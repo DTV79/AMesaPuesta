@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AMesaPuesta</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="hero">
+
+    <img
+      class="logo"
+      src="./assets/logo-cangrejo.png"
+      alt="Logo AMesaPuesta"
+    />
+
+    <h1 class="title">AMesaPuesta</h1>
+
+    <p class="slogan">
+      A mesa puesta… y el vaso lleno desde 2022
+    </p>
+
+  </main>
+</body>
+</html>
