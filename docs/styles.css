@@ -1,17 +1,16 @@
 :root{
   --bg: #ffffff;
-  --text: #111111;
-  --muted: #333333;
+  --text: #111;
+  --muted: #333;
 }
 
 *{ box-sizing:border-box; }
 
 body{
   margin:0;
-  min-height:100vh;
   background: var(--bg);
-  color: var(--text);
   font-family: Georgia, "Times New Roman", serif;
+  color: var(--text);
 }
 
 .hero{
@@ -19,16 +18,15 @@ body{
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
-  padding: 28px 16px;
-  gap: 16px;
+  justify-content:flex-start;   /* más arriba */
+  padding-top: 60px;            /* subimos contenido */
   text-align:center;
 }
 
 .logo-wrap{
   position: relative;
-  width: min(320px, 88vw);
-  aspect-ratio: 1 / 1;
+  width: min(380px, 92vw);      /* más grande */
+  aspect-ratio: 1/1;
   display:grid;
   place-items:center;
 }
@@ -38,25 +36,23 @@ body{
   inset:0;
   width:100%;
   height:100%;
-  pointer-events:none;
 }
 
 .arc-text{
   fill: var(--text);
   font-weight: 700;
-  letter-spacing: 1px;
-  font-size: 18px;
+  letter-spacing: 2px;
+  font-size: 26px;              /* letras más grandes */
 }
 
 .logo{
-  width: 62%;
-  height: auto;
-  display:block;
+  width: 78%;                   /* logo mucho más grande */
+  height:auto;
 }
 
 .slogan{
-  margin:0;
-  font-size: clamp(16px, 2.6vw, 20px);
+  margin-top: 30px;
+  font-size: 18px;
   font-style: italic;
   color: var(--muted);
 }
