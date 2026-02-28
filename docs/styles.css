@@ -1,45 +1,62 @@
-:root {
-  --bg: #f4f1ea;
-  --text: #111;
-  --muted: #444;
+:root{
+  --bg: #ffffff;
+  --text: #111111;
+  --muted: #333333;
 }
 
-* { box-sizing: border-box; }
+*{ box-sizing:border-box; }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: "Georgia", "Times New Roman", serif;
+body{
+  margin:0;
+  min-height:100vh;
   background: var(--bg);
   color: var(--text);
+  font-family: Georgia, "Times New Roman", serif;
 }
 
-.hero {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 18px;
-  text-align: center;
-  padding: 40px 20px;
+.hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding: 28px 16px;
+  gap: 16px;
+  text-align:center;
 }
 
-.logo {
-  width: 260px;
-  max-width: 80%;
-  height: auto;
+.logo-wrap{
+  position: relative;
+  width: min(320px, 88vw);
+  aspect-ratio: 1 / 1;
+  display:grid;
+  place-items:center;
 }
 
-.title {
-  margin: 0;
-  font-size: clamp(38px, 6vw, 60px);
+.arc{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+}
+
+.arc-text{
+  fill: var(--text);
+  font-weight: 700;
   letter-spacing: 1px;
+  font-size: 18px;
 }
 
-.slogan {
-  margin: 0;
-  font-size: clamp(16px, 2.5vw, 22px);
+.logo{
+  width: 62%;
+  height: auto;
+  display:block;
+}
+
+.slogan{
+  margin:0;
+  font-size: clamp(16px, 2.6vw, 20px);
   font-style: italic;
   color: var(--muted);
 }
