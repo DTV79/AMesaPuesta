@@ -25,7 +25,7 @@ body{
 
 .logo-wrap{
   position: relative;
-  width: min(420px, 94vw);      /* más grande */
+  width: min(380px, 92vw);      /* más grande */
   aspect-ratio: 1/1;
   display:grid;
   place-items:center;
