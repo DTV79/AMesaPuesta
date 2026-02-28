@@ -48,8 +48,7 @@ body{
 .logo{
   width: 78%;                   /* logo mucho más grande */
   height:auto;
-  transform: translateY(12px);  /* lo baja un poco */
-}
+ }
 
 .slogan{
   margin-top: 30px;
