@@ -9,17 +9,30 @@
 <body>
   <main class="hero">
 
-    <img
-      class="logo"
-      src="Fotos/logo-cangrejo.png"
-      alt="Logo AMesaPuesta"
-    />
+    <div class="logo-wrap" aria-label="Cofradía A Mesa Puesta">
+      <!-- Texto curvo -->
+      <svg class="arc" viewBox="0 0 300 300" role="img" aria-label="Cofradía A Mesa Puesta">
+        <defs>
+          <!-- Arco superior -->
+          <path id="topArc" d="M 40 165 A 110 110 0 0 1 260 165" />
+        </defs>
 
-    <h1 class="title">AMesaPuesta</h1>
+        <text class="arc-text">
+          <textPath href="#topArc" startOffset="50%" text-anchor="middle">
+            Cofradía A Mesa Puesta
+          </textPath>
+        </text>
+      </svg>
 
-    <p class="slogan">
-      A mesa puesta… y el vaso lleno desde 2022
-    </p>
+      <!-- Logo -->
+      <img
+        class="logo"
+        src="./Fotos/logo-cangrejo.png"
+        alt="Logo AMesaPuesta"
+      />
+    </div>
+
+    <p class="slogan">A mesa puesta… y el vaso lleno desde 2022</p>
 
   </main>
 </body>
