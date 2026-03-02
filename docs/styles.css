@@ -51,8 +51,16 @@ body{
  }
 
 .slogan{
-  margin-top: 30px;
-  font-size: 18px;
-  font-style: italic;
-  color: var(--muted);
+  margin-top: 10px;
+  font-size: 20px;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 1px;
+  color: #3a1f0f;  /* marrón oscuro tipo hierro */
+
+  text-shadow:
+    0 1px 0 #000,
+    0 2px 2px rgba(0,0,0,0.4),
+    0 0 4px rgba(120,40,0,0.5),
+    0 0 8px rgba(160,60,0,0.3);
 }
