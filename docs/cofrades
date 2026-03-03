@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cofrades</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1 style="text-align:center;margin-top:30px;">👥 Cofrades</h1>
+
+<div id="resumen" style="text-align:center;margin:20px;"></div>
+
+<table id="tabla" style="margin:auto;border-collapse:collapse;width:90%;">
+    <thead>
+        <tr>
+            <th>Miembro</th>
+            <th>Categoría</th>
+            <th>Cuotas</th>
+            <th>Remanente</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+fetch('cofrades.json')
+  .then(response => response.json())
+  .then(data => {
+
+    // Resumen arriba
+    document.getElementById("resumen").innerHTML =
+      "<strong>Total miembros:</strong> " + data.resumen.total_miembros +
+      " | <strong>Remanente global:</strong> " + data.resumen.total_remanente;
+
+    const tbody = document.querySelector("#tabla tbody");
+
+    data.cofrades.forEach(c => {
+        let fila = `
+            <tr>
+                <td>${c.miembro}</td>
+                <td>${c.categoria}</td>
+                <td>${c.cuotas}</td>
+                <td>${c.remanente}</td>
+            </tr>
+        `;
+        tbody.innerHTML += fila;
+    });
+
+  });
+</script>
+
+</body>
+</html>
