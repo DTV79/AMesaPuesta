@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="styles.css" />
 
   <style>
-    /* ====== LOOK & FEEL ====== */
     :root{
       --bg:#f8f5f0;
       --card:#ffffff;
@@ -18,12 +17,14 @@
       --shadow: 0 8px 24px rgba(0,0,0,.08);
       --radius: 16px;
     }
+
     body{
       margin:0;
       background:var(--bg);
       color:var(--ink);
       font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
     }
+
     .wrap{
       width:min(1100px, 92vw);
       margin: 28px auto 60px;
@@ -35,40 +36,42 @@
       border:1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 22px 22px 16px;
-      display:flex;
-      gap:18px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
+      padding: 18px 20px;
     }
+
     .title{
-      display:flex; gap:12px; align-items:center;
+      display:flex;
+      gap:14px;
+      align-items:center;
+      justify-content:flex-start;
     }
+
     .title h1{
       margin:0;
       font-size: 34px;
       letter-spacing:.2px;
     }
-    .subtitle{
-      margin:6px 0 0;
-      color:var(--muted);
-      font-size: 14px;
-    }
+
     .back{
+      margin-left: 6px;           /* más pegado al título */
       text-decoration:none;
       color:var(--accent);
       font-weight:600;
       border:1px solid rgba(139,0,0,.25);
-      padding:10px 14px;
+      padding:6px 12px;           /* más compacto */
       border-radius: 999px;
       background:#fff;
       transition: .2s;
       display:inline-flex;
       align-items:center;
       gap:8px;
+      font-size: 14px;
+      line-height: 1;
     }
-    .back:hover{ transform: translateY(-1px); box-shadow: 0 10px 18px rgba(139,0,0,.08); }
+    .back:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(139,0,0,.08);
+    }
 
     /* ====== STATS ====== */
     .stats{
@@ -87,9 +90,22 @@
       box-shadow: var(--shadow);
       padding: 14px 16px;
     }
-    .stat .k{ color:var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing:.08em; }
-    .stat .v{ margin-top:8px; font-size: 22px; font-weight: 800; }
-    .stat .hint{ margin-top:6px; color:var(--muted); font-size: 12px; }
+    .stat .k{
+      color:var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing:.08em;
+    }
+    .stat .v{
+      margin-top:8px;
+      font-size: 22px;
+      font-weight: 800;
+    }
+    .stat .hint{
+      margin-top:6px;
+      color:var(--muted);
+      font-size: 12px;
+    }
 
     /* ====== CONTROLS ====== */
     .controls{
@@ -208,17 +224,11 @@
   <div class="wrap">
 
     <div class="hero">
-      <div>
-        <div class="title">
-          <span style="font-size:34px">🐵</span>
-          <div>
-            <h1>Cofrades</h1>
-            <div class="subtitle" id="subtitulo">Cargando datos…</div>
-          </div>
-        </div>
+      <div class="title">
+        <span style="font-size:34px">🐵</span>
+        <h1>Cofrades</h1>
+        <a class="back" href="index.html">← Volver</a>
       </div>
-
-      <a class="back" href="index.html">← Volver</a>
     </div>
 
     <div class="stats">
@@ -308,11 +318,9 @@
 
     let rows = ALL.slice();
 
-    // filtro
     if (filter === 'activos') rows = rows.filter(c => !isBaja(c));
     if (filter === 'baja') rows = rows.filter(c => isBaja(c));
 
-    // búsqueda
     if (q){
       rows = rows.filter(c =>
         (c.miembro || '').toLowerCase().includes(q) ||
@@ -320,7 +328,6 @@
       );
     }
 
-    // orden
     const by = {
       miembro_asc:  (a,b) => (a.miembro||'').localeCompare(b.miembro||'', 'es'),
       miembro_desc: (a,b) => (b.miembro||'').localeCompare(a.miembro||'', 'es'),
@@ -330,7 +337,6 @@
     };
     rows.sort(by[sort] || by.miembro_asc);
 
-    // pintar tabla
     const tbody = document.getElementById('tbody');
     if (!rows.length){
       tbody.innerHTML = `<tr><td class="muted" colspan="4" style="padding:18px 16px;">Sin resultados.</td></tr>`;
@@ -361,19 +367,15 @@
       return r.json();
     })
     .then(data => {
-      // stats
+      // stats (pero SIN texto debajo del título)
       document.getElementById('s_total_miembros').textContent = data.resumen.total_miembros ?? '—';
       document.getElementById('s_remanente').textContent = fmt.format(Number(data.resumen.total_remanente ?? 0));
       document.getElementById('s_cuotas').textContent = fmt.format(Number(data.resumen.total_cuotas ?? 0));
       document.getElementById('s_pagos').textContent = fmt.format(Number(data.resumen.total_pagos_comidas ?? 0));
 
-      document.getElementById('subtitulo').textContent =
-        `Total miembros: ${data.resumen.total_miembros ?? '—'} · Remanente global: ${fmt.format(Number(data.resumen.total_remanente ?? 0))}`;
-
       ALL = Array.isArray(data.cofrades) ? data.cofrades : [];
       apply();
 
-      // listeners
       document.getElementById('q').addEventListener('input', apply);
       document.getElementById('sort').addEventListener('change', apply);
       document.getElementById('filter').addEventListener('change', apply);
@@ -381,7 +383,6 @@
     .catch(err => {
       document.getElementById('tbody').innerHTML =
         `<tr><td class="muted" colspan="4" style="padding:18px 16px;">❌ Error cargando datos: ${err.message}</td></tr>`;
-      document.getElementById('subtitulo').textContent = "Error cargando cofrades.json";
     });
 </script>
 
