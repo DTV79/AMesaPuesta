@@ -24,7 +24,7 @@
 </table>
 
 <script>
-fetch('cofrades.json')
+fetch('cofrades.json?v=' + new Date().getTime())
   .then(response => response.json())
   .then(data => {
 
