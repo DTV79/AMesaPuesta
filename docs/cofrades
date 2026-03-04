@@ -52,3 +52,20 @@ fetch('cofrades.json')
 
 </body>
 </html>
+
+Sub ProbarAccesoGitHub()
+    Dim token As String
+    token = GetGitHubToken()
+    If token = "" Then
+        MsgBox "Falta token en Config!A1", vbCritical
+        Exit Sub
+    End If
+
+    Dim urlRepo As String
+    urlRepo = "https://api.github.com/repos/" & GITHUB_OWNER & "/" & GITHUB_REPO
+
+    Dim r As Object
+    Set r = Http("GET", urlRepo, token)
+
+    MsgBox "Status: " & r.Status & vbCrLf & r.responseText
+End Sub
