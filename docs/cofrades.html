@@ -26,7 +26,7 @@
     }
     .wrap{
       width:min(1100px, 92vw);
-      margin: 28px auto 20px;
+      margin: 28px auto 60px;
     }
 
     /* ====== HEADER ====== */
@@ -72,7 +72,7 @@
 
     /* ====== STATS ====== */
     .stats{
-      margin-top: 6px;
+      margin-top: 16px;
       display:grid;
       grid-template-columns: repeat(4, minmax(0,1fr));
       gap:14px;
@@ -93,7 +93,7 @@
 
     /* ====== CONTROLS ====== */
     .controls{
-      margin-top: 8px;
+      margin-top: 18px;
       display:flex;
       gap:12px;
       align-items:center;
@@ -221,6 +221,17 @@
       <a class="back" href="index.html">← Volver</a>
     </div>
 
+    <div class="stats">
+      <div class="stat">
+        <div class="k">Total miembros</div>
+        <div class="v" id="s_total_miembros">—</div>
+        <div class="hint">Miembros listados</div>
+      </div>
+      <div class="stat">
+        <div class="k">Remanente global</div>
+        <div class="v" id="s_remanente">—</div>
+        <div class="hint">Suma de remanentes</div>
+      </div>
       <div class="stat">
         <div class="k">Total cuotas</div>
         <div class="v" id="s_cuotas">—</div>
