@@ -1,53 +1,388 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Cofrades</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cofrades</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    /* ====== LOOK & FEEL ====== */
+    :root{
+      --bg:#f8f5f0;
+      --card:#ffffff;
+      --ink:#1f1f1f;
+      --muted:#6b7280;
+      --accent:#8b0000;
+      --border:#e5e7eb;
+      --shadow: 0 8px 24px rgba(0,0,0,.08);
+      --radius: 16px;
+    }
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--ink);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+    }
+    .wrap{
+      width:min(1100px, 92vw);
+      margin: 28px auto 60px;
+    }
+
+    /* ====== HEADER ====== */
+    .hero{
+      background: linear-gradient(135deg, #fff, #fff5f5);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px 22px 16px;
+      display:flex;
+      gap:18px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .title{
+      display:flex; gap:12px; align-items:center;
+    }
+    .title h1{
+      margin:0;
+      font-size: 34px;
+      letter-spacing:.2px;
+    }
+    .subtitle{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size: 14px;
+    }
+    .back{
+      text-decoration:none;
+      color:var(--accent);
+      font-weight:600;
+      border:1px solid rgba(139,0,0,.25);
+      padding:10px 14px;
+      border-radius: 999px;
+      background:#fff;
+      transition: .2s;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .back:hover{ transform: translateY(-1px); box-shadow: 0 10px 18px rgba(139,0,0,.08); }
+
+    /* ====== STATS ====== */
+    .stats{
+      margin-top: 16px;
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap:14px;
+    }
+    @media (max-width: 900px){
+      .stats{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    .stat{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px 16px;
+    }
+    .stat .k{ color:var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing:.08em; }
+    .stat .v{ margin-top:8px; font-size: 22px; font-weight: 800; }
+    .stat .hint{ margin-top:6px; color:var(--muted); font-size: 12px; }
+
+    /* ====== CONTROLS ====== */
+    .controls{
+      margin-top: 18px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:space-between;
+    }
+    .search{
+      flex: 1 1 320px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 14px;
+      box-shadow: var(--shadow);
+    }
+    .search input{
+      border:none;
+      outline:none;
+      width:100%;
+      font-size: 14px;
+      background:transparent;
+    }
+    .pill{
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+      display:flex;
+      gap:10px;
+      align-items:center;
+      color:var(--muted);
+      font-size: 13px;
+    }
+    .pill select{
+      border:none;
+      outline:none;
+      background:transparent;
+      font-size: 13px;
+      color:var(--ink);
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    /* ====== TABLE ====== */
+    .tableCard{
+      margin-top: 14px;
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    table{
+      width:100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    thead th{
+      text-align:left;
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      border-bottom:1px solid var(--border);
+      padding: 14px 16px;
+      color:#111827;
+      white-space:nowrap;
+    }
+    tbody td{
+      padding: 12px 16px;
+      border-bottom:1px solid var(--border);
+      vertical-align:middle;
+    }
+    tbody tr:hover{
+      background: #fff7f7;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight:700;
+      font-size:12px;
+      border:1px solid rgba(139,0,0,.25);
+      background: rgba(139,0,0,.06);
+      color: var(--accent);
+      white-space:nowrap;
+    }
+    .num{
+      font-variant-numeric: tabular-nums;
+      text-align:right;
+      white-space:nowrap;
+    }
+    .muted{ color: var(--muted); }
+
+    /* ====== FOOTER ====== */
+    .footerNote{
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align:right;
+      padding-right: 4px;
+    }
+  </style>
 </head>
+
 <body>
+  <div class="wrap">
 
-<h1 style="text-align:center;margin-top:30px;">👥 Cofrades</h1>
+    <div class="hero">
+      <div>
+        <div class="title">
+          <span style="font-size:34px">🐵</span>
+          <div>
+            <h1>Cofrades</h1>
+            <div class="subtitle" id="subtitulo">Cargando datos…</div>
+          </div>
+        </div>
+      </div>
 
-<div id="resumen" style="text-align:center;margin:20px;"></div>
+      <a class="back" href="index.html">← Volver</a>
+    </div>
 
-<table id="tabla" style="margin:auto;border-collapse:collapse;width:90%;">
-    <thead>
-        <tr>
-            <th>Miembro</th>
-            <th>Categoría</th>
-            <th>Cuotas</th>
-            <th>Remanente</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+    <div class="stats">
+      <div class="stat">
+        <div class="k">Total miembros</div>
+        <div class="v" id="s_total_miembros">—</div>
+        <div class="hint">Miembros listados</div>
+      </div>
+      <div class="stat">
+        <div class="k">Remanente global</div>
+        <div class="v" id="s_remanente">—</div>
+        <div class="hint">Suma de remanentes</div>
+      </div>
+      <div class="stat">
+        <div class="k">Total cuotas</div>
+        <div class="v" id="s_cuotas">—</div>
+        <div class="hint">Suma de cuotas</div>
+      </div>
+      <div class="stat">
+        <div class="k">Pagos comidas</div>
+        <div class="v" id="s_pagos">—</div>
+        <div class="hint">Total pagos comidas</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="search">
+        🔎
+        <input id="q" type="search" placeholder="Buscar por nombre o categoría…" />
+      </div>
+
+      <div class="pill">
+        Ordenar:
+        <select id="sort">
+          <option value="miembro_asc">Nombre (A→Z)</option>
+          <option value="miembro_desc">Nombre (Z→A)</option>
+          <option value="cuotas_desc">Cuotas (mayor→menor)</option>
+          <option value="remanente_desc">Remanente (mayor→menor)</option>
+          <option value="categoria_asc">Categoría (A→Z)</option>
+        </select>
+      </div>
+
+      <div class="pill">
+        Ver:
+        <select id="filter">
+          <option value="todos">Todos</option>
+          <option value="activos">Solo activos (sin “Baja”)</option>
+          <option value="baja">Solo “Baja”</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="tableCard">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:34%">Miembro</th>
+            <th style="width:30%">Categoría</th>
+            <th class="num" style="width:18%">Cuotas</th>
+            <th class="num" style="width:18%">Remanente</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td class="muted" colspan="4" style="padding:18px 16px;">Cargando…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footerNote" id="foot"></div>
+
+  </div>
 
 <script>
-fetch('cofrades.json?v=' + new Date().getTime())
-  .then(response => response.json())
-  .then(data => {
+  const fmt = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 });
 
-    // Resumen arriba
-    document.getElementById("resumen").innerHTML =
-      "<strong>Total miembros:</strong> " + data.resumen.total_miembros +
-      " | <strong>Remanente global:</strong> " + data.resumen.total_remanente;
+  let ALL = [];
 
-    const tbody = document.querySelector("#tabla tbody");
+  function isBaja(c){
+    const cat = (c.categoria || '').toLowerCase();
+    return cat.includes('baja');
+  }
 
-    data.cofrades.forEach(c => {
-        let fila = `
-            <tr>
-                <td>${c.miembro}</td>
-                <td>${c.categoria}</td>
-                <td>${c.cuotas}</td>
-                <td>${c.remanente}</td>
-            </tr>
-        `;
-        tbody.innerHTML += fila;
+  function apply(){
+    const q = (document.getElementById('q').value || '').toLowerCase().trim();
+    const sort = document.getElementById('sort').value;
+    const filter = document.getElementById('filter').value;
+
+    let rows = ALL.slice();
+
+    // filtro
+    if (filter === 'activos') rows = rows.filter(c => !isBaja(c));
+    if (filter === 'baja') rows = rows.filter(c => isBaja(c));
+
+    // búsqueda
+    if (q){
+      rows = rows.filter(c =>
+        (c.miembro || '').toLowerCase().includes(q) ||
+        (c.categoria || '').toLowerCase().includes(q)
+      );
+    }
+
+    // orden
+    const by = {
+      miembro_asc:  (a,b) => (a.miembro||'').localeCompare(b.miembro||'', 'es'),
+      miembro_desc: (a,b) => (b.miembro||'').localeCompare(a.miembro||'', 'es'),
+      categoria_asc:(a,b) => (a.categoria||'').localeCompare(b.categoria||'', 'es'),
+      cuotas_desc:  (a,b) => (Number(b.cuotas||0) - Number(a.cuotas||0)),
+      remanente_desc:(a,b)=> (Number(b.remanente||0) - Number(a.remanente||0)),
+    };
+    rows.sort(by[sort] || by.miembro_asc);
+
+    // pintar tabla
+    const tbody = document.getElementById('tbody');
+    if (!rows.length){
+      tbody.innerHTML = `<tr><td class="muted" colspan="4" style="padding:18px 16px;">Sin resultados.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = rows.map(c => `
+      <tr>
+        <td>
+          <div style="font-weight:800">${c.miembro ?? ''}</div>
+          <div class="muted" style="font-size:12px;margin-top:2px">
+            ${isBaja(c) ? '⛔ Baja' : '✅ Activo'}
+          </div>
+        </td>
+        <td><span class="badge">${c.categoria ?? ''}</span></td>
+        <td class="num">${fmt.format(Number(c.cuotas ?? 0))}</td>
+        <td class="num">${fmt.format(Number(c.remanente ?? 0))}</td>
+      </tr>
+    `).join('');
+
+    document.getElementById('foot').textContent =
+      `Mostrando ${rows.length} de ${ALL.length} cofrades`;
+  }
+
+  fetch('cofrades.json?v=' + Date.now(), { cache: 'no-store' })
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(data => {
+      // stats
+      document.getElementById('s_total_miembros').textContent = data.resumen.total_miembros ?? '—';
+      document.getElementById('s_remanente').textContent = fmt.format(Number(data.resumen.total_remanente ?? 0));
+      document.getElementById('s_cuotas').textContent = fmt.format(Number(data.resumen.total_cuotas ?? 0));
+      document.getElementById('s_pagos').textContent = fmt.format(Number(data.resumen.total_pagos_comidas ?? 0));
+
+      document.getElementById('subtitulo').textContent =
+        `Total miembros: ${data.resumen.total_miembros ?? '—'} · Remanente global: ${fmt.format(Number(data.resumen.total_remanente ?? 0))}`;
+
+      ALL = Array.isArray(data.cofrades) ? data.cofrades : [];
+      apply();
+
+      // listeners
+      document.getElementById('q').addEventListener('input', apply);
+      document.getElementById('sort').addEventListener('change', apply);
+      document.getElementById('filter').addEventListener('change', apply);
+    })
+    .catch(err => {
+      document.getElementById('tbody').innerHTML =
+        `<tr><td class="muted" colspan="4" style="padding:18px 16px;">❌ Error cargando datos: ${err.message}</td></tr>`;
+      document.getElementById('subtitulo').textContent = "Error cargando cofrades.json";
     });
-
-  });
 </script>
 
 </body>
