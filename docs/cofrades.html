@@ -296,7 +296,7 @@
       </tr>
     </thead>
         <tbody id="tbody">
-          <tr><td class="muted" colspan="4" style="padding:18px 16px;">Cargando…</td></tr>
+          <tr><td class="muted" colspan="6" style="padding:18px 16px;">Cargando…</td></tr>
         </tbody>
       </table>
     </div>
@@ -313,6 +313,13 @@
   function isBaja(c){
     const cat = (c.categoria || '').toLowerCase();
     return cat.includes('baja');
+  }
+
+  function formatearFecha(fecha){
+    if(!fecha) return "";
+    const f = new Date(fecha);
+    if(isNaN(f)) return fecha;
+    return f.toLocaleDateString("es-ES");
   }
 
   function apply(){
@@ -343,23 +350,29 @@
 
     const tbody = document.getElementById('tbody');
     if (!rows.length){
-      tbody.innerHTML = `<tr><td class="muted" colspan="4" style="padding:18px 16px;">Sin resultados.</td></tr>`;
+      tbody.innerHTML = `<tr><td class="muted" colspan="6" style="padding:18px 16px;">Sin resultados.</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = rows.map(c => `
+    tbody.innerHTML = rows.map(c => {
+
+      const cuotasOk = (c.cuotas_al_dia ?? "").toString().toLowerCase().includes("sí")
+                    || (c.cuotas_al_dia ?? "").toString().toLowerCase().includes("si");
+
+      const color = cuotasOk ? "#1f7a1f" : "#b00020";
+      const icono = cuotasOk ? "🟢" : "🔴";
+
+      return `
       <tr>
-        <td>
-          <div style="font-weight:800">${c.miembro ?? ''}</div>
-          <div class="muted" style="font-size:12px;margin-top:2px">
-            ${isBaja(c) ? '⛔ Baja' : '✅ Activo'}
-          </div>
-        </td>
-        <td><span class="badge">${c.categoria ?? ''}</span></td>
-        <td class="num">${fmt.format(Number(c.cuotas ?? 0))}</td>
-        <td class="num">${fmt.format(Number(c.remanente ?? 0))}</td>
+        <td><strong>${c.miembro ?? ''}</strong></td>
+        <td>${c.categoria ?? ''}</td>
+        <td>${formatearFecha(c.fecha_ingreso)}</td>
+        <td class="num">${fmt.format(Number(c.pagos_comidas ?? 0))}</td>
+        <td class="num">${fmt.format(Number(c.comidas_asistidas ?? 0))}</td>
+        <td style="color:${color};font-weight:700">${icono} ${c.cuotas_al_dia ?? ''}</td>
       </tr>
-    `).join('');
+      `;
+    }).join('');
 
     document.getElementById('foot').textContent =
       `Mostrando ${rows.length} de ${ALL.length} cofrades`;
@@ -386,7 +399,7 @@
     })
     .catch(err => {
       document.getElementById('tbody').innerHTML =
-        `<tr><td class="muted" colspan="4" style="padding:18px 16px;">❌ Error cargando datos: ${err.message}</td></tr>`;
+        `<tr><td class="muted" colspan="6" style="padding:18px 16px;">❌ Error cargando datos: ${err.message}</td></tr>`;
     });
 </script>
 
