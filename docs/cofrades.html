@@ -30,7 +30,6 @@
       margin: 18px auto 40px;
     }
 
-    /* ====== HEADER ====== */
     .hero{
       background: linear-gradient(135deg, #fff, #fff5f5);
       border:1px solid var(--border);
@@ -44,7 +43,7 @@
       display:flex;
       gap:10px;
       align-items:center;
-   }
+    }
 
     .title h1{
       margin:0;
@@ -68,21 +67,25 @@
       font-size: 14px;
       line-height: 1;
     }
+
     .back:hover{
       transform: translateY(-1px);
       box-shadow: 0 10px 18px rgba(139,0,0,.08);
     }
 
-    /* ====== STATS ====== */
     .stats{
       margin-top: 6px;
       display:grid;
       grid-template-columns: repeat(4, minmax(0,1fr));
       gap:14px;
     }
+
     @media (max-width: 900px){
-      .stats{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .stats{
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
     }
+
     .stat{
       background:var(--card);
       border:1px solid var(--border);
@@ -90,24 +93,20 @@
       box-shadow: var(--shadow);
       padding: 14px 16px;
     }
+
     .stat .k{
       color:var(--muted);
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing:.08em;
     }
+
     .stat .v{
       margin-top:8px;
       font-size: 22px;
       font-weight: 800;
     }
-    .stat .hint{
-      margin-top:6px;
-      color:var(--muted);
-      font-size: 12px;
-    }
 
-    /* ====== CONTROLS ====== */
     .controls{
       margin-top: 18px;
       display:flex;
@@ -116,6 +115,7 @@
       flex-wrap:wrap;
       justify-content:space-between;
     }
+
     .search{
       flex: 1 1 320px;
       display:flex;
@@ -127,6 +127,7 @@
       padding: 10px 14px;
       box-shadow: var(--shadow);
     }
+
     .search input{
       border:none;
       outline:none;
@@ -134,6 +135,7 @@
       font-size: 14px;
       background:transparent;
     }
+
     .pill{
       background: var(--card);
       border:1px solid var(--border);
@@ -146,6 +148,7 @@
       color:var(--muted);
       font-size: 13px;
     }
+
     .pill select{
       border:none;
       outline:none;
@@ -164,7 +167,6 @@
       color: var(--muted);
     }
 
-    /* ====== TABLE ====== */
     .tableCard{
       margin-top: 14px;
       background: var(--card);
@@ -175,12 +177,14 @@
       width: 100%;
       box-sizing: border-box;
     }
+
     table{
       width:100%;
       border-collapse: collapse;
       font-size: 14px;
       table-layout: fixed;
     }
+
     thead th{
       text-align:left;
       background: #fff;
@@ -192,35 +196,27 @@
       color:#111827;
       white-space:nowrap;
     }
+
     tbody td{
       padding: 12px 16px;
       border-bottom:1px solid var(--border);
       vertical-align:middle;
     }
+
     tbody tr:hover{
       background: #fff7f7;
     }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-weight:700;
-      font-size:12px;
-      border:1px solid rgba(139,0,0,.25);
-      background: rgba(139,0,0,.06);
-      color: var(--accent);
-      white-space:nowrap;
-    }
+
     .num{
       font-variant-numeric: tabular-nums;
       text-align:right;
       white-space:nowrap;
     }
-    .muted{ color: var(--muted); }
 
-    /* ====== FOOTER ====== */
+    .muted{
+      color: var(--muted);
+    }
+
     .footerNote{
       margin-top: 12px;
       color: var(--muted);
@@ -229,127 +225,98 @@
       padding-right: 4px;
     }
 
-    /* ====== MÓVIL EN VERTICAL: solo mostrar Miembro ====== */
-    @media (max-width: 768px) and (orientation: portrait){
-  .tableHint{
-    display:block;
-  }
+    /* Por defecto ocultamos las columnas extra */
+    .landscape-only{
+      display: none;
+    }
 
-  .table-mobile-hide,
-  .table-landscape-show{
-    display:none;
-  }
-
-  table{
-    table-layout: auto;
-  }
-
-  thead th,
-  tbody td{
-    padding: 12px 14px;
-  }
-}
-
-    /* ====== RESTO DE CASOS: mostrar todo ====== */
-    @media (min-width: 769px), (orientation: landscape){
-  .tableHint{
-    display:block;
-  }
-
-  .table-mobile-hide{
-    display:none;
-  }
-
-  .table-landscape-show{
-    display:table-cell;
-  }
-}
+    /* En horizontal mostramos Miembro + Categoría */
+    @media (orientation: landscape){
+      .landscape-only{
+        display: table-cell;
+      }
+    }
   </style>
 </head>
 
 <body>
   <div class="wrap">
 
-   <div class="hero">
-  <div class="title">
-    <span style="font-size:34px">👥</span>
-    <h1>Cofrades</h1>
-    <a class="back" href="index.html">← Volver</a>
-  </div>
-
-  <div class="stats">
-      <div class="stat">
-        <div class="k">Miembros activos</div>
-        <div class="v" id="s_total_miembros">—</div>
-      </div>
-      <div class="stat">
-        <div class="k">Total cuotas</div>
-        <div class="v" id="s_cuotas">—</div>
-      </div>
-      <div class="stat">
-        <div class="k">Total gastos</div>
-        <div class="v" id="s_pagos">—</div>
-      </div>
-      <div class="stat">
-        <div class="k">Remanente global</div>
-        <div class="v" id="s_remanente">—</div>
-      </div>
-    </div>
-
-    <div class="controls">
-      <div class="search">
-        🔎
-        <input id="q" type="search" placeholder="Buscar por nombre o categoría…" />
+    <div class="hero">
+      <div class="title">
+        <span style="font-size:34px">👥</span>
+        <h1>Cofrades</h1>
+        <a class="back" href="index.html">← Volver</a>
       </div>
 
-      <div class="pill">
-        Ordenar:
-        <select id="sort">
-          <option value="miembro_asc">Nombre (A→Z)</option>
-          <option value="miembro_desc">Nombre (Z→A)</option>
-          <option value="cuotas_desc">Cuotas (mayor→menor)</option>
-          <option value="remanente_desc">Remanente (mayor→menor)</option>
-          <option value="categoria_asc">Categoría (A→Z)</option>
-        </select>
+      <div class="stats">
+        <div class="stat">
+          <div class="k">Miembros activos</div>
+          <div class="v" id="s_total_miembros">—</div>
+        </div>
+        <div class="stat">
+          <div class="k">Total cuotas</div>
+          <div class="v" id="s_cuotas">—</div>
+        </div>
+        <div class="stat">
+          <div class="k">Total gastos</div>
+          <div class="v" id="s_gastos">—</div>
+        </div>
+        <div class="stat">
+          <div class="k">Remanente global</div>
+          <div class="v" id="s_remanente">—</div>
+        </div>
       </div>
 
-      <div class="pill">
-        Ver:
-        <select id="filter">
-          <option value="todos">Todos</option>
-          <option value="activos" selected>Solo activos</option>
-          <option value="baja">Solo “Baja”</option>
+      <div class="controls">
+        <div class="search">
+          🔎
+          <input id="q" type="search" placeholder="Buscar por nombre o categoría…" />
+        </div>
+
+        <div class="pill">
+          Ordenar:
+          <select id="sort">
+            <option value="miembro_asc">Nombre (A→Z)</option>
+            <option value="miembro_desc">Nombre (Z→A)</option>
+            <option value="categoria_asc">Categoría (A→Z)</option>
           </select>
+        </div>
+
+        <div class="pill">
+          Ver:
+          <select id="filter">
+            <option value="todos">Todos</option>
+            <option value="activos" selected>Solo activos (sin "Baja")</option>
+            <option value="baja">Solo "Baja"</option>
+          </select>
+        </div>
       </div>
+
+      <div class="tableHint">(Para ver todos los datos pon el móvil en horizontal)</div>
+
+      <div class="tableCard">
+        <table>
+          <thead>
+            <tr>
+              <th>Miembro</th>
+              <th class="landscape-only">Categoría</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr>
+              <td class="muted" colspan="2" style="padding:18px 16px;">Cargando…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footerNote" id="foot"></div>
     </div>
-
-    <div class="tableHint">(Para ver todos los datos pon el móvil en horizontal)</div>
-
-    <div class="tableCard">
-      <table>
-        <thead>
-      <tr>
-        <tr>
-        <th>Miembro</th>
-        <th class="table-landscape-show">Categoría</th>
-        <th class="table-mobile-hide">Fecha ingreso</th>
-        <th class="num table-mobile-hide">Pagos comidas</th>
-        <th class="num table-mobile-hide">Comidas asistidas</th>
-        <th class="table-mobile-hide">Cuotas al día</th>
-        </tr>
-    </thead>
-        <tbody id="tbody">
-          <tr><td class="muted" colspan="6" style="padding:18px 16px;">Cargando…</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="footerNote" id="foot"></div>
 
   </div>
 
 <script>
-  const fmt = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 });
   const eur = new Intl.NumberFormat('es-ES', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
@@ -360,13 +327,6 @@
   function isBaja(c){
     const cat = (c.categoria || '').toLowerCase();
     return cat.includes('baja');
-  }
-
-  function formatearFecha(fecha){
-    if(!fecha) return "";
-    const f = new Date(fecha);
-    if(isNaN(f)) return fecha;
-    return f.toLocaleDateString("es-ES");
   }
 
   function apply(){
@@ -387,40 +347,27 @@
     }
 
     const by = {
-      miembro_asc:  (a,b) => (a.miembro||'').localeCompare(b.miembro||'', 'es'),
-      miembro_desc: (a,b) => (b.miembro||'').localeCompare(a.miembro||'', 'es'),
-      categoria_asc:(a,b) => (a.categoria||'').localeCompare(b.categoria||'', 'es'),
-      cuotas_desc:  (a,b) => (Number(b.cuotas||0) - Number(a.cuotas||0)),
-      remanente_desc:(a,b)=> (Number(b.remanente||0) - Number(a.remanente||0)),
+      miembro_asc:  (a,b) => (a.miembro || '').localeCompare(b.miembro || '', 'es'),
+      miembro_desc: (a,b) => (b.miembro || '').localeCompare(a.miembro || '', 'es'),
+      categoria_asc:(a,b) => (a.categoria || '').localeCompare(b.categoria || '', 'es')
     };
+
     rows.sort(by[sort] || by.miembro_asc);
 
     const tbody = document.getElementById('tbody');
+
     if (!rows.length){
-      tbody.innerHTML = `<tr><td class="muted" colspan="6" style="padding:18px 16px;">Sin resultados.</td></tr>`;
+      tbody.innerHTML = `<tr><td class="muted" colspan="2" style="padding:18px 16px;">Sin resultados.</td></tr>`;
+      document.getElementById('foot').textContent = 'Mostrando 0 cofrades';
       return;
     }
 
-    tbody.innerHTML = rows.map(c => {
-
-      const cuotasOk = (c.cuotas_al_dia ?? "").toString().toLowerCase().includes("sí")
-                    || (c.cuotas_al_dia ?? "").toString().toLowerCase().includes("si");
-
-      const color = cuotasOk ? "#1f7a1f" : "#b00020";
-      const icono = cuotasOk ? "🟢" : "🔴";
-
-      return `
-      return `
+    tbody.innerHTML = rows.map(c => `
       <tr>
-      <td><strong>${c.miembro ?? ''}</strong></td>
-      <td class="table-landscape-show">${c.categoria ?? ''}</td>
-      <td class="table-mobile-hide">${formatearFecha(c.fecha_ingreso)}</td>
-      <td class="num table-mobile-hide">${fmt.format(Number(c.pagos_comidas ?? 0))}</td>
-      <td class="num table-mobile-hide">${fmt.format(Number(c.comidas_asistidas ?? 0))}</td>
-      <td class="table-mobile-hide" style="color:${color};font-weight:700">${icono} ${c.cuotas_al_dia ?? ''}</td>
+        <td><strong>${c.miembro ?? ''}</strong></td>
+        <td class="landscape-only">${c.categoria ?? ''}</td>
       </tr>
-    `;
-    }).join('');
+    `).join('');
 
     document.getElementById('foot').textContent =
       `Mostrando ${rows.length} de ${ALL.length} cofrades`;
@@ -432,13 +379,18 @@
       return r.json();
     })
     .then(data => {
-      const activos = data.cofrades.filter(c => !isBaja(c)).length;
-      document.getElementById('s_total_miembros').textContent = activos;
-      document.getElementById('s_remanente').textContent = eur.format(Number(data.resumen.total_remanente ?? 0)) + " €";
-      document.getElementById('s_cuotas').textContent = eur.format(Number(data.resumen.total_cuotas ?? 0)) + " €";
-      document.getElementById('s_pagos').textContent = eur.format(Number(data.resumen.total_gastos ?? 0)) + " €";
-
       ALL = Array.isArray(data.cofrades) ? data.cofrades : [];
+
+      const activos = ALL.filter(c => !isBaja(c)).length;
+
+      document.getElementById('s_total_miembros').textContent = activos;
+      document.getElementById('s_cuotas').textContent =
+        eur.format(Number(data.resumen.total_cuotas ?? 0)) + ' €';
+      document.getElementById('s_gastos').textContent =
+        eur.format(Number(data.resumen.total_gastos ?? 0)) + ' €';
+      document.getElementById('s_remanente').textContent =
+        eur.format(Number(data.resumen.total_remanente ?? 0)) + ' €';
+
       apply();
 
       document.getElementById('q').addEventListener('input', apply);
@@ -447,7 +399,7 @@
     })
     .catch(err => {
       document.getElementById('tbody').innerHTML =
-        `<tr><td class="muted" colspan="6" style="padding:18px 16px;">❌ Error cargando datos: ${err.message}</td></tr>`;
+        `<tr><td class="muted" colspan="2" style="padding:18px 16px;">❌ Error cargando datos: ${err.message}</td></tr>`;
     });
 </script>
 
