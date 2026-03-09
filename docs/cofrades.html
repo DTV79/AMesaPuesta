@@ -235,24 +235,20 @@
 
   <div class="stats">
       <div class="stat">
-        <div class="k">Total miembros</div>
+        <div class="k">Miembros activos</div>
         <div class="v" id="s_total_miembros">—</div>
-        <div class="hint">Miembros listados</div>
       </div>
       <div class="stat">
         <div class="k">Remanente global</div>
         <div class="v" id="s_remanente">—</div>
-        <div class="hint">Suma de remanentes</div>
       </div>
       <div class="stat">
         <div class="k">Total cuotas</div>
         <div class="v" id="s_cuotas">—</div>
-        <div class="hint">Suma de cuotas</div>
       </div>
       <div class="stat">
-        <div class="k">Pagos comidas</div>
+        <div class="k">Total gastos</div>
         <div class="v" id="s_pagos">—</div>
-        <div class="hint">Total pagos comidas</div>
       </div>
     </div>
 
@@ -307,6 +303,7 @@
 
 <script>
   const fmt = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 });
+  const eur = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
 
   let ALL = [];
 
@@ -385,10 +382,11 @@
     })
     .then(data => {
       // stats (pero SIN texto debajo del título)
-      document.getElementById('s_total_miembros').textContent = data.resumen.total_miembros ?? '—';
-      document.getElementById('s_remanente').textContent = fmt.format(Number(data.resumen.total_remanente ?? 0));
-      document.getElementById('s_cuotas').textContent = fmt.format(Number(data.resumen.total_cuotas ?? 0));
-      document.getElementById('s_pagos').textContent = fmt.format(Number(data.resumen.total_pagos_comidas ?? 0));
+      const activos = data.cofrades.filter(c => !isBaja(c)).length;
+      document.getElementById('s_total_miembros').textContent = activos;
+      document.getElementById('s_remanente').textContent = eur.format(Number(data.resumen.total_remanente ?? 0));
+      document.getElementById('s_cuotas').textContent = eur.format(Number(data.resumen.total_cuotas ?? 0));
+      document.getElementById('s_pagos').textContent = eur.format(Number(data.resumen.total_gastos ?? 0));
 
       ALL = Array.isArray(data.cofrades) ? data.cofrades : [];
       apply();
