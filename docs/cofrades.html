@@ -67,7 +67,6 @@
       font-size: 14px;
       line-height: 1;
     }
-
     .back:hover{
       transform: translateY(-1px);
       box-shadow: 0 10px 18px rgba(139,0,0,.08);
@@ -79,11 +78,8 @@
       grid-template-columns: repeat(4, minmax(0,1fr));
       gap:14px;
     }
-
     @media (max-width: 900px){
-      .stats{
-        grid-template-columns: repeat(2, minmax(0,1fr));
-      }
+      .stats{ grid-template-columns: repeat(2, minmax(0,1fr)); }
     }
 
     .stat{
@@ -225,15 +221,15 @@
       padding-right: 4px;
     }
 
-    /* Por defecto ocultamos las columnas extra */
-    .landscape-only{
-      display: none;
+    /* Por defecto en vertical: Miembro + Categoría */
+    .h-only{
+      display:none;
     }
 
-    /* En horizontal mostramos Miembro + Categoría */
+    /* En horizontal: mostrar columnas extra */
     @media (orientation: landscape){
-      .landscape-only{
-        display: table-cell;
+      .h-only{
+        display:table-cell;
       }
     }
   </style>
@@ -260,7 +256,7 @@
         </div>
         <div class="stat">
           <div class="k">Total gastos</div>
-          <div class="v" id="s_gastos">—</div>
+          <div class="v" id="s_pagos">—</div>
         </div>
         <div class="stat">
           <div class="k">Remanente global</div>
@@ -287,7 +283,7 @@
           Ver:
           <select id="filter">
             <option value="todos">Todos</option>
-            <option value="activos" selected>Solo activos (sin "Baja")</option>
+            <option value="activos" selected>Solo activos</option>
             <option value="baja">Solo "Baja"</option>
           </select>
         </div>
@@ -300,12 +296,15 @@
           <thead>
             <tr>
               <th>Miembro</th>
-              <th class="landscape-only">Categoría</th>
+              <th>Categoría</th>
+              <th class="num h-only">Pagos comidas</th>
+              <th class="num h-only">Comidas asistidas</th>
+              <th class="h-only">Cuotas al día</th>
             </tr>
           </thead>
           <tbody id="tbody">
             <tr>
-              <td class="muted" colspan="2" style="padding:18px 16px;">Cargando…</td>
+              <td class="muted" colspan="5" style="padding:18px 16px;">Cargando…</td>
             </tr>
           </tbody>
         </table>
@@ -317,6 +316,7 @@
   </div>
 
 <script>
+  const fmt = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 });
   const eur = new Intl.NumberFormat('es-ES', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
@@ -357,17 +357,28 @@
     const tbody = document.getElementById('tbody');
 
     if (!rows.length){
-      tbody.innerHTML = `<tr><td class="muted" colspan="2" style="padding:18px 16px;">Sin resultados.</td></tr>`;
+      tbody.innerHTML = `<tr><td class="muted" colspan="5" style="padding:18px 16px;">Sin resultados.</td></tr>`;
       document.getElementById('foot').textContent = 'Mostrando 0 cofrades';
       return;
     }
 
-    tbody.innerHTML = rows.map(c => `
+    tbody.innerHTML = rows.map(c => {
+      const cuotasOk = (c.cuotas_al_dia ?? "").toString().toLowerCase().includes("sí")
+                    || (c.cuotas_al_dia ?? "").toString().toLowerCase().includes("si");
+
+      const color = cuotasOk ? "#1f7a1f" : "#b00020";
+      const icono = cuotasOk ? "🟢" : "🔴";
+
+      return `
       <tr>
         <td><strong>${c.miembro ?? ''}</strong></td>
-        <td class="landscape-only">${c.categoria ?? ''}</td>
+        <td>${c.categoria ?? ''}</td>
+        <td class="num h-only">${fmt.format(Number(c.pagos_comidas ?? 0))}</td>
+        <td class="num h-only">${fmt.format(Number(c.comidas_asistidas ?? 0))}</td>
+        <td class="h-only" style="color:${color};font-weight:700">${icono} ${c.cuotas_al_dia ?? ''}</td>
       </tr>
-    `).join('');
+      `;
+    }).join('');
 
     document.getElementById('foot').textContent =
       `Mostrando ${rows.length} de ${ALL.length} cofrades`;
@@ -386,7 +397,7 @@
       document.getElementById('s_total_miembros').textContent = activos;
       document.getElementById('s_cuotas').textContent =
         eur.format(Number(data.resumen.total_cuotas ?? 0)) + ' €';
-      document.getElementById('s_gastos').textContent =
+      document.getElementById('s_pagos').textContent =
         eur.format(Number(data.resumen.total_gastos ?? 0)) + ' €';
       document.getElementById('s_remanente').textContent =
         eur.format(Number(data.resumen.total_remanente ?? 0)) + ' €';
@@ -399,7 +410,7 @@
     })
     .catch(err => {
       document.getElementById('tbody').innerHTML =
-        `<tr><td class="muted" colspan="2" style="padding:18px 16px;">❌ Error cargando datos: ${err.message}</td></tr>`;
+        `<tr><td class="muted" colspan="5" style="padding:18px 16px;">❌ Error cargando datos: ${err.message}</td></tr>`;
     });
 </script>
 
