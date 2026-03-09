@@ -384,14 +384,30 @@
   }
 
   return `
-  <tr>
-    <td class="cell-indent"><strong>${c.miembro ?? ''}</strong></td>
-    <td class="cell-indent"><span class="badge ${badgeClass}">${categoria}</span></td>
-    <td class="cell-indent h-only">${fmt.format(Number(c.pagos_comidas ?? 0))}</td>
-    <td class="cell-indent h-only">${fmt.format(Number(c.comidas_asistidas ?? 0))}</td>
-    <td class="cell-indent h-only" style="color:${color};font-weight:700">${icono} ${cuotasTexto}</td>
-  </tr>
-  `;
+  return `
+<tr>
+  <td>
+    <div style="font-weight:700">${c.miembro ?? ''}</div>
+  </td>
+
+  <td>
+    <span class="badge ${badgeClass}">${categoria}</span>
+    <div class="fecha-alta">Alta: ${formatearFecha(c.fecha_ingreso)}</div>
+  </td>
+
+  <td class="num h-only">
+    ${fmt.format(Number(c.pagos_comidas ?? 0))}
+  </td>
+
+  <td class="num h-only">
+    ${fmt.format(Number(c.comidas_asistidas ?? 0))}
+  </td>
+
+  <td class="num h-only" style="color:${color};font-weight:700">
+    ${icono} ${cuotasTexto}
+  </td>
+</tr>
+`;
 }).join('');
 
     document.getElementById('foot').textContent =
