@@ -303,9 +303,7 @@
 
 <script>
   const fmt = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 });
-  const eur = new Intl.NumberFormat('es-ES', { 
-  style: 'currency', 
-  currency: 'EUR',
+  const eur = new Intl.NumberFormat('es-ES', {
   minimumFractionDigits: 0,
   maximumFractionDigits: 0
   });
@@ -389,9 +387,9 @@
       // stats (pero SIN texto debajo del título)
       const activos = data.cofrades.filter(c => !isBaja(c)).length;
       document.getElementById('s_total_miembros').textContent = activos;
-      document.getElementById('s_remanente').textContent = eur.format(Number(data.resumen.total_remanente ?? 0));
-      document.getElementById('s_cuotas').textContent = eur.format(Number(data.resumen.total_cuotas ?? 0));
-      document.getElementById('s_pagos').textContent = eur.format(Number(data.resumen.total_gastos ?? 0));
+      document.getElementById('s_remanente').textContent = eur.format(Number(data.resumen.total_remanente ?? 0)) + " €";
+      document.getElementById('s_cuotas').textContent = eur.format(Number(data.resumen.total_cuotas ?? 0)) + " €";
+      document.getElementById('s_pagos').textContent = eur.format(Number(data.resumen.total_gastos ?? 0)) + " €";
 
       ALL = Array.isArray(data.cofrades) ? data.cofrades : [];
       apply();
