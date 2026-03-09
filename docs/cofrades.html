@@ -53,12 +53,12 @@
     }
 
     .back{
-      margin-left: 6px;           /* más pegado al título */
+      margin-left: 6px;
       text-decoration:none;
       color:var(--accent);
       font-weight:600;
       border:1px solid rgba(139,0,0,.25);
-      padding:6px 12px;           /* más compacto */
+      padding:6px 12px;
       border-radius: 999px;
       background:#fff;
       transition: .2s;
@@ -156,6 +156,14 @@
       cursor:pointer;
     }
 
+    .tableHint{
+      margin-top: 10px;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-style: italic;
+      color: var(--muted);
+    }
+
     /* ====== TABLE ====== */
     .tableCard{
       margin-top: 14px;
@@ -220,6 +228,42 @@
       text-align:right;
       padding-right: 4px;
     }
+
+    /* ====== MÓVIL EN VERTICAL: solo mostrar Miembro ====== */
+    @media (max-width: 768px) and (orientation: portrait){
+  .tableHint{
+    display:block;
+  }
+
+  .table-mobile-hide,
+  .table-landscape-show{
+    display:none;
+  }
+
+  table{
+    table-layout: auto;
+  }
+
+  thead th,
+  tbody td{
+    padding: 12px 14px;
+  }
+}
+
+    /* ====== RESTO DE CASOS: mostrar todo ====== */
+    @media (min-width: 769px), (orientation: landscape){
+  .tableHint{
+    display:block;
+  }
+
+  .table-mobile-hide{
+    display:none;
+  }
+
+  .table-landscape-show{
+    display:table-cell;
+  }
+}
   </style>
 </head>
 
@@ -235,7 +279,7 @@
 
   <div class="stats">
       <div class="stat">
-        <div class="k">Miembros</div>
+        <div class="k">Miembros activos</div>
         <div class="v" id="s_total_miembros">—</div>
       </div>
       <div class="stat">
@@ -247,7 +291,7 @@
         <div class="v" id="s_pagos">—</div>
       </div>
       <div class="stat">
-        <div class="k">Remanente</div>
+        <div class="k">Remanente global</div>
         <div class="v" id="s_remanente">—</div>
       </div>
     </div>
@@ -273,23 +317,26 @@
         Ver:
         <select id="filter">
           <option value="todos">Todos</option>
-          <option value="activos">Solo activos (sin “Baja”)</option>
+          <option value="activos" selected>Solo activos</option>
           <option value="baja">Solo “Baja”</option>
-        </select>
+          </select>
       </div>
     </div>
+
+    <div class="tableHint">(Para ver todos los datos pon el móvil en horizontal)</div>
 
     <div class="tableCard">
       <table>
         <thead>
       <tr>
+        <tr>
         <th>Miembro</th>
-        <th>Categoría</th>
-        <th>Fecha ingreso</th>
-        <th class="num">Pagos comidas</th>
-        <th class="num">Comidas asistidas</th>
-        <th>Cuotas al día</th>
-      </tr>
+        <th class="table-landscape-show">Categoría</th>
+        <th class="table-mobile-hide">Fecha ingreso</th>
+        <th class="num table-mobile-hide">Pagos comidas</th>
+        <th class="num table-mobile-hide">Comidas asistidas</th>
+        <th class="table-mobile-hide">Cuotas al día</th>
+        </tr>
     </thead>
         <tbody id="tbody">
           <tr><td class="muted" colspan="6" style="padding:18px 16px;">Cargando…</td></tr>
@@ -304,8 +351,8 @@
 <script>
   const fmt = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 });
   const eur = new Intl.NumberFormat('es-ES', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
   });
 
   let ALL = [];
@@ -363,15 +410,16 @@
       const icono = cuotasOk ? "🟢" : "🔴";
 
       return `
+      return `
       <tr>
-        <td><strong>${c.miembro ?? ''}</strong></td>
-        <td>${c.categoria ?? ''}</td>
-        <td>${formatearFecha(c.fecha_ingreso)}</td>
-        <td class="num">${fmt.format(Number(c.pagos_comidas ?? 0))}</td>
-        <td class="num">${fmt.format(Number(c.comidas_asistidas ?? 0))}</td>
-        <td style="color:${color};font-weight:700">${icono} ${c.cuotas_al_dia ?? ''}</td>
+      <td><strong>${c.miembro ?? ''}</strong></td>
+      <td class="table-landscape-show">${c.categoria ?? ''}</td>
+      <td class="table-mobile-hide">${formatearFecha(c.fecha_ingreso)}</td>
+      <td class="num table-mobile-hide">${fmt.format(Number(c.pagos_comidas ?? 0))}</td>
+      <td class="num table-mobile-hide">${fmt.format(Number(c.comidas_asistidas ?? 0))}</td>
+      <td class="table-mobile-hide" style="color:${color};font-weight:700">${icono} ${c.cuotas_al_dia ?? ''}</td>
       </tr>
-      `;
+    `;
     }).join('');
 
     document.getElementById('foot').textContent =
@@ -384,7 +432,6 @@
       return r.json();
     })
     .then(data => {
-      // stats (pero SIN texto debajo del título)
       const activos = data.cofrades.filter(c => !isBaja(c)).length;
       document.getElementById('s_total_miembros').textContent = activos;
       document.getElementById('s_remanente').textContent = eur.format(Number(data.resumen.total_remanente ?? 0)) + " €";
