@@ -119,3 +119,11 @@ body{
   color:var(--accent);
   border-color:rgba(139,0,0,.25);
 }
+
+
+.fecha-alta{
+  font-size:12px;
+  font-style:italic;
+  color:var(--muted);
+  margin-top:3px;
+}
