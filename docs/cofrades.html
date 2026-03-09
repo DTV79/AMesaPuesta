@@ -363,22 +363,34 @@
     }
 
     tbody.innerHTML = rows.map(c => {
-      const cuotasOk = (c.cuotas_al_dia ?? "").toString().toLowerCase().includes("sí")
-                    || (c.cuotas_al_dia ?? "").toString().toLowerCase().includes("si");
+  const cuotasTexto = (c.cuotas_al_dia ?? "").toString();
+  const cuotasOk = cuotasTexto.toLowerCase().includes("sí") || cuotasTexto.toLowerCase().includes("si");
 
-      const color = cuotasOk ? "#1f7a1f" : "#b00020";
-      const icono = cuotasOk ? "🟢" : "🔴";
+  const color = cuotasOk ? "#1f7a1f" : "#b00020";
+  const icono = cuotasOk ? "🟢" : "🔴";
 
-      return `
-      <tr>
-        <td><strong>${c.miembro ?? ''}</strong></td>
-        <td>${c.categoria ?? ''}</td>
-        <td class="num h-only">${fmt.format(Number(c.pagos_comidas ?? 0))}</td>
-        <td class="num h-only">${fmt.format(Number(c.comidas_asistidas ?? 0))}</td>
-        <td class="h-only" style="color:${color};font-weight:700">${icono} ${c.cuotas_al_dia ?? ''}</td>
-      </tr>
-      `;
-    }).join('');
+  const categoria = (c.categoria ?? "").toString();
+  const catLower = categoria.toLowerCase();
+
+  let badgeClass = "badge-default";
+  if (catLower.includes("fundador")) {
+    badgeClass = "badge-fundador";
+  } else if (catLower.includes("cofrade")) {
+    badgeClass = "badge-cofrade";
+  } else if (catLower.includes("baja")) {
+    badgeClass = "badge-baja";
+  }
+
+  return `
+  <tr>
+    <td class="cell-indent"><strong>${c.miembro ?? ''}</strong></td>
+    <td class="cell-indent"><span class="badge ${badgeClass}">${categoria}</span></td>
+    <td class="cell-indent h-only">${fmt.format(Number(c.pagos_comidas ?? 0))}</td>
+    <td class="cell-indent h-only">${fmt.format(Number(c.comidas_asistidas ?? 0))}</td>
+    <td class="cell-indent h-only" style="color:${color};font-weight:700">${icono} ${cuotasTexto}</td>
+  </tr>
+  `;
+}).join('');
 
     document.getElementById('foot').textContent =
       `Mostrando ${rows.length} de ${ALL.length} cofrades`;
