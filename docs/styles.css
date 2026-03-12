@@ -127,3 +127,20 @@ body{
   color:var(--muted);
   margin-top:3px;
 }
+
+
+.categoria-cell{
+  text-align:center;
+}
+
+.categoria-cell .badge{
+  display:inline-block;
+}
+
+.fecha-alta{
+  font-size:12px;
+  font-style:italic;
+  color:var(--muted);
+  margin-top:4px;
+  text-align:center;
+}
