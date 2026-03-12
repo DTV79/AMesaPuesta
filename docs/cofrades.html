@@ -42,8 +42,9 @@
 
     .title{
       display:flex;
-      gap:10px;
       align-items:center;
+      justify-content:space-between;
+      width:100%;
     }
 
     .title h1{
@@ -53,21 +54,19 @@
     }
 
     .back{
-      margin-left: auto;
-      margin-right:-30px;   /* lo empuja más hacia el borde derecho */
       text-decoration:none;
       color:var(--accent);
       font-weight:600;
       border:1px solid rgba(139,0,0,.25);
       padding:6px 12px;
-      border-radius: 999px;
+      border-radius:999px;
       background:#fff;
-      transition: .2s;
+      transition:.2s;
       display:inline-flex;
       align-items:center;
       gap:8px;
-      font-size: 14px;
-      line-height: 1;
+      font-size:14px;
+      line-height:1;
     }
     .back:hover{
       transform: translateY(-1px);
@@ -313,12 +312,13 @@
 <body>
   <div class="wrap">
 
-    <div class="hero">
-      <div class="title">
-        <span style="font-size:34px">👥</span>
-        <h1>Cofrades</h1>
-        <a class="back" href="index.html">← Volver</a>
-      </div>
+    <div class="title">
+    <div style="display:flex;align-items:center;gap:10px;">
+    <span style="font-size:34px">👥</span>
+    <h1>Cofrades</h1>
+    </div>
+     <a class="back" href="index.html">← Volver</a>
+     </div>
 
       <div class="stats">
         <div class="stat">
