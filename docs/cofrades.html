@@ -13,6 +13,7 @@
       --ink:#1f1f1f;
       --muted:#6b7280;
       --accent:#8b0000;
+      --accent-soft:#f7e8e8;
       --border:#e5e7eb;
       --shadow: 0 8px 24px rgba(0,0,0,.08);
       --radius: 16px;
@@ -35,7 +36,7 @@
       border:1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 4px 14px;
+      padding: 8px 14px 12px 14px;
       margin-bottom: 4px;
     }
 
@@ -72,39 +73,64 @@
       box-shadow: 0 10px 18px rgba(139,0,0,.08);
     }
 
+    /* ====== PANEL FINANCIERO ====== */
     .stats{
-      margin-top: 6px;
+      margin-top: 10px;
       display:grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
-      gap:14px;
-    }
-    @media (max-width: 900px){
-      .stats{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
     }
 
     .stat{
-      background:var(--card);
+      background: linear-gradient(180deg, #fff 0%, #fcfbfb 100%);
       border:1px solid var(--border);
-      border-radius: var(--radius);
+      border-top: 4px solid var(--accent);
+      border-radius: 14px;
       box-shadow: var(--shadow);
-      padding: 14px 16px;
+      padding: 12px 10px;
+      text-align:center;
+      min-width:0;
     }
 
     .stat .k{
       color:var(--muted);
-      font-size: 12px;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing:.08em;
+      line-height:1.2;
     }
 
     .stat .v{
       margin-top:8px;
       font-size: 22px;
       font-weight: 800;
+      line-height:1.1;
+      white-space:nowrap;
     }
 
+    @media (max-width: 700px){
+      .stats{
+        gap:6px;
+      }
+
+      .stat{
+        padding: 10px 6px;
+        border-radius: 12px;
+      }
+
+      .stat .k{
+        font-size: 9px;
+        letter-spacing:.04em;
+      }
+
+      .stat .v{
+        font-size: 15px;
+      }
+    }
+
+    /* ====== CONTROLS ====== */
     .controls{
-      margin-top: 18px;
+      margin-top: 16px;
       display:flex;
       gap:12px;
       align-items:center;
@@ -257,11 +283,16 @@
       border-color:rgba(139,0,0,.25);
     }
 
+    .categoria-cell{
+      text-align:center;
+    }
+
     .fecha-alta{
       font-size:12px;
       font-style:italic;
       color:var(--muted);
       margin-top:4px;
+      text-align:center;
     }
 
     /* Por defecto en vertical: Miembro + Categoría */
@@ -339,10 +370,10 @@
           <thead>
             <tr>
               <th>Miembro</th>
-              <th>Categoría</th>
+              <th style="text-align:center;">Categoría</th>
               <th class="num h-only">Pagos comidas</th>
               <th class="num h-only">Comidas asistidas</th>
-              <th class="h-only">Cuotas al día</th>
+              <th class="num h-only">Cuotas al día</th>
             </tr>
           </thead>
           <tbody id="tbody">
@@ -434,7 +465,7 @@
       return `
 <tr>
   <td><strong>${c.miembro ?? ''}</strong></td>
-  <td>
+  <td class="categoria-cell">
     <span class="badge ${badgeClass}">${categoria}</span>
     <div class="fecha-alta">Alta: ${formatearFecha(c.fecha_ingreso)}</div>
   </td>
