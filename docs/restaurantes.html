@@ -1,193 +1,80 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Restaurantes | Cofrades</title>
-  <style>
-    :root{
-      --bg:#f8f5f0;
-      --card:#ffffff;
-      --ink:#1f1f1f;
-      --muted:#6b7280;
-      --accent:#8b0000;
-      --border:#e5e7eb;
-      --shadow:0 8px 24px rgba(0,0,0,.08);
-      --radius:18px;
-    }
+<meta charset="UTF-8">
+<title>Restaurantes</title>
 
-    *{box-sizing:border-box;}
+<style>
 
-    body{
-      margin:0;
-      font-family:Arial, Helvetica, sans-serif;
-      background:var(--bg);
-      color:var(--ink);
-    }
+body{
+  font-family:Arial;
+  background:#f8f5f0;
+  margin:0;
+}
 
-    header{
-      background:linear-gradient(135deg, #7a0000, #a00000);
-      color:white;
-      padding:40px 20px;
-      text-align:center;
-    }
+header{
+  background:#8b0000;
+  color:white;
+  padding:30px;
+  text-align:center;
+}
 
-    header h1{
-      margin:0;
-      font-size:2.2rem;
-    }
+.container{
+  max-width:1000px;
+  margin:auto;
+  padding:40px;
+}
 
-    header p{
-      margin-top:10px;
-      color:#f3d6d6;
-      font-size:1rem;
-    }
+.restaurante{
+  background:white;
+  padding:20px;
+  margin-bottom:20px;
+  border-radius:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
 
-    .topbar{
-      max-width:1200px;
-      margin:24px auto 0;
-      padding:0 20px;
-      display:flex;
-      justify-content:flex-end;
-    }
+.volver{
+  display:inline-block;
+  margin-bottom:30px;
+  background:#8b0000;
+  color:white;
+  padding:10px 20px;
+  text-decoration:none;
+  border-radius:6px;
+}
 
-    .btn-volver{
-      display:inline-block;
-      text-decoration:none;
-      background:var(--accent);
-      color:white;
-      padding:10px 18px;
-      border-radius:12px;
-      font-weight:bold;
-      transition:.2s;
-    }
-
-    .btn-volver:hover{
-      opacity:.9;
-      transform:translateY(-1px);
-    }
-
-    .container{
-      max-width:1200px;
-      margin:30px auto 60px;
-      padding:0 20px;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
-      gap:24px;
-    }
-
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      transition:.25s;
-    }
-
-    .card:hover{
-      transform:translateY(-4px);
-    }
-
-    .card-img{
-      height:180px;
-      background:#ddd url('https://via.placeholder.com/600x400?text=Restaurante') center/cover no-repeat;
-    }
-
-    .card-body{
-      padding:20px;
-    }
-
-    .card h2{
-      margin:0 0 10px;
-      font-size:1.3rem;
-      color:var(--accent);
-    }
-
-    .info{
-      font-size:.95rem;
-      color:var(--muted);
-      margin-bottom:8px;
-    }
-
-    .descripcion{
-      margin:14px 0 20px;
-      line-height:1.5;
-    }
-
-    .btn-detalle{
-      display:inline-block;
-      text-decoration:none;
-      background:var(--accent);
-      color:white;
-      padding:10px 16px;
-      border-radius:10px;
-      font-weight:bold;
-    }
-
-    .btn-detalle:hover{
-      opacity:.9;
-    }
-  </style>
+</style>
 </head>
+
 <body>
 
-  <header>
-    <h1>Restaurantes</h1>
-    <p>Lugares donde la Cofradía ha dejado huella</p>
-  </header>
+<header>
+<h1>Restaurantes visitados</h1>
+</header>
 
-  <div class="topbar">
-    <a href="index.html" class="btn-volver">Volver</a>
-  </div>
+<div class="container">
 
-  <main class="container">
-    <div class="grid">
+<a href="index.html" class="volver">← Volver</a>
 
-      <div class="card">
-        <div class="card-img"></div>
-        <div class="card-body">
-          <h2>Mesón El Rincón</h2>
-          <div class="info"><strong>Fecha:</strong> 12/10/2025</div>
-          <div class="info"><strong>Dirección:</strong> Calle Mayor 14, Sevilla</div>
-          <p class="descripcion">
-            Almuerzo de confraternización con menú tradicional y ambiente excelente.
-          </p>
-          <a href="restaurante-meson-rincon.html" class="btn-detalle">Ver menú</a>
-        </div>
-      </div>
+<div class="restaurante">
+<h2>Restaurante Casa Paco</h2>
+<p><b>Fecha:</b> 15/02/2026</p>
+<p><b>Dirección:</b> Calle Mayor 12, Vigo</p>
+</div>
 
-      <div class="card">
-        <div class="card-img"></div>
-        <div class="card-body">
-          <h2>Casa Paco</h2>
-          <div class="info"><strong>Fecha:</strong> 03/01/2026</div>
-          <div class="info"><strong>Dirección:</strong> Avenida de la Constitución 8, Córdoba</div>
-          <p class="descripcion">
-            Jornada memorable con platos caseros, buen vino y sobremesa histórica.
-          </p>
-          <a href="restaurante-casa-paco.html" class="btn-detalle">Ver menú</a>
-        </div>
-      </div>
+<div class="restaurante">
+<h2>Mesón El Buen Comer</h2>
+<p><b>Fecha:</b> 12/01/2026</p>
+<p><b>Dirección:</b> Plaza España 4, Pontevedra</p>
+</div>
 
-      <div class="card">
-        <div class="card-img"></div>
-        <div class="card-body">
-          <h2>La Tasquita Cofrade</h2>
-          <div class="info"><strong>Fecha:</strong> 21/02/2026</div>
-          <div class="info"><strong>Dirección:</strong> Plaza del Salvador 3, Granada</div>
-          <p class="descripcion">
-            Encuentro gastronómico con especial protagonismo de carnes y guisos.
-          </p>
-          <a href="restaurante-tasquita-cofrade.html" class="btn-detalle">Ver menú</a>
-        </div>
-      </div>
+<div class="restaurante">
+<h2>La Parrilla del Puerto</h2>
+<p><b>Fecha:</b> 20/12/2025</p>
+<p><b>Dirección:</b> Avenida del Mar 8, Baiona</p>
+</div>
 
-    </div>
-  </main>
+</div>
 
 </body>
 </html>
