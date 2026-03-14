@@ -26,9 +26,46 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
     }
 
+    /* CABECERA IGUAL QUE RESTAURANTES */
+    .page-header{
+      background:#8b0000;
+      color:white;
+      padding:30px;
+      text-align:center;
+    }
+
+    .page-header h1{
+      margin:0;
+      font-size:28px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:10px;
+    }
+
+    .page-container{
+      width:min(1100px,92vw);
+      margin:20px auto 0;
+    }
+
+    .page-back{
+      display:inline-block;
+      background:#8b0000;
+      color:white;
+      padding:8px 16px;
+      border-radius:6px;
+      text-decoration:none;
+      font-weight:600;
+      font-size:14px;
+    }
+
+    .page-back:hover{
+      opacity:.9;
+    }
+
     .wrap{
       width:min(1100px, 92vw);
-      margin: 18px auto 40px;
+      margin: 24px auto 40px;
     }
 
     .hero{
@@ -38,39 +75,6 @@
       box-shadow: var(--shadow);
       padding: 8px 14px 12px 14px;
       margin-bottom: 4px;
-    }
-
-    .title{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      width:100%;
-    }
-
-    .title h1{
-      margin:0;
-      font-size: 28px;
-      letter-spacing:.2px;
-    }
-
-    .back{
-      text-decoration:none;
-      color:var(--accent);
-      font-weight:600;
-      border:1px solid rgba(139,0,0,.25);
-      padding:6px 12px;
-      border-radius:999px;
-      background:#fff;
-      transition:.2s;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size:14px;
-      line-height:1;
-    }
-    .back:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 10px 18px rgba(139,0,0,.08);
     }
 
     /* ====== PANEL FINANCIERO ====== */
@@ -310,25 +314,22 @@
 </head>
 
 <body>
-  <div class="wrap">
-
-    <div class="hero">
 
   <header class="page-header">
-<h1>
+    <h1>
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="white" viewBox="0 0 24 24">
+        <path d="M16 11c1.66 0 3-1.79 3-4s-1.34-4-3-4-3 1.79-3 4 1.34 4 3 4zm-8 0c1.66 0 3-1.79 3-4S9.66 3 8 3 5 4.79 5 7s1.34 4 3 4zm0 2c-2.67 0-8 1.34-8 4v3h10v-3c0-1.02.39-1.97 1.02-2.78C10.21 13.44 8.94 13 8 13zm8 0c-.94 0-2.21.44-3.02 1.22C13.61 15.03 14 15.98 14 17v3h10v-3c0-2.66-5.33-4-8-4z"/>
+      </svg>
+      Cofrades
+    </h1>
+  </header>
 
-<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="white" viewBox="0 0 24 24">
-<path d="M16 11c1.66 0 3-1.79 3-4s-1.34-4-3-4-3 1.79-3 4 1.34 4 3 4zm-8 0c1.66 0 3-1.79 3-4S9.66 3 8 3 5 4.79 5 7s1.34 4 3 4zm0 2c-2.67 0-8 1.34-8 4v3h10v-3c0-1.02.39-1.97 1.02-2.78C10.21 13.44 8.94 13 8 13zm8 0c-.94 0-2.21.44-3.02 1.22C13.61 15.03 14 15.98 14 17v3h10v-3c0-2.66-5.33-4-8-4z"/>
-</svg>
+  <div class="page-container">
+    <a href="index.html" class="page-back">← Volver</a>
+  </div>
 
-Cofrades
-
-</h1>
-</header>
-
-<div class="page-container">
-<a href="index.html" class="page-back">← Volver</a>
-</div>
+  <div class="wrap">
+    <div class="hero">
 
       <div class="stats">
         <div class="stat">
@@ -397,7 +398,6 @@ Cofrades
 
       <div class="footerNote" id="foot"></div>
     </div>
-
   </div>
 
 <script>
