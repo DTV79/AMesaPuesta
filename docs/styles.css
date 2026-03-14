@@ -144,3 +144,41 @@ body{
   margin-top:4px;
   text-align:center;
 }
+
+
+/* CABECERA COMÚN */
+
+.page-header{
+  background:#8b0000;
+  color:white;
+  padding:30px;
+  text-align:center;
+}
+
+.page-header h1{
+  margin:0;
+  font-size:28px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+}
+
+.page-container{
+  width:min(1100px,92vw);
+  margin:20px auto;
+}
+
+.page-back{
+  display:inline-block;
+  background:#8b0000;
+  color:white;
+  padding:8px 16px;
+  border-radius:6px;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.page-back:hover{
+  opacity:.9;
+}
