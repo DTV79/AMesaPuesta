@@ -65,9 +65,9 @@
 
   .filtros{
     display:grid;
-    grid-template-columns:minmax(0, 2fr) minmax(180px, 1fr) minmax(180px, 1fr) auto;
+    grid-template-columns:minmax(0, 2fr) minmax(140px, 1fr) minmax(140px, 1fr) auto;
     gap:14px;
-    align-items:center;
+    align-items:end;
     margin-bottom:10px;
   }
 
@@ -104,6 +104,18 @@
   .fecha-input{
     padding:12px;
     font-size:14px;
+  }
+
+  .fecha-box{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+
+  .fecha-box label{
+    font-size:12px;
+    color:var(--muted);
+    font-weight:600;
   }
 
   .buscador:focus,
@@ -339,22 +351,22 @@
     </div>
 
     <div class="fecha-box">
-  <label>Desde</label>
-  <input
-    type="date"
-    id="fecha-desde"
-    class="fecha-input"
-  >
-</div>
+      <label for="fecha-desde">Desde</label>
+      <input
+        type="date"
+        id="fecha-desde"
+        class="fecha-input"
+      >
+    </div>
 
-<div class="fecha-box">
-  <label>Hasta</label>
-  <input
-    type="date"
-    id="fecha-hasta"
-    class="fecha-input"
-  >
-</div>
+    <div class="fecha-box">
+      <label for="fecha-hasta">Hasta</label>
+      <input
+        type="date"
+        id="fecha-hasta"
+        class="fecha-input"
+      >
+    </div>
 
     <button id="limpiar" class="btn-limpiar" type="button">
       Limpiar filtros
