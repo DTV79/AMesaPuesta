@@ -415,11 +415,17 @@
   }
 
   function formatearFecha(fecha){
-    if(!fecha) return "";
-    const f = new Date(fecha);
-    if(isNaN(f)) return fecha;
-    return f.toLocaleDateString("es-ES");
-  }
+  if(!fecha) return "";
+
+  const f = new Date(fecha);
+  if(isNaN(f)) return fecha;
+
+  const dia = String(f.getDate()).padStart(2,"0");
+  const mes = String(f.getMonth()+1).padStart(2,"0");
+  const año = f.getFullYear();
+
+  return `${dia}/${mes}/${año}`;
+}
 
   function apply(){
     const q = (document.getElementById('q').value || '').toLowerCase().trim();
