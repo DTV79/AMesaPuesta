@@ -18,14 +18,14 @@ body{
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:flex-start;   /* más arriba */
-  padding-top: 60px;            /* subimos contenido */
+  justify-content:flex-start;
+  padding-top: 60px;
   text-align:center;
 }
 
 .logo-wrap{
   position: relative;
-  width: min(380px, 92vw);      /* más grande */
+  width: min(380px, 92vw);
   aspect-ratio: 1/1;
   display:grid;
   place-items:center;
@@ -42,13 +42,13 @@ body{
   fill: var(--text);
   font-weight: 700;
   letter-spacing: 2px;
-  font-size: 26px;              /* letras más grandes */
+  font-size: 26px;
 }
 
 .logo{
-  width: 78%;                   /* logo mucho más grande */
+  width: 78%;
   height:auto;
- }
+}
 
 .slogan{
   margin-top: 6px;
@@ -56,31 +56,30 @@ body{
   font-weight: 800;
   text-align: center;
   letter-spacing: 1px;
-  color: #3a1f0f;  /* marrón oscuro tipo hierro */
- }
+  color: #3a1f0f;
+}
 
 .menu-principal {
-    margin-top: 40px;
-    text-align: center;
+  margin-top: 40px;
+  text-align: center;
 }
 
 .boton-menu {
-    display: inline-block;
-    padding: 15px 30px;
-    margin: 10px;
-    background-color: #8b0000;
-    color: white;
-    text-decoration: none;
-    font-size: 18px;
-    border-radius: 8px;
-    transition: 0.3s;
+  display: inline-block;
+  padding: 15px 30px;
+  margin: 10px;
+  background-color: #8b0000;
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  border-radius: 8px;
+  transition: 0.3s;
 }
 
 .boton-menu:hover {
-    background-color: #a52a2a;
-    transform: scale(1.05);
+  background-color: #a52a2a;
+  transform: scale(1.05);
 }
-
 
 .cell-indent{
   padding-left: 10px;
@@ -120,14 +119,12 @@ body{
   border-color:rgba(139,0,0,.25);
 }
 
-
 .fecha-alta{
   font-size:12px;
   font-style:italic;
   color:var(--muted);
   margin-top:3px;
 }
-
 
 .categoria-cell{
   text-align:center;
@@ -144,7 +141,6 @@ body{
   margin-top:4px;
   text-align:center;
 }
-
 
 /* CABECERA COMÚN */
 
@@ -183,13 +179,18 @@ body{
   opacity:.9;
 }
 
-
 .filtros{
   display:grid;
-  grid-template-columns:minmax(0, 2fr) minmax(180px, 1fr) minmax(180px, 1fr) auto;
+  grid-template-columns:minmax(0, 1fr);
   gap:14px;
-  align-items:center;
   margin-bottom:10px;
+}
+
+.fechas-wrap{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:10px;
+  width:100%;
 }
 
 .btn-limpiar{
@@ -197,25 +198,26 @@ body{
   border:1px solid #d8caca;
   color:var(--muted);
   border-radius:8px;
-  padding:10px 12px;
-  font-size:13px;
+  padding:8px 10px;
+  font-size:12px;
   cursor:pointer;
   font-weight:500;
   white-space:nowrap;
   transition:.2s;
+  justify-self:start;
 }
 
 .btn-limpiar:hover{
   background:#faf7f7;
-  color:var(--accent);
+  color:#8b0000;
   border-color:#c9b1b1;
 }
-
 
 .fecha-box{
   display:flex;
   flex-direction:column;
   gap:4px;
+  min-width:0;
 }
 
 .fecha-box label{
