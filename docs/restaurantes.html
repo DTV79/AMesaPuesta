@@ -289,7 +289,30 @@
       class="fecha-input"
       placeholder="Hasta"
     >
-  </div>
+  </div><div class="filtros">
+  <input
+    type="search"
+    id="buscador"
+    class="buscador"
+    placeholder="Buscar por restaurante, lugar, organizador o fecha..."
+  >
+
+  <input
+    type="date"
+    id="fecha-desde"
+    class="fecha-input"
+  >
+
+  <input
+    type="date"
+    id="fecha-hasta"
+    class="fecha-input"
+  >
+
+  <button id="limpiar" class="btn-limpiar">
+    Limpiar filtros
+  </button>
+</div>
 
   <div id="contador" class="contador">Cargando restaurantes…</div>
 
@@ -326,6 +349,20 @@
     return (valor !== undefined && valor !== null && String(valor).trim() !== "") ? valor : "—";
   }
 
+  function formatearPrecio(valor){
+
+  if(valor === undefined || valor === null || valor === "") return "—";
+
+  const numero = Number(valor);
+
+  if(isNaN(numero)) return valor;
+
+  return numero.toLocaleString("es-ES", {
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  }) + " €";
+  }
+  
   function renderResenas(resenas){
     if(!resenas || String(resenas).trim() === "") return "Sin reseña";
     return String(resenas).trim();
@@ -395,7 +432,7 @@
 
           <div class="detalle-box">
             <h3>Precio</h3>
-            <p><b>${textoSeguro(rest.precio)}</b></p>
+            <p><b>${formatearPrecio(rest.precio)}</b></p>
           </div>
 
           <div class="detalle-box">
@@ -498,6 +535,16 @@
       document.getElementById("buscador").addEventListener("input", aplicarFiltros);
       document.getElementById("fecha-desde").addEventListener("change", aplicarFiltros);
       document.getElementById("fecha-hasta").addEventListener("change", aplicarFiltros);
+
+    document.getElementById("limpiar").addEventListener("click", () => {
+
+    document.getElementById("buscador").value = "";
+    document.getElementById("fecha-desde").value = "";
+    document.getElementById("fecha-hasta").value = "";
+
+  pintarRestaurantes(TODOS_LOS_RESTAURANTES);
+
+});
     })
     .catch(error => {
       document.getElementById("contador").textContent = "Error al cargar restaurantes";
