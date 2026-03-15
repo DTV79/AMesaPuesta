@@ -25,22 +25,6 @@
     color:var(--ink);
   }
 
-  .page-header{
-    background:#8b0000;
-    color:white;
-    padding:30px;
-    text-align:center;
-  }
-
-  .page-header h1{
-    margin:0;
-    font-size:28px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:10px;
-  }
-
   .container{
     width:min(1100px,92vw);
     margin:20px auto 60px;
@@ -63,14 +47,6 @@
     opacity:.9;
   }
 
-  .filtros{
-    display:grid;
-    grid-template-columns:minmax(0, 2fr) minmax(320px, 1fr) auto;
-    gap:14px;
-    align-items:end;
-    margin-bottom:10px;
-  }
-
   .buscador-wrap{
     position:relative;
     min-width:0;
@@ -89,67 +65,29 @@
   .buscador,
   .fecha-input{
     width:100%;
+    max-width:100%;
+    min-width:0;
     box-sizing:border-box;
     border:1px solid var(--border);
     border-radius:10px;
     background:#fff;
-    font-size:15px;
     box-shadow:0 4px 10px rgba(0,0,0,0.06);
     outline:none;
   }
 
   .buscador{
     padding:12px 16px 12px 38px;
-  }
-
-  .fechas-wrap{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:14px;
-    min-width:0;
-  }
-
-  .fecha-box{
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-    min-width:0;
-  }
-
-  .fecha-box label{
-    font-size:12px;
-    color:var(--muted);
-    font-weight:600;
+    font-size:15px;
   }
 
   .fecha-input{
-    padding:12px;
-    font-size:14px;
-    min-width:0;
+    padding:10px;
+    font-size:13px;
   }
 
   .buscador:focus,
   .fecha-input:focus{
     border-color:rgba(139,0,0,.45);
-  }
-
-  .btn-limpiar{
-    background:transparent;
-    border:1px solid #d8caca;
-    color:var(--muted);
-    border-radius:8px;
-    padding:10px 12px;
-    font-size:13px;
-    cursor:pointer;
-    font-weight:500;
-    white-space:nowrap;
-    transition:.2s;
-  }
-
-  .btn-limpiar:hover{
-    background:#faf7f7;
-    color:var(--accent);
-    border-color:#c9b1b1;
   }
 
   .contador{
@@ -306,28 +244,6 @@
   }
 
   @media (max-width: 800px){
-    .filtros{
-      grid-template-columns:1fr;
-      gap:10px;
-    }
-
-    .fechas-wrap{
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      width:100%;
-    }
-
-    .fecha-input{
-      font-size:13px;
-      padding:10px;
-    }
-
-    .btn-limpiar{
-      justify-self:start;
-      padding:8px 10px;
-      font-size:12px;
-    }
-
     .lista-restaurantes{
       grid-template-columns:1fr;
     }
