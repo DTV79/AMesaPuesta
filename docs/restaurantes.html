@@ -272,12 +272,7 @@
     padding-left:18px;
   }
 
-  .detalle-box li{
-    margin:5px 0;
-    font-size:14px;
-    line-height:1.45;
-  }
-
+  .detalle-box li,
   .detalle-box p{
     margin:5px 0;
     font-size:14px;
@@ -318,7 +313,6 @@
 </header>
 
 <div class="container">
-
   <a href="index.html" class="volver">← Volver</a>
 
   <div class="filtros">
@@ -362,7 +356,6 @@
   <div id="lista-restaurantes" class="lista-restaurantes">
     <div class="mensaje">Cargando restaurantes…</div>
   </div>
-
 </div>
 
 <script>
@@ -375,7 +368,7 @@
     if(isNaN(f)) return fecha;
 
     const dia = String(f.getDate()).padStart(2,"0");
-    const mes = String(f.getMonth()+1).padStart(2,"0");
+    const mes = String(f.getMonth() + 1).padStart(2,"0");
     const año = f.getFullYear();
 
     return `${dia}/${mes}/${año}`;
