@@ -63,6 +63,26 @@
     opacity:.9;
   }
 
+  .buscador-wrap{
+    margin-bottom:24px;
+  }
+
+  .buscador{
+    width:100%;
+    box-sizing:border-box;
+    padding:12px 16px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#fff;
+    font-size:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.06);
+    outline:none;
+  }
+
+  .buscador:focus{
+    border-color:rgba(139,0,0,.45);
+  }
+
   .lista-restaurantes{
     display:grid;
     grid-template-columns:repeat(2, minmax(0, 1fr));
@@ -102,6 +122,7 @@
     font-weight:700;
     font-size:13px;
     white-space:nowrap;
+    letter-spacing:1px;
   }
 
   .resumen p{
@@ -232,6 +253,15 @@
 
   <a href="index.html" class="volver">← Volver</a>
 
+  <div class="buscador-wrap">
+    <input
+      type="search"
+      id="buscador"
+      class="buscador"
+      placeholder="Buscar por restaurante, lugar, organizador o fecha..."
+    >
+  </div>
+
   <div id="lista-restaurantes" class="lista-restaurantes">
     <div class="mensaje">Cargando restaurantes…</div>
   </div>
@@ -239,18 +269,20 @@
 </div>
 
 <script>
+  let TODOS_LOS_RESTAURANTES = [];
+
   function formatearFecha(fecha){
-  if(!fecha) return "—";
+    if(!fecha) return "—";
 
-  const f = new Date(fecha);
-  if(isNaN(f)) return fecha;
+    const f = new Date(fecha);
+    if(isNaN(f)) return fecha;
 
-  const dia = String(f.getDate()).padStart(2,"0");
-  const mes = String(f.getMonth()+1).padStart(2,"0");
-  const año = f.getFullYear();
+    const dia = String(f.getDate()).padStart(2,"0");
+    const mes = String(f.getMonth()+1).padStart(2,"0");
+    const año = f.getFullYear();
 
-  return `${dia}/${mes}/${año}`;
-}
+    return `${dia}/${mes}/${año}`;
+  }
 
   function listaAHTML(lista){
     if(!Array.isArray(lista) || lista.length === 0){
@@ -261,6 +293,11 @@
 
   function textoSeguro(valor){
     return (valor !== undefined && valor !== null && String(valor).trim() !== "") ? valor : "—";
+  }
+
+  function renderResenas(resenas){
+    if(!resenas || String(resenas).trim() === "") return "Sin reseña";
+    return String(resenas).trim();
   }
 
   function crearFicha(rest, index){
@@ -276,15 +313,11 @@
       ? rest.autor
       : "Sin autor";
 
-    const resenas = rest.resenas && String(rest.resenas).trim() !== ""
-      ? rest.resenas
-      : "Sin valoración";
-
     return `
       <div class="restaurante">
         <div class="restaurante-top">
           <h2>${textoSeguro(rest.nombre)}</h2>
-          <div class="resenas">${resenas}</div>
+          <div class="resenas">${renderResenas(rest.resenas)}</div>
         </div>
 
         <div class="resumen">
@@ -361,24 +394,54 @@
     }
   }
 
+  function textoBusqueda(rest){
+    const nombre = (rest.nombre || "").toLowerCase();
+    const direccion = (rest.direccion || "").toLowerCase();
+    const organizadores = Array.isArray(rest.organizadores) ? rest.organizadores.join(" ").toLowerCase() : "";
+    const fechaOriginal = (rest.fecha || "").toLowerCase();
+    const fechaFormateada = formatearFecha(rest.fecha).toLowerCase();
+
+    return `${nombre} ${direccion} ${organizadores} ${fechaOriginal} ${fechaFormateada}`;
+  }
+
+  function pintarRestaurantes(lista){
+    const contenedor = document.getElementById("lista-restaurantes");
+
+    if(lista.length === 0){
+      contenedor.innerHTML = `<div class="mensaje">No hay restaurantes que coincidan con la búsqueda.</div>`;
+      return;
+    }
+
+    contenedor.innerHTML = lista
+      .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+      .map((rest, index) => crearFicha(rest, index))
+      .join("");
+  }
+
   fetch("restaurantes.json?v=" + Date.now(), { cache: "no-store" })
     .then(res => {
       if(!res.ok) throw new Error("HTTP " + res.status);
       return res.json();
     })
     .then(data => {
-      const lista = document.getElementById("lista-restaurantes");
-      const restaurantes = Array.isArray(data.restaurantes) ? data.restaurantes : [];
+      TODOS_LOS_RESTAURANTES = Array.isArray(data.restaurantes) ? data.restaurantes : [];
+      pintarRestaurantes(TODOS_LOS_RESTAURANTES);
 
-      if(restaurantes.length === 0){
-        lista.innerHTML = `<div class="mensaje">No hay restaurantes disponibles.</div>`;
-        return;
-      }
+      const buscador = document.getElementById("buscador");
+      buscador.addEventListener("input", function(){
+        const q = this.value.trim().toLowerCase();
 
-      lista.innerHTML = restaurantes
-        .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
-        .map((rest, index) => crearFicha(rest, index))
-        .join("");
+        if(q === ""){
+          pintarRestaurantes(TODOS_LOS_RESTAURANTES);
+          return;
+        }
+
+        const filtrados = TODOS_LOS_RESTAURANTES.filter(rest =>
+          textoBusqueda(rest).includes(q)
+        );
+
+        pintarRestaurantes(filtrados);
+      });
     })
     .catch(error => {
       document.getElementById("lista-restaurantes").innerHTML =
