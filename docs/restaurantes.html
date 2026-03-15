@@ -63,11 +63,15 @@
     opacity:.9;
   }
 
-  .buscador-wrap{
-    margin-bottom:24px;
+  .filtros{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr;
+    gap:14px;
+    margin-bottom:10px;
   }
 
-  .buscador{
+  .buscador,
+  .fecha-input{
     width:100%;
     box-sizing:border-box;
     padding:12px 16px;
@@ -79,8 +83,15 @@
     outline:none;
   }
 
-  .buscador:focus{
+  .buscador:focus,
+  .fecha-input:focus{
     border-color:rgba(139,0,0,.45);
+  }
+
+  .contador{
+    margin-bottom:22px;
+    color:var(--muted);
+    font-size:14px;
   }
 
   .lista-restaurantes{
@@ -231,6 +242,10 @@
   }
 
   @media (max-width: 800px){
+    .filtros{
+      grid-template-columns:1fr;
+    }
+
     .lista-restaurantes{
       grid-template-columns:1fr;
     }
@@ -253,14 +268,30 @@
 
   <a href="index.html" class="volver">← Volver</a>
 
-  <div class="buscador-wrap">
+  <div class="filtros">
     <input
       type="search"
       id="buscador"
       class="buscador"
       placeholder="Buscar por restaurante, lugar, organizador o fecha..."
     >
+
+    <input
+      type="date"
+      id="fecha-desde"
+      class="fecha-input"
+      placeholder="Desde"
+    >
+
+    <input
+      type="date"
+      id="fecha-hasta"
+      class="fecha-input"
+      placeholder="Hasta"
+    >
   </div>
+
+  <div id="contador" class="contador">Cargando restaurantes…</div>
 
   <div id="lista-restaurantes" class="lista-restaurantes">
     <div class="mensaje">Cargando restaurantes…</div>
@@ -404,8 +435,31 @@
     return `${nombre} ${direccion} ${organizadores} ${fechaOriginal} ${fechaFormateada}`;
   }
 
+  function fechaValida(fechaStr){
+    if(!fechaStr) return null;
+    const f = new Date(fechaStr);
+    if(isNaN(f)) return null;
+    f.setHours(0,0,0,0);
+    return f;
+  }
+
+  function restauranteDentroDeRango(rest, desde, hasta){
+    if(!rest.fecha) return false;
+
+    const fechaRest = fechaValida(rest.fecha);
+    if(!fechaRest) return false;
+
+    if(desde && fechaRest < desde) return false;
+    if(hasta && fechaRest > hasta) return false;
+
+    return true;
+  }
+
   function pintarRestaurantes(lista){
     const contenedor = document.getElementById("lista-restaurantes");
+    const contador = document.getElementById("contador");
+
+    contador.textContent = `Mostrando ${lista.length} restaurante${lista.length === 1 ? "" : "s"}`;
 
     if(lista.length === 0){
       contenedor.innerHTML = `<div class="mensaje">No hay restaurantes que coincidan con la búsqueda.</div>`;
@@ -418,6 +472,20 @@
       .join("");
   }
 
+  function aplicarFiltros(){
+    const q = document.getElementById("buscador").value.trim().toLowerCase();
+    const desde = fechaValida(document.getElementById("fecha-desde").value);
+    const hasta = fechaValida(document.getElementById("fecha-hasta").value);
+
+    let filtrados = TODOS_LOS_RESTAURANTES.filter(rest => {
+      const coincideTexto = q === "" || textoBusqueda(rest).includes(q);
+      const coincideFecha = (!desde && !hasta) || restauranteDentroDeRango(rest, desde, hasta);
+      return coincideTexto && coincideFecha;
+    });
+
+    pintarRestaurantes(filtrados);
+  }
+
   fetch("restaurantes.json?v=" + Date.now(), { cache: "no-store" })
     .then(res => {
       if(!res.ok) throw new Error("HTTP " + res.status);
@@ -427,23 +495,12 @@
       TODOS_LOS_RESTAURANTES = Array.isArray(data.restaurantes) ? data.restaurantes : [];
       pintarRestaurantes(TODOS_LOS_RESTAURANTES);
 
-      const buscador = document.getElementById("buscador");
-      buscador.addEventListener("input", function(){
-        const q = this.value.trim().toLowerCase();
-
-        if(q === ""){
-          pintarRestaurantes(TODOS_LOS_RESTAURANTES);
-          return;
-        }
-
-        const filtrados = TODOS_LOS_RESTAURANTES.filter(rest =>
-          textoBusqueda(rest).includes(q)
-        );
-
-        pintarRestaurantes(filtrados);
-      });
+      document.getElementById("buscador").addEventListener("input", aplicarFiltros);
+      document.getElementById("fecha-desde").addEventListener("change", aplicarFiltros);
+      document.getElementById("fecha-hasta").addEventListener("change", aplicarFiltros);
     })
     .catch(error => {
+      document.getElementById("contador").textContent = "Error al cargar restaurantes";
       document.getElementById("lista-restaurantes").innerHTML =
         `<div class="mensaje">❌ Error cargando restaurantes: ${error.message}</div>`;
     });
