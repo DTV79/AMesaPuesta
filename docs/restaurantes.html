@@ -70,7 +70,6 @@
   }
 
   .buscador{
-    display:block;
     width:100%;
     box-sizing:border-box;
     border:1px solid var(--border);
@@ -103,7 +102,6 @@
   }
 
   .fecha-input{
-    display:block;
     width:100%;
     box-sizing:border-box;
     border:1px solid var(--border);
@@ -111,7 +109,7 @@
     background:#fff;
     box-shadow:0 4px 10px rgba(0,0,0,0.06);
     outline:none;
-    padding:10px 8px;
+    padding:10px 10px;
     font-size:13px;
   }
 
@@ -299,8 +297,8 @@
     }
 
     .fecha-input{
-      padding:9px 6px;
       font-size:12px;
+      padding:9px 8px;
     }
   }
 </style>
@@ -335,18 +333,22 @@
       <div class="fecha-box">
         <label for="fecha-desde">Desde</label>
         <input
-          type="date"
+          type="text"
+          inputmode="numeric"
           id="fecha-desde"
           class="fecha-input"
+          placeholder="dd/mm/aaaa"
         >
       </div>
 
       <div class="fecha-box">
         <label for="fecha-hasta">Hasta</label>
         <input
-          type="date"
+          type="text"
+          inputmode="numeric"
           id="fecha-hasta"
           class="fecha-input"
+          placeholder="dd/mm/aaaa"
         >
       </div>
     </div>
@@ -379,6 +381,30 @@
     return `${dia}/${mes}/${año}`;
   }
 
+  function parseFechaManual(texto){
+    if(!texto) return null;
+
+    const limpio = texto.trim();
+    const m = limpio.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if(!m) return null;
+
+    const dia = Number(m[1]);
+    const mes = Number(m[2]);
+    const año = Number(m[3]);
+
+    const f = new Date(año, mes - 1, dia);
+    if(
+      f.getFullYear() !== año ||
+      f.getMonth() !== mes - 1 ||
+      f.getDate() !== dia
+    ){
+      return null;
+    }
+
+    f.setHours(0,0,0,0);
+    return f;
+  }
+
   function listaAHTML(lista){
     if(!Array.isArray(lista) || lista.length === 0){
       return '<p class="muted">Sin datos</p>';
@@ -394,7 +420,6 @@
     if(valor === undefined || valor === null || valor === "") return "—";
 
     const numero = Number(valor);
-
     if(isNaN(numero)) return valor;
 
     return numero.toLocaleString("es-ES", {
@@ -512,7 +537,7 @@
     return `${nombre} ${direccion} ${organizadores} ${fechaOriginal} ${fechaFormateada}`;
   }
 
-  function fechaValida(fechaStr){
+  function fechaValidaISO(fechaStr){
     if(!fechaStr) return null;
     const f = new Date(fechaStr);
     if(isNaN(f)) return null;
@@ -523,7 +548,7 @@
   function restauranteDentroDeRango(rest, desde, hasta){
     if(!rest.fecha) return false;
 
-    const fechaRest = fechaValida(rest.fecha);
+    const fechaRest = fechaValidaISO(rest.fecha);
     if(!fechaRest) return false;
 
     if(desde && fechaRest < desde) return false;
@@ -551,8 +576,8 @@
 
   function aplicarFiltros(){
     const q = document.getElementById("buscador").value.trim().toLowerCase();
-    const desde = fechaValida(document.getElementById("fecha-desde").value);
-    const hasta = fechaValida(document.getElementById("fecha-hasta").value);
+    const desde = parseFechaManual(document.getElementById("fecha-desde").value);
+    const hasta = parseFechaManual(document.getElementById("fecha-hasta").value);
 
     const filtrados = TODOS_LOS_RESTAURANTES.filter(rest => {
       const coincideTexto = q === "" || textoBusqueda(rest).includes(q);
@@ -573,8 +598,8 @@
       pintarRestaurantes(TODOS_LOS_RESTAURANTES);
 
       document.getElementById("buscador").addEventListener("input", aplicarFiltros);
-      document.getElementById("fecha-desde").addEventListener("change", aplicarFiltros);
-      document.getElementById("fecha-hasta").addEventListener("change", aplicarFiltros);
+      document.getElementById("fecha-desde").addEventListener("input", aplicarFiltros);
+      document.getElementById("fecha-hasta").addEventListener("input", aplicarFiltros);
 
       document.getElementById("limpiar").addEventListener("click", () => {
         document.getElementById("buscador").value = "";
