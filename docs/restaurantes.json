@@ -1,24 +1,5 @@
 ﻿{"restaurantes":[
   {
-    "id": 0,
-    "nombre": "Restaurante",
-    "direccion": "Dirección",
-    "telefono": "Teléfono",
-    "web": "WEB",
-    "fecha": "",
-    "resenas": "Reseñas",
-    "organizadores": ["Organizadores"],
-    "entrantes": ["Entrantes"],
-    "platos_principales": ["Platos Principales"],
-    "postres": ["Postres"],
-    "bebidas": ["Bebidas"],
-    "precio": "Precio",
-    "asistieron": ["Asistieron"],
-    "no_asistieron": ["No Asistieron"],
-    "descripcion": "Descripción",
-    "autor": "Autor"
-  },
-  {
     "id": 1,
     "nombre": "Bar Manolo",
     "direccion": "Camiño Espiñeiro, 69, Teis, 36207 Vigo, Pontevedra",
