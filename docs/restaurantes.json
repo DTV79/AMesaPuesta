@@ -13,9 +13,9 @@
     "postres": ["Helados","Cañitas","Tarta de queso"],
     "bebidas": ["Vino","Cervezas","Café","Chupitos"],
     "precio": "455",
-    "asistieron": ["Capón","Carlos Runner","Diego (Yo)","Iñaki","Manolo Granja","Miguel Capón","Ovi","Pablo Hermida","Quintana"],
+    "asistieron": ["Capón","Carlos Runner","Diego","Iñaki","Manolo Granja","Miguel Capón","Ovi","Pablo Hermida","Quintana"],
     "no_asistieron": ["José Increíble"],
-    "descripcion": "Prueba",
+    "descripcion": "",
     "autor": ""
   },
   {
@@ -32,7 +32,7 @@
     "postres": ["Tarta milhojas"],
     "bebidas": ["Vino","Cervezas","Café","Chupitos"],
     "precio": "560",
-    "asistieron": ["Capón","Decio","Diego (Yo)","Iñaki","Manolo Granja","Miguel Capón","Ovi","Quintana"],
+    "asistieron": ["Capón","Decio","Diego","Iñaki","Manolo Granja","Miguel Capón","Ovi","Quintana"],
     "no_asistieron": ["Carlos Runner","José Increíble","Pablo Canitrot","Pablo Hermida","Xabi"],
     "descripcion": "",
     "autor": ""
@@ -51,7 +51,7 @@
     "postres": ["Queso con membrillo","Orejas","Filloas","Cañitas","Leche frita","Flan de café"],
     "bebidas": ["Vino","Cervezas","Café","Chupitos"],
     "precio": "352",
-    "asistieron": ["Capón","Carlos Runner","Decio","Diego (Yo)","Iñaki","José Increíble","Manolo Granja","Miguel Capón","Ovi","Pablo Hermida","Xabi"],
+    "asistieron": ["Capón","Carlos Runner","Decio","Diego","Iñaki","José Increíble","Manolo Granja","Miguel Capón","Ovi","Pablo Hermida","Xabi"],
     "no_asistieron": ["Pablo Canitrot","Quintana"],
     "descripcion": "",
     "autor": ""
@@ -70,7 +70,7 @@
     "postres": ["Postres variados"],
     "bebidas": ["Vino de la casa","Cervezas","Café","Chupitos"],
     "precio": "350,4",
-    "asistieron": ["Carlos Runner","Decio","Diego (Yo)","Iñaki","José Increíble","Manolo Granja","Ovi","Pablo Hermida","Sera"],
+    "asistieron": ["Carlos Runner","Decio","Diego","Iñaki","José Increíble","Manolo Granja","Ovi","Pablo Hermida","Sera"],
     "no_asistieron": ["Capón","Miguel Capón","Pablo Canitrot","Quintana","Xabi","Herva"],
     "descripcion": "",
     "autor": ""
@@ -89,7 +89,7 @@
     "postres": ["Tarta milhojas"],
     "bebidas": ["Vino","Cervezas","Café","Chupitos"],
     "precio": "900",
-    "asistieron": ["Capón","Carlos Runner","Decio","Diego (Yo)","Iñaki","Manolo Granja","Miguel Capón","Ovi","Pablo Hermida","Quintana","Sera","Herva"],
+    "asistieron": ["Capón","Carlos Runner","Decio","Diego","Iñaki","Manolo Granja","Miguel Capón","Ovi","Pablo Hermida","Quintana","Sera","Herva"],
     "no_asistieron": ["José Increíble","Pablo Canitrot","Xabi"],
     "descripcion": "",
     "autor": ""
@@ -108,7 +108,7 @@
     "postres": ["Postres variados"],
     "bebidas": ["Vino","Cervezas","Café","Chupitos"],
     "precio": "400",
-    "asistieron": ["Capón","Carlos Runner","Diego (Yo)","Iñaki","José Increíble","Manolo Granja","Miguel Capón","Ovi","Quintana","Xabi"],
+    "asistieron": ["Capón","Carlos Runner","Diego","Iñaki","José Increíble","Manolo Granja","Miguel Capón","Ovi","Quintana","Xabi"],
     "no_asistieron": ["Decio","Pablo Hermida","Sera","Herva"],
     "descripcion": "",
     "autor": ""
@@ -127,7 +127,7 @@
     "postres": ["Comtessa","Piña caramelizada","Filloas"],
     "bebidas": ["Vino","Cervezas","Café","Chupitos"],
     "precio": "600",
-    "asistieron": ["Capón","Carlos Runner","Decio","Diego (Yo)","Iñaki","José Increíble","Miguel Capón","Ovi","Pablo Hermida","Quintana","Xabi","Sera","Herva","Isma Zeus"],
+    "asistieron": ["Capón","Carlos Runner","Decio","Diego","Iñaki","José Increíble","Miguel Capón","Ovi","Pablo Hermida","Quintana","Xabi","Sera","Herva","Isma Zeus"],
     "no_asistieron": ["Manolo Granja"],
     "descripcion": "",
     "autor": ""
@@ -146,7 +146,7 @@
     "postres": ["Leche frita","Flan","Tarta helada"],
     "bebidas": ["Vino","Cervezas","Café","Chupitos"],
     "precio": "480",
-    "asistieron": ["Carlos Runner","Decio","Diego (Yo)","Iñaki","José Increíble","Manolo Granja","Ovi","Pablo Hermida","Sera","Herva","Pepe"],
+    "asistieron": ["Carlos Runner","Decio","Diego","Iñaki","José Increíble","Manolo Granja","Ovi","Pablo Hermida","Sera","Herva","Pepe"],
     "no_asistieron": ["Capón","Miguel Capón","Quintana","Xabi","Isma Zeus"],
     "descripcion": "",
     "autor": ""
@@ -165,9 +165,9 @@
     "postres": ["Tarta de café","Flan de queixo","Flan de chocolate"],
     "bebidas": ["Viña Nagarola (Mencía e Godello)","Cervezas","Café","Chupitos"],
     "precio": "588",
-    "asistieron": ["Capón","Decio","Diego (Yo)","José Increíble","Miguel Capón","Ovi","Pablo Hermida","Quintana","Sera","Herva","Isma Zeus","Pepe"],
+    "asistieron": ["Capón","Decio","Diego","José Increíble","Miguel Capón","Ovi","Pablo Hermida","Quintana","Sera","Herva","Isma Zeus","Pepe"],
     "no_asistieron": ["Carlos Runner","Iñaki","Manolo Granja","Xabi"],
-    "descripcion": "",
-    "autor": ""
+    "descripcion": "Caza, monte y tradición gallega en estado puro",
+    "autor": "Diego"
   }
 ]}
