@@ -65,7 +65,7 @@
 
   .filtros{
     display:grid;
-    grid-template-columns:minmax(0, 2fr) minmax(140px, 1fr) minmax(140px, 1fr) auto;
+    grid-template-columns:minmax(0, 2fr) minmax(320px, 1fr) auto;
     gap:14px;
     align-items:end;
     margin-bottom:10px;
@@ -73,6 +73,7 @@
 
   .buscador-wrap{
     position:relative;
+    min-width:0;
   }
 
   .buscador-icono{
@@ -101,21 +102,30 @@
     padding:12px 16px 12px 38px;
   }
 
-  .fecha-input{
-    padding:12px;
-    font-size:14px;
+  .fechas-wrap{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    min-width:0;
   }
 
   .fecha-box{
     display:flex;
     flex-direction:column;
     gap:4px;
+    min-width:0;
   }
 
   .fecha-box label{
     font-size:12px;
     color:var(--muted);
     font-weight:600;
+  }
+
+  .fecha-input{
+    padding:12px;
+    font-size:14px;
+    min-width:0;
   }
 
   .buscador:focus,
@@ -297,12 +307,14 @@
 
   @media (max-width: 800px){
     .filtros{
-      grid-template-columns:1fr 1fr;
+      grid-template-columns:1fr;
       gap:10px;
     }
 
-    .buscador-wrap{
-      grid-column:1 / -1;
+    .fechas-wrap{
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      width:100%;
     }
 
     .fecha-input{
@@ -311,7 +323,6 @@
     }
 
     .btn-limpiar{
-      grid-column:1 / -1;
       justify-self:start;
       padding:8px 10px;
       font-size:12px;
@@ -350,22 +361,24 @@
       >
     </div>
 
-    <div class="fecha-box">
-      <label for="fecha-desde">Desde</label>
-      <input
-        type="date"
-        id="fecha-desde"
-        class="fecha-input"
-      >
-    </div>
+    <div class="fechas-wrap">
+      <div class="fecha-box">
+        <label for="fecha-desde">Desde</label>
+        <input
+          type="date"
+          id="fecha-desde"
+          class="fecha-input"
+        >
+      </div>
 
-    <div class="fecha-box">
-      <label for="fecha-hasta">Hasta</label>
-      <input
-        type="date"
-        id="fecha-hasta"
-        class="fecha-input"
-      >
+      <div class="fecha-box">
+        <label for="fecha-hasta">Hasta</label>
+        <input
+          type="date"
+          id="fecha-hasta"
+          class="fecha-input"
+        >
+      </div>
     </div>
 
     <button id="limpiar" class="btn-limpiar" type="button">
