@@ -63,23 +63,146 @@
     opacity:.9;
   }
 
+  .lista-restaurantes{
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+  }
+
   .restaurante{
     background:white;
-    padding:20px;
-    margin-bottom:20px;
-    border-radius:10px;
+    padding:22px;
+    border-radius:12px;
     box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    border:1px solid var(--border);
+  }
+
+  .restaurante-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:20px;
+    flex-wrap:wrap;
   }
 
   .restaurante h2{
-    margin-top:0;
+    margin:0 0 14px 0;
+    font-size:24px;
+    color:var(--accent);
+  }
+
+  .resenas{
+    display:inline-block;
+    background:#faf3f3;
+    color:var(--accent);
+    border:1px solid rgba(139,0,0,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+
+  .resumen-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:10px 24px;
     margin-bottom:14px;
-    font-size:22px;
   }
 
   .restaurante p{
-    margin:10px 0;
+    margin:8px 0;
     font-size:14px;
+    line-height:1.5;
+  }
+
+  .descripcion{
+    margin-top:8px;
+    padding-top:8px;
+  }
+
+  .autor{
+    color:var(--muted);
+    font-style:italic;
+  }
+
+  .web-link{
+    color:var(--accent);
+    text-decoration:none;
+    word-break:break-word;
+  }
+
+  .web-link:hover{
+    text-decoration:underline;
+  }
+
+  .btn-detalles{
+    margin-top:14px;
+    background:#8b0000;
+    color:white;
+    border:none;
+    padding:10px 16px;
+    border-radius:8px;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+  }
+
+  .btn-detalles:hover{
+    opacity:.92;
+  }
+
+  .detalles{
+    display:none;
+    margin-top:18px;
+    padding-top:18px;
+    border-top:1px solid var(--border);
+  }
+
+  .detalles.abierto{
+    display:block;
+  }
+
+  .detalles-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+    gap:16px;
+  }
+
+  .detalle-box{
+    background:#fcfbfb;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:14px 16px;
+  }
+
+  .detalle-box h3{
+    margin:0 0 10px 0;
+    color:var(--accent);
+    font-size:16px;
+  }
+
+  .detalle-box ul{
+    margin:0;
+    padding-left:18px;
+  }
+
+  .detalle-box li{
+    margin:6px 0;
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .muted{
+    color:var(--muted);
+  }
+
+  .mensaje{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    border:1px solid var(--border);
+    font-size:15px;
   }
 </style>
 </head>
@@ -99,25 +222,157 @@
 
   <a href="index.html" class="volver">← Volver</a>
 
-  <div class="restaurante">
-    <h2>Restaurante Casa Paco</h2>
-    <p><b>Fecha:</b> 15/02/2026</p>
-    <p><b>Dirección:</b> Calle Mayor 12, Vigo</p>
-  </div>
-
-  <div class="restaurante">
-    <h2>Mesón El Buen Comer</h2>
-    <p><b>Fecha:</b> 12/01/2026</p>
-    <p><b>Dirección:</b> Plaza España 4, Pontevedra</p>
-  </div>
-
-  <div class="restaurante">
-    <h2>La Parrilla del Puerto</h2>
-    <p><b>Fecha:</b> 20/12/2025</p>
-    <p><b>Dirección:</b> Avenida del Mar 8, Baiona</p>
+  <div id="lista-restaurantes" class="lista-restaurantes">
+    <div class="mensaje">Cargando restaurantes…</div>
   </div>
 
 </div>
+
+<script>
+  function formatearFecha(fecha){
+    if(!fecha) return "—";
+    const f = new Date(fecha);
+    if(isNaN(f)) return fecha;
+    return f.toLocaleDateString("es-ES");
+  }
+
+  function listaAHTML(lista){
+    if(!Array.isArray(lista) || lista.length === 0){
+      return '<p class="muted">Sin datos</p>';
+    }
+    return `<ul>${lista.map(item => `<li>${item}</li>`).join("")}</ul>`;
+  }
+
+  function textoSeguro(valor){
+    return (valor !== undefined && valor !== null && String(valor).trim() !== "") ? valor : "—";
+  }
+
+  function crearFicha(rest, index){
+    const web = rest.web && String(rest.web).trim() !== ""
+      ? `<a class="web-link" href="${rest.web}" target="_blank" rel="noopener noreferrer">${rest.web}</a>`
+      : "—";
+
+    const descripcion = rest.descripcion && String(rest.descripcion).trim() !== ""
+      ? rest.descripcion
+      : "Sin descripción";
+
+    const autor = rest.autor && String(rest.autor).trim() !== ""
+      ? rest.autor
+      : "Sin autor";
+
+    const resenas = rest.resenas && String(rest.resenas).trim() !== ""
+      ? rest.resenas
+      : "Sin valoración";
+
+    return `
+      <div class="restaurante">
+        <div class="restaurante-top">
+          <div>
+            <h2>${textoSeguro(rest.nombre)}</h2>
+          </div>
+          <div class="resenas">${resenas}</div>
+        </div>
+
+        <div class="resumen-grid">
+          <p><b>Fecha:</b> ${formatearFecha(rest.fecha)}</p>
+          <p><b>Dirección:</b> ${textoSeguro(rest.direccion)}</p>
+          <p><b>Teléfono:</b> ${textoSeguro(rest.telefono)}</p>
+          <p><b>Web:</b> ${web}</p>
+        </div>
+
+        <div class="descripcion">
+          <p><b>Descripción:</b> ${descripcion}</p>
+          <p class="autor"><b>Autor:</b> ${autor}</p>
+        </div>
+
+        <button class="btn-detalles" onclick="toggleDetalles(${index})" id="btn-${index}">
+          Ver más
+        </button>
+
+        <div class="detalles" id="detalles-${index}">
+          <div class="detalles-grid">
+            <div class="detalle-box">
+              <h3>Organizadores</h3>
+              ${listaAHTML(rest.organizadores)}
+            </div>
+
+            <div class="detalle-box">
+              <h3>Entrantes</h3>
+              ${listaAHTML(rest.entrantes)}
+            </div>
+
+            <div class="detalle-box">
+              <h3>Platos principales</h3>
+              ${listaAHTML(rest.platos_principales)}
+            </div>
+
+            <div class="detalle-box">
+              <h3>Postres</h3>
+              ${listaAHTML(rest.postres)}
+            </div>
+
+            <div class="detalle-box">
+              <h3>Bebidas</h3>
+              ${listaAHTML(rest.bebidas)}
+            </div>
+
+            <div class="detalle-box">
+              <h3>Asistieron</h3>
+              ${listaAHTML(rest.asistieron)}
+            </div>
+
+            <div class="detalle-box">
+              <h3>No asistieron</h3>
+              ${listaAHTML(rest.no_asistieron)}
+            </div>
+
+            <div class="detalle-box">
+              <h3>Precio</h3>
+              <p><b>${textoSeguro(rest.precio)}</b></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function toggleDetalles(index){
+    const detalles = document.getElementById(`detalles-${index}`);
+    const boton = document.getElementById(`btn-${index}`);
+
+    if(detalles.classList.contains("abierto")){
+      detalles.classList.remove("abierto");
+      boton.textContent = "Ver más";
+    } else {
+      detalles.classList.add("abierto");
+      boton.textContent = "Ver menos";
+    }
+  }
+
+  fetch("restaurantes.json?v=" + Date.now(), { cache: "no-store" })
+    .then(res => {
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(data => {
+      const lista = document.getElementById("lista-restaurantes");
+      const restaurantes = Array.isArray(data.restaurantes) ? data.restaurantes : [];
+
+      if(restaurantes.length === 0){
+        lista.innerHTML = `<div class="mensaje">No hay restaurantes disponibles.</div>`;
+        return;
+      }
+
+      lista.innerHTML = restaurantes
+        .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+        .map((rest, index) => crearFicha(rest, index))
+        .join("");
+    })
+    .catch(error => {
+      document.getElementById("lista-restaurantes").innerHTML =
+        `<div class="mensaje">❌ Error cargando restaurantes: ${error.message}</div>`;
+    });
+</script>
 
 </body>
 </html>
