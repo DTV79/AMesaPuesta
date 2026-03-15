@@ -85,17 +85,19 @@
   }
 
   .fechas-wrap{
-    display:flex;
-    width:100%;
-    gap:10px;
-  }
+  display:grid;
+  grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
+  gap:10px;
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
 
   .fecha-box{
-    flex:1 1 0;
-    min-width:0;
-    display:flex;
-    flex-direction:column;
-    gap:4px;
+  min-width:0;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
   }
 
   .fecha-box label{
@@ -105,20 +107,21 @@
   }
 
   .fecha-input{
-    width:100%;
-    max-width:100%;
-    min-width:0;
-    box-sizing:border-box;
-    border:1px solid var(--border);
-    border-radius:10px;
-    background:#fff;
-    box-shadow:0 4px 10px rgba(0,0,0,0.06);
-    outline:none;
-    padding:9px 6px;
-    font-size:11px;
-    appearance:auto;
-    -webkit-appearance:auto;
-  }
+  display:block;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#fff;
+  box-shadow:0 4px 10px rgba(0,0,0,0.06);
+  outline:none;
+  padding:9px 6px;
+  font-size:11px;
+  appearance:none;
+  -webkit-appearance:none;
+}
 
   .buscador:focus,
   .fecha-input:focus{
@@ -293,11 +296,22 @@
     font-size:15px;
   }
 
-  @media (max-width: 800px){
-    .lista-restaurantes{
-      grid-template-columns:1fr;
-    }
-  }
+  .fecha-input{
+  display:block;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#fff;
+  box-shadow:0 4px 10px rgba(0,0,0,0.06);
+  outline:none;
+  padding:9px 6px;
+  font-size:11px;
+  appearance:none;
+  -webkit-appearance:none;
+}
 </style>
 </head>
 
