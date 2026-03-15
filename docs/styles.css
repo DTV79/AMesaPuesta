@@ -179,46 +179,6 @@ body{
   opacity:.9;
 }
 
-.filtros{
-  display:grid;
-  grid-template-columns:minmax(0, 1fr);
-  gap:14px;
-  margin-bottom:10px;
-}
-
-.fechas-wrap{
-  display:grid;
-  grid-template-columns:repeat(2, minmax(0, 1fr));
-  gap:10px;
-  width:100%;
-}
-
-.btn-limpiar{
-  background:transparent;
-  border:1px solid #d8caca;
-  color:var(--muted);
-  border-radius:8px;
-  padding:8px 10px;
-  font-size:12px;
-  cursor:pointer;
-  font-weight:500;
-  white-space:nowrap;
-  transition:.2s;
-  justify-self:start;
-}
-
-.btn-limpiar:hover{
-  background:#faf7f7;
-  color:#8b0000;
-  border-color:#c9b1b1;
-}
-
-.fecha-box{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  min-width:0;
-}
 
 .fecha-box label{
   font-size:12px;
