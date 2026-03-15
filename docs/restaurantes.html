@@ -64,14 +64,14 @@
   }
 
   .lista-restaurantes{
-    display:flex;
-    flex-direction:column;
-    gap:22px;
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:20px;
   }
 
   .restaurante{
     background:white;
-    padding:22px;
+    padding:18px;
     border-radius:12px;
     box-shadow:0 4px 10px rgba(0,0,0,0.1);
     border:1px solid var(--border);
@@ -81,14 +81,15 @@
     display:flex;
     justify-content:space-between;
     align-items:flex-start;
-    gap:20px;
-    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:12px;
   }
 
   .restaurante h2{
-    margin:0 0 14px 0;
-    font-size:24px;
+    margin:0;
+    font-size:20px;
     color:var(--accent);
+    line-height:1.2;
   }
 
   .resenas{
@@ -97,27 +98,28 @@
     color:var(--accent);
     border:1px solid rgba(139,0,0,.18);
     border-radius:999px;
-    padding:8px 12px;
+    padding:6px 10px;
     font-weight:700;
+    font-size:13px;
     white-space:nowrap;
   }
 
-  .resumen-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
-    gap:10px 24px;
-    margin-bottom:14px;
-  }
-
-  .restaurante p{
-    margin:8px 0;
+  .resumen p{
+    margin:6px 0;
     font-size:14px;
-    line-height:1.5;
+    line-height:1.45;
   }
 
   .descripcion{
-    margin-top:8px;
-    padding-top:8px;
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px solid #f0eeee;
+  }
+
+  .descripcion p{
+    margin:6px 0;
+    font-size:14px;
+    line-height:1.5;
   }
 
   .autor{
@@ -136,11 +138,11 @@
   }
 
   .btn-detalles{
-    margin-top:14px;
+    margin-top:12px;
     background:#8b0000;
     color:white;
     border:none;
-    padding:10px 16px;
+    padding:9px 14px;
     border-radius:8px;
     font-weight:600;
     font-size:14px;
@@ -153,8 +155,8 @@
 
   .detalles{
     display:none;
-    margin-top:18px;
-    padding-top:18px;
+    margin-top:16px;
+    padding-top:16px;
     border-top:1px solid var(--border);
   }
 
@@ -162,23 +164,18 @@
     display:block;
   }
 
-  .detalles-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
-    gap:16px;
-  }
-
   .detalle-box{
     background:#fcfbfb;
     border:1px solid var(--border);
     border-radius:10px;
-    padding:14px 16px;
+    padding:12px 14px;
+    margin-bottom:12px;
   }
 
   .detalle-box h3{
-    margin:0 0 10px 0;
+    margin:0 0 8px 0;
     color:var(--accent);
-    font-size:16px;
+    font-size:15px;
   }
 
   .detalle-box ul{
@@ -187,9 +184,15 @@
   }
 
   .detalle-box li{
-    margin:6px 0;
+    margin:5px 0;
     font-size:14px;
-    line-height:1.5;
+    line-height:1.45;
+  }
+
+  .detalle-box p{
+    margin:5px 0;
+    font-size:14px;
+    line-height:1.45;
   }
 
   .muted{
@@ -197,12 +200,19 @@
   }
 
   .mensaje{
+    grid-column:1 / -1;
     background:white;
     padding:20px;
     border-radius:12px;
     box-shadow:0 4px 10px rgba(0,0,0,0.1);
     border:1px solid var(--border);
     font-size:15px;
+  }
+
+  @media (max-width: 800px){
+    .lista-restaurantes{
+      grid-template-columns:1fr;
+    }
   }
 </style>
 </head>
@@ -267,13 +277,11 @@
     return `
       <div class="restaurante">
         <div class="restaurante-top">
-          <div>
-            <h2>${textoSeguro(rest.nombre)}</h2>
-          </div>
+          <h2>${textoSeguro(rest.nombre)}</h2>
           <div class="resenas">${resenas}</div>
         </div>
 
-        <div class="resumen-grid">
+        <div class="resumen">
           <p><b>Fecha:</b> ${formatearFecha(rest.fecha)}</p>
           <p><b>Dirección:</b> ${textoSeguro(rest.direccion)}</p>
           <p><b>Teléfono:</b> ${textoSeguro(rest.telefono)}</p>
@@ -290,46 +298,44 @@
         </button>
 
         <div class="detalles" id="detalles-${index}">
-          <div class="detalles-grid">
-            <div class="detalle-box">
-              <h3>Organizadores</h3>
-              ${listaAHTML(rest.organizadores)}
-            </div>
+          <div class="detalle-box">
+            <h3>Organizadores</h3>
+            ${listaAHTML(rest.organizadores)}
+          </div>
 
-            <div class="detalle-box">
-              <h3>Entrantes</h3>
-              ${listaAHTML(rest.entrantes)}
-            </div>
+          <div class="detalle-box">
+            <h3>Entrantes</h3>
+            ${listaAHTML(rest.entrantes)}
+          </div>
 
-            <div class="detalle-box">
-              <h3>Platos principales</h3>
-              ${listaAHTML(rest.platos_principales)}
-            </div>
+          <div class="detalle-box">
+            <h3>Platos principales</h3>
+            ${listaAHTML(rest.platos_principales)}
+          </div>
 
-            <div class="detalle-box">
-              <h3>Postres</h3>
-              ${listaAHTML(rest.postres)}
-            </div>
+          <div class="detalle-box">
+            <h3>Postres</h3>
+            ${listaAHTML(rest.postres)}
+          </div>
 
-            <div class="detalle-box">
-              <h3>Bebidas</h3>
-              ${listaAHTML(rest.bebidas)}
-            </div>
+          <div class="detalle-box">
+            <h3>Bebidas</h3>
+            ${listaAHTML(rest.bebidas)}
+          </div>
 
-            <div class="detalle-box">
-              <h3>Asistieron</h3>
-              ${listaAHTML(rest.asistieron)}
-            </div>
+          <div class="detalle-box">
+            <h3>Precio</h3>
+            <p><b>${textoSeguro(rest.precio)}</b></p>
+          </div>
 
-            <div class="detalle-box">
-              <h3>No asistieron</h3>
-              ${listaAHTML(rest.no_asistieron)}
-            </div>
+          <div class="detalle-box">
+            <h3>Asistieron</h3>
+            ${listaAHTML(rest.asistieron)}
+          </div>
 
-            <div class="detalle-box">
-              <h3>Precio</h3>
-              <p><b>${textoSeguro(rest.precio)}</b></p>
-            </div>
+          <div class="detalle-box">
+            <h3>No asistieron</h3>
+            ${listaAHTML(rest.no_asistieron)}
           </div>
         </div>
       </div>
