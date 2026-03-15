@@ -65,16 +65,30 @@
 
   .filtros{
     display:grid;
-    grid-template-columns:2fr 1fr 1fr;
+    grid-template-columns:minmax(0, 2fr) minmax(180px, 1fr) minmax(180px, 1fr) auto;
     gap:14px;
+    align-items:center;
     margin-bottom:10px;
+  }
+
+  .buscador-wrap{
+    position:relative;
+  }
+
+  .buscador-icono{
+    position:absolute;
+    left:14px;
+    top:50%;
+    transform:translateY(-50%);
+    color:var(--muted);
+    font-size:14px;
+    pointer-events:none;
   }
 
   .buscador,
   .fecha-input{
     width:100%;
     box-sizing:border-box;
-    padding:12px 16px;
     border:1px solid var(--border);
     border-radius:10px;
     background:#fff;
@@ -83,9 +97,37 @@
     outline:none;
   }
 
+  .buscador{
+    padding:12px 16px 12px 38px;
+  }
+
+  .fecha-input{
+    padding:12px;
+    font-size:14px;
+  }
+
   .buscador:focus,
   .fecha-input:focus{
     border-color:rgba(139,0,0,.45);
+  }
+
+  .btn-limpiar{
+    background:transparent;
+    border:1px solid #d8caca;
+    color:var(--muted);
+    border-radius:8px;
+    padding:10px 12px;
+    font-size:13px;
+    cursor:pointer;
+    font-weight:500;
+    white-space:nowrap;
+    transition:.2s;
+  }
+
+  .btn-limpiar:hover{
+    background:#faf7f7;
+    color:var(--accent);
+    border-color:#c9b1b1;
   }
 
   .contador{
@@ -243,7 +285,24 @@
 
   @media (max-width: 800px){
     .filtros{
-      grid-template-columns:1fr;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .buscador-wrap{
+      grid-column:1 / -1;
+    }
+
+    .fecha-input{
+      font-size:13px;
+      padding:10px;
+    }
+
+    .btn-limpiar{
+      grid-column:1 / -1;
+      justify-self:start;
+      padding:8px 10px;
+      font-size:12px;
     }
 
     .lista-restaurantes{
@@ -269,31 +328,34 @@
   <a href="index.html" class="volver">← Volver</a>
 
   <div class="filtros">
-  <input
-    type="search"
-    id="buscador"
-    class="buscador"
-    placeholder="Buscar por restaurante, lugar, organizador o fecha..."
-  >
+    <div class="buscador-wrap">
+      <span class="buscador-icono">🔎</span>
+      <input
+        type="search"
+        id="buscador"
+        class="buscador"
+        placeholder="Buscar por restaurante, lugar, organizador o fecha..."
+      >
+    </div>
 
-  <input
-    type="date"
-    id="fecha-desde"
-    class="fecha-input"
-  >
+    <input
+      type="date"
+      id="fecha-desde"
+      class="fecha-input"
+    >
 
-  <input
-    type="date"
-    id="fecha-hasta"
-    class="fecha-input"
-  >
+    <input
+      type="date"
+      id="fecha-hasta"
+      class="fecha-input"
+    >
 
-  <button id="limpiar" class="btn-limpiar" type="button">
-    Limpiar filtros
-  </button>
-</div>
+    <button id="limpiar" class="btn-limpiar" type="button">
+      Limpiar filtros
+    </button>
+  </div>
 
-<div id="contador" class="contador">Cargando restaurantes…</div>
+  <div id="contador" class="contador">Cargando restaurantes…</div>
 
   <div id="lista-restaurantes" class="lista-restaurantes">
     <div class="mensaje">Cargando restaurantes…</div>
@@ -329,19 +391,18 @@
   }
 
   function formatearPrecio(valor){
+    if(valor === undefined || valor === null || valor === "") return "—";
 
-  if(valor === undefined || valor === null || valor === "") return "—";
+    const numero = Number(valor);
 
-  const numero = Number(valor);
+    if(isNaN(numero)) return valor;
 
-  if(isNaN(numero)) return valor;
-
-  return numero.toLocaleString("es-ES", {
-    minimumFractionDigits:2,
-    maximumFractionDigits:2
-  }) + " €";
+    return numero.toLocaleString("es-ES", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }) + " €";
   }
-  
+
   function renderResenas(resenas){
     if(!resenas || String(resenas).trim() === "") return "Sin reseña";
     return String(resenas).trim();
@@ -493,7 +554,7 @@
     const desde = fechaValida(document.getElementById("fecha-desde").value);
     const hasta = fechaValida(document.getElementById("fecha-hasta").value);
 
-    let filtrados = TODOS_LOS_RESTAURANTES.filter(rest => {
+    const filtrados = TODOS_LOS_RESTAURANTES.filter(rest => {
       const coincideTexto = q === "" || textoBusqueda(rest).includes(q);
       const coincideFecha = (!desde && !hasta) || restauranteDentroDeRango(rest, desde, hasta);
       return coincideTexto && coincideFecha;
@@ -515,15 +576,12 @@
       document.getElementById("fecha-desde").addEventListener("change", aplicarFiltros);
       document.getElementById("fecha-hasta").addEventListener("change", aplicarFiltros);
 
-    document.getElementById("limpiar").addEventListener("click", () => {
-
-    document.getElementById("buscador").value = "";
-    document.getElementById("fecha-desde").value = "";
-    document.getElementById("fecha-hasta").value = "";
-
-  pintarRestaurantes(TODOS_LOS_RESTAURANTES);
-
-});
+      document.getElementById("limpiar").addEventListener("click", () => {
+        document.getElementById("buscador").value = "";
+        document.getElementById("fecha-desde").value = "";
+        document.getElementById("fecha-hasta").value = "";
+        pintarRestaurantes(TODOS_LOS_RESTAURANTES);
+      });
     })
     .catch(error => {
       document.getElementById("contador").textContent = "Error al cargar restaurantes";
