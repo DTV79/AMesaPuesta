@@ -192,21 +192,25 @@
     line-height:1.45;
   }
 
-  .descripcion{
+  .cita-cofrade{
     margin-top:10px;
-    padding-top:10px;
+    padding-top:12px;
     border-top:1px solid #f0eeee;
   }
 
-  .descripcion p{
-    margin:6px 0;
-    font-size:14px;
-    line-height:1.5;
+  .cita-texto{
+    margin:0;
+    font-size:15px;
+    line-height:1.55;
+    font-style:italic;
+    color:#2f2f2f;
   }
 
-  .autor{
+  .cita-autor{
+    margin:8px 0 0 0;
+    font-size:13px;
+    font-weight:700;
     color:var(--muted);
-    font-style:italic;
   }
 
   .web-link{
@@ -440,11 +444,11 @@
 
     const descripcion = rest.descripcion && String(rest.descripcion).trim() !== ""
       ? rest.descripcion
-      : "Sin descripción";
+      : "Sin comentario aún.";
 
     const autor = rest.autor && String(rest.autor).trim() !== ""
       ? rest.autor
-      : "Sin autor";
+      : "Cofradía A Mesa Puesta";
 
     return `
       <div class="restaurante">
@@ -460,9 +464,9 @@
           <p><b>Web:</b> ${web}</p>
         </div>
 
-        <div class="descripcion">
-          <p><b>Descripción:</b> ${descripcion}</p>
-          <p class="autor"><b>Autor:</b> ${autor}</p>
+        <div class="cita-cofrade">
+          <p class="cita-texto">“${descripcion}”</p>
+          <p class="cita-autor">— ${autor}</p>
         </div>
 
         <button class="btn-detalles" onclick="toggleDetalles(${index})" id="btn-${index}">
