@@ -1,248 +1,203 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Estatutos | A Mesa Puesta</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estatutos | A Mesa Puesta</title>
 
-  <style>
-    :root{
-      --bg:#f8f5f0;
-      --card:#ffffff;
-      --ink:#1f1f1f;
-      --muted:#6b7280;
-      --accent:#8b0000;
-      --accent-dark:#6f0000;
-      --border:#e5e7eb;
-      --shadow:0 8px 24px rgba(0,0,0,.08);
-      --radius:18px;
-    }
+<link rel="stylesheet" href="styles.css">
 
-    *{box-sizing:border-box;}
+<style>
+:root{
+  --bg:#f8f5f0;
+  --card:#ffffff;
+  --ink:#1f1f1f;
+  --muted:#6b7280;
+  --accent:#8b0000;
+  --accent-dark:#6f0000;
+  --border:#e5e7eb;
+  --shadow:0 8px 24px rgba(0,0,0,.08);
+  --radius:18px;
+}
 
-    body{
-      margin:0;
-      font-family: Arial, Helvetica, sans-serif;
-      background:var(--bg);
-      color:var(--ink);
-    }
+*{box-sizing:border-box;}
 
-    .wrap{
-      max-width:1100px;
-      margin:0 auto;
-      padding:24px 16px 40px;
-    }
+body{
+  margin:0;
+  font-family: Arial, Helvetica, sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+}
 
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      margin-bottom:24px;
-      flex-wrap:wrap;
-    }
+.wrap{
+  max-width:1100px;
+  margin:0 auto;
+  padding:24px 16px 40px;
+}
 
-    .titulo{
-      margin:0;
-      font-size:clamp(28px, 4vw, 40px);
-      line-height:1.1;
-    }
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:24px;
+  flex-wrap:wrap;
+}
 
-    .volver{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:12px 18px;
-      border-radius:12px;
-      background:var(--accent);
-      color:#fff;
-      text-decoration:none;
-      font-weight:700;
-      box-shadow:var(--shadow);
-      transition:.2s ease;
-      white-space:nowrap;
-    }
+.titulo{
+  margin:0;
+  font-size:clamp(28px,4vw,40px);
+}
 
-    .volver:hover{
-      background:var(--accent-dark);
-      transform:translateY(-1px);
-    }
+.volver{
+  padding:12px 18px;
+  border-radius:12px;
+  background:var(--accent);
+  color:#fff;
+  text-decoration:none;
+  font-weight:700;
+  box-shadow:var(--shadow);
+}
 
-    .hero-card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:24px;
-      margin-bottom:24px;
-    }
+.volver:hover{
+  background:var(--accent-dark);
+}
 
-    .hero-card h2{
-      margin:0 0 10px;
-      font-size:24px;
-    }
+.hero-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:24px;
+  margin-bottom:24px;
+}
 
-    .hero-card p{
-      margin:0;
-      color:var(--muted);
-      line-height:1.65;
-      font-size:16px;
-    }
+.hero-card h2{
+  margin:0 0 10px;
+}
 
-    .acciones{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top:18px;
-    }
+.hero-card p{
+  margin:0;
+  color:var(--muted);
+  line-height:1.6;
+}
 
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:12px 18px;
-      border-radius:12px;
-      text-decoration:none;
-      font-weight:700;
-      transition:.2s ease;
-      border:1px solid transparent;
-    }
+.acciones{
+  display:flex;
+  gap:12px;
+  margin-top:18px;
+  flex-wrap:wrap;
+}
 
-    .btn-principal{
-      background:var(--accent);
-      color:#fff;
-      box-shadow:var(--shadow);
-    }
+.btn{
+  padding:12px 18px;
+  border-radius:12px;
+  text-decoration:none;
+  font-weight:700;
+}
 
-    .btn-principal:hover{
-      background:var(--accent-dark);
-      transform:translateY(-1px);
-    }
+.btn-principal{
+  background:var(--accent);
+  color:#fff;
+}
 
-    .btn-secundario{
-      background:#fff;
-      color:var(--ink);
-      border-color:var(--border);
-    }
+.btn-principal:hover{
+  background:var(--accent-dark);
+}
 
-    .btn-secundario:hover{
-      background:#f3f4f6;
-    }
+.btn-secundario{
+  background:#fff;
+  border:1px solid var(--border);
+  color:var(--ink);
+}
 
-    .visor-card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
+.btn-secundario:hover{
+  background:#f3f4f6;
+}
 
-    .visor-header{
-      padding:16px 20px;
-      border-bottom:1px solid var(--border);
-      background:#fcfbf8;
-    }
+.visor-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
 
-    .visor-header h3{
-      margin:0;
-      font-size:18px;
-    }
+.visor-header{
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+  background:#fcfbf8;
+}
 
-    .visor-header p{
-      margin:6px 0 0;
-      color:var(--muted);
-      font-size:14px;
-    }
+.visor-pdf{
+  width:100%;
+  height:78vh;
+  min-height:700px;
+  border:none;
+}
 
-    .visor-pdf{
-      width:100%;
-      height:78vh;
-      min-height:700px;
-      border:none;
-      display:block;
-      background:#fff;
-    }
+@media (max-width:768px){
 
-    .nota{
-      margin-top:14px;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.6;
-    }
+  .acciones{
+    flex-direction:column;
+  }
 
-    @media (max-width: 768px){
-      .wrap{
-        padding:18px 12px 28px;
-      }
+  .visor-pdf{
+    height:70vh;
+    min-height:520px;
+  }
 
-      .topbar{
-        align-items:flex-start;
-      }
+}
+</style>
 
-      .volver{
-        width:100%;
-      }
-
-      .acciones{
-        flex-direction:column;
-      }
-
-      .btn{
-        width:100%;
-      }
-
-      .visor-pdf{
-        height:70vh;
-        min-height:520px;
-      }
-    }
-  </style>
 </head>
+
 <body>
 
-  <div class="wrap">
+<div class="wrap">
 
-    <header class="topbar">
-      <h1 class="titulo">Estatutos</h1>
-      <a href="index.html" class="volver">Volver</a>
-    </header>
+<header class="topbar">
+<h1 class="titulo">Estatutos</h1>
+<a href="index.html" class="volver">Volver</a>
+</header>
 
-    <section class="hero-card">
-      <h2>Estatutos de la Cofradía</h2>
-      <p>
-        En esta página puedes consultar el documento oficial con las normas,
-        organización y funcionamiento de la Cofradía A Mesa Puesta.
-      </p>
+<section class="hero-card">
 
-      <div class="acciones">
-        <a href="docs/Estatutos.pdf" target="_blank" class="btn btn-principal">
-          Abrir PDF en pestaña nueva
-        </a>
+<h2>Estatutos de la Cofradía</h2>
 
-        <a href="docs/Estatutos.pdf" class="btn btn-secundario" download>
-          Descargar PDF
-        </a>
-      </div>
+<p>
+En esta página puedes consultar el documento oficial con las normas y el funcionamiento de la Cofradía A Mesa Puesta.
+</p>
 
-      <p class="nota">
-        Si el documento se actualiza desde Excel, esta página mostrará siempre la versión más reciente subida a GitHub.
-      </p>
-    </section>
+<div class="acciones">
 
-    <section class="visor-card">
-      <div class="visor-header">
-        <h3>Documento completo</h3>
-        <p>Visualización directa del archivo de estatutos.</p>
-      </div>
+<a href="docs/Estatutos.pdf" target="_blank" class="btn btn-principal">
+Abrir PDF en pestaña nueva
+</a>
 
-      <iframe
-        class="visor-pdf"
-        src="Estatutos.pdf">
-      </iframe>
-    </section>
+<a href="docs/Estatutos.pdf" class="btn btn-secundario" download>
+Descargar PDF
+</a>
 
-  </div>
+</div>
+
+</section>
+
+<section class="visor-card">
+
+<div class="visor-header">
+<h3>Documento completo</h3>
+<p>Visualización directa del archivo de estatutos.</p>
+</div>
+
+<iframe
+class="visor-pdf"
+src="docs/Estatutos.pdf">
+</iframe>
+
+</section>
+
+</div>
 
 </body>
 </html>
