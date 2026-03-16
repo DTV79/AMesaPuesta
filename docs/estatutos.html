@@ -311,10 +311,25 @@
       font-weight:700;
       background:var(--card-soft);
       border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
     }
 
     .indice-mobile summary::-webkit-details-marker{
       display:none;
+    }
+
+    .flecha{
+      font-size:18px;
+      transition:transform .25s ease;
+      color:var(--accent);
+      flex-shrink:0;
+      margin-left:10px;
+    }
+
+    .indice-mobile details[open] .flecha{
+      transform:rotate(180deg);
     }
 
     .indice-mobile .indice-mobile-body{
@@ -487,6 +502,10 @@
         gap:2px;
       }
 
+      .meta .separador{
+        display:none;
+      }
+
       .acciones{
         flex-direction:column;
       }
@@ -546,7 +565,7 @@
 
       <div class="meta">
         <span>Fundados el 09 de abril de 2022</span>
-        <span>·</span>
+        <span class="separador">·</span>
         <span>Actualizados el 22 de marzo de 2025</span>
       </div>
 
@@ -562,7 +581,10 @@
 
     <div class="indice-mobile">
       <details>
-        <summary>Índice de capítulos</summary>
+        <summary>
+          Índice de capítulos
+          <span class="flecha">▾</span>
+        </summary>
         <div class="indice-mobile-body">
           <ol>
             <li><a href="#capitulo-1">Capítulo I · Denominación, fines, domicilio y ámbito</a></li>
