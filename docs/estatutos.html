@@ -109,7 +109,7 @@
       align-items:center;
       justify-content:center;
       gap:8px;
-      padding:12px 18px;
+      padding:10px 16px;
       border-radius:12px;
       background:var(--accent);
       color:#fff;
@@ -118,6 +118,9 @@
       box-shadow:var(--shadow);
       transition:.2s ease;
       white-space:nowrap;
+      width:auto;
+      align-self:flex-start;
+      flex:0 0 auto;
     }
 
     .volver:hover{
@@ -184,6 +187,10 @@
       font-size:14px;
       position:relative;
       z-index:1;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
     }
 
     .acciones{
@@ -282,6 +289,55 @@
       border-top:1px solid var(--border);
       font-size:14px;
       color:var(--muted);
+    }
+
+    .indice-mobile{
+      display:none;
+      margin-bottom:18px;
+    }
+
+    .indice-mobile details{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .indice-mobile summary{
+      list-style:none;
+      cursor:pointer;
+      padding:16px 18px;
+      font-weight:700;
+      background:var(--card-soft);
+      border-bottom:1px solid var(--border);
+    }
+
+    .indice-mobile summary::-webkit-details-marker{
+      display:none;
+    }
+
+    .indice-mobile .indice-mobile-body{
+      padding:16px 18px;
+    }
+
+    .indice-mobile ol{
+      margin:0;
+      padding-left:20px;
+    }
+
+    .indice-mobile li{
+      margin:10px 0;
+    }
+
+    .indice-mobile a{
+      color:var(--ink);
+      text-decoration:none;
+      line-height:1.5;
+    }
+
+    .indice-mobile a:hover{
+      color:var(--accent);
     }
 
     .contenido{
@@ -391,7 +447,11 @@
       }
 
       .indice{
-        position:static;
+        display:none;
+      }
+
+      .indice-mobile{
+        display:block;
       }
     }
 
@@ -421,13 +481,25 @@
         font-size:25px;
       }
 
+      .meta{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:2px;
+      }
+
       .acciones{
         flex-direction:column;
       }
 
-      .btn,
-      .volver{
+      .btn{
         width:100%;
+      }
+
+      .volver{
+        width:auto;
+        min-width:auto;
+        padding:10px 14px;
+        font-size:15px;
       }
 
       .capitulo-head,
@@ -447,6 +519,8 @@
   </style>
 </head>
 <body>
+
+  <div id="top"></div>
 
   <div class="wrap">
 
@@ -471,7 +545,9 @@
       </p>
 
       <div class="meta">
-        Fundados el 09 de abril de 2022 · Actualizados el 22 de marzo de 2025
+        <span>Fundados el 09 de abril de 2022</span>
+        <span>·</span>
+        <span>Actualizados el 22 de marzo de 2025</span>
       </div>
 
       <div class="acciones">
@@ -483,6 +559,22 @@
         </a>
       </div>
     </section>
+
+    <div class="indice-mobile">
+      <details>
+        <summary>Índice de capítulos</summary>
+        <div class="indice-mobile-body">
+          <ol>
+            <li><a href="#capitulo-1">Capítulo I · Denominación, fines, domicilio y ámbito</a></li>
+            <li><a href="#capitulo-2">Capítulo II · Normas generales</a></li>
+            <li><a href="#capitulo-3">Capítulo III · Los socios</a></li>
+            <li><a href="#capitulo-4">Capítulo IV · Bajas y expulsiones</a></li>
+            <li><a href="#capitulo-5">Capítulo V · Consejo de Cofrades Fundadores</a></li>
+            <li><a href="#capitulo-6">Capítulo VI · Estatutos</a></li>
+          </ol>
+        </div>
+      </details>
+    </div>
 
     <div class="grid">
 
@@ -689,15 +781,5 @@
   </div>
 
   <a href="#top" class="subir" title="Subir arriba">↑</a>
-
-  <script>
-    if (!document.getElementById('top')) {
-      const topAnchor = document.createElement('div');
-      topAnchor.id = 'top';
-      topAnchor.style.position = 'absolute';
-      topAnchor.style.top = '0';
-      document.body.prepend(topAnchor);
-    }
-  </script>
 </body>
 </html>
