@@ -3,153 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Estatutos | A Mesa Puesta</title>
 
+<title>Estatutos | Cofradía A Mesa Puesta</title>
 <link rel="stylesheet" href="styles.css">
 
 <style>
+
 :root{
   --bg:#f8f5f0;
   --card:#ffffff;
   --ink:#1f1f1f;
   --muted:#6b7280;
   --accent:#8b0000;
-  --accent-dark:#6f0000;
   --border:#e5e7eb;
+  --radius:16px;
   --shadow:0 8px 24px rgba(0,0,0,.08);
-  --radius:18px;
 }
-
-*{box-sizing:border-box;}
 
 body{
   margin:0;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:Arial, Helvetica, sans-serif;
   background:var(--bg);
   color:var(--ink);
 }
 
 .wrap{
-  max-width:1100px;
-  margin:0 auto;
-  padding:24px 16px 40px;
+  max-width:900px;
+  margin:auto;
+  padding:30px 20px 60px;
 }
 
 .topbar{
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  gap:16px;
-  margin-bottom:24px;
-  flex-wrap:wrap;
+  align-items:center;
+  margin-bottom:30px;
 }
 
 .titulo{
   margin:0;
-  font-size:clamp(28px,4vw,40px);
+  font-size:34px;
 }
 
 .volver{
-  padding:12px 18px;
-  border-radius:12px;
+  padding:10px 18px;
   background:var(--accent);
-  color:#fff;
+  color:white;
   text-decoration:none;
-  font-weight:700;
-  box-shadow:var(--shadow);
+  border-radius:10px;
+  font-weight:bold;
 }
 
-.volver:hover{
-  background:var(--accent-dark);
-}
-
-.hero-card{
+.card{
   background:var(--card);
-  border:1px solid var(--border);
+  padding:30px;
   border-radius:var(--radius);
   box-shadow:var(--shadow);
-  padding:24px;
-  margin-bottom:24px;
+  border:1px solid var(--border);
 }
 
-.hero-card h2{
-  margin:0 0 10px;
+.capitulo{
+  margin-top:35px;
 }
 
-.hero-card p{
-  margin:0;
-  color:var(--muted);
+.capitulo h2{
+  font-size:22px;
+  border-bottom:2px solid var(--border);
+  padding-bottom:8px;
+}
+
+.articulo{
+  margin-top:20px;
+}
+
+.articulo h3{
+  font-size:18px;
+  margin-bottom:6px;
+}
+
+.articulo p{
   line-height:1.6;
+  color:#444;
 }
 
-.acciones{
-  display:flex;
-  gap:12px;
-  margin-top:18px;
-  flex-wrap:wrap;
+.lista{
+  margin-left:20px;
+  line-height:1.7;
 }
 
-.btn{
-  padding:12px 18px;
-  border-radius:12px;
-  text-decoration:none;
-  font-weight:700;
+.descarga{
+  margin-top:25px;
 }
 
-.btn-principal{
+.boton{
+  display:inline-block;
   background:var(--accent);
-  color:#fff;
+  color:white;
+  padding:12px 18px;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:bold;
 }
 
-.btn-principal:hover{
-  background:var(--accent-dark);
+.meta{
+  color:var(--muted);
+  margin-bottom:20px;
 }
 
-.btn-secundario{
-  background:#fff;
-  border:1px solid var(--border);
-  color:var(--ink);
-}
-
-.btn-secundario:hover{
-  background:#f3f4f6;
-}
-
-.visor-card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  overflow:hidden;
-}
-
-.visor-header{
-  padding:16px 20px;
-  border-bottom:1px solid var(--border);
-  background:#fcfbf8;
-}
-
-.visor-pdf{
-  width:100%;
-  height:78vh;
-  min-height:700px;
-  border:none;
-}
-
-@media (max-width:768px){
-
-  .acciones{
-    flex-direction:column;
-  }
-
-  .visor-pdf{
-    height:70vh;
-    min-height:520px;
-  }
-
-}
 </style>
-
 </head>
 
 <body>
@@ -161,41 +122,170 @@ body{
 <a href="index.html" class="volver">Volver</a>
 </header>
 
-<section class="hero-card">
+<div class="card">
 
-<h2>Estatutos de la Cofradía</h2>
-
-<p>
-En esta página puedes consultar el documento oficial con las normas y el funcionamiento de la Cofradía A Mesa Puesta.
+<p class="meta">
+Fundados el 09 de abril de 2022 · Actualizados el 22 de marzo de 2025
 </p>
 
-<div class="acciones">
+<h1>Estatutos de la Cofradía A Mesa Puesta</h1>
 
-<a href="docs/Estatutos.pdf" target="_blank" class="btn btn-principal">
-Abrir PDF en pestaña nueva
+<div class="descarga">
+<a href="docs/Estatutos.pdf" class="boton" target="_blank">
+Descargar documento oficial (PDF)
 </a>
+</div>
 
-<a href="docs/Estatutos.pdf" class="btn btn-secundario" download>
-Descargar PDF
-</a>
+<!-- CAPITULO I -->
+
+<div class="capitulo">
+<h2>Capítulo I · Denominación, fines, domicilio y ámbito</h2>
+
+<div class="articulo">
+<h3>Artículo 1 · Denominación</h3>
+<p>
+Con la denominación de <strong>Cofradía A Mesa Puesta</strong>, se constituye por tiempo indefinido en Tui una asociación al amparo de la Ley Orgánica 1/2002 reguladora del Derecho de Asociación, con plena capacidad jurídica y sin ánimo de lucro.
+</p>
+</div>
+
+<div class="articulo">
+<h3>Artículo 2 · Fines</h3>
+<p>
+La asociación tiene como finalidad realizar reuniones periódicas de sus miembros en restaurantes o casas de comidas para degustar diversas propuestas gastronómicas.
+</p>
+<p>
+Todas las comidas quedarán registradas en el libro de actas de la Cofradía.
+</p>
+</div>
+
+<div class="articulo">
+<h3>Artículo 3 · Domicilio y ámbito</h3>
+<p>
+El domicilio social se establece en Tui, Calle Travesía Alcalde Casal Aboi Nº 1 3ºD, 36700.
+</p>
+<p>
+El ámbito territorial principal es la Comunidad Autónoma de Galicia, pudiendo extenderse a cualquier otro punto nacional o internacional.
+</p>
+</div>
 
 </div>
 
-</section>
+<!-- CAPITULO II -->
 
-<section class="visor-card">
+<div class="capitulo">
+<h2>Capítulo II · Normas generales</h2>
 
-<div class="visor-header">
-<h3>Documento completo</h3>
-<p>Visualización directa del archivo de estatutos.</p>
+<ul class="lista">
+<li>Se realizarán aproximadamente tres comidas al año, una en cada estación excepto invierno.</li>
+<li>En cada comida se fijará la fecha estimada de la siguiente.</li>
+<li>La cuota anual será de 50 €.</li>
+<li>El dinero se destinará íntegramente a la organización de las comidas.</li>
+<li>Las comidas se aprobarán por mayoría de la mitad más uno de los cofrades.</li>
+<li>No asistir a una comida no implica devolución de cuota.</li>
+<li>En cada comida se designará un comité organizador de dos personas.</li>
+<li>Los organizadores propondrán dos fechas y se votará durante 5 días.</li>
+<li>Las nuevas incorporaciones pagarán la parte proporcional del año más el remanente existente.</li>
+</ul>
+
 </div>
 
-<iframe
-class="visor-pdf"
-src="docs/Estatutos.pdf">
-</iframe>
+<!-- CAPITULO III -->
 
-</section>
+<div class="capitulo">
+<h2>Capítulo III · Los socios</h2>
+
+<div class="articulo">
+<h3>Artículo 5</h3>
+<p>
+Podrá ingresar cualquier persona mayor de 18 años interesada en los fines de la Cofradía.
+</p>
+
+<ul class="lista">
+<li>Los candidatos deben ser propuestos por un Cofrade.</li>
+<li>Máximo dos nuevos miembros por comida.</li>
+<li>Entrarán como <strong>Aprendiz de Cofrade</strong>.</li>
+<li>La admisión se decidirá por votación secreta y mayoría de dos tercios.</li>
+<li>El aprendiz tiene voz pero no voto.</li>
+<li>Pasará a Cofrade pleno tras asistir a 5 comidas o tras 3 años.</li>
+</ul>
+
+</div>
+
+<div class="articulo">
+<h3>Artículo 6 · Derechos</h3>
+
+<ul class="lista">
+<li>Participar en las asambleas con voz y voto.</li>
+<li>Proponer sugerencias.</li>
+<li>Solicitar información sobre la Cofradía.</li>
+<li>Proponer nuevos miembros.</li>
+</ul>
+
+</div>
+
+<div class="articulo">
+<h3>Artículo 7 · Obligaciones</h3>
+
+<ul class="lista">
+<li>Participar en las actividades de la Cofradía.</li>
+<li>Desempeñar los cargos para los que se fuese elegido.</li>
+<li>Asistir a las asambleas.</li>
+<li>Satisfacer las cuotas establecidas.</li>
+<li>Respetar los estatutos.</li>
+</ul>
+
+</div>
+
+</div>
+
+<!-- CAPITULO IV -->
+
+<div class="capitulo">
+<h2>Capítulo IV · Bajas y expulsiones</h2>
+
+<ul class="lista">
+<li>Por voluntad propia.</li>
+<li>Por falta de pago de la cuota.</li>
+<li>Por no asistir durante un año a ninguna comida sin causa justificada.</li>
+<li>Por unanimidad del resto ante conductas inapropiadas.</li>
+</ul>
+
+</div>
+
+<!-- CAPITULO V -->
+
+<div class="capitulo">
+<h2>Capítulo V · Consejo de Cofrades Fundadores</h2>
+
+<ul class="lista">
+<li>Gestionar las comidas aprobadas por la Junta.</li>
+<li>Llevar las actas y atender propuestas.</li>
+<li>Admitir nuevos aprendices y ejecutar sanciones.</li>
+</ul>
+
+<p>
+Será Cofrade Fundador quien:
+</p>
+
+<ul class="lista">
+<li>Haya asistido a 10 comidas o lleve 5 años en la cofradía.</li>
+<li>Destaque por su apoyo en la organización.</li>
+</ul>
+
+</div>
+
+<!-- CAPITULO VI -->
+
+<div class="capitulo">
+<h2>Capítulo VI · Modificación de estatutos</h2>
+
+<p>
+Para modificar los estatutos será necesaria una mayoría de dos tercios del total de cofrades.
+</p>
+
+</div>
+
+</div>
 
 </div>
 
