@@ -1,402 +1,703 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estatutos | Cofradía A Mesa Puesta</title>
+  <link rel="stylesheet" href="styles.css" />
 
-<title>Estatutos | Cofradía A Mesa Puesta</title>
+  <style>
+    :root{
+      --bg:#f8f5f0;
+      --card:#ffffff;
+      --card-soft:#fcfbf8;
+      --ink:#1f1f1f;
+      --ink-soft:#444;
+      --muted:#6b7280;
+      --accent:#8b0000;
+      --accent-dark:#6f0000;
+      --accent-soft:#f6eaea;
+      --accent-line:#e8caca;
+      --border:#e5e7eb;
+      --shadow:0 10px 28px rgba(0,0,0,.08);
+      --shadow-soft:0 6px 18px rgba(0,0,0,.05);
+      --radius:18px;
+      --radius-sm:12px;
+      --max:1100px;
+    }
 
-<link rel="stylesheet" href="styles.css">
+    *{
+      box-sizing:border-box;
+    }
 
-<style>
+    html{
+      scroll-behavior:smooth;
+    }
 
-:root{
-  --bg:#f8f5f0;
-  --card:#ffffff;
-  --card-soft:#fcfbf8;
-  --ink:#1f1f1f;
-  --muted:#6b7280;
-  --accent:#8b0000;
-  --accent-dark:#6f0000;
-  --accent-soft:#f6eaea;
-  --border:#e5e7eb;
-  --shadow:0 10px 28px rgba(0,0,0,.08);
-  --radius:18px;
-  --max:1000px;
-}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(139,0,0,.04), transparent 18%),
+        radial-gradient(circle at top right, rgba(139,0,0,.03), transparent 14%),
+        var(--bg);
+      color:var(--ink);
+      line-height:1.65;
+    }
 
-body{
-  margin:0;
-  font-family:Arial, Helvetica, sans-serif;
-  background:var(--bg);
-  color:var(--ink);
-  line-height:1.65;
-}
+    img{
+      max-width:100%;
+      display:block;
+    }
 
-.wrap{
-  max-width:var(--max);
-  margin:auto;
-  padding:30px 16px 60px;
-}
+    a{
+      -webkit-tap-highlight-color: transparent;
+    }
 
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:24px;
-}
+    .wrap{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:26px 16px 60px;
+    }
 
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:22px;
+      flex-wrap:wrap;
+    }
 
-.brand img{
-  width:60px;
-}
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
 
-.volver{
-  padding:10px 18px;
-  background:var(--accent);
-  color:white;
-  text-decoration:none;
-  border-radius:10px;
-  font-weight:bold;
-}
+    .brand-logo{
+      width:64px;
+      height:64px;
+      object-fit:contain;
+      border-radius:14px;
+      background:#fff;
+      padding:6px;
+      border:1px solid var(--border);
+      box-shadow:var(--shadow-soft);
+      flex-shrink:0;
+    }
 
-.hero-card{
-  background:var(--card);
-  padding:28px;
-  border-radius:var(--radius);
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
-  margin-bottom:25px;
-}
+    .brand-text{
+      min-width:0;
+    }
 
-.eyebrow{
-  font-size:12px;
-  text-transform:uppercase;
-  color:var(--accent);
-  font-weight:bold;
-}
+    .brand-text h1{
+      margin:0;
+      font-size:clamp(28px, 4vw, 38px);
+      line-height:1.05;
+    }
 
-.hero-card h2{
-  margin:8px 0 10px;
-}
+    .brand-text p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:15px;
+    }
 
-.meta{
-  color:var(--muted);
-  font-size:14px;
-}
+    .volver{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:12px 18px;
+      border-radius:12px;
+      background:var(--accent);
+      color:#fff;
+      text-decoration:none;
+      font-weight:700;
+      box-shadow:var(--shadow);
+      transition:.2s ease;
+      white-space:nowrap;
+    }
 
-.acciones{
-  margin-top:20px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
+    .volver:hover{
+      background:var(--accent-dark);
+      transform:translateY(-1px);
+    }
 
-.btn{
-  padding:12px 18px;
-  border-radius:10px;
-  font-weight:bold;
-  text-decoration:none;
-}
+    .hero-card{
+      background:linear-gradient(180deg, #ffffff 0%, #fcfbf8 100%);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:30px;
+      margin-bottom:22px;
+      position:relative;
+      overflow:hidden;
+    }
 
-.btn-principal{
-  background:var(--accent);
-  color:white;
-}
+    .hero-card::after{
+      content:"";
+      position:absolute;
+      top:-40px;
+      right:-40px;
+      width:160px;
+      height:160px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(139,0,0,.08), transparent 70%);
+      pointer-events:none;
+    }
 
-.btn-secundario{
-  background:white;
-  border:1px solid var(--border);
-  color:var(--ink);
-}
+    .eyebrow{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      margin-bottom:14px;
+      border:1px solid var(--accent-line);
+    }
 
-.grid{
-  display:grid;
-  grid-template-columns:280px 1fr;
-  gap:24px;
-}
+    .hero-card h2{
+      margin:0 0 10px;
+      font-size:clamp(28px, 4vw, 34px);
+      line-height:1.15;
+      position:relative;
+      z-index:1;
+    }
 
-.indice{
-  background:var(--card);
-  padding:20px;
-  border-radius:var(--radius);
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
-}
+    .hero-card p{
+      margin:0;
+      color:var(--ink-soft);
+      max-width:760px;
+      position:relative;
+      z-index:1;
+    }
 
-.indice h3{
-  margin-top:0;
-}
+    .meta{
+      margin-top:16px;
+      color:var(--muted);
+      font-size:14px;
+      position:relative;
+      z-index:1;
+    }
 
-.indice ol{
-  padding-left:18px;
-}
+    .acciones{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:22px;
+      position:relative;
+      z-index:1;
+    }
 
-.indice li{
-  margin:8px 0;
-}
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:12px 18px;
+      border-radius:12px;
+      text-decoration:none;
+      font-weight:700;
+      transition:.2s ease;
+      border:1px solid transparent;
+    }
 
-.indice a{
-  text-decoration:none;
-  color:var(--ink);
-}
+    .btn-principal{
+      background:var(--accent);
+      color:#fff;
+      box-shadow:var(--shadow-soft);
+    }
 
-.indice a:hover{
-  color:var(--accent);
-}
+    .btn-principal:hover{
+      background:var(--accent-dark);
+      transform:translateY(-1px);
+    }
 
-.capitulo{
-  background:var(--card);
-  border-radius:var(--radius);
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
-  margin-bottom:18px;
-}
+    .btn-secundario{
+      background:#fff;
+      color:var(--ink);
+      border-color:var(--border);
+    }
 
-.capitulo-head{
-  padding:16px 20px;
-  border-bottom:1px solid var(--border);
-  background:var(--card-soft);
-}
+    .btn-secundario:hover{
+      background:#f3f4f6;
+    }
 
-.capitulo-body{
-  padding:20px;
-}
+    .grid{
+      display:grid;
+      grid-template-columns:300px 1fr;
+      gap:22px;
+      align-items:start;
+    }
 
-.articulo{
-  margin-bottom:18px;
-}
+    .indice{
+      position:sticky;
+      top:18px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
 
-.articulo h3{
-  margin-bottom:6px;
-  color:var(--accent);
-}
+    .indice h3{
+      margin:0 0 8px;
+      font-size:18px;
+    }
 
-.lista{
-  padding-left:20px;
-}
+    .indice p{
+      margin:0 0 14px;
+      color:var(--muted);
+      font-size:14px;
+    }
 
-.lista li{
-  margin:6px 0;
-}
+    .indice ol{
+      margin:0;
+      padding-left:20px;
+    }
 
-@media(max-width:900px){
+    .indice li{
+      margin:10px 0;
+    }
 
-.grid{
-grid-template-columns:1fr;
-}
+    .indice a{
+      color:var(--ink);
+      text-decoration:none;
+      line-height:1.5;
+    }
 
-}
+    .indice a:hover{
+      color:var(--accent);
+    }
 
-</style>
+    .indice-extra{
+      margin-top:18px;
+      padding-top:14px;
+      border-top:1px solid var(--border);
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    .contenido{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    .capitulo{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .capitulo-head{
+      background:var(--card-soft);
+      border-bottom:1px solid var(--border);
+      padding:18px 22px;
+    }
+
+    .capitulo-head h2{
+      margin:0;
+      font-size:22px;
+      line-height:1.25;
+    }
+
+    .capitulo-body{
+      padding:22px;
+    }
+
+    .articulo{
+      padding:18px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:#fff;
+    }
+
+    .articulo + .articulo{
+      margin-top:14px;
+    }
+
+    .articulo h3{
+      margin:0 0 10px;
+      font-size:18px;
+      color:var(--accent);
+    }
+
+    .articulo p{
+      margin:0 0 10px;
+      color:#444;
+    }
+
+    .articulo p:last-child{
+      margin-bottom:0;
+    }
+
+    .lista{
+      margin:10px 0 0 0;
+      padding-left:20px;
+      color:#444;
+    }
+
+    .lista li{
+      margin:8px 0;
+    }
+
+    .nota-final{
+      background:var(--accent-soft);
+      border:1px solid #ecd3d3;
+      border-radius:16px;
+      padding:18px 20px;
+      color:#4b1f1f;
+      margin-top:14px;
+    }
+
+    .nota-final strong{
+      color:var(--accent);
+    }
+
+    .subir{
+      position:fixed;
+      right:18px;
+      bottom:18px;
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:var(--accent);
+      color:#fff;
+      text-decoration:none;
+      font-size:22px;
+      box-shadow:var(--shadow);
+      z-index:20;
+    }
+
+    .subir:hover{
+      background:var(--accent-dark);
+    }
+
+    @media (max-width: 900px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+
+      .indice{
+        position:static;
+      }
+    }
+
+    @media (max-width: 768px){
+      .wrap{
+        padding:18px 12px 34px;
+      }
+
+      .topbar{
+        align-items:flex-start;
+      }
+
+      .brand{
+        align-items:flex-start;
+      }
+
+      .brand-logo{
+        width:54px;
+        height:54px;
+      }
+
+      .hero-card{
+        padding:22px 18px;
+      }
+
+      .hero-card h2{
+        font-size:25px;
+      }
+
+      .acciones{
+        flex-direction:column;
+      }
+
+      .btn,
+      .volver{
+        width:100%;
+      }
+
+      .capitulo-head,
+      .capitulo-body{
+        padding:16px;
+      }
+
+      .articulo{
+        padding:15px;
+      }
+
+      .subir{
+        right:12px;
+        bottom:12px;
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="wrap">
-
-<header class="topbar">
-
-<div class="brand">
-<img src="./Fotos/logo-cangrejo.png">
-<h1>Estatutos</h1>
-</div>
-
-<a href="index.html" class="volver">Volver</a>
-
-</header>
-
-<section class="hero-card">
-
-<span class="eyebrow">Documento oficial</span>
-
-<h2>Estatutos de la Cofradía A Mesa Puesta</h2>
-
-<p>
-Versión integrada en la web para facilitar su lectura.
-El documento oficial sigue siendo el PDF aprobado por la cofradía.
-</p>
-
-<p class="meta">
-Fundados el 09 de abril de 2022 · Actualizados el 22 de marzo de 2025
-</p>
-
-<div class="acciones">
-
-<a href="docs/Estatutos.pdf" target="_blank" class="btn btn-principal">
-Descargar PDF oficial
-</a>
-
-<a href="#capitulo-1" class="btn btn-secundario">
-Ir al contenido
-</a>
-
-</div>
-
-</section>
-
-<div class="grid">
-
-<aside class="indice">
-
-<h3>Índice</h3>
-
-<ol>
-<li><a href="#capitulo-1">Capítulo I · Denominación y fines</a></li>
-<li><a href="#capitulo-2">Capítulo II · Normas generales</a></li>
-<li><a href="#capitulo-3">Capítulo III · Los socios</a></li>
-<li><a href="#capitulo-4">Capítulo IV · Bajas y expulsiones</a></li>
-<li><a href="#capitulo-5">Capítulo V · Consejo de Cofrades Fundadores</a></li>
-<li><a href="#capitulo-6">Capítulo VI · Estatutos</a></li>
-</ol>
-
-</aside>
-
-<main>
-
-<section class="capitulo" id="capitulo-1">
-
-<div class="capitulo-head">
-<h2>Capítulo I · Denominación, fines, domicilio y ámbito</h2>
-</div>
-
-<div class="capitulo-body">
-
-<div class="articulo">
-<h3>Artículo 1</h3>
-<p>
-Con la denominación de Cofradía A Mesa Puesta se constituye por tiempo indefinido
-en Tui una asociación sin ánimo de lucro al amparo de la Ley Orgánica 1/2002.
-</p>
-</div>
-
-<div class="articulo">
-<h3>Artículo 2</h3>
-<p>
-La asociación tiene como finalidad realizar reuniones periódicas de sus miembros
-en restaurantes o casas de comidas para degustar diversas propuestas gastronómicas.
-</p>
-</div>
-
-<div class="articulo">
-<h3>Artículo 3</h3>
-<p>
-El domicilio social se establece en Tui y el ámbito territorial será principalmente Galicia,
-pudiendo extenderse a otros lugares.
-</p>
-</div>
-
-</div>
-</section>
-
-<section class="capitulo" id="capitulo-2">
-
-<div class="capitulo-head">
-<h2>Capítulo II · Normas generales</h2>
-</div>
-
-<div class="capitulo-body">
-
-<ul class="lista">
-
-<li>Se realizarán aproximadamente tres comidas al año.</li>
-<li>La cuota anual será de 50 euros.</li>
-<li>El dinero se destinará íntegramente a la organización de las comidas.</li>
-<li>Las decisiones se tomarán por votación entre los cofrades.</li>
-<li>En cada comida se designará un comité organizador de dos personas.</li>
-
-</ul>
-
-</div>
-</section>
-
-<section class="capitulo" id="capitulo-3">
-
-<div class="capitulo-head">
-<h2>Capítulo III · Los socios</h2>
-</div>
-
-<div class="capitulo-body">
-
-<div class="articulo">
-<h3>Ingreso de miembros</h3>
-
-<ul class="lista">
-
-<li>Ser mayor de 18 años.</li>
-<li>Ser propuesto por un Cofrade.</li>
-<li>La admisión se decide por votación.</li>
-
-</ul>
-
-</div>
-
-</div>
-</section>
-
-<section class="capitulo" id="capitulo-4">
-
-<div class="capitulo-head">
-<h2>Capítulo IV · Bajas y expulsiones</h2>
-</div>
-
-<div class="capitulo-body">
-
-<ul class="lista">
-
-<li>Por voluntad propia.</li>
-<li>Por impago de la cuota.</li>
-<li>Por no asistir durante un año sin causa justificada.</li>
-
-</ul>
-
-</div>
-</section>
-
-<section class="capitulo" id="capitulo-5">
-
-<div class="capitulo-head">
-<h2>Capítulo V · Consejo de Cofrades Fundadores</h2>
-</div>
-
-<div class="capitulo-body">
-
-<ul class="lista">
-
-<li>Gestionar las comidas aprobadas.</li>
-<li>Llevar las actas y propuestas.</li>
-<li>Admitir nuevos miembros.</li>
-
-</ul>
-
-</div>
-</section>
-
-<section class="capitulo" id="capitulo-6">
-
-<div class="capitulo-head">
-<h2>Capítulo VI · Estatutos</h2>
-</div>
-
-<div class="capitulo-body">
-
-<p>
-Para modificar los estatutos será necesaria una mayoría de dos tercios del total de cofrades.
-</p>
-
-</div>
-</section>
-
-</main>
-
-</div>
-
-</div>
-
+  <div class="wrap">
+
+    <header class="topbar">
+      <div class="brand">
+        <img src="./Fotos/logo-cangrejo.png" alt="Logo Cofradía A Mesa Puesta" class="brand-logo" />
+        <div class="brand-text">
+          <h1>Estatutos</h1>
+          <p>Cofradía A Mesa Puesta</p>
+        </div>
+      </div>
+
+      <a href="index.html" class="volver">← Volver</a>
+    </header>
+
+    <section class="hero-card">
+      <span class="eyebrow">Documento oficial</span>
+      <h2>Estatutos de la Cofradía A Mesa Puesta</h2>
+      <p>
+        Versión integrada en la web para facilitar la lectura y consulta.
+        El documento oficial de referencia sigue siendo el PDF aprobado por la Cofradía.
+      </p>
+
+      <div class="meta">
+        Fundados el 09 de abril de 2022 · Actualizados el 22 de marzo de 2025
+      </div>
+
+      <div class="acciones">
+        <a href="Estatutos.pdf" target="_blank" class="btn btn-principal">
+          Descargar PDF oficial
+        </a>
+        <a href="#capitulo-1" class="btn btn-secundario">
+          Ir al contenido
+        </a>
+      </div>
+    </section>
+
+    <div class="grid">
+
+      <aside class="indice">
+        <h3>Índice</h3>
+        <p>Acceso rápido a cada capítulo.</p>
+
+        <ol>
+          <li><a href="#capitulo-1">Capítulo I · Denominación, fines, domicilio y ámbito</a></li>
+          <li><a href="#capitulo-2">Capítulo II · Normas generales</a></li>
+          <li><a href="#capitulo-3">Capítulo III · Los socios</a></li>
+          <li><a href="#capitulo-4">Capítulo IV · Bajas y expulsiones</a></li>
+          <li><a href="#capitulo-5">Capítulo V · Consejo de Cofrades Fundadores</a></li>
+          <li><a href="#capitulo-6">Capítulo VI · Estatutos</a></li>
+        </ol>
+
+        <div class="indice-extra">
+          Última revisión reflejada en esta página: 22/03/2025.
+        </div>
+      </aside>
+
+      <main class="contenido">
+
+        <section class="capitulo" id="capitulo-1">
+          <div class="capitulo-head">
+            <h2>Capítulo I · Denominación, fines, domicilio y ámbito</h2>
+          </div>
+          <div class="capitulo-body">
+
+            <article class="articulo">
+              <h3>Artículo 1 · Denominación</h3>
+              <p>
+                Con la denominación de <strong>Cofradía A Mesa Puesta</strong>, se constituye por tiempo indefinido en Tui una asociación al amparo de la Ley Orgánica 1/2002, de 22 de marzo, reguladora del Derecho de Asociación y normas complementarias, con capacidad jurídica y plena capacidad de obrar, careciendo de ánimo de lucro.
+              </p>
+            </article>
+
+            <article class="articulo">
+              <h3>Artículo 2 · Fines</h3>
+              <p>
+                La asociación tiene como fines realizar reuniones periódicas de sus miembros en restaurantes, casas de comidas y otros lugares públicos o privados para degustar las diversas comidas que se propongan.
+              </p>
+              <p>
+                Todas las comidas quedarán registradas en el libro de actas de la Cofradía, que estará a disposición de los cofrades.
+              </p>
+            </article>
+
+            <article class="articulo">
+              <h3>Artículo 3 · Domicilio y ámbito</h3>
+              <p>
+                La asociación establece su domicilio social en Tui, Calle Travesía Alcalde Casal Aboi, Nº 1, 3ºD, código postal 36700.
+              </p>
+              <p>
+                El ámbito territorial en el que va a realizar sus actividades será preferentemente la Comunidad Autónoma de Galicia, con posibilidad de extenderse, en casos concretos, a cualquier otro punto del territorio nacional o internacional.
+              </p>
+            </article>
+
+          </div>
+        </section>
+
+        <section class="capitulo" id="capitulo-2">
+          <div class="capitulo-head">
+            <h2>Capítulo II · Normas generales</h2>
+          </div>
+          <div class="capitulo-body">
+
+            <article class="articulo">
+              <h3>Artículo 4 · Normas de funcionamiento</h3>
+              <ul class="lista">
+                <li>Se realizarán tres comidas al año, aproximadamente una en cada estación del año, exceptuando el invierno.</li>
+                <li>En cada comida se cerrará la fecha estimada de la siguiente comida.</li>
+                <li>Se pagará una cuota de 50 euros anuales.</li>
+                <li>El dinero se destinará íntegramente a la organización de las comidas.</li>
+                <li>15 euros irán a cada una de las dos o tres comidas anuales y la cuota sobrante irá a un bote para una comida especial que requiera mayor presupuesto.</li>
+                <li>La comida especial deberá aprobarse por votación, siendo necesaria una mayoría de dos tercios del total de cofrades.</li>
+                <li>Para que una comida llegue a celebrarse tiene que haber votos favorables de la mitad más uno del total de cofrades.</li>
+                <li>El no asistir a las comidas no implica la devolución de la cuota.</li>
+                <li>En caso de no asistir a alguna comida, los 15 euros del bote asignados a dicha comida se utilizarán para realizar el pago de la misma.</li>
+                <li>En cada comida se asignará un comité de 2 personas que organizará la siguiente, ya sea de forma voluntaria o por sorteo.</li>
+                <li>Quienes ya hayan organizado no entrarán en el sorteo ni podrán volver a presentarse voluntarios hasta que todos hayan organizado alguna vez.</li>
+                <li>Las personas encargadas propondrán dos fechas para realizar la comida.</li>
+                <li>Habrá 5 días hábiles para votar y, una vez concluido el plazo, quienes no hayan votado deberán adaptarse a la fecha ganadora si quieren venir.</li>
+                <li>En caso de empate, las personas que hayan votado que les era indiferente cualquiera de las fechas deberán escoger una en un plazo de 2 días.</li>
+                <li>Las nuevas incorporaciones, como “Aprendices de Cofrade”, pagarán la parte proporcional según el momento del año en que ingresen más el remanente acumulado.</li>
+              </ul>
+            </article>
+
+          </div>
+        </section>
+
+        <section class="capitulo" id="capitulo-3">
+          <div class="capitulo-head">
+            <h2>Capítulo III · Los socios</h2>
+          </div>
+          <div class="capitulo-body">
+
+            <article class="articulo">
+              <h3>Artículo 5 · Ingreso de nuevos miembros</h3>
+              <p>
+                Podrá ingresar como miembro cualquier persona mayor de 18 años que tenga interés en el desarrollo de los fines de la Cofradía.
+              </p>
+              <ul class="lista">
+                <li>Las personas a admitir tienen que ser propuestas por un Cofrade.</li>
+                <li>Solo podrán entrar dos personas como máximo por comida entre los propuestos.</li>
+                <li>Los nuevos miembros tendrán la consideración de <strong>Aprendiz de Cofrade</strong>.</li>
+                <li>Se elegirán por voto secreto y por mayoría de dos tercios.</li>
+                <li>En caso de empate entre propuestas, habrá una nueva votación entre los candidatos empatados mediante mayoría simple.</li>
+                <li>El Aprendiz de Cofrade tendrá derecho de voz en las juntas, pero no derecho a voto ni a proponer nuevos miembros.</li>
+                <li>Pasará a ser Cofrade de pleno derecho cuando haya acudido a 5 comidas o, en su defecto, tras 3 años desde su integración en la Cofradía.</li>
+              </ul>
+            </article>
+
+            <article class="articulo">
+              <h3>Artículo 6 · Derechos de los Cofrades y Cofrades Fundadores</h3>
+              <ul class="lista">
+                <li>Tomar parte en las Asambleas Generales con voz y voto.</li>
+                <li>Proponer cuantas sugerencias crean oportunas.</li>
+                <li>Solicitar información sobre la marcha de la Cofradía.</li>
+                <li>Proponer un máximo de un Cofrade.</li>
+              </ul>
+            </article>
+
+            <article class="articulo">
+              <h3>Artículo 7 · Obligaciones de los miembros</h3>
+              <ul class="lista">
+                <li>Participar en las actividades de la Cofradía y trabajar para el logro de sus fines.</li>
+                <li>Desempeñar los cargos para los que se fuese elegido.</li>
+                <li>Asistir a las Asambleas Generales.</li>
+                <li>Satisfacer las cuotas que se establezcan.</li>
+                <li>Respetar los presentes estatutos.</li>
+              </ul>
+            </article>
+
+          </div>
+        </section>
+
+        <section class="capitulo" id="capitulo-4">
+          <div class="capitulo-head">
+            <h2>Capítulo IV · Bajas y expulsiones</h2>
+          </div>
+          <div class="capitulo-body">
+
+            <article class="articulo">
+              <h3>Artículo 8 · Motivos de baja o expulsión</h3>
+              <ul class="lista">
+                <li>Por voluntad propia.</li>
+                <li>Por falta del pago de la cuota.</li>
+                <li>Por no asistir durante un año a ninguna comida sin causa justificada.</li>
+                <li>Por unanimidad del resto, revisando la situación de cualquier Cofrade ante conflictos, destrozos injustificados del local o conductas gravemente contrarias al espíritu de la Cofradía.</li>
+              </ul>
+            </article>
+
+          </div>
+        </section>
+
+        <section class="capitulo" id="capitulo-5">
+          <div class="capitulo-head">
+            <h2>Capítulo V · Consejo de Cofrades Fundadores</h2>
+          </div>
+          <div class="capitulo-body">
+
+            <article class="articulo">
+              <h3>Artículo 9 · Competencias</h3>
+              <ul class="lista">
+                <li>Gestionar las comidas adoptadas por la Junta de Cofrades para el año siguiente.</li>
+                <li>Llevar las actas, atender y admitir propuestas de los Cofrades.</li>
+                <li>Admitir nuevos Aprendices de Cofrades y ejecutar sanciones.</li>
+                <li>Considerar las propuestas de los Cofrades y, en caso oportuno, darles publicidad y trámite.</li>
+              </ul>
+            </article>
+
+            <article class="articulo">
+              <h3>Cofrade Fundador · Requisitos</h3>
+              <ul class="lista">
+                <li>Asistencia a un mínimo de 10 comidas, o en su defecto 5 años en la Cofradía.</li>
+                <li>Carácter constructivo y de apoyo en la organización, valorado por mayoría simple del Consejo de Cofrades.</li>
+              </ul>
+            </article>
+
+          </div>
+        </section>
+
+        <section class="capitulo" id="capitulo-6">
+          <div class="capitulo-head">
+            <h2>Capítulo VI · Estatutos</h2>
+          </div>
+          <div class="capitulo-body">
+
+            <article class="articulo">
+              <h3>Artículo 10 · Modificación de los estatutos</h3>
+              <p>
+                Para la modificación de los estatutos será necesaria una mayoría de dos tercios del total de cofrades.
+              </p>
+            </article>
+
+            <div class="nota-final">
+              <strong>Nota:</strong> esta página presenta una versión integrada y legible de los estatutos. El documento oficial de referencia sigue siendo el PDF aprobado por la Cofradía.
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <a href="#top" class="subir" title="Subir arriba">↑</a>
+
+  <script>
+    if (!document.getElementById('top')) {
+      const topAnchor = document.createElement('div');
+      topAnchor.id = 'top';
+      topAnchor.style.position = 'absolute';
+      topAnchor.style.top = '0';
+      document.body.prepend(topAnchor);
+    }
+  </script>
 </body>
 </html>
