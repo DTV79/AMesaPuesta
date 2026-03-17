@@ -600,11 +600,23 @@
     }
 
     function esPublicable(anuncio) {
-      const visible = anuncio.visible !== false;
-      if (!visible) return false;
-      if (estaCaducado(anuncio.fechaFin)) return false;
-      return true;
-    }
+  const visible = anuncio.visible !== false;
+  if (!visible) return false;
+
+  if (estaCaducado(anuncio.fechaFin)) return false;
+
+  if (fechaValida(anuncio.fechaPublicacion)) {
+    const hoy = new Date();
+    hoy.setHours(23, 59, 59, 999);
+
+    const publicacion = new Date(anuncio.fechaPublicacion);
+    publicacion.setHours(0, 0, 0, 0);
+
+    if (publicacion > hoy) return false;
+  }
+
+  return true;
+}
 
     function iconoTipo(tipo) {
       const t = String(tipo || "").toLowerCase();
