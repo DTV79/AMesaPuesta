@@ -84,24 +84,30 @@
 
   .fechas-wrap{
   display:flex;
+  justify-content:space-between;
+  gap:14px;
   width:100%;
-  gap:8px;
-  overflow:hidden;
 }
 
 .fecha-box{
-  flex:0 0 calc(50% - 4px);
-  width:calc(50% - 4px);
+  flex:0 0 calc(50% - 7px);
+  max-width:calc(50% - 7px);
   min-width:0;
   display:flex;
   flex-direction:column;
-  gap:4px;
+  gap:5px;
 }
 
 .fecha-box label{
   font-size:12px;
   color:var(--muted);
   font-weight:600;
+}
+
+.fecha-ayuda{
+  font-size:11px;
+  color:var(--muted);
+  line-height:1;
 }
 
 .fecha-input{
@@ -115,9 +121,9 @@
   background:#fff;
   box-shadow:0 4px 10px rgba(0,0,0,0.06);
   outline:none;
-  padding:8px 6px;
-  font-size:12px;
-  height:38px;
+  padding:10px 10px;
+  font-size:13px;
+  height:42px;
 }
 
   .buscador:focus,
@@ -304,14 +310,14 @@
 
   .fechas-wrap{
     display:flex;
+    justify-content:space-between;
+    gap:12px;
     width:100%;
-    gap:8px;
-    overflow:hidden;
   }
 
   .fecha-box{
-    flex:0 0 calc(50% - 4px);
-    width:calc(50% - 4px);
+    flex:0 0 calc(50% - 6px);
+    max-width:calc(50% - 6px);
     min-width:0;
   }
 
@@ -319,10 +325,11 @@
     width:100%;
     min-width:0;
     max-width:100%;
-    padding:8px 4px;
-    font-size:11px;
-    height:36px;
+    padding:10px 8px;
+    font-size:13px;
+    height:40px;
   }
+
 }
 </style>
 </head>
