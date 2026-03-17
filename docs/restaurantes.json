@@ -1,6 +1,6 @@
 ﻿{"restaurantes":[
   {
-    "id": 1,
+    "id": 0,
     "nombre": "Bar Manolo",
     "direccion": "Camiño Espiñeiro, 69, Teis, 36207 Vigo, Pontevedra",
     "telefono": "986 26 47 52",
@@ -19,7 +19,7 @@
     "autor": ""
   },
   {
-    "id": 2,
+    "id": 0,
     "nombre": "A Lareira Do Larexo",
     "direccion": "36980, Estrada A Graña, 7B, 36989 O Grove, Pontevedra",
     "telefono": "986 73 17 18",
@@ -38,7 +38,7 @@
     "autor": ""
   },
   {
-    "id": 3,
+    "id": 0,
     "nombre": "Casa Currás",
     "direccion": "PLAZA IGLESIA, N 2, 36500 Lalín, Pontevedra",
     "telefono": "986 78 12 51  / 645 63 83 00",
@@ -57,7 +57,7 @@
     "autor": ""
   },
   {
-    "id": 4,
+    "id": 0,
     "nombre": "Taberna Afonso",
     "direccion": "EM1270 1, 4990-680 Poiares, Portugal",
     "telefono": "965 22 70 56",
@@ -76,7 +76,7 @@
     "autor": ""
   },
   {
-    "id": 5,
+    "id": 0,
     "nombre": "A Lareira Do Larexo",
     "direccion": "36980, Estrada A Graña, 7B, 36989 O Grove, Pontevedra",
     "telefono": "986 73 17 18",
@@ -95,7 +95,7 @@
     "autor": ""
   },
   {
-    "id": 6,
+    "id": 0,
     "nombre": "Hotel Nande",
     "direccion": "Bouza do Rato s/n, 36449, Pontevedra",
     "telefono": "886 16 48 36",
@@ -114,7 +114,7 @@
     "autor": ""
   },
   {
-    "id": 7,
+    "id": 0,
     "nombre": "Casa Paco",
     "direccion": "Carretera EP-2202, local 15B, 36779 Torroña, Pontevedra",
     "telefono": "986 36 21 71",
@@ -133,7 +133,7 @@
     "autor": ""
   },
   {
-    "id": 8,
+    "id": 0,
     "nombre": "O Pucheiro",
     "direccion": "Rúa Álvaro Cunqueiro, 3, 32400 Ribadavia, Ourense",
     "telefono": "988 47 09 06",
@@ -152,7 +152,7 @@
     "autor": ""
   },
   {
-    "id": 9,
+    "id": 0,
     "nombre": "Casa Nagarola",
     "direccion": "Praza Igrexa, 13b, 36847 Fornelos de Montes, Pontevedra",
     "telefono": "986 75 05 97",
