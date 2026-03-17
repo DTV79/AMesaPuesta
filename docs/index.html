@@ -123,16 +123,17 @@
         const activos = anuncios.filter(a => a.visible !== false && !estaCaducado(a.fechaFin));
         const destacados = activos.filter(a => a.destacado === true);
 
-        if (activos.length > 0) {
-          aviso.hidden = false;
+        if (destacados.length > 0) {
+        aviso.hidden = false;
 
-          const texto = aviso.querySelector(".aviso-home-texto span");
-          if (destacados.length > 0) {
-            texto.textContent = "Hay anuncios destacados publicados.";
-          } else {
-            texto.textContent = "Hay avisos nuevos en el tablón.";
-          }
-        }
+        const texto = aviso.querySelector(".aviso-home-texto span");
+
+        if (destacados.length === 1) {
+        texto.textContent = "Hay un anuncio destacado.";
+        } else {
+        texto.textContent = "Hay anuncios destacados.";
+      }  
+    }
       } catch (e) {
         console.error(e);
       }
