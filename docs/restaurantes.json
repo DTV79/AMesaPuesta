@@ -169,24 +169,5 @@
     "no_asistieron": ["Carlos Runner","Iñaki","Manolo Granja","Xabi"],
     "descripcion": "Caza, monte y tradición gallega en estado puro",
     "autor": "Diego"
-  },
-  {
-    "id": 10,
-    "nombre": "Prueba",
-    "direccion": "A ver que sale",
-    "telefono": "",
-    "web": "",
-    "fecha": "2026-03-17",
-    "resenas": "",
-    "organizadores": ["Diego"],
-    "entrantes": [],
-    "platos_principales": [],
-    "postres": [],
-    "bebidas": [],
-    "precio": "",
-    "asistieron": [],
-    "no_asistieron": [],
-    "descripcion": "",
-    "autor": ""
   }
 ]}
