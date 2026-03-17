@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="color-scheme" content="light">  
 <title>Restaurantes</title>
 <link rel="stylesheet" href="styles.css">
 
@@ -83,48 +82,40 @@
   }
 
   .fechas-wrap{
-  display:flex;
-  justify-content:space-between;
-  gap:14px;
-  width:100%;
-}
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    width:100%;
+  }
 
-.fecha-box{
-  flex:0 0 calc(50% - 7px);
-  max-width:calc(50% - 7px);
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-}
+  .fecha-box{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
 
-.fecha-box label{
-  font-size:12px;
-  color:var(--muted);
-  font-weight:600;
-}
+  .fecha-box label{
+    font-size:12px;
+    color:var(--muted);
+    font-weight:600;
+  }
 
-.fecha-ayuda{
-  font-size:11px;
-  color:var(--muted);
-  line-height:1;
-}
+  .fecha-input{
+    width:100%;
+    box-sizing:border-box;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#fff;
+    box-shadow:0 4px 10px rgba(0,0,0,0.06);
+    outline:none;
+    padding:10px 12px;
+    font-size:14px;
+  }
 
-.fecha-input{
-  display:block;
-  width:100%;
-  min-width:0;
-  max-width:100%;
-  box-sizing:border-box;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background:#fff;
-  box-shadow:0 4px 10px rgba(0,0,0,0.06);
-  outline:none;
-  padding:10px 10px;
-  font-size:13px;
-  height:42px;
-}
+  .fecha-input::placeholder{
+    color:#9ca3af;
+  }
 
   .buscador:focus,
   .fecha-input:focus{
@@ -303,34 +294,21 @@
     font-size:15px;
   }
 
- @media (max-width: 800px){
-  .lista-restaurantes{
-    grid-template-columns:1fr;
-  }
+  @media (max-width: 800px){
+    .lista-restaurantes{
+      grid-template-columns:1fr;
+    }
 
-  .fechas-wrap{
-    display:flex;
-    justify-content:space-between;
-    gap:12px;
-    width:100%;
-  }
+    .fechas-wrap{
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
 
-  .fecha-box{
-    flex:0 0 calc(50% - 6px);
-    max-width:calc(50% - 6px);
-    min-width:0;
+    .fecha-input{
+      font-size:13px;
+      padding:10px 10px;
+    }
   }
-
-  .fecha-input{
-    width:100%;
-    min-width:0;
-    max-width:100%;
-    padding:10px 8px;
-    font-size:13px;
-    height:40px;
-  }
-
-}
 </style>
 </head>
 
@@ -355,27 +333,31 @@
         type="search"
         id="buscador"
         class="buscador"
-        placeholder="Buscar por restaurante, lugar, organizador ..."
+        placeholder="Buscar por restaurante, lugar, organizador o fecha..."
       >
     </div>
 
     <div class="fechas-wrap">
       <div class="fecha-box">
         <label for="fecha-desde">Desde</label>
-       <input
-        type="date"
-        id="fecha-desde"
-        class="fecha-input"
-      >
+        <input
+          type="text"
+          id="fecha-desde"
+          class="fecha-input"
+          inputmode="numeric"
+          placeholder="dd/mm/aaaa"
+        >
       </div>
 
       <div class="fecha-box">
         <label for="fecha-hasta">Hasta</label>
-         <input
-          type="date"
+        <input
+          type="text"
           id="fecha-hasta"
           class="fecha-input"
-          >
+          inputmode="numeric"
+          placeholder="dd/mm/aaaa"
+        >
       </div>
     </div>
 
@@ -419,6 +401,7 @@
     const año = Number(m[3]);
 
     const f = new Date(año, mes - 1, dia);
+
     if(
       f.getFullYear() !== año ||
       f.getMonth() !== mes - 1 ||
