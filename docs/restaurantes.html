@@ -11,7 +11,7 @@
     --bg:#f8f5f0;
     --card:#ffffff;
     --ink:#1f1f1f;
-    --muted:#6b7280;
+    --muted:#6b7280;f
     --accent:#8b0000;
     --border:#e5e7eb;
     --shadow:0 8px 24px rgba(0,0,0,.08);
@@ -346,6 +346,7 @@
           class="fecha-input"
           inputmode="numeric"
           placeholder="dd/mm/aaaa"
+          maxlength="10"
         >
       </div>
 
@@ -357,6 +358,7 @@
           class="fecha-input"
           inputmode="numeric"
           placeholder="dd/mm/aaaa"
+          maxlength="10"
         >
       </div>
     </div>
@@ -583,6 +585,18 @@
       .join("");
   }
 
+function autoFormatearFechaInput(input){
+  let v = input.value.replace(/\D/g, "").slice(0, 8);
+
+  if(v.length > 4){
+    input.value = `${v.slice(0,2)}/${v.slice(2,4)}/${v.slice(4)}`;
+  } else if(v.length > 2){
+    input.value = `${v.slice(0,2)}/${v.slice(2)}`;
+  } else {
+    input.value = v;
+  }
+}
+  
   function aplicarFiltros(){
     const q = document.getElementById("buscador").value.trim().toLowerCase();
     const desde = parseFechaManual(document.getElementById("fecha-desde").value);
@@ -607,8 +621,15 @@
       pintarRestaurantes(TODOS_LOS_RESTAURANTES);
 
       document.getElementById("buscador").addEventListener("input", aplicarFiltros);
-      document.getElementById("fecha-desde").addEventListener("input", aplicarFiltros);
-      document.getElementById("fecha-hasta").addEventListener("input", aplicarFiltros);
+      document.getElementById("fecha-desde").addEventListener("input", (e) => {
+      autoFormatearFechaInput(e.target);
+      aplicarFiltros();
+    });
+
+      document.getElementById("fecha-hasta").addEventListener("input", (e) => {
+      autoFormatearFechaInput(e.target);
+      aplicarFiltros();
+    });
 
       document.getElementById("limpiar").addEventListener("click", () => {
         document.getElementById("buscador").value = "";
