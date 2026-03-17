@@ -392,29 +392,41 @@
   }
 
   function parseFechaManual(texto){
-    if(!texto) return null;
+  if(!texto) return null;
 
-    const limpio = texto.trim();
-    const m = limpio.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  const limpio = texto.trim();
+
+  let dia, mes, año;
+  let m;
+
+  // Formato dd/mm/aaaa o dd-mm-aaaa
+  m = limpio.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})$/);
+  if(m){
+    dia = Number(m[1]);
+    mes = Number(m[2]);
+    año = Number(m[3]);
+  } else {
+    // Formato aaaa-mm-dd
+    m = limpio.match(/^(\d{4})-(\d{2})-(\d{2})$/);
     if(!m) return null;
-
-    const dia = Number(m[1]);
-    const mes = Number(m[2]);
-    const año = Number(m[3]);
-
-    const f = new Date(año, mes - 1, dia);
-
-    if(
-      f.getFullYear() !== año ||
-      f.getMonth() !== mes - 1 ||
-      f.getDate() !== dia
-    ){
-      return null;
-    }
-
-    f.setHours(0,0,0,0);
-    return f;
+    año = Number(m[1]);
+    mes = Number(m[2]);
+    dia = Number(m[3]);
   }
+
+  const f = new Date(año, mes - 1, dia);
+
+  if(
+    f.getFullYear() !== año ||
+    f.getMonth() !== mes - 1 ||
+    f.getDate() !== dia
+  ){
+    return null;
+  }
+
+  f.setHours(0,0,0,0);
+  return f;
+}
 
   function listaAHTML(lista){
     if(!Array.isArray(lista) || lista.length === 0){
