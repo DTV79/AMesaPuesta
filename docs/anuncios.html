@@ -17,7 +17,7 @@
       --accent-2:#b38b59;
       --border:#e7e2d9;
       --shadow:0 10px 30px rgba(0,0,0,.08);
-      --radius:18px;
+      --shadow-soft:0 8px 22px rgba(0,0,0,.06);
       --max:1100px;
     }
 
@@ -28,12 +28,10 @@
       padding:0;
       background:var(--bg);
       color:var(--ink);
-      font-family: Georgia, "Times New Roman", serif;
+      font-family:Georgia, "Times New Roman", serif;
     }
 
-    body{
-      min-height:100vh;
-    }
+    body{ min-height:100vh; }
 
     a{
       color:inherit;
@@ -46,7 +44,6 @@
       padding:22px 0 40px;
     }
 
-    /* CABECERA */
     .topbar{
       display:flex;
       align-items:flex-start;
@@ -117,7 +114,6 @@
       background:#fffdf9;
     }
 
-    /* HERO */
     .hero-card{
       background:linear-gradient(135deg, rgba(139,0,0,.96), rgba(90,0,0,.92));
       color:#fff;
@@ -153,10 +149,96 @@
       color:rgba(255,255,255,.92);
     }
 
-    /* CONTROLES */
+    .destacado-principal{
+      display:none;
+      background:linear-gradient(135deg, #fff8ec, #fffdf8);
+      border:1px solid #e8d3af;
+      border-radius:22px;
+      box-shadow:0 14px 34px rgba(103,61,15,.10);
+      overflow:hidden;
+      margin-bottom:22px;
+      animation:aparecer .35s ease;
+    }
+
+    .destacado-principal.show{
+      display:block;
+    }
+
+    .destacado-barra{
+      height:6px;
+      background:linear-gradient(90deg, var(--accent-2), #d6b07b);
+    }
+
+    .destacado-contenido{
+      padding:22px 22px 20px;
+    }
+
+    .destacado-etiqueta{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:#fff1d8;
+      color:#8a5a00;
+      border:1px solid #ead2a0;
+      font-size:.85rem;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+
+    .destacado-titulo{
+      margin:0 0 10px;
+      font-size:clamp(1.45rem, 2.5vw, 2rem);
+      line-height:1.15;
+      color:var(--accent);
+    }
+
+    .destacado-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 14px;
+      color:var(--muted);
+      font-size:.95rem;
+      margin-bottom:12px;
+    }
+
+    .destacado-texto{
+      margin:0;
+      line-height:1.75;
+      color:#2e2e2e;
+      font-size:1rem;
+    }
+
+    .destacado-acciones{
+      margin-top:16px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .btn-sec{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid #dec8a9;
+      color:#7b4b12;
+      font-weight:700;
+      transition:.2s ease;
+      cursor:pointer;
+    }
+
+    .btn-sec:hover{
+      transform:translateY(-1px);
+      background:#fffaf2;
+    }
+
     .controls{
       display:grid;
-      grid-template-columns:minmax(220px, 1.2fr) minmax(180px, .7fr);
+      grid-template-columns:minmax(220px, 1.2fr) minmax(180px, .7fr) minmax(180px, .6fr);
       gap:14px;
       margin-bottom:22px;
     }
@@ -166,7 +248,7 @@
       border:1px solid var(--border);
       border-radius:16px;
       padding:12px 14px;
-      box-shadow:var(--shadow);
+      box-shadow:var(--shadow-soft);
     }
 
     .control label{
@@ -190,7 +272,6 @@
       font-family:inherit;
     }
 
-    /* LISTA */
     .anuncios-wrap{
       display:grid;
       gap:18px;
@@ -200,9 +281,10 @@
       background:var(--card);
       border:1px solid var(--border);
       border-radius:20px;
-      box-shadow:var(--shadow);
+      box-shadow:var(--shadow-soft);
       overflow:hidden;
-      transition:.2s ease;
+      transition:.22s ease;
+      animation:aparecer .35s ease;
     }
 
     .anuncio:hover{
@@ -243,6 +325,7 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
+      gap:6px;
       padding:6px 10px;
       border-radius:999px;
       font-size:.82rem;
@@ -250,12 +333,13 @@
       line-height:1;
     }
 
-    .pill-tipo{
-      background:#f3ece3;
-      color:#6c4c23;
-      border:1px solid #e6d7c4;
-      text-transform:capitalize;
-    }
+    .pill-tipo{ text-transform:capitalize; }
+    .tipo-general{ background:#f2f2f2; color:#505050; border:1px solid #e1e1e1; }
+    .tipo-comida{ background:#fbecef; color:#8b2f40; border:1px solid #f1d3da; }
+    .tipo-reunion{ background:#edf6f1; color:#2f6b52; border:1px solid #d4eadf; }
+    .tipo-tesoreria{ background:#fff7e8; color:#8a6215; border:1px solid #edd9a8; }
+    .tipo-urgente{ background:#fff0f0; color:#9d1f1f; border:1px solid #f0c7c7; }
+    .tipo-recordatorio{ background:#f4f0fa; color:#654a89; border:1px solid #e2d7f3; }
 
     .pill-destacado{
       background:#fff4df;
@@ -278,10 +362,19 @@
     }
 
     .anuncio-texto{
-      padding:0 20px 16px;
+      padding:0 20px 10px;
       color:#2f2f2f;
-      line-height:1.7;
+      line-height:1.75;
       font-size:1rem;
+      white-space:pre-line;
+    }
+
+    .anuncio-texto.limitado{
+      display:-webkit-box;
+      -webkit-line-clamp:4;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      white-space:normal;
     }
 
     .anuncio-footer{
@@ -299,20 +392,29 @@
       font-style:italic;
     }
 
-    .link-btn{
+    .acciones{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .mini-btn{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      padding:10px 14px;
+      padding:9px 13px;
       border-radius:999px;
       border:1px solid #dcc8ac;
       background:#fffaf2;
       color:#7b4b12;
       font-weight:700;
       transition:.2s ease;
+      cursor:pointer;
+      font-family:inherit;
+      font-size:.93rem;
     }
 
-    .link-btn:hover{
+    .mini-btn:hover{
       transform:translateY(-1px);
       background:#fff4e5;
     }
@@ -324,7 +426,7 @@
       padding:28px 20px;
       text-align:center;
       color:var(--muted);
-      box-shadow:var(--shadow);
+      box-shadow:var(--shadow-soft);
     }
 
     .loading{
@@ -341,65 +443,12 @@
       font-size:.92rem;
     }
 
-    /* AVISO EN PÁGINA PRINCIPAL */
-    .aviso-nuevo{
-      position:fixed;
-      right:18px;
-      bottom:18px;
-      z-index:999;
-      display:none;
-      align-items:center;
-      gap:10px;
-      max-width:360px;
-      padding:14px 16px;
-      border-radius:16px;
-      background:linear-gradient(135deg, #8b0000, #670000);
-      color:#fff;
-      box-shadow:0 16px 40px rgba(0,0,0,.22);
-      border:1px solid rgba(255,255,255,.14);
+    @keyframes aparecer{
+      from{ opacity:0; transform:translateY(8px); }
+      to{ opacity:1; transform:translateY(0); }
     }
 
-    .aviso-nuevo.show{
-      display:flex;
-    }
-
-    .aviso-icono{
-      flex:0 0 auto;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      width:38px;
-      height:38px;
-      border-radius:50%;
-      background:rgba(255,255,255,.12);
-    }
-
-    .aviso-texto{
-      flex:1;
-      min-width:0;
-    }
-
-    .aviso-texto strong{
-      display:block;
-      font-size:.97rem;
-      margin-bottom:2px;
-    }
-
-    .aviso-texto span{
-      font-size:.88rem;
-      color:rgba(255,255,255,.9);
-      line-height:1.35;
-    }
-
-    .aviso-link{
-      color:#fff;
-      font-weight:700;
-      text-decoration:underline;
-      white-space:nowrap;
-      margin-left:4px;
-    }
-
-    @media (max-width: 820px){
+    @media (max-width: 920px){
       .controls{
         grid-template-columns:1fr;
       }
@@ -411,13 +460,7 @@
         padding-top:16px;
       }
 
-      .topbar{
-        align-items:flex-start;
-      }
-
-      .brand{
-        width:100%;
-      }
+      .brand{ width:100%; }
 
       .back-wrap{
         width:100%;
@@ -434,9 +477,7 @@
         gap:8px;
       }
 
-      .fecha{
-        padding-top:0;
-      }
+      .fecha{ padding-top:0; }
 
       .anuncio-texto,
       .anuncio-footer{
@@ -444,11 +485,8 @@
         padding-right:18px;
       }
 
-      .aviso-nuevo{
-        left:12px;
-        right:12px;
-        bottom:12px;
-        max-width:none;
+      .destacado-contenido{
+        padding:18px 18px 17px;
       }
     }
   </style>
@@ -476,13 +514,15 @@
       </p>
     </section>
 
+    <section id="destacadoPrincipal" class="destacado-principal" aria-live="polite"></section>
+
     <section class="controls">
       <div class="control">
         <label for="buscador">Buscar anuncio</label>
         <input
           type="text"
           id="buscador"
-          placeholder="Buscar por título, texto o autor"
+          placeholder="Buscar por título, texto, autor o tipo"
         />
       </div>
 
@@ -492,13 +532,21 @@
           <option value="todos">Todos</option>
         </select>
       </div>
+
+      <div class="control">
+        <label for="filtroDestacados">Mostrar</label>
+        <select id="filtroDestacados">
+          <option value="todos">Todos los anuncios</option>
+          <option value="destacados">Solo destacados</option>
+        </select>
+      </div>
     </section>
 
     <div id="loading" class="loading">Cargando anuncios...</div>
     <section id="anuncios" class="anuncios-wrap" aria-live="polite"></section>
 
     <div class="footnote">
-      Los anuncios destacados aparecen en primer lugar.
+      Los anuncios destacados aparecen primero y el principal se muestra arriba del listado.
     </div>
 
   </main>
@@ -508,6 +556,8 @@
     const LOADING = document.getElementById("loading");
     const BUSCADOR = document.getElementById("buscador");
     const FILTRO = document.getElementById("filtroTipo");
+    const FILTRO_DEST = document.getElementById("filtroDestacados");
+    const DESTACADO_PRINCIPAL = document.getElementById("destacadoPrincipal");
 
     let anunciosOriginales = [];
 
@@ -533,7 +583,6 @@
 
     function estaCaducado(fechaFin) {
       if (!fechaValida(fechaFin)) return false;
-
       const hoy = new Date();
       hoy.setHours(0, 0, 0, 0);
 
@@ -550,9 +599,41 @@
         .replace(/[\u0300-\u036f]/g, "");
     }
 
+    function esPublicable(anuncio) {
+      const visible = anuncio.visible !== false;
+      if (!visible) return false;
+      if (estaCaducado(anuncio.fechaFin)) return false;
+      return true;
+    }
+
+    function iconoTipo(tipo) {
+      const t = String(tipo || "").toLowerCase();
+      switch (t) {
+        case "comida":
+          return "🍽️";
+        case "reunion":
+          return "👥";
+        case "tesoreria":
+          return "💰";
+        case "urgente":
+          return "⚠️";
+        case "recordatorio":
+          return "📝";
+        default:
+          return "📌";
+      }
+    }
+
+    function claseTipo(tipo) {
+      const t = String(tipo || "").toLowerCase().trim();
+      const validos = ["general","comida","reunion","tesoreria","urgente","recordatorio"];
+      return validos.includes(t) ? `tipo-${t}` : "tipo-general";
+    }
+
     function obtenerTipos(anuncios) {
       const tipos = [...new Set(
         anuncios
+          .filter(esPublicable)
           .map(a => String(a.tipo || "").trim().toLowerCase())
           .filter(Boolean)
       )].sort((a, b) => a.localeCompare(b, "es"));
@@ -577,14 +658,49 @@
       });
     }
 
+    function pintarDestacadoPrincipal(anuncios) {
+      const destacados = ordenarAnuncios(anuncios.filter(a => a.destacado === true));
+      if (!destacados.length) {
+        DESTACADO_PRINCIPAL.classList.remove("show");
+        DESTACADO_PRINCIPAL.innerHTML = "";
+        return;
+      }
+
+      const a = destacados[0];
+      const enlace = String(a.enlace || "").trim();
+      const autor = String(a.autor || "").trim();
+      const fecha = formatearFecha(a.fecha || "");
+      const tipo = String(a.tipo || "general").trim().toLowerCase();
+
+      DESTACADO_PRINCIPAL.innerHTML = `
+        <div class="destacado-barra"></div>
+        <div class="destacado-contenido">
+          <div class="destacado-etiqueta">${iconoTipo(tipo)} Anuncio destacado</div>
+          <h2 class="destacado-titulo">${escapeHTML(a.titulo || "Sin título")}</h2>
+          <div class="destacado-meta">
+            <span>${iconoTipo(tipo)} ${escapeHTML(tipo || "general")}</span>
+            ${fecha ? `<span>📅 ${escapeHTML(fecha)}</span>` : ``}
+            ${autor ? `<span>✍️ ${escapeHTML(autor)}</span>` : ``}
+          </div>
+          <p class="destacado-texto">${escapeHTML(a.texto || "").replace(/\n/g, "<br>")}</p>
+          <div class="destacado-acciones">
+            ${enlace ? `<a class="btn-sec" href="${escapeHTML(enlace)}" target="_blank" rel="noopener noreferrer">Ver más</a>` : ``}
+          </div>
+        </div>
+      `;
+      DESTACADO_PRINCIPAL.classList.add("show");
+    }
+
     function filtrarAnuncios() {
       const texto = normalizarTexto(BUSCADOR.value);
       const tipo = FILTRO.value;
+      const soloDestacados = FILTRO_DEST.value === "destacados";
 
-      const lista = anunciosOriginales.filter(anuncio => {
-        const visible = anuncio.visible !== false;
-        if (!visible) return false;
-        if (estaCaducado(anuncio.fechaFin)) return false;
+      const publicables = anunciosOriginales.filter(esPublicable);
+      pintarDestacadoPrincipal(publicables);
+
+      let lista = publicables.filter(anuncio => {
+        if (soloDestacados && anuncio.destacado !== true) return false;
 
         if (tipo !== "todos" && String(anuncio.tipo || "").toLowerCase() !== tipo) {
           return false;
@@ -599,7 +715,14 @@
         return bloque.includes(texto);
       });
 
-      renderizar(ordenarAnuncios(lista));
+      lista = ordenarAnuncios(lista);
+
+      const destacadoPrincipal = lista.find(a => a.destacado === true);
+      if (destacadoPrincipal) {
+        lista = lista.filter(a => a !== destacadoPrincipal);
+      }
+
+      renderizar(lista);
     }
 
     function renderizar(anuncios) {
@@ -614,14 +737,15 @@
         return;
       }
 
-      CONTENEDOR.innerHTML = anuncios.map(anuncio => {
+      CONTENEDOR.innerHTML = anuncios.map((anuncio, i) => {
         const destacado = !!anuncio.destacado;
-        const tipo = escapeHTML(anuncio.tipo || "general");
+        const tipo = String(anuncio.tipo || "general").trim().toLowerCase();
         const titulo = escapeHTML(anuncio.titulo || "Sin título");
         const texto = escapeHTML(anuncio.texto || "");
         const autor = escapeHTML(anuncio.autor || "");
         const fecha = formatearFecha(anuncio.fecha || "");
         const enlace = String(anuncio.enlace || "").trim();
+        const textoId = `texto-anuncio-${i}`;
 
         return `
           <article class="anuncio ${destacado ? "destacado" : ""}">
@@ -630,8 +754,8 @@
             <div class="anuncio-top">
               <div class="anuncio-head">
                 <div class="anuncio-meta">
-                  <span class="pill pill-tipo">${tipo}</span>
-                  ${destacado ? `<span class="pill pill-destacado">Destacado</span>` : ``}
+                  <span class="pill pill-tipo ${claseTipo(tipo)}">${iconoTipo(tipo)} ${escapeHTML(tipo)}</span>
+                  ${destacado ? `<span class="pill pill-destacado">⭐ Destacado</span>` : ``}
                 </div>
                 <h2 class="anuncio-titulo">${titulo}</h2>
               </div>
@@ -639,15 +763,26 @@
               <div class="fecha">${fecha}</div>
             </div>
 
-            <div class="anuncio-texto">${texto.replace(/\n/g, "<br>")}</div>
+            <div id="${textoId}" class="anuncio-texto limitado">${texto.replace(/\n/g, "<br>")}</div>
 
             <div class="anuncio-footer">
               <div class="autor">${autor ? "Publicado por " + autor : ""}</div>
-              ${enlace ? `<a class="link-btn" href="${escapeHTML(enlace)}" target="_blank" rel="noopener noreferrer">Ver más</a>` : ``}
+              <div class="acciones">
+                <button type="button" class="mini-btn" onclick="toggleTexto('${textoId}', this)">Ver más</button>
+                ${enlace ? `<a class="mini-btn" href="${escapeHTML(enlace)}" target="_blank" rel="noopener noreferrer">Abrir enlace</a>` : ``}
+              </div>
             </div>
           </article>
         `;
       }).join("");
+    }
+
+    function toggleTexto(id, boton) {
+      const texto = document.getElementById(id);
+      if (!texto) return;
+
+      texto.classList.toggle("limitado");
+      boton.textContent = texto.classList.contains("limitado") ? "Ver más" : "Ver menos";
     }
 
     async function cargarAnuncios() {
@@ -673,6 +808,7 @@
 
     BUSCADOR.addEventListener("input", filtrarAnuncios);
     FILTRO.addEventListener("change", filtrarAnuncios);
+    FILTRO_DEST.addEventListener("change", filtrarAnuncios);
 
     cargarAnuncios();
   </script>
