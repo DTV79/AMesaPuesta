@@ -1,8 +1,22 @@
 ﻿{"anuncios":[
   {
-    "id": "AN001",
+    "id": "ID",
+    "fecha": "",
+    "tipo": "general",
+    "titulo": "Título",
+    "texto": "Texto",
+    "destacado": false,
+    "visible": false,
+    "autor": "Autor",
+    "enlace": "Enlace",
+    "fechaFin": "",
+    "orden": 0,
+    "fechaPublicacion": ""
+  },
+  {
+    "id": "ANU-0001",
     "fecha": "2026-03-28",
-    "tipo": "evento",
+    "tipo": "comida",
     "titulo": "Comida",
     "texto": "El restaurante de la comida será en Cans (Porriño). La hora de la salida de Tui será la 13:00 del mediodía",
     "destacado": true,
@@ -10,6 +24,35 @@
     "autor": "",
     "enlace": "",
     "fechaFin": "2026-03-29",
-    "orden": 0
+    "orden": 0,
+    "fechaPublicacion": ""
+  },
+  {
+    "id": "ANU-0002",
+    "fecha": "2026-03-28",
+    "tipo": "reunion",
+    "titulo": "Estatutos",
+    "texto": "Se revisarán los estatutos para incluir posibles mejoras",
+    "destacado": false,
+    "visible": true,
+    "autor": "",
+    "enlace": "",
+    "fechaFin": "2026-03-29",
+    "orden": 0,
+    "fechaPublicacion": ""
+  },
+  {
+    "id": "ANU-0003",
+    "fecha": "2026-03-17",
+    "tipo": "tesoreria",
+    "titulo": "Pagos Cuotas",
+    "texto": "Acordar el pago de las cuotas de este año",
+    "destacado": true,
+    "visible": true,
+    "autor": "",
+    "enlace": "",
+    "fechaFin": "",
+    "orden": 0,
+    "fechaPublicacion": "2026-03-18"
   }
 ]}
