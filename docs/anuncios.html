@@ -1,1 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>Tablón de anuncios</title>
 
+  <style>
+    :root{
+      color-scheme: light;
+
+      --bg:#f8f5f0;
+      --card:#ffffff;
+      --ink:#1f1f1f;
+      --muted:#6b7280;
+      --accent:#8b0000;
+      --accent-2:#b38b59;
+      --border:#e7e2d9;
+      --shadow:0 10px 30px rgba(0,0,0,.08);
+      --radius:18px;
+      --radius-sm:12px;
+      --max:1100px;
+    }
+
+    *{ box-sizing:border-box; }
+
+    html,body{
+      margin:0;
+      padding:0;
+      background:var(--bg);
+      color:var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    body{
+      min-height:100vh;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    .page{
+      width:min(var(--max), calc(100% - 28px));
+      margin:0 auto;
+      padding:22px 0 40px;
+    }
+
+    /* CABECERA */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:22px;
+      flex-wrap:wrap;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+
+    .eyebrow{
+      font-size:.78rem;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--accent);
+      font-weight:700;
+    }
+
+    .title{
+      margin:0;
+      font-size:clamp(2rem, 3vw, 2.8rem);
+      line-height:1.05;
+      color:var(--accent);
+      font-weight:700;
+    }
+
+    .subtitle{
+      margin:0;
+      color:var(--muted);
+      font-size:1rem;
+      line-height:1.4;
+    }
+
+    .back-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 16px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:#fff;
+      color:var(--accent);
+      font-weight:700;
+      box-shadow:var(--shadow);
+      white-space:nowrap;
+      transition:.2s ease;
+      flex-shrink:0;
+    }
+
+    .back-btn:hover{
+      transform:translateY(-1px);
+      border-color:#d8c8b2;
+    }
+
+    /* HERO */
+    .hero-card{
+      background:linear-gradient(135deg, rgba(139,0,0,.96), rgba(90,0,0,.92));
+      color:#fff;
+      border-radius:24px;
+      padding:28px 26px;
+      box-shadow:var(--shadow);
+      margin-bottom:22px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero-card::after{
+      content:"";
+      position:absolute;
+      inset:auto -60px -60px auto;
+      width:180px;
+      height:180px;
+      border-radius:50%;
+      background:rgba(255,255,255,.08);
+    }
+
+    .hero-card h2{
+      margin:0 0 10px;
+      font-size:clamp(1.5rem, 2.5vw, 2rem);
+      line-height:1.15;
+    }
+
+    .hero-card p{
+      margin:0;
+      max-width:780px;
+      font-size:1rem;
+      line-height:1.6;
+      color:rgba(255,255,255,.92);
+    }
+
+    /* CONTROLES */
+    .controls{
+      display:grid;
+      grid-template-columns: minmax(220px, 1.2fr) minmax(180px, .7fr);
+      gap:14px;
+      margin-bottom:22px;
+    }
+
+    .control{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:12px 14px;
+      box-shadow:var(--shadow);
+    }
+
+    .control label{
+      display:block;
+      font-size:.78rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:7px;
+      font-weight:700;
+    }
+
+    .control input,
+    .control select{
+      width:100%;
+      border:0;
+      outline:none;
+      background:transparent;
+      color:var(--ink);
+      font-size:1rem;
+      font-family:inherit;
+    }
+
+    /* LISTA */
+    .anuncios-wrap{
+      display:grid;
+      gap:18px;
+    }
+
+    .anuncio{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      transition:.2s ease;
+    }
+
+    .anuncio:hover{
+      transform:translateY(-2px);
+    }
+
+    .anuncio.destacado{
+      border-color:#d8c09b;
+      box-shadow:0 14px 34px rgba(103,61,15,.12);
+    }
+
+    .anuncio-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      padding:18px 20px 0;
+    }
+
+    .destacado-linea{
+      height:5px;
+      background:linear-gradient(90deg, var(--accent-2), #d6b07b);
+    }
+
+    .anuncio-head{
+      min-width:0;
+      flex:1;
+    }
+
+    .anuncio-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:.82rem;
+      font-weight:700;
+      line-height:1;
+    }
+
+    .pill-tipo{
+      background:#f3ece3;
+      color:#6c4c23;
+      border:1px solid #e6d7c4;
+      text-transform:capitalize;
+    }
+
+    .pill-destacado{
+      background:#fff4df;
+      color:#8a5a00;
+      border:1px solid #ead2a0;
+    }
+
+    .fecha{
+      color:var(--muted);
+      font-size:.96rem;
+      white-space:nowrap;
+      padding-top:2px;
+    }
+
+    .anuncio-titulo{
+      margin:0 0 10px;
+      font-size:clamp(1.2rem, 2vw, 1.5rem);
+      line-height:1.2;
+      color:var(--accent);
+    }
+
+    .anuncio-texto{
+      padding:0 20px 16px;
+      color:#2f2f2f;
+      line-height:1.7;
+      font-size:1rem;
+    }
+
+    .anuncio-footer{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:0 20px 18px;
+    }
+
+    .autor{
+      color:var(--muted);
+      font-size:.95rem;
+      font-style:italic;
+    }
+
+    .link-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid #dcc8ac;
+      background:#fffaf2;
+      color:#7b4b12;
+      font-weight:700;
+      transition:.2s ease;
+    }
+
+    .link-btn:hover{
+      transform:translateY(-1px);
+      background:#fff4e5;
+    }
+
+    .empty{
+      background:var(--card);
+      border:1px dashed #d9d0c3;
+      border-radius:18px;
+      padding:28px 20px;
+      text-align:center;
+      color:var(--muted);
+      box-shadow:var(--shadow);
+    }
+
+    .loading{
+      text-align:center;
+      color:var(--muted);
+      padding:24px 0 8px;
+      font-size:1rem;
+    }
+
+    .footnote{
+      margin-top:26px;
+      text-align:center;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+
+    @media (max-width: 820px){
+      .controls{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 640px){
+      .page{
+        width:min(var(--max), calc(100% - 18px));
+        padding-top:16px;
+      }
+
+      .topbar{
+        align-items:flex-start;
+      }
+
+      .brand{
+        width:100%;
+      }
+
+      .back-btn{
+        padding:9px 14px;
+        font-size:.95rem;
+      }
+
+      .hero-card{
+        padding:22px 18px;
+        border-radius:20px;
+      }
+
+      .anuncio-top{
+        flex-direction:column;
+        gap:8px;
+      }
+
+      .fecha{
+        padding-top:0;
+      }
+
+      .anuncio-texto,
+      .anuncio-footer{
+        padding-left:18px;
+        padding-right:18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="eyebrow">Cofradía A Mesa Puesta</div>
+        <h1 class="title">Tablón de anuncios</h1>
+        <p class="subtitle">Novedades, avisos y comunicaciones de la cofradía</p>
+      </div>
+
+      <a class="back-btn" href="../index.html">← Volver</a>
+    </header>
+
+    <section class="hero-card">
+      <h2>Información importante de la cofradía</h2>
+      <p>
+        En este espacio se recogen los anuncios relevantes, convocatorias, recordatorios
+        y cualquier otra comunicación de interés para los cofrades.
+      </p>
+    </section>
+
+    <section class="controls">
+      <div class="control">
+        <label for="buscador">Buscar anuncio</label>
+        <input
+          type="text"
+          id="buscador"
+          placeholder="Buscar por título, texto o autor"
+        />
+      </div>
+
+      <div class="control">
+        <label for="filtroTipo">Filtrar por tipo</label>
+        <select id="filtroTipo">
+          <option value="todos">Todos</option>
+        </select>
+      </div>
+    </section>
+
+    <div id="loading" class="loading">Cargando anuncios...</div>
+    <section id="anuncios" class="anuncios-wrap" aria-live="polite"></section>
+
+    <div class="footnote">
+      Los anuncios destacados aparecen en primer lugar.
+    </div>
+
+  </main>
+
+  <script>
+    const CONTENEDOR = document.getElementById("anuncios");
+    const LOADING = document.getElementById("loading");
+    const BUSCADOR = document.getElementById("buscador");
+    const FILTRO = document.getElementById("filtroTipo");
+
+    let anunciosOriginales = [];
+
+    function escapeHTML(texto) {
+      return String(texto ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function formatearFecha(fechaISO) {
+      if (!fechaISO) return "";
+      const partes = fechaISO.split("-");
+      if (partes.length !== 3) return fechaISO;
+      return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+
+    function fechaValida(fecha) {
+      return fecha && !isNaN(new Date(fecha).getTime());
+    }
+
+    function estaCaducado(fechaFin) {
+      if (!fechaValida(fechaFin)) return false;
+
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+
+      const fin = new Date(fechaFin);
+      fin.setHours(23, 59, 59, 999);
+
+      return fin < hoy;
+    }
+
+    function normalizarTexto(v) {
+      return String(v ?? "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function obtenerTipos(anuncios) {
+      const tipos = [...new Set(
+        anuncios
+          .map(a => String(a.tipo || "").trim().toLowerCase())
+          .filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b, "es"));
+
+      FILTRO.innerHTML = `<option value="todos">Todos</option>` +
+        tipos.map(tipo => `<option value="${escapeHTML(tipo)}">${escapeHTML(tipo.charAt(0).toUpperCase() + tipo.slice(1))}</option>`).join("");
+    }
+
+    function ordenarAnuncios(lista) {
+      return [...lista].sort((a, b) => {
+        const destA = !!a.destacado;
+        const destB = !!b.destacado;
+        if (destA !== destB) return destB - destA;
+
+        const ordenA = Number.isFinite(Number(a.orden)) ? Number(a.orden) : 999999;
+        const ordenB = Number.isFinite(Number(b.orden)) ? Number(b.orden) : 999999;
+        if (ordenA !== ordenB) return ordenA - ordenB;
+
+        const fechaA = fechaValida(a.fecha) ? new Date(a.fecha).getTime() : 0;
+        const fechaB = fechaValida(b.fecha) ? new Date(b.fecha).getTime() : 0;
+        return fechaB - fechaA;
+      });
+    }
+
+    function filtrarAnuncios() {
+      const texto = normalizarTexto(BUSCADOR.value);
+      const tipo = FILTRO.value;
+
+      const lista = anunciosOriginales.filter(anuncio => {
+        const visible = anuncio.visible !== false;
+        if (!visible) return false;
+        if (estaCaducado(anuncio.fechaFin)) return false;
+
+        if (tipo !== "todos" && String(anuncio.tipo || "").toLowerCase() !== tipo) {
+          return false;
+        }
+
+        if (!texto) return true;
+
+        const bloque = normalizarTexto(
+          `${anuncio.titulo || ""} ${anuncio.texto || ""} ${anuncio.autor || ""} ${anuncio.tipo || ""}`
+        );
+
+        return bloque.includes(texto);
+      });
+
+      renderizar(ordenarAnuncios(lista));
+    }
+
+    function renderizar(anuncios) {
+      LOADING.style.display = "none";
+
+      if (!anuncios.length) {
+        CONTENEDOR.innerHTML = `
+          <div class="empty">
+            No hay anuncios que coincidan con la búsqueda o el filtro seleccionado.
+          </div>
+        `;
+        return;
+      }
+
+      CONTENEDOR.innerHTML = anuncios.map(anuncio => {
+        const destacado = !!anuncio.destacado;
+        const tipo = escapeHTML(anuncio.tipo || "general");
+        const titulo = escapeHTML(anuncio.titulo || "Sin título");
+        const texto = escapeHTML(anuncio.texto || "");
+        const autor = escapeHTML(anuncio.autor || "");
+        const fecha = formatearFecha(anuncio.fecha || "");
+        const enlace = String(anuncio.enlace || "").trim();
+
+        return `
+          <article class="anuncio ${destacado ? "destacado" : ""}">
+            ${destacado ? `<div class="destacado-linea"></div>` : ``}
+
+            <div class="anuncio-top">
+              <div class="anuncio-head">
+                <div class="anuncio-meta">
+                  <span class="pill pill-tipo">${tipo}</span>
+                  ${destacado ? `<span class="pill pill-destacado">Destacado</span>` : ``}
+                </div>
+                <h2 class="anuncio-titulo">${titulo}</h2>
+              </div>
+
+              <div class="fecha">${fecha}</div>
+            </div>
+
+            <div class="anuncio-texto">${texto.replace(/\n/g, "<br>")}</div>
+
+            <div class="anuncio-footer">
+              <div class="autor">${autor ? "Publicado por " + autor : ""}</div>
+              ${enlace ? `<a class="link-btn" href="${escapeHTML(enlace)}" target="_blank" rel="noopener noreferrer">Ver más</a>` : ``}
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    async function cargarAnuncios() {
+      try {
+        const response = await fetch("./anuncios.json?v=" + Date.now(), { cache: "no-store" });
+        if (!response.ok) throw new Error("No se pudo cargar anuncios.json");
+
+        const data = await response.json();
+        anunciosOriginales = Array.isArray(data.anuncios) ? data.anuncios : [];
+
+        obtenerTipos(anunciosOriginales);
+        filtrarAnuncios();
+      } catch (error) {
+        LOADING.style.display = "none";
+        CONTENEDOR.innerHTML = `
+          <div class="empty">
+            No se pudieron cargar los anuncios en este momento.
+          </div>
+        `;
+        console.error(error);
+      }
+    }
+
+    BUSCADOR.addEventListener("input", filtrarAnuncios);
+    FILTRO.addEventListener("change", filtrarAnuncios);
+
+    cargarAnuncios();
+  </script>
+</body>
+</html>
