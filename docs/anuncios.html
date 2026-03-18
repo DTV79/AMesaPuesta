@@ -600,23 +600,22 @@
     }
 
     function esPublicable(anuncio) {
-  const visible = anuncio.visible !== false;
-  if (!visible) return false;
+      const visible = anuncio.visible !== false;
+      if (!visible) return false;
+      if (estaCaducado(anuncio.fechaFin)) return false;
 
-  if (estaCaducado(anuncio.fechaFin)) return false;
+      if (fechaValida(anuncio.fechaPublicacion)) {
+        const hoy = new Date();
+        hoy.setHours(23, 59, 59, 999);
 
-  if (fechaValida(anuncio.fechaPublicacion)) {
-    const hoy = new Date();
-    hoy.setHours(23, 59, 59, 999);
+        const publicacion = new Date(anuncio.fechaPublicacion);
+        publicacion.setHours(0, 0, 0, 0);
 
-    const publicacion = new Date(anuncio.fechaPublicacion);
-    publicacion.setHours(0, 0, 0, 0);
+        if (publicacion > hoy) return false;
+      }
 
-    if (publicacion > hoy) return false;
-  }
-
-  return true;
-}
+      return true;
+    }
 
     function iconoTipo(tipo) {
       const t = String(tipo || "").toLowerCase();
@@ -656,6 +655,10 @@
 
     function ordenarAnuncios(lista) {
       return [...lista].sort((a, b) => {
+        const urgenteA = String(a.tipo || "").toLowerCase().trim() === "urgente";
+        const urgenteB = String(b.tipo || "").toLowerCase().trim() === "urgente";
+        if (urgenteA !== urgenteB) return urgenteB - urgenteA;
+
         const destA = !!a.destacado;
         const destB = !!b.destacado;
         if (destA !== destB) return destB - destA;
@@ -671,14 +674,14 @@
     }
 
     function pintarDestacadoPrincipal(anuncios) {
-      const destacados = ordenarAnuncios(anuncios.filter(a => a.destacado === true));
-      if (!destacados.length) {
+      const candidatos = ordenarAnuncios(anuncios.filter(a => a.destacado === true));
+      if (!candidatos.length) {
         DESTACADO_PRINCIPAL.classList.remove("show");
         DESTACADO_PRINCIPAL.innerHTML = "";
         return;
       }
 
-      const a = destacados[0];
+      const a = candidatos[0];
       const enlace = String(a.enlace || "").trim();
       const autor = String(a.autor || "").trim();
       const fecha = formatearFecha(a.fecha || "");
