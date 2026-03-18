@@ -12,5 +12,19 @@
     "fechaFin": "",
     "orden": 0,
     "fechaPublicacion": ""
+  },
+  {
+    "id": "ANU-0001",
+    "fecha": "2026-03-18",
+    "tipo": "comida",
+    "titulo": "Comida (28/03/2026)",
+    "texto": "La salida será a las 12:00 del mediodia desde la Estatua del Sida",
+    "destacado": true,
+    "visible": true,
+    "autor": "",
+    "enlace": "",
+    "fechaFin": "2026-03-19",
+    "orden": 0,
+    "fechaPublicacion": ""
   }
 ]}
