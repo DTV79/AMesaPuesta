@@ -19,6 +19,15 @@
       --shadow-soft:0 6px 18px rgba(0,0,0,.06);
       --max-width:1120px;
       --content-width:980px;
+
+      --notice-bg-1:#fbf4e8;
+      --notice-bg-2:#f4e6cf;
+      --notice-border:#e5cfaa;
+      --notice-text:#5a4030;
+      --notice-title:#8b0000;
+      --notice-link:#7a2200;
+      --notice-icon-bg:rgba(139,0,0,.08);
+      --notice-dot:#b40000;
     }
 
     *{
@@ -138,6 +147,7 @@
     }
 
     .boton-menu{
+      position:relative;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -179,6 +189,23 @@
       justify-self:center;
     }
 
+    .boton-menu--anuncios-activo{
+      box-shadow:
+        0 12px 26px rgba(0,0,0,.10),
+        0 0 0 2px rgba(243,221,184,.9);
+    }
+
+    .badge-anuncios{
+      position:absolute;
+      top:10px;
+      right:12px;
+      width:11px;
+      height:11px;
+      border-radius:50%;
+      background:var(--notice-dot);
+      box-shadow:0 0 0 3px rgba(255,255,255,.95);
+    }
+
     .aviso-home{
       width:100%;
       max-width:var(--content-width);
@@ -188,16 +215,22 @@
       gap:16px;
       padding:14px 16px;
       border-radius:24px;
-      background:linear-gradient(180deg, var(--primary-soft) 0%, var(--primary) 45%, var(--primary-dark) 100%);
-      color:#fff;
-      box-shadow:var(--shadow);
+      background:linear-gradient(180deg, var(--notice-bg-1) 0%, var(--notice-bg-2) 100%);
+      color:var(--notice-text);
+      border:1px solid var(--notice-border);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .aviso-home[hidden]{
+      display:none !important;
     }
 
     .aviso-home-icono{
       width:54px;
       height:54px;
       border-radius:50%;
-      background:rgba(255,255,255,.14);
+      background:var(--notice-icon-bg);
+      color:var(--notice-title);
       display:flex;
       align-items:center;
       justify-content:center;
@@ -220,17 +253,18 @@
     .aviso-home-texto strong{
       font-size:18px;
       line-height:1.1;
+      color:var(--notice-title);
     }
 
     .aviso-home-texto span{
       font-size:14px;
       line-height:1.3;
-      color:rgba(255,255,255,.94);
+      color:var(--notice-text);
     }
 
     .aviso-home-link{
       flex:0 0 auto;
-      color:#fff;
+      color:var(--notice-link);
       font-size:17px;
       font-weight:700;
       text-decoration:underline;
@@ -287,7 +321,7 @@
         letter-spacing:1.3px;
       }
 
-     .arc{
+      .arc{
         transform: translateY(6px);
       }
 
@@ -322,6 +356,13 @@
         width:17px;
         height:17px;
         flex-basis:17px;
+      }
+
+      .badge-anuncios{
+        top:8px;
+        right:10px;
+        width:10px;
+        height:10px;
       }
 
       .aviso-home{
@@ -456,7 +497,8 @@
             Estatutos
           </a>
 
-          <a href="anuncios.html" class="boton-menu boton-menu--anuncios">
+          <a href="anuncios.html" class="boton-menu boton-menu--anuncios" id="botonAnuncios">
+            <span id="badgeAnuncios" class="badge-anuncios" hidden></span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M3 10v4c0 .55.45 1 1 1h3l4 3V6L7 9H4c-.55 0-1 .45-1 1zm13.5 2c0-1.77-1-3.29-2.5-4.03v8.05c1.5-.73 2.5-2.25 2.5-4.02zm-2.5-9.5v2.06c2.89.86 5 3.54 5 6.44s-2.11 5.58-5 6.44v2.06c4.01-.91 7-4.49 7-8.5s-2.99-7.59-7-8.5z"/>
             </svg>
@@ -474,8 +516,8 @@
       </div>
 
       <div class="aviso-home-texto">
-        <strong>Nuevos anuncios</strong>
-        <span>Hay avisos importantes en el tablón.</span>
+        <strong id="tituloAvisoAnuncios">Nuevo anuncio destacado</strong>
+        <span id="textoAvisoAnuncios">Hay un anuncio importante en el tablón.</span>
       </div>
 
       <a href="anuncios.html" class="aviso-home-link">Ver</a>
@@ -485,6 +527,10 @@
   <script>
     (async function () {
       const aviso = document.getElementById("avisoAnuncios");
+      const badge = document.getElementById("badgeAnuncios");
+      const botonAnuncios = document.getElementById("botonAnuncios");
+      const tituloAviso = document.getElementById("tituloAvisoAnuncios");
+      const textoAviso = document.getElementById("textoAvisoAnuncios");
 
       function fechaValida(fecha) {
         return fecha && !isNaN(new Date(fecha).getTime());
@@ -502,6 +548,28 @@
         return fin < hoy;
       }
 
+      function esPublicable(a) {
+        if (a.visible === false) return false;
+        if (estaCaducado(a.fechaFin)) return false;
+
+        if (fechaValida(a.fechaPublicacion)) {
+          const hoy = new Date();
+          hoy.setHours(23, 59, 59, 999);
+
+          const publicacion = new Date(a.fechaPublicacion);
+          publicacion.setHours(0, 0, 0, 0);
+
+          if (publicacion > hoy) return false;
+        }
+
+        return true;
+      }
+
+      function obtenerTimestamp(a) {
+        if (fechaValida(a.fecha)) return new Date(a.fecha).getTime();
+        return 0;
+      }
+
       try {
         const res = await fetch("./anuncios.json?v=" + Date.now(), { cache: "no-store" });
         if (!res.ok) return;
@@ -509,19 +577,21 @@
         const data = await res.json();
         const anuncios = Array.isArray(data.anuncios) ? data.anuncios : [];
 
-        const activos = anuncios.filter(a => a.visible !== false && !estaCaducado(a.fechaFin));
-        const destacados = activos.filter(a => a.destacado === true);
+        const destacados = anuncios
+          .filter(a => esPublicable(a) && a.destacado === true)
+          .sort((a, b) => obtenerTimestamp(b) - obtenerTimestamp(a));
 
         if (destacados.length > 0) {
+          const principal = destacados[0];
+
           aviso.hidden = false;
+          badge.hidden = false;
+          botonAnuncios.classList.add("boton-menu--anuncios-activo");
 
-          const texto = aviso.querySelector(".aviso-home-texto span");
-
-          if (destacados.length === 1) {
-            texto.textContent = "Hay un anuncio destacado.";
-          } else {
-            texto.textContent = "Hay anuncios destacados.";
-          }
+          tituloAviso.textContent = "Nuevo anuncio destacado";
+          textoAviso.textContent = principal.titulo
+            ? principal.titulo
+            : "Hay un anuncio importante en el tablón.";
         }
       } catch (e) {
         console.error(e);
