@@ -1,602 +1,831 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light" />
-  <title>AMesaPuesta</title>
+  <title>Tablón de anuncios</title>
 
   <style>
     :root{
-      --bg:#f7f4ef;
-      --text:#1f1a17;
-      --muted:#5b4334;
-      --primary:#a40000;
-      --primary-dark:#860000;
-      --primary-soft:#b80d0d;
-      --panel-border:rgba(232,221,210,.78);
-      --shadow:0 12px 26px rgba(0,0,0,.10);
-      --shadow-soft:0 6px 18px rgba(0,0,0,.06);
-      --max-width:1120px;
-      --content-width:980px;
-
-      --notice-bg-1:#fbf4e8;
-      --notice-bg-2:#f4e6cf;
-      --notice-border:#e5cfaa;
-      --notice-text:#5a4030;
-      --notice-title:#8b0000;
-      --notice-link:#7a2200;
-      --notice-icon-bg:rgba(139,0,0,.08);
-      --notice-dot:#b40000;
+      color-scheme: light;
+      --bg:#f8f5f0;
+      --card:#ffffff;
+      --ink:#1f1f1f;
+      --muted:#6b7280;
+      --accent:#8b0000;
+      --accent-2:#b38b59;
+      --border:#e7e2d9;
+      --shadow:0 10px 30px rgba(0,0,0,.08);
+      --shadow-soft:0 8px 22px rgba(0,0,0,.06);
+      --max:1100px;
     }
 
-    *{
-      box-sizing:border-box;
-    }
+    *{ box-sizing:border-box; }
 
-    html{
-      -webkit-text-size-adjust:100%;
-      scroll-behavior:smooth;
-    }
-
-    body{
+    html,body{
       margin:0;
-      font-family: Georgia, "Times New Roman", serif;
-      color:var(--text);
-      background:
-        radial-gradient(circle at top, #ffffff 0%, var(--bg) 46%, #f2ece3 100%);
-      min-height:100vh;
+      padding:0;
+      background:var(--bg);
+      color:var(--ink);
+      font-family:Georgia, "Times New Roman", serif;
     }
 
-    img{
-      max-width:100%;
-      display:block;
-    }
+    body{ min-height:100vh; }
 
     a{
       color:inherit;
-    }
-
-    .page-shell{
-      width:min(calc(100% - 28px), var(--max-width));
-      margin:0 auto;
-      padding:
-        max(8px, env(safe-area-inset-top))
-        0
-        max(18px, env(safe-area-inset-bottom))
-        0;
-    }
-
-    .hero{
-      width:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding:10px 0 6px;
-    }
-
-    .brand-panel{
-      width:100%;
-      max-width:var(--content-width);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      background:rgba(255,255,255,.50);
-      border:1px solid var(--panel-border);
-      border-radius:34px;
-      box-shadow:var(--shadow-soft);
-      padding:14px 16px 12px;
-      backdrop-filter:blur(2px);
-    }
-
-    .logo-wrap{
-      position:relative;
-      width:min(100%, 470px);
-      aspect-ratio:1 / 1;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      margin:0 auto;
-    }
-
-    .arc{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      overflow:visible;
-      pointer-events:none;
-    }
-
-    .arc-text{
-      fill:#1e1a17;
-      font-size:24px;
-      font-weight:700;
-      letter-spacing:2.2px;
-      text-transform:uppercase;
-    }
-
-    .logo{
-      width:min(62%, 300px);
-      height:auto;
-      object-fit:contain;
-      margin-top:12px;
-      background:transparent;
-      filter:drop-shadow(0 6px 12px rgba(0,0,0,.14));
-    }
-
-    .slogan{
-      margin-top:-18px;
-      margin-bottom:4px;
-      text-align:center;
-      color:var(--muted);
-      font-size:clamp(18px, 2vw, 28px);
-      line-height:1.15;
-      font-weight:700;
-      max-width:100%;
-      white-space:nowrap;
-    }
-
-    .menu-principal{
-      width:100%;
-      max-width:860px;
-      display:grid;
-      grid-template-columns:repeat(3, minmax(0, 1fr));
-      gap:16px;
-      margin:10px auto 0;
-    }
-
-    .boton-menu{
-      position:relative;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      min-height:64px;
-      padding:14px 16px;
-      border-radius:18px;
       text-decoration:none;
-      color:#fff;
-      background:linear-gradient(180deg, var(--primary-soft) 0%, var(--primary) 45%, var(--primary-dark) 100%);
-      box-shadow:var(--shadow);
-      font-size:20px;
-      font-weight:700;
-      line-height:1.2;
-      text-align:center;
-      transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
-      -webkit-tap-highlight-color:transparent;
     }
 
-    .boton-menu svg{
-      width:20px;
-      height:20px;
-      flex:0 0 20px;
+    .page{
+      width:min(var(--max), calc(100% - 28px));
+      margin:0 auto;
+      padding:22px 0 40px;
     }
 
-    .boton-menu:hover{
-      transform:translateY(-2px);
-      box-shadow:0 14px 24px rgba(0,0,0,.14);
-      filter:brightness(1.02);
-    }
-
-    .boton-menu:active{
-      transform:scale(.985);
-    }
-
-    .boton-menu--anuncios{
-      grid-column:1 / -1;
-      width:min(100%, 380px);
-      justify-self:center;
-    }
-
-    .boton-menu--anuncios-activo{
-      box-shadow:
-        0 12px 26px rgba(0,0,0,.10),
-        0 0 0 2px rgba(243,221,184,.9);
-    }
-
-    .badge-anuncios{
-      position:absolute;
-      top:10px;
-      right:12px;
-      width:11px;
-      height:11px;
-      border-radius:50%;
-      background:var(--notice-dot);
-      box-shadow:0 0 0 3px rgba(255,255,255,.95);
-    }
-
-    .aviso-home{
-      width:100%;
-      max-width:var(--content-width);
-      margin:12px auto 0;
+    .topbar{
       display:flex;
-      align-items:center;
-      gap:16px;
-      padding:14px 16px;
-      border-radius:24px;
-      background:linear-gradient(180deg, var(--notice-bg-1) 0%, var(--notice-bg-2) 100%);
-      color:var(--notice-text);
-      border:1px solid var(--notice-border);
-      box-shadow:var(--shadow-soft);
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+      margin-bottom:22px;
+      flex-wrap:wrap;
     }
 
-    .aviso-home[hidden]{
-      display:none !important;
-    }
-
-    .aviso-home-icono{
-      width:54px;
-      height:54px;
-      border-radius:50%;
-      background:var(--notice-icon-bg);
-      color:var(--notice-title);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex:0 0 54px;
-    }
-
-    .aviso-home-icono svg{
-      width:24px;
-      height:24px;
-    }
-
-    .aviso-home-texto{
-      min-width:0;
+    .brand{
       display:flex;
       flex-direction:column;
-      gap:3px;
+      gap:4px;
+      min-width:0;
       flex:1;
     }
 
-    .aviso-home-texto strong{
-      font-size:18px;
-      line-height:1.1;
-      color:var(--notice-title);
-    }
-
-    .aviso-home-texto span{
-      font-size:14px;
-      line-height:1.3;
-      color:var(--notice-text);
-    }
-
-    .aviso-home-link{
-      flex:0 0 auto;
-      color:var(--notice-link);
-      font-size:17px;
+    .eyebrow{
+      font-size:.78rem;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--accent);
       font-weight:700;
-      text-decoration:underline;
-      white-space:nowrap;
-      padding-left:6px;
     }
 
-    @media (max-width: 980px){
-      .brand-panel{
-        padding:16px 14px 12px;
-      }
+    .title{
+      margin:0;
+      font-size:clamp(2rem, 3vw, 2.8rem);
+      line-height:1.05;
+      color:var(--accent);
+      font-weight:700;
+    }
 
-      .menu-principal{
-        grid-template-columns:repeat(2, minmax(0, 1fr));
-        max-width:640px;
-      }
+    .subtitle{
+      margin:0;
+      color:var(--muted);
+      font-size:1rem;
+      line-height:1.4;
+    }
 
-      .slogan{
-        white-space:normal;
-        font-size:clamp(20px, 3vw, 30px);
-        margin-top:-14px;
-      }
+    .back-wrap{
+      display:flex;
+      justify-content:flex-end;
+      align-items:flex-start;
+      min-width:120px;
+    }
 
-      .boton-menu--anuncios{
-        grid-column:1 / -1;
-        width:100%;
-        max-width:none;
+    .back-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:9px 16px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:#fff;
+      color:var(--accent);
+      font-weight:700;
+      font-size:.96rem;
+      line-height:1;
+      white-space:nowrap;
+      box-shadow:0 6px 18px rgba(0,0,0,.06);
+      transition:all .2s ease;
+    }
+
+    .back-btn:hover{
+      transform:translateY(-1px);
+      border-color:#d4c4ac;
+      background:#fffdf9;
+    }
+
+    .hero-card{
+      background:linear-gradient(135deg, rgba(139,0,0,.96), rgba(90,0,0,.92));
+      color:#fff;
+      border-radius:24px;
+      padding:28px 26px;
+      box-shadow:var(--shadow);
+      margin-bottom:22px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero-card::after{
+      content:"";
+      position:absolute;
+      inset:auto -60px -60px auto;
+      width:180px;
+      height:180px;
+      border-radius:50%;
+      background:rgba(255,255,255,.08);
+    }
+
+    .hero-card h2{
+      margin:0 0 10px;
+      font-size:clamp(1.5rem, 2.5vw, 2rem);
+      line-height:1.15;
+    }
+
+    .hero-card p{
+      margin:0;
+      max-width:780px;
+      font-size:1rem;
+      line-height:1.6;
+      color:rgba(255,255,255,.92);
+    }
+
+    .destacado-principal{
+      display:none;
+      background:linear-gradient(135deg, #fff8ec, #fffdf8);
+      border:1px solid #e8d3af;
+      border-radius:22px;
+      box-shadow:0 14px 34px rgba(103,61,15,.10);
+      overflow:hidden;
+      margin-bottom:22px;
+      animation:aparecer .35s ease;
+    }
+
+    .destacado-principal.show{
+      display:block;
+    }
+
+    .destacado-barra{
+      height:6px;
+      background:linear-gradient(90deg, var(--accent-2), #d6b07b);
+    }
+
+    .destacado-contenido{
+      padding:22px 22px 20px;
+    }
+
+    .destacado-etiqueta{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:#fff1d8;
+      color:#8a5a00;
+      border:1px solid #ead2a0;
+      font-size:.85rem;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+
+    .destacado-titulo{
+      margin:0 0 10px;
+      font-size:clamp(1.45rem, 2.5vw, 2rem);
+      line-height:1.15;
+      color:var(--accent);
+    }
+
+    .destacado-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 14px;
+      color:var(--muted);
+      font-size:.95rem;
+      margin-bottom:12px;
+    }
+
+    .destacado-texto{
+      margin:0;
+      line-height:1.75;
+      color:#2e2e2e;
+      font-size:1rem;
+    }
+
+    .destacado-acciones{
+      margin-top:16px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .btn-sec{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid #dec8a9;
+      color:#7b4b12;
+      font-weight:700;
+      transition:.2s ease;
+      cursor:pointer;
+    }
+
+    .btn-sec:hover{
+      transform:translateY(-1px);
+      background:#fffaf2;
+    }
+
+    .controls{
+      display:grid;
+      grid-template-columns:minmax(220px, 1.2fr) minmax(180px, .7fr) minmax(180px, .6fr);
+      gap:14px;
+      margin-bottom:22px;
+    }
+
+    .control{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:12px 14px;
+      box-shadow:var(--shadow-soft);
+    }
+
+    .control label{
+      display:block;
+      font-size:.78rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:7px;
+      font-weight:700;
+    }
+
+    .control input,
+    .control select{
+      width:100%;
+      border:0;
+      outline:none;
+      background:transparent;
+      color:var(--ink);
+      font-size:1rem;
+      font-family:inherit;
+    }
+
+    .anuncios-wrap{
+      display:grid;
+      gap:18px;
+    }
+
+    .anuncio{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow:var(--shadow-soft);
+      overflow:hidden;
+      transition:.22s ease;
+      animation:aparecer .35s ease;
+    }
+
+    .anuncio:hover{
+      transform:translateY(-2px);
+    }
+
+    .anuncio.destacado{
+      border-color:#d8c09b;
+      box-shadow:0 14px 34px rgba(103,61,15,.12);
+    }
+
+    .destacado-linea{
+      height:5px;
+      background:linear-gradient(90deg, var(--accent-2), #d6b07b);
+    }
+
+    .anuncio-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      padding:18px 20px 0;
+    }
+
+    .anuncio-head{
+      min-width:0;
+      flex:1;
+    }
+
+    .anuncio-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:.82rem;
+      font-weight:700;
+      line-height:1;
+    }
+
+    .pill-tipo{ text-transform:capitalize; }
+    .tipo-general{ background:#f2f2f2; color:#505050; border:1px solid #e1e1e1; }
+    .tipo-comida{ background:#fbecef; color:#8b2f40; border:1px solid #f1d3da; }
+    .tipo-reunion{ background:#edf6f1; color:#2f6b52; border:1px solid #d4eadf; }
+    .tipo-tesoreria{ background:#fff7e8; color:#8a6215; border:1px solid #edd9a8; }
+    .tipo-urgente{ background:#fff0f0; color:#9d1f1f; border:1px solid #f0c7c7; }
+    .tipo-recordatorio{ background:#f4f0fa; color:#654a89; border:1px solid #e2d7f3; }
+
+    .pill-destacado{
+      background:#fff4df;
+      color:#8a5a00;
+      border:1px solid #ead2a0;
+    }
+
+    .fecha{
+      color:var(--muted);
+      font-size:.96rem;
+      white-space:nowrap;
+      padding-top:2px;
+    }
+
+    .anuncio-titulo{
+      margin:0 0 10px;
+      font-size:clamp(1.2rem, 2vw, 1.5rem);
+      line-height:1.2;
+      color:var(--accent);
+    }
+
+    .anuncio-texto{
+      padding:0 20px 10px;
+      color:#2f2f2f;
+      line-height:1.75;
+      font-size:1rem;
+      white-space:pre-line;
+    }
+
+    .anuncio-texto.limitado{
+      display:-webkit-box;
+      -webkit-line-clamp:4;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      white-space:normal;
+    }
+
+    .anuncio-footer{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:0 20px 18px;
+    }
+
+    .autor{
+      color:var(--muted);
+      font-size:.95rem;
+      font-style:italic;
+    }
+
+    .acciones{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .mini-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:9px 13px;
+      border-radius:999px;
+      border:1px solid #dcc8ac;
+      background:#fffaf2;
+      color:#7b4b12;
+      font-weight:700;
+      transition:.2s ease;
+      cursor:pointer;
+      font-family:inherit;
+      font-size:.93rem;
+    }
+
+    .mini-btn:hover{
+      transform:translateY(-1px);
+      background:#fff4e5;
+    }
+
+    .empty{
+      background:var(--card);
+      border:1px dashed #d9d0c3;
+      border-radius:18px;
+      padding:28px 20px;
+      text-align:center;
+      color:var(--muted);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .loading{
+      text-align:center;
+      color:var(--muted);
+      padding:24px 0 8px;
+      font-size:1rem;
+    }
+
+    .footnote{
+      margin-top:26px;
+      text-align:center;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+
+    @keyframes aparecer{
+      from{ opacity:0; transform:translateY(8px); }
+      to{ opacity:1; transform:translateY(0); }
+    }
+
+    @media (max-width: 920px){
+      .controls{
+        grid-template-columns:1fr;
       }
     }
 
     @media (max-width: 640px){
-      .page-shell{
-        width:min(calc(100% - 18px), 100%);
+      .page{
+        width:min(var(--max), calc(100% - 18px));
+        padding-top:16px;
       }
 
-      .hero{
-        padding-top:10px;
-        padding-bottom:6px;
+      .brand{ width:100%; }
+
+      .back-wrap{
+        width:100%;
+        justify-content:flex-start;
       }
 
-      .brand-panel{
-        border-radius:24px;
-        padding:14px 12px 12px;
-      }
-
-      .logo-wrap{
-        width:min(100%, 340px);
-        margin-top:-10px;
-        margin-bottom:0;
-      }
-
-      .arc-text{
-        font-size:22px;
-        letter-spacing:1.3px;
-      }
-
-      .arc{
-        transform: translateY(6px);
-      }
-
-      .logo{
-        width:min(64%, 215px);
-        margin-top:4px;
-      }
-
-      .slogan{
-        font-size:clamp(15px, 4.8vw, 21px);
-        line-height:1.18;
-        margin-top:-50px;
-        margin-bottom:12px;
-        padding:0 4px;
-        white-space:normal;
-      }
-
-      .menu-principal{
-        gap:12px;
-        margin:4px auto 0;
-      }
-
-      .boton-menu{
-        min-height:54px;
-        padding:12px 10px;
-        border-radius:15px;
-        font-size:16px;
-        gap:7px;
-      }
-
-      .boton-menu svg{
-        width:17px;
-        height:17px;
-        flex-basis:17px;
-      }
-
-      .badge-anuncios{
-        top:8px;
-        right:10px;
-        width:10px;
-        height:10px;
-      }
-
-      .aviso-home{
-        margin-top:12px;
-        gap:10px;
-        padding:12px 12px;
+      .hero-card{
+        padding:22px 18px;
         border-radius:20px;
       }
 
-      .aviso-home-icono{
-        width:44px;
-        height:44px;
-        flex-basis:44px;
+      .anuncio-top{
+        flex-direction:column;
+        gap:8px;
       }
 
-      .aviso-home-icono svg{
-        width:20px;
-        height:20px;
+      .fecha{ padding-top:0; }
+
+      .anuncio-texto,
+      .anuncio-footer{
+        padding-left:18px;
+        padding-right:18px;
       }
 
-      .aviso-home-texto strong{
-        font-size:16px;
-      }
-
-      .aviso-home-texto span{
-        font-size:13px;
-        line-height:1.25;
-      }
-
-      .aviso-home-link{
-        font-size:15px;
-        padding-left:2px;
-      }
-    }
-
-    @media (max-width: 390px){
-      .logo-wrap{
-        width:min(100%, 300px);
-      }
-
-      .arc-text{
-        font-size:15px;
-        letter-spacing:1px;
-      }
-
-      .logo{
-        width:min(58%, 175px);
-        margin-top:8px;
-      }
-
-      .slogan{
-        margin-top:-18px;
-      }
-
-      .menu-principal{
-        grid-template-columns:1fr;
-        max-width:320px;
-      }
-
-      .boton-menu{
-        min-height:52px;
-        font-size:16px;
-      }
-
-      .boton-menu--anuncios{
-        grid-column:auto;
-        width:100%;
-      }
-
-      .aviso-home{
-        align-items:flex-start;
-      }
-
-      .aviso-home-link{
-        align-self:center;
+      .destacado-contenido{
+        padding:18px 18px 17px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="page-shell">
-    <main class="hero">
-      <section class="brand-panel">
-        <div class="logo-wrap">
-          <svg class="arc" viewBox="0 0 400 400" aria-hidden="true">
-            <defs>
-              <path id="topArc" d="M 70 200 A 130 130 0 0 1 330 200" />
-            </defs>
+  <main class="page">
 
-            <text class="arc-text">
-              <textPath href="#topArc" startOffset="50%" text-anchor="middle">
-                COFRADÍA A MESA PUESTA
-              </textPath>
-            </text>
-          </svg>
-
-          <img
-            class="logo"
-            src="./Fotos/logo-cangrejo.png"
-            alt="Logo AMesaPuesta"
-          />
-        </div>
-
-        <p class="slogan">A mesa puesta… y el vaso lleno desde 2022</p>
-
-        <div class="menu-principal">
-          <a href="cofrades.html" class="boton-menu">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M16 11c1.66 0 3-1.79 3-4s-1.34-4-3-4-3 1.79-3 4 1.34 4 3 4zm-8 0c1.66 0 3-1.79 3-4S9.66 3 8 3 5 4.79 5 7s1.34 4 3 4zm0 2c-2.67 0-8 1.34-8 4v3h10v-3c0-1.02.39-1.97 1.02-2.78C10.21 13.44 8.94 13 8 13zm8 0c-.94 0-2.21.44-3.02 1.22C13.61 15.03 14 15.98 14 17v3h10v-3c0-2.66-5.33-4-8-4z"/>
-            </svg>
-            Cofrades
-          </a>
-
-          <a href="restaurantes.html" class="boton-menu">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.21 1.79 4 4 4v9h2v-9c2.21 0 4-1.79 4-4V2h-2v7zm4-7v20h2v-8h3V2h-5z"/>
-            </svg>
-            Restaurantes
-          </a>
-
-          <a href="himno.html" class="boton-menu">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/>
-            </svg>
-            Himno
-          </a>
-
-          <a href="estatutos.html" class="boton-menu">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M1 21h12v2H1zM5.24 8.17l4.59 4.59 2.12-2.12-4.59-4.59L5.24 8.17zm6.01-6.01l4.59 4.59 2.12-2.12-4.59-4.59-2.12 2.12zM3.12 10.29l10.59 10.59 2.12-2.12L5.24 8.17 3.12 10.29z"/>
-            </svg>
-            Estatutos
-          </a>
-
-          <a href="anuncios.html" class="boton-menu boton-menu--anuncios" id="botonAnuncios">
-            <span id="badgeAnuncios" class="badge-anuncios" hidden></span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 10v4c0 .55.45 1 1 1h3l4 3V6L7 9H4c-.55 0-1 .45-1 1zm13.5 2c0-1.77-1-3.29-2.5-4.03v8.05c1.5-.73 2.5-2.25 2.5-4.02zm-2.5-9.5v2.06c2.89.86 5 3.54 5 6.44s-2.11 5.58-5 6.44v2.06c4.01-.91 7-4.49 7-8.5s-2.99-7.59-7-8.5z"/>
-            </svg>
-            Tablón de anuncios
-          </a>
-        </div>
-      </section>
-    </main>
-
-    <div id="avisoAnuncios" class="aviso-home" hidden>
-      <div class="aviso-home-icono">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M3 10v4c0 .55.45 1 1 1h3l4 3V6L7 9H4c-.55 0-1 .45-1 1zm13.5 2c0-1.77-1-3.29-2.5-4.03v8.05c1.5-.73 2.5-2.25 2.5-4.02zm-2.5-9.5v2.06c2.89.86 5 3.54 5 6.44s-2.11 5.58-5 6.44v2.06c4.01-.91 7-4.49 7-8.5s-2.99-7.59-7-8.5z"/>
-        </svg>
+    <header class="topbar">
+      <div class="brand">
+        <div class="eyebrow">Cofradía A Mesa Puesta</div>
+        <h1 class="title">Tablón de anuncios</h1>
+        <p class="subtitle">Novedades, avisos y comunicaciones de la cofradía</p>
       </div>
 
-      <div class="aviso-home-texto">
-        <strong id="tituloAvisoAnuncios">Nuevo anuncio destacado</strong>
-        <span id="textoAvisoAnuncios">Hay un anuncio importante en el tablón.</span>
+      <div class="back-wrap">
+        <a class="back-btn" href="index.html">← Volver</a>
+      </div>
+    </header>
+
+    <section class="hero-card">
+      <h2>Información importante de la cofradía</h2>
+      <p>
+        En este espacio se recogen los anuncios relevantes, convocatorias, recordatorios
+        y cualquier otra comunicación de interés para los cofrades.
+      </p>
+    </section>
+
+    <section id="destacadoPrincipal" class="destacado-principal" aria-live="polite"></section>
+
+    <section class="controls">
+      <div class="control">
+        <label for="buscador">Buscar anuncio</label>
+        <input
+          type="text"
+          id="buscador"
+          placeholder="Buscar por título, texto, autor o tipo"
+        />
       </div>
 
-      <a href="anuncios.html" class="aviso-home-link">Ver</a>
+      <div class="control">
+        <label for="filtroTipo">Filtrar por tipo</label>
+        <select id="filtroTipo">
+          <option value="todos">Todos</option>
+        </select>
+      </div>
+
+      <div class="control">
+        <label for="filtroDestacados">Mostrar</label>
+        <select id="filtroDestacados">
+          <option value="todos">Todos los anuncios</option>
+          <option value="destacados">Solo destacados</option>
+        </select>
+      </div>
+    </section>
+
+    <div id="loading" class="loading">Cargando anuncios...</div>
+    <section id="anuncios" class="anuncios-wrap" aria-live="polite"></section>
+
+    <div class="footnote">
+      Los anuncios destacados aparecen primero y el principal se muestra arriba del listado.
     </div>
-  </div>
+
+  </main>
 
   <script>
-    (async function () {
-      const aviso = document.getElementById("avisoAnuncios");
-      const badge = document.getElementById("badgeAnuncios");
-      const botonAnuncios = document.getElementById("botonAnuncios");
-      const tituloAviso = document.getElementById("tituloAvisoAnuncios");
-      const textoAviso = document.getElementById("textoAvisoAnuncios");
+    const CONTENEDOR = document.getElementById("anuncios");
+    const LOADING = document.getElementById("loading");
+    const BUSCADOR = document.getElementById("buscador");
+    const FILTRO = document.getElementById("filtroTipo");
+    const FILTRO_DEST = document.getElementById("filtroDestacados");
+    const DESTACADO_PRINCIPAL = document.getElementById("destacadoPrincipal");
 
-      function fechaValida(fecha) {
-        return fecha && !isNaN(new Date(fecha).getTime());
-      }
+    let anunciosOriginales = [];
 
-      function estaCaducado(fechaFin) {
-        if (!fechaValida(fechaFin)) return false;
+    function escapeHTML(texto) {
+      return String(texto ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
 
+    function formatearFecha(fechaISO) {
+      if (!fechaISO) return "";
+      const partes = fechaISO.split("-");
+      if (partes.length !== 3) return fechaISO;
+      return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+
+    function fechaValida(fecha) {
+      return fecha && !isNaN(new Date(fecha).getTime());
+    }
+
+    function estaCaducado(fechaFin) {
+      if (!fechaValida(fechaFin)) return false;
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+
+      const fin = new Date(fechaFin);
+      fin.setHours(23, 59, 59, 999);
+
+      return fin < hoy;
+    }
+
+    function normalizarTexto(v) {
+      return String(v ?? "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function esPublicable(anuncio) {
+      const visible = anuncio.visible !== false;
+      if (!visible) return false;
+      if (estaCaducado(anuncio.fechaFin)) return false;
+
+      if (fechaValida(anuncio.fechaPublicacion)) {
         const hoy = new Date();
-        hoy.setHours(0, 0, 0, 0);
+        hoy.setHours(23, 59, 59, 999);
 
-        const fin = new Date(fechaFin);
-        fin.setHours(23, 59, 59, 999);
+        const publicacion = new Date(anuncio.fechaPublicacion);
+        publicacion.setHours(0, 0, 0, 0);
 
-        return fin < hoy;
+        if (publicacion > hoy) return false;
       }
 
-      function esPublicable(a) {
-        if (a.visible === false) return false;
-        if (estaCaducado(a.fechaFin)) return false;
+      return true;
+    }
 
-        if (fechaValida(a.fechaPublicacion)) {
-          const hoy = new Date();
-          hoy.setHours(23, 59, 59, 999);
+    function iconoTipo(tipo) {
+      const t = String(tipo || "").toLowerCase();
+      switch (t) {
+        case "comida":
+          return "🍽️";
+        case "reunion":
+          return "👥";
+        case "tesoreria":
+          return "💰";
+        case "urgente":
+          return "⚠️";
+        case "recordatorio":
+          return "📝";
+        default:
+          return "📌";
+      }
+    }
 
-          const publicacion = new Date(a.fechaPublicacion);
-          publicacion.setHours(0, 0, 0, 0);
+    function claseTipo(tipo) {
+      const t = String(tipo || "").toLowerCase().trim();
+      const validos = ["general","comida","reunion","tesoreria","urgente","recordatorio"];
+      return validos.includes(t) ? `tipo-${t}` : "tipo-general";
+    }
 
-          if (publicacion > hoy) return false;
+    function obtenerTipos(anuncios) {
+      const tipos = [...new Set(
+        anuncios
+          .filter(esPublicable)
+          .map(a => String(a.tipo || "").trim().toLowerCase())
+          .filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b, "es"));
+
+      FILTRO.innerHTML = `<option value="todos">Todos</option>` +
+        tipos.map(tipo => `<option value="${escapeHTML(tipo)}">${escapeHTML(tipo.charAt(0).toUpperCase() + tipo.slice(1))}</option>`).join("");
+    }
+
+    function ordenarAnuncios(lista) {
+      return [...lista].sort((a, b) => {
+        const urgenteA = String(a.tipo || "").toLowerCase().trim() === "urgente";
+        const urgenteB = String(b.tipo || "").toLowerCase().trim() === "urgente";
+        if (urgenteA !== urgenteB) return urgenteB - urgenteA;
+
+        const destA = !!a.destacado;
+        const destB = !!b.destacado;
+        if (destA !== destB) return destB - destA;
+
+        const ordenA = Number.isFinite(Number(a.orden)) ? Number(a.orden) : 999999;
+        const ordenB = Number.isFinite(Number(b.orden)) ? Number(b.orden) : 999999;
+        if (ordenA !== ordenB) return ordenA - ordenB;
+
+        const fechaA = fechaValida(a.fecha) ? new Date(a.fecha).getTime() : 0;
+        const fechaB = fechaValida(b.fecha) ? new Date(b.fecha).getTime() : 0;
+        return fechaB - fechaA;
+      });
+    }
+
+    function pintarDestacadoPrincipal(anuncios) {
+      const candidatos = ordenarAnuncios(anuncios.filter(a => a.destacado === true));
+      if (!candidatos.length) {
+        DESTACADO_PRINCIPAL.classList.remove("show");
+        DESTACADO_PRINCIPAL.innerHTML = "";
+        return;
+      }
+
+      const a = candidatos[0];
+      const enlace = String(a.enlace || "").trim();
+      const autor = String(a.autor || "").trim();
+      const fecha = formatearFecha(a.fecha || "");
+      const tipo = String(a.tipo || "general").trim().toLowerCase();
+
+      DESTACADO_PRINCIPAL.innerHTML = `
+        <div class="destacado-barra"></div>
+        <div class="destacado-contenido">
+          <div class="destacado-etiqueta">${iconoTipo(tipo)} Anuncio destacado</div>
+          <h2 class="destacado-titulo">${escapeHTML(a.titulo || "Sin título")}</h2>
+          <div class="destacado-meta">
+            <span>${iconoTipo(tipo)} ${escapeHTML(tipo || "general")}</span>
+            ${fecha ? `<span>📅 ${escapeHTML(fecha)}</span>` : ``}
+            ${autor ? `<span>✍️ ${escapeHTML(autor)}</span>` : ``}
+          </div>
+          <p class="destacado-texto">${escapeHTML(a.texto || "").replace(/\n/g, "<br>")}</p>
+          <div class="destacado-acciones">
+            ${enlace ? `<a class="btn-sec" href="${escapeHTML(enlace)}" target="_blank" rel="noopener noreferrer">Ver más</a>` : ``}
+          </div>
+        </div>
+      `;
+      DESTACADO_PRINCIPAL.classList.add("show");
+    }
+
+    function filtrarAnuncios() {
+      const texto = normalizarTexto(BUSCADOR.value);
+      const tipo = FILTRO.value;
+      const soloDestacados = FILTRO_DEST.value === "destacados";
+
+      const publicables = anunciosOriginales.filter(esPublicable);
+      pintarDestacadoPrincipal(publicables);
+
+      let lista = publicables.filter(anuncio => {
+        if (soloDestacados && anuncio.destacado !== true) return false;
+
+        if (tipo !== "todos" && String(anuncio.tipo || "").toLowerCase() !== tipo) {
+          return false;
         }
 
-        return true;
+        if (!texto) return true;
+
+        const bloque = normalizarTexto(
+          `${anuncio.titulo || ""} ${anuncio.texto || ""} ${anuncio.autor || ""} ${anuncio.tipo || ""}`
+        );
+
+        return bloque.includes(texto);
+      });
+
+      lista = ordenarAnuncios(lista);
+
+      const destacadoPrincipal = lista.find(a => a.destacado === true);
+      if (destacadoPrincipal) {
+        lista = lista.filter(a => a !== destacadoPrincipal);
       }
 
-      function obtenerTimestamp(a) {
-        if (fechaValida(a.fecha)) return new Date(a.fecha).getTime();
-        return 0;
+      renderizar(lista);
+    }
+
+    function renderizar(anuncios) {
+      LOADING.style.display = "none";
+
+      if (!anuncios.length) {
+        CONTENEDOR.innerHTML = `
+          <div class="empty">
+            No hay anuncios que coincidan con la búsqueda o el filtro seleccionado.
+          </div>
+        `;
+        return;
       }
 
+      CONTENEDOR.innerHTML = anuncios.map((anuncio, i) => {
+        const destacado = !!anuncio.destacado;
+        const tipo = String(anuncio.tipo || "general").trim().toLowerCase();
+        const titulo = escapeHTML(anuncio.titulo || "Sin título");
+        const texto = escapeHTML(anuncio.texto || "");
+        const autor = escapeHTML(anuncio.autor || "");
+        const fecha = formatearFecha(anuncio.fecha || "");
+        const enlace = String(anuncio.enlace || "").trim();
+        const textoId = `texto-anuncio-${i}`;
+
+        return `
+          <article class="anuncio ${destacado ? "destacado" : ""}">
+            ${destacado ? `<div class="destacado-linea"></div>` : ``}
+
+            <div class="anuncio-top">
+              <div class="anuncio-head">
+                <div class="anuncio-meta">
+                  <span class="pill pill-tipo ${claseTipo(tipo)}">${iconoTipo(tipo)} ${escapeHTML(tipo)}</span>
+                  ${destacado ? `<span class="pill pill-destacado">⭐ Destacado</span>` : ``}
+                </div>
+                <h2 class="anuncio-titulo">${titulo}</h2>
+              </div>
+
+              <div class="fecha">${fecha}</div>
+            </div>
+
+            <div id="${textoId}" class="anuncio-texto limitado">${texto.replace(/\n/g, "<br>")}</div>
+
+            <div class="anuncio-footer">
+              <div class="autor">${autor ? "Publicado por " + autor : ""}</div>
+              <div class="acciones">
+                <button type="button" class="mini-btn" onclick="toggleTexto('${textoId}', this)">Ver más</button>
+                ${enlace ? `<a class="mini-btn" href="${escapeHTML(enlace)}" target="_blank" rel="noopener noreferrer">Abrir enlace</a>` : ``}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function toggleTexto(id, boton) {
+      const texto = document.getElementById(id);
+      if (!texto) return;
+
+      texto.classList.toggle("limitado");
+      boton.textContent = texto.classList.contains("limitado") ? "Ver más" : "Ver menos";
+    }
+
+    async function cargarAnuncios() {
       try {
-        const res = await fetch("./anuncios.json?v=" + Date.now(), { cache: "no-store" });
-        if (!res.ok) return;
+        const response = await fetch("./anuncios.json?v=" + Date.now(), { cache: "no-store" });
+        if (!response.ok) throw new Error("No se pudo cargar anuncios.json");
 
-        const data = await res.json();
-        const anuncios = Array.isArray(data.anuncios) ? data.anuncios : [];
+        const data = await response.json();
+        anunciosOriginales = Array.isArray(data.anuncios) ? data.anuncios : [];
 
-        const destacados = anuncios
-          .filter(a => esPublicable(a) && a.destacado === true)
-          .sort((a, b) => obtenerTimestamp(b) - obtenerTimestamp(a));
-
-        if (destacados.length > 0) {
-          const principal = destacados[0];
-
-          aviso.hidden = false;
-          badge.hidden = false;
-          botonAnuncios.classList.add("boton-menu--anuncios-activo");
-
-          tituloAviso.textContent = "Nuevo anuncio destacado";
-          textoAviso.textContent = principal.titulo
-            ? principal.titulo
-            : "Hay un anuncio importante en el tablón.";
-        }
-      } catch (e) {
-        console.error(e);
+        obtenerTipos(anunciosOriginales);
+        filtrarAnuncios();
+      } catch (error) {
+        LOADING.style.display = "none";
+        CONTENEDOR.innerHTML = `
+          <div class="empty">
+            No se pudieron cargar los anuncios en este momento.
+          </div>
+        `;
+        console.error(error);
       }
-    })();
+    }
+
+    BUSCADOR.addEventListener("input", filtrarAnuncios);
+    FILTRO.addEventListener("change", filtrarAnuncios);
+    FILTRO_DEST.addEventListener("change", filtrarAnuncios);
+
+    cargarAnuncios();
   </script>
 </body>
 </html>
