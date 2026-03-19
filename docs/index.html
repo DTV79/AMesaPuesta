@@ -137,7 +137,7 @@
       width:100%;
       max-width:860px;
       display:grid;
-      grid-template-columns:repeat(3, minmax(0, 1fr));
+      grid-template-columns:repeat(6, minmax(0, 1fr));
       gap:16px;
       margin:10px auto 0;
     }
@@ -161,6 +161,7 @@
       text-align:center;
       transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
       -webkit-tap-highlight-color:transparent;
+      grid-column:span 2;
     }
 
     .boton-menu svg{
@@ -179,10 +180,13 @@
       transform:scale(.985);
     }
 
+    .boton-menu--estatutos{
+      grid-column:span 3;
+    }
+
     .boton-menu--anuncios{
-      grid-column:1 / -1;
-      width:min(100%, 380px);
-      justify-self:center;
+      grid-column:span 3;
+      width:100%;
     }
 
     .boton-menu--anuncios-activo{
@@ -356,6 +360,14 @@
         margin-top:-14px;
       }
 
+      .boton-menu{
+        grid-column:auto;
+      }
+
+      .boton-menu--estatutos{
+        grid-column:auto;
+      }
+
       .boton-menu--anuncios{
         grid-column:1 / -1;
         width:100%;
@@ -504,6 +516,10 @@
         font-size:16px;
       }
 
+      .boton-menu--estatutos{
+        grid-column:auto;
+      }
+
       .boton-menu--anuncios{
         grid-column:auto;
         width:100%;
@@ -567,7 +583,7 @@
             Himno
           </a>
 
-          <a href="estatutos.html" class="boton-menu">
+          <a href="estatutos.html" class="boton-menu boton-menu--estatutos">
             <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M1 21h12v2H1zM5.24 8.17l4.59 4.59 2.12-2.12-4.59-4.59L5.24 8.17zm6.01-6.01l4.59 4.59 2.12-2.12-4.59-4.59-2.12 2.12zM3.12 10.29l10.59 10.59 2.12-2.12L5.24 8.17 3.12 10.29z"/>
             </svg>
