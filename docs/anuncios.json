@@ -11,7 +11,8 @@
     "enlace": "Enlace",
     "fechaFin": "",
     "orden": 0,
-    "fechaPublicacion": ""
+    "fechaPublicacion": "",
+    "dias_destacado": ""
   },
   {
     "id": "ANU-0001",
@@ -25,7 +26,8 @@
     "enlace": "",
     "fechaFin": "2026-03-19",
     "orden": 0,
-    "fechaPublicacion": ""
+    "fechaPublicacion": "",
+    "dias_destacado": ""
   },
   {
     "id": "ANU-0002",
@@ -39,7 +41,8 @@
     "enlace": "",
     "fechaFin": "2026-03-19",
     "orden": 0,
-    "fechaPublicacion": ""
+    "fechaPublicacion": "",
+    "dias_destacado": ""
   },
   {
     "id": "ANU-0003",
@@ -53,7 +56,8 @@
     "enlace": "",
     "fechaFin": "",
     "orden": 0,
-    "fechaPublicacion": ""
+    "fechaPublicacion": "",
+    "dias_destacado": ""
   },
   {
     "id": "ANU-0004",
@@ -67,7 +71,8 @@
     "enlace": "",
     "fechaFin": "",
     "orden": 0,
-    "fechaPublicacion": ""
+    "fechaPublicacion": "",
+    "dias_destacado": ""
   },
   {
     "id": "ANU-0005",
@@ -81,7 +86,8 @@
     "enlace": "",
     "fechaFin": "",
     "orden": 0,
-    "fechaPublicacion": ""
+    "fechaPublicacion": "",
+    "dias_destacado": ""
   },
   {
     "id": "ANU-0006",
@@ -95,6 +101,7 @@
     "enlace": "",
     "fechaFin": "",
     "orden": 0,
-    "fechaPublicacion": ""
+    "fechaPublicacion": "",
+    "dias_destacado": ""
   }
 ]}
