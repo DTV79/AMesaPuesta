@@ -54,5 +54,47 @@
     "fechaFin": "",
     "orden": 0,
     "fechaPublicacion": ""
+  },
+  {
+    "id": "ANU-0004",
+    "fecha": "2026-03-19",
+    "tipo": "general",
+    "titulo": "Prueba 1",
+    "texto": "Ver si sale arriba",
+    "destacado": true,
+    "visible": true,
+    "autor": "",
+    "enlace": "",
+    "fechaFin": "",
+    "orden": 0,
+    "fechaPublicacion": ""
+  },
+  {
+    "id": "ANU-0005",
+    "fecha": "2026-03-19",
+    "tipo": "comida",
+    "titulo": "Prueba 2",
+    "texto": "Ver si sale arriba 2",
+    "destacado": true,
+    "visible": true,
+    "autor": "",
+    "enlace": "",
+    "fechaFin": "",
+    "orden": 0,
+    "fechaPublicacion": ""
+  },
+  {
+    "id": "ANU-0006",
+    "fecha": "2026-03-19",
+    "tipo": "recordatorio",
+    "titulo": "Prueba 3",
+    "texto": "Versi sale arriba 3",
+    "destacado": true,
+    "visible": true,
+    "autor": "",
+    "enlace": "",
+    "fechaFin": "",
+    "orden": 0,
+    "fechaPublicacion": ""
   }
 ]}
