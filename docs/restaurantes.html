@@ -179,16 +179,17 @@
   }
 
   .resenas{
-    display:inline-block;
-    background:#faf3f3;
-    color:var(--accent);
-    border:1px solid rgba(139,0,0,.18);
-    border-radius:999px;
-    padding:6px 10px;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    min-width:96px;
+    font-size:20px;
     font-weight:700;
-    font-size:13px;
+    color:#d4a017;
+    letter-spacing:2px;
+    line-height:1;
     white-space:nowrap;
-    letter-spacing:1px;
+    flex-shrink:0;
   }
 
   .resumen p{
@@ -361,6 +362,12 @@
       padding:10px 10px;
     }
 
+    .resenas{
+      min-width:88px;
+      font-size:18px;
+      letter-spacing:1px;
+    }
+
     #btnSubir{
       right: 16px;
       bottom: 16px;
@@ -469,14 +476,12 @@
     let dia, mes, año;
     let m;
 
-    // Formato dd/mm/aaaa o dd-mm-aaaa
     m = limpio.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})$/);
     if(m){
       dia = Number(m[1]);
       mes = Number(m[2]);
       año = Number(m[3]);
     } else {
-      // Formato aaaa-mm-dd
       m = limpio.match(/^(\d{4})-(\d{2})-(\d{2})$/);
       if(!m) return null;
       año = Number(m[1]);
@@ -529,8 +534,15 @@
   }
 
   function renderResenas(resenas){
-    if(!resenas || String(resenas).trim() === "") return "Sin reseña";
-    return String(resenas).trim();
+    const n = Number(resenas);
+
+    if (isNaN(n) || n <= 0) return "Sin reseña";
+
+    const valor = Math.max(0, Math.min(5, Math.round(n)));
+    const llenas = "★".repeat(valor);
+    const vacias = "☆".repeat(5 - valor);
+
+    return llenas + vacias;
   }
 
   function crearFicha(rest, index){
@@ -550,7 +562,7 @@
       <div class="restaurante">
         <div class="restaurante-top">
           <h2>${textoSeguro(rest.nombre)}</h2>
-          <div class="resenas">${renderResenas(rest.resenas)}</div>
+          <div class="resenas" aria-label="Valoración ${textoSeguro(rest.resenas)} sobre 5">${renderResenas(rest.resenas)}</div>
         </div>
 
         <div class="resumen">
