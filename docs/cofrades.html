@@ -510,11 +510,11 @@
 
       document.getElementById('s_total_miembros').textContent = activos;
       document.getElementById('s_cuotas').textContent =
-      new Intl.NumberFormat('es-ES').format(Number(data.resumen.total_cuotas ?? 0)) + ' €';
+        Number(data.resumen.total_cuotas ?? 0).toLocaleString('es-ES') + ' €';
       document.getElementById('s_pagos').textContent =
-      new Intl.NumberFormat('es-ES').format(Number(data.resumen.total_gastos ?? 0)) + ' €';
+        Number(data.resumen.total_gastos ?? 0).toLocaleString('es-ES') + ' €';
       document.getElementById('s_remanente').textContent =
-      new Intl.NumberFormat('es-ES').format(Number(data.resumen.total_remanente ?? 0)) + ' €';
+        Number(data.resumen.total_remanente ?? 0).toLocaleString('es-ES') + ' €';
 
       apply();
 
