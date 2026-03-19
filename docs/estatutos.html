@@ -436,26 +436,46 @@
       color:var(--accent);
     }
 
-    .subir{
+    #btnSubir{
       position:fixed;
-      right:18px;
-      bottom:18px;
-      width:48px;
-      height:48px;
+      right:22px;
+      bottom:22px;
+      width:52px;
+      height:52px;
+      border:none;
       border-radius:50%;
+      background:linear-gradient(135deg,#8b0000,#b30000);
+      color:#fff;
+      cursor:pointer;
       display:flex;
       align-items:center;
       justify-content:center;
-      background:var(--accent);
-      color:#fff;
-      text-decoration:none;
-      font-size:22px;
-      box-shadow:var(--shadow);
-      z-index:20;
+      box-shadow:0 10px 24px rgba(139,0,0,.28);
+      opacity:0;
+      visibility:hidden;
+      transform:translateY(10px) scale(.95);
+      transition:opacity .25s ease, transform .25s ease, visibility .25s ease, background .2s ease;
+      z-index:9999;
     }
 
-    .subir:hover{
-      background:var(--accent-dark);
+    #btnSubir.show{
+      opacity:1;
+      visibility:visible;
+      transform:translateY(0) scale(1);
+    }
+
+    #btnSubir:hover{
+      background:linear-gradient(135deg,#760000,#990000);
+    }
+
+    #btnSubir:active{
+      transform:scale(.96);
+    }
+
+    #btnSubir svg{
+      width:22px;
+      height:22px;
+      fill:currentColor;
     }
 
     @media (max-width: 900px){
@@ -532,9 +552,16 @@
         padding:15px;
       }
 
-      .subir{
-        right:12px;
-        bottom:12px;
+      #btnSubir{
+        right:16px;
+        bottom:16px;
+        width:48px;
+        height:48px;
+      }
+
+      #btnSubir svg{
+        width:20px;
+        height:20px;
       }
     }
   </style>
@@ -804,6 +831,29 @@
     </div>
   </div>
 
-  <a href="#top" class="subir" title="Subir arriba">↑</a>
+  <button id="btnSubir" title="Subir arriba" aria-label="Subir arriba">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 5l-7 7 1.41 1.41L11 8.83V20h2V8.83l4.59 4.58L19 12z"/>
+    </svg>
+  </button>
+
+  <script>
+    const btnSubir = document.getElementById('btnSubir');
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        btnSubir.classList.add('show');
+      } else {
+        btnSubir.classList.remove('show');
+      }
+    });
+
+    btnSubir.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  </script>
 </body>
 </html>
