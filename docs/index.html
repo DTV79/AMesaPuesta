@@ -20,14 +20,14 @@
       --max-width:1120px;
       --content-width:980px;
 
-      --notice-bg-1:#fbf4e8;
-      --notice-bg-2:#f4e6cf;
-      --notice-border:#e5cfaa;
-      --notice-text:#5a4030;
-      --notice-title:#8b0000;
-      --notice-link:#7a2200;
-      --notice-icon-bg:rgba(139,0,0,.08);
-      --notice-dot:#b40000;
+      --notice-bg-1:#f06a8f;
+      --notice-bg-2:#c93060;
+      --notice-border:#e56e96;
+      --notice-text:#fff4f8;
+      --notice-title:#ffffff;
+      --notice-link:#ffffff;
+      --notice-icon-bg:rgba(255,255,255,.16);
+      --notice-dot:#ff4f88;
     }
 
     *{ box-sizing:border-box; }
@@ -228,6 +228,25 @@
       border:1px solid var(--notice-border);
       box-shadow:var(--shadow-soft);
       animation:fadeUp .28s ease;
+      overflow:hidden;
+    }
+
+    .aviso-home::before{
+      content:"";
+      position:absolute;
+      top:0;
+      left:-120%;
+      width:120%;
+      height:100%;
+      background:linear-gradient(
+        120deg,
+        transparent 0%,
+        rgba(255,255,255,.30) 50%,
+        transparent 100%
+      );
+      transform:skewX(-20deg);
+      animation:brilloAviso 4s ease-in-out infinite;
+      pointer-events:none;
     }
 
     .aviso-home[hidden]{
@@ -242,7 +261,7 @@
       height:28px;
       border:0;
       border-radius:50%;
-      background:rgba(139,0,0,.08);
+      background:rgba(255,255,255,.16);
       color:var(--notice-title);
       font-size:18px;
       line-height:1;
@@ -250,10 +269,11 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      z-index:1;
     }
 
     .aviso-home-cerrar:hover{
-      background:rgba(139,0,0,.14);
+      background:rgba(255,255,255,.24);
     }
 
     .aviso-home-icono{
@@ -266,6 +286,8 @@
       align-items:center;
       justify-content:center;
       flex:0 0 54px;
+      position:relative;
+      z-index:1;
     }
 
     .aviso-home-icono svg{
@@ -279,6 +301,8 @@
       flex-direction:column;
       gap:3px;
       flex:1;
+      position:relative;
+      z-index:1;
     }
 
     .aviso-home-texto strong{
@@ -301,11 +325,19 @@
       text-decoration:underline;
       white-space:nowrap;
       padding-left:6px;
+      position:relative;
+      z-index:1;
     }
 
     @keyframes fadeUp{
       from{ opacity:0; transform:translateY(8px); }
       to{ opacity:1; transform:translateY(0); }
+    }
+
+    @keyframes brilloAviso{
+      0%{ left:-120%; }
+      40%{ left:120%; }
+      100%{ left:120%; }
     }
 
     @media (max-width: 980px){
