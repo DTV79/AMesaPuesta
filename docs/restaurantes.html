@@ -429,12 +429,19 @@
   return f;
 }
 
-  function listaAHTML(lista){
-    if(!Array.isArray(lista) || lista.length === 0){
-      return '<p class="muted">Sin datos</p>';
-    }
-    return `<ul>${lista.map(item => `<li>${item}</li>`).join("")}</ul>`;
+  function listaAHTML(lista, ordenar = false){
+  if(!Array.isArray(lista) || lista.length === 0){
+    return '<p class="muted">Sin datos</p>';
   }
+
+  const items = [...lista];
+
+  if(ordenar){
+    items.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+  }
+
+  return `<ul>${items.map(item => `<li>${item}</li>`).join("")}</ul>`;
+}
 
   function textoSeguro(valor){
     return (valor !== undefined && valor !== null && String(valor).trim() !== "") ? valor : "—";
@@ -526,13 +533,13 @@
 
           <div class="detalle-box">
             <h3>Asistieron</h3>
-            ${listaAHTML(rest.asistieron)}
+            ${listaAHTML(rest.asistieron, true)}
           </div>
 
           <div class="detalle-box">
-            <h3>No asistieron</h3>
-            ${listaAHTML(rest.no_asistieron)}
-          </div>
+           <h3>No asistieron</h3>
+           ${listaAHTML(rest.no_asistieron, true)}
+        </div>
         </div>
       </div>
     `;
