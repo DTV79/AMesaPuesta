@@ -625,6 +625,7 @@
       const badge = document.getElementById("badgeAnuncios");
       const botonAnuncios = document.getElementById("botonAnuncios");
       const cerrarAviso = document.getElementById("cerrarAvisoAnuncios");
+      const tituloAviso = document.getElementById("tituloAvisoAnuncios");
       const textoAviso = document.getElementById("textoAvisoAnuncios");
 
       function fechaValida(fecha) {
@@ -665,8 +666,32 @@
         return 0;
       }
 
+      function numeroDiasDestacado(a) {
+        const valor = String(a.dias_destacado ?? "").trim();
+        const numero = parseInt(valor, 10);
+        return Number.isFinite(numero) && numero > 0 ? numero : 15;
+      }
+
+      function esDestacadoActivo(a) {
+        if (a.destacado === false) return false;
+        if (!fechaValida(a.fecha)) return false;
+
+        const dias = numeroDiasDestacado(a);
+
+        const fechaAnuncio = new Date(a.fecha);
+        fechaAnuncio.setHours(0, 0, 0, 0);
+
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+
+        const diferenciaMs = hoy - fechaAnuncio;
+        const diferenciaDias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
+
+        return diferenciaDias >= 0 && diferenciaDias <= dias;
+      }
+
       function claveCierre(destacados) {
-        return "aviso_anuncios_cerrado_" + destacados.map(a => a.id || "").join("|");
+        return "aviso_anuncios_cerrado_" + destacados.map(a => a.id || `${a.fecha || ""}-${a.titulo || ""}`).join("|");
       }
 
       try {
@@ -677,7 +702,7 @@
         const anuncios = Array.isArray(data.anuncios) ? data.anuncios : [];
 
         const destacados = anuncios
-          .filter(a => esPublicable(a) && a.destacado === true)
+          .filter(a => esPublicable(a) && esDestacadoActivo(a))
           .sort((a, b) => obtenerTimestamp(b) - obtenerTimestamp(a));
 
         if (destacados.length > 0) {
@@ -686,9 +711,11 @@
           botonAnuncios.classList.add("boton-menu--anuncios-activo");
 
           if (destacados.length === 1) {
+            tituloAviso.textContent = "Hay 1 nuevo anuncio destacado";
             textoAviso.textContent = "Hay un anuncio importante en el tablón.";
           } else {
-            textoAviso.textContent = "Hay anuncios importantes en el tablón.";
+            tituloAviso.textContent = `Hay ${destacados.length} nuevos anuncios destacados`;
+            textoAviso.textContent = "Hay varios anuncios importantes en el tablón.";
           }
 
           const storageKey = claveCierre(destacados);
