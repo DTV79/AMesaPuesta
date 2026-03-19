@@ -12,7 +12,7 @@
     --bg:#f8f5f0;
     --card:#ffffff;
     --ink:#1f1f1f;
-    --muted:#6b7280;f
+    --muted:#6b7280;
     --accent:#8b0000;
     --border:#e5e7eb;
     --shadow:0 8px 24px rgba(0,0,0,.08);
@@ -198,33 +198,33 @@
   }
 
   .cita-cofrade{
-  margin-top:12px;
-  padding-top:10px;
-  border-top:1px solid #f0eeee;
-}
+    margin-top:12px;
+    padding-top:10px;
+    border-top:1px solid #f0eeee;
+  }
 
-.cita-titulo{
-  font-size:13px;
-  font-weight:700;
-  color:#8b0000;
-  margin-bottom:6px;
-}
+  .cita-titulo{
+    font-size:13px;
+    font-weight:700;
+    color:#8b0000;
+    margin-bottom:6px;
+  }
 
-.cita-texto{
-  margin:0;
-  font-size:15px;
-  line-height:1.55;
-  font-style:italic;
-  color:#8b0000;
-  font-weight:600;
-}
+  .cita-texto{
+    margin:0;
+    font-size:15px;
+    line-height:1.55;
+    font-style:italic;
+    color:#8b0000;
+    font-weight:600;
+  }
 
-.cita-autor{
-  margin-top:6px;
-  font-size:13px;
-  font-weight:600;
-  color:var(--muted);
-}
+  .cita-autor{
+    margin-top:6px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--muted);
+  }
 
   .web-link{
     color:var(--accent);
@@ -303,6 +303,49 @@
     font-size:15px;
   }
 
+  /* BOTÓN SUBIR ARRIBA */
+  #btnSubir{
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    width: 52px;
+    height: 52px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8b0000, #b30000);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 24px rgba(139,0,0,.28);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px) scale(.95);
+    transition: opacity .25s ease, transform .25s ease, visibility .25s ease, background .2s ease;
+    z-index: 9999;
+  }
+
+  #btnSubir.show{
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+  }
+
+  #btnSubir:hover{
+    background: linear-gradient(135deg, #760000, #990000);
+  }
+
+  #btnSubir:active{
+    transform: scale(.96);
+  }
+
+  #btnSubir svg{
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+  }
+
   @media (max-width: 800px){
     .lista-restaurantes{
       grid-template-columns:1fr;
@@ -316,6 +359,18 @@
     .fecha-input{
       font-size:13px;
       padding:10px 10px;
+    }
+
+    #btnSubir{
+      right: 16px;
+      bottom: 16px;
+      width: 48px;
+      height: 48px;
+    }
+
+    #btnSubir svg{
+      width: 20px;
+      height: 20px;
     }
   }
 </style>
@@ -384,6 +439,12 @@
   </div>
 </div>
 
+<button id="btnSubir" title="Subir arriba" aria-label="Subir arriba">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 5l-7 7 1.41 1.41L11 8.83V20h2V8.83l4.59 4.58L19 12z"/>
+  </svg>
+</button>
+
 <script>
   let TODOS_LOS_RESTAURANTES = [];
 
@@ -401,55 +462,55 @@
   }
 
   function parseFechaManual(texto){
-  if(!texto) return null;
+    if(!texto) return null;
 
-  const limpio = texto.trim();
+    const limpio = texto.trim();
 
-  let dia, mes, año;
-  let m;
+    let dia, mes, año;
+    let m;
 
-  // Formato dd/mm/aaaa o dd-mm-aaaa
-  m = limpio.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})$/);
-  if(m){
-    dia = Number(m[1]);
-    mes = Number(m[2]);
-    año = Number(m[3]);
-  } else {
-    // Formato aaaa-mm-dd
-    m = limpio.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if(!m) return null;
-    año = Number(m[1]);
-    mes = Number(m[2]);
-    dia = Number(m[3]);
+    // Formato dd/mm/aaaa o dd-mm-aaaa
+    m = limpio.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})$/);
+    if(m){
+      dia = Number(m[1]);
+      mes = Number(m[2]);
+      año = Number(m[3]);
+    } else {
+      // Formato aaaa-mm-dd
+      m = limpio.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if(!m) return null;
+      año = Number(m[1]);
+      mes = Number(m[2]);
+      dia = Number(m[3]);
+    }
+
+    const f = new Date(año, mes - 1, dia);
+
+    if(
+      f.getFullYear() !== año ||
+      f.getMonth() !== mes - 1 ||
+      f.getDate() !== dia
+    ){
+      return null;
+    }
+
+    f.setHours(0,0,0,0);
+    return f;
   }
-
-  const f = new Date(año, mes - 1, dia);
-
-  if(
-    f.getFullYear() !== año ||
-    f.getMonth() !== mes - 1 ||
-    f.getDate() !== dia
-  ){
-    return null;
-  }
-
-  f.setHours(0,0,0,0);
-  return f;
-}
 
   function listaAHTML(lista, ordenar = false){
-  if(!Array.isArray(lista) || lista.length === 0){
-    return '<p class="muted">Sin datos</p>';
+    if(!Array.isArray(lista) || lista.length === 0){
+      return '<p class="muted">Sin datos</p>';
+    }
+
+    const items = [...lista];
+
+    if(ordenar){
+      items.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+    }
+
+    return `<ul>${items.map(item => `<li>${item}</li>`).join("")}</ul>`;
   }
-
-  const items = [...lista];
-
-  if(ordenar){
-    items.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
-  }
-
-  return `<ul>${items.map(item => `<li>${item}</li>`).join("")}</ul>`;
-}
 
   function textoSeguro(valor){
     return (valor !== undefined && valor !== null && String(valor).trim() !== "") ? valor : "—";
@@ -545,9 +606,9 @@
           </div>
 
           <div class="detalle-box">
-           <h3>No asistieron</h3>
-           ${listaAHTML(rest.no_asistieron, true)}
-        </div>
+            <h3>No asistieron</h3>
+            ${listaAHTML(rest.no_asistieron, true)}
+          </div>
         </div>
       </div>
     `;
@@ -613,17 +674,17 @@
       .join("");
   }
 
-function autoFormatearFechaInput(input){
-  let v = input.value.replace(/\D/g, "").slice(0, 8);
+  function autoFormatearFechaInput(input){
+    let v = input.value.replace(/\D/g, "").slice(0, 8);
 
-  if(v.length > 4){
-    input.value = `${v.slice(0,2)}/${v.slice(2,4)}/${v.slice(4)}`;
-  } else if(v.length > 2){
-    input.value = `${v.slice(0,2)}/${v.slice(2)}`;
-  } else {
-    input.value = v;
+    if(v.length > 4){
+      input.value = `${v.slice(0,2)}/${v.slice(2,4)}/${v.slice(4)}`;
+    } else if(v.length > 2){
+      input.value = `${v.slice(0,2)}/${v.slice(2)}`;
+    } else {
+      input.value = v;
+    }
   }
-}
   
   function aplicarFiltros(){
     const q = document.getElementById("buscador").value.trim().toLowerCase();
@@ -650,14 +711,14 @@ function autoFormatearFechaInput(input){
 
       document.getElementById("buscador").addEventListener("input", aplicarFiltros);
       document.getElementById("fecha-desde").addEventListener("input", (e) => {
-      autoFormatearFechaInput(e.target);
-      aplicarFiltros();
-    });
+        autoFormatearFechaInput(e.target);
+        aplicarFiltros();
+      });
 
       document.getElementById("fecha-hasta").addEventListener("input", (e) => {
-      autoFormatearFechaInput(e.target);
-      aplicarFiltros();
-    });
+        autoFormatearFechaInput(e.target);
+        aplicarFiltros();
+      });
 
       document.getElementById("limpiar").addEventListener("click", () => {
         document.getElementById("buscador").value = "";
@@ -671,6 +732,23 @@ function autoFormatearFechaInput(input){
       document.getElementById("lista-restaurantes").innerHTML =
         `<div class="mensaje">❌ Error cargando restaurantes: ${error.message}</div>`;
     });
+
+  const btnSubir = document.getElementById('btnSubir');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      btnSubir.classList.add('show');
+    } else {
+      btnSubir.classList.remove('show');
+    }
+  });
+
+  btnSubir.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
 </script>
 
 </body>
