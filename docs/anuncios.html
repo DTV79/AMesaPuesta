@@ -149,19 +149,50 @@
       color:rgba(255,255,255,.92);
     }
 
-    .destacado-principal{
+    .destacados-principales{
       display:none;
+      margin-bottom:22px;
+      animation:aparecer .35s ease;
+    }
+
+    .destacados-principales.show{
+      display:block;
+    }
+
+    .destacados-header{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:14px;
+      color:var(--accent);
+      font-weight:700;
+      font-size:1.08rem;
+    }
+
+    .destacados-grid{
+      display:grid;
+      gap:16px;
+    }
+
+    .destacado-principal{
       background:linear-gradient(135deg, #fff8ec, #fffdf8);
       border:1px solid #e8d3af;
       border-radius:22px;
       box-shadow:0 14px 34px rgba(103,61,15,.10);
       overflow:hidden;
-      margin-bottom:22px;
-      animation:aparecer .35s ease;
+      position:relative;
     }
 
-    .destacado-principal.show{
-      display:block;
+    .destacado-principal::before{
+      content:"";
+      position:absolute;
+      top:14px;
+      right:18px;
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:#b38b59;
+      box-shadow:0 0 0 4px rgba(179,139,89,.15);
     }
 
     .destacado-barra{
@@ -189,7 +220,7 @@
 
     .destacado-titulo{
       margin:0 0 10px;
-      font-size:clamp(1.45rem, 2.5vw, 2rem);
+      font-size:clamp(1.35rem, 2.3vw, 1.85rem);
       line-height:1.15;
       color:var(--accent);
     }
@@ -208,6 +239,7 @@
       line-height:1.75;
       color:#2e2e2e;
       font-size:1rem;
+      white-space:pre-line;
     }
 
     .destacado-acciones{
@@ -448,7 +480,6 @@
       to{ opacity:1; transform:translateY(0); }
     }
 
-    /* BOTÓN SUBIR ARRIBA */
     #btnSubir{
       position:fixed;
       right:22px;
@@ -569,7 +600,7 @@
       </p>
     </section>
 
-    <section id="destacadoPrincipal" class="destacado-principal" aria-live="polite"></section>
+    <section id="destacadosPrincipales" class="destacados-principales" aria-live="polite"></section>
 
     <section class="controls">
       <div class="control">
@@ -601,7 +632,7 @@
     <section id="anuncios" class="anuncios-wrap" aria-live="polite"></section>
 
     <div class="footnote">
-      Los anuncios destacados aparecen primero y el principal se muestra arriba del listado.
+      Los anuncios destacados activos aparecen primero y también se muestran arriba del listado.
     </div>
 
   </main>
@@ -618,7 +649,7 @@
     const BUSCADOR = document.getElementById("buscador");
     const FILTRO = document.getElementById("filtroTipo");
     const FILTRO_DEST = document.getElementById("filtroDestacados");
-    const DESTACADO_PRINCIPAL = document.getElementById("destacadoPrincipal");
+    const DESTACADOS_PRINCIPALES = document.getElementById("destacadosPrincipales");
 
     let anunciosOriginales = [];
 
@@ -658,6 +689,30 @@
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function numeroDiasDestacado(anuncio) {
+      const valor = String(anuncio.dias_destacado ?? "").trim();
+      const numero = parseInt(valor, 10);
+      return Number.isFinite(numero) && numero > 0 ? numero : 15;
+    }
+
+    function esDestacadoActivo(anuncio) {
+      if (anuncio.destacado === false) return false;
+      if (!fechaValida(anuncio.fecha)) return false;
+
+      const dias = numeroDiasDestacado(anuncio);
+
+      const fechaAnuncio = new Date(anuncio.fecha);
+      fechaAnuncio.setHours(0, 0, 0, 0);
+
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+
+      const diferenciaMs = hoy - fechaAnuncio;
+      const diferenciaDias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
+
+      return diferenciaDias >= 0 && diferenciaDias <= dias;
     }
 
     function esPublicable(anuncio) {
@@ -720,8 +775,8 @@
         const urgenteB = String(b.tipo || "").toLowerCase().trim() === "urgente";
         if (urgenteA !== urgenteB) return urgenteB - urgenteA;
 
-        const destA = !!a.destacado;
-        const destB = !!b.destacado;
+        const destA = esDestacadoActivo(a);
+        const destB = esDestacadoActivo(b);
         if (destA !== destB) return destB - destA;
 
         const ordenA = Number.isFinite(Number(a.orden)) ? Number(a.orden) : 999999;
@@ -734,37 +789,48 @@
       });
     }
 
-    function pintarDestacadoPrincipal(anuncios) {
-      const candidatos = ordenarAnuncios(anuncios.filter(a => a.destacado === true));
+    function pintarDestacadosPrincipales(anuncios) {
+      const candidatos = ordenarAnuncios(anuncios.filter(a => esDestacadoActivo(a)));
+
       if (!candidatos.length) {
-        DESTACADO_PRINCIPAL.classList.remove("show");
-        DESTACADO_PRINCIPAL.innerHTML = "";
+        DESTACADOS_PRINCIPALES.classList.remove("show");
+        DESTACADOS_PRINCIPALES.innerHTML = "";
         return;
       }
 
-      const a = candidatos[0];
-      const enlace = String(a.enlace || "").trim();
-      const autor = String(a.autor || "").trim();
-      const fecha = formatearFecha(a.fecha || "");
-      const tipo = String(a.tipo || "general").trim().toLowerCase();
+      DESTACADOS_PRINCIPALES.innerHTML = `
+        <div class="destacados-header">📢 Anuncios destacados</div>
+        <div class="destacados-grid">
+          ${candidatos.map(a => {
+            const enlace = String(a.enlace || "").trim();
+            const autor = String(a.autor || "").trim();
+            const fecha = formatearFecha(a.fecha || "");
+            const tipo = String(a.tipo || "general").trim().toLowerCase();
+            const dias = numeroDiasDestacado(a);
 
-      DESTACADO_PRINCIPAL.innerHTML = `
-        <div class="destacado-barra"></div>
-        <div class="destacado-contenido">
-          <div class="destacado-etiqueta">${iconoTipo(tipo)} Anuncio destacado</div>
-          <h2 class="destacado-titulo">${escapeHTML(a.titulo || "Sin título")}</h2>
-          <div class="destacado-meta">
-            <span>${iconoTipo(tipo)} ${escapeHTML(tipo || "general")}</span>
-            ${fecha ? `<span>📅 ${escapeHTML(fecha)}</span>` : ``}
-            ${autor ? `<span>✍️ ${escapeHTML(autor)}</span>` : ``}
-          </div>
-          <p class="destacado-texto">${escapeHTML(a.texto || "").replace(/\n/g, "<br>")}</p>
-          <div class="destacado-acciones">
-            ${enlace ? `<a class="btn-sec" href="${escapeHTML(enlace)}" target="_blank" rel="noopener noreferrer">Ver más</a>` : ``}
-          </div>
+            return `
+              <article class="destacado-principal">
+                <div class="destacado-barra"></div>
+                <div class="destacado-contenido">
+                  <div class="destacado-etiqueta">📌 Destacado durante ${dias} día${dias === 1 ? "" : "s"}</div>
+                  <h2 class="destacado-titulo">${escapeHTML(a.titulo || "Sin título")}</h2>
+                  <div class="destacado-meta">
+                    <span>${iconoTipo(tipo)} ${escapeHTML(tipo || "general")}</span>
+                    ${fecha ? `<span>📅 ${escapeHTML(fecha)}</span>` : ``}
+                    ${autor ? `<span>✍️ ${escapeHTML(autor)}</span>` : ``}
+                  </div>
+                  <p class="destacado-texto">${escapeHTML(a.texto || "").replace(/\n/g, "<br>")}</p>
+                  <div class="destacado-acciones">
+                    ${enlace ? `<a class="btn-sec" href="${escapeHTML(enlace)}" target="_blank" rel="noopener noreferrer">Ver más</a>` : ``}
+                  </div>
+                </div>
+              </article>
+            `;
+          }).join("")}
         </div>
       `;
-      DESTACADO_PRINCIPAL.classList.add("show");
+
+      DESTACADOS_PRINCIPALES.classList.add("show");
     }
 
     function filtrarAnuncios() {
@@ -773,10 +839,10 @@
       const soloDestacados = FILTRO_DEST.value === "destacados";
 
       const publicables = anunciosOriginales.filter(esPublicable);
-      pintarDestacadoPrincipal(publicables);
+      pintarDestacadosPrincipales(publicables);
 
       let lista = publicables.filter(anuncio => {
-        if (soloDestacados && anuncio.destacado !== true) return false;
+        if (soloDestacados && !esDestacadoActivo(anuncio)) return false;
 
         if (tipo !== "todos" && String(anuncio.tipo || "").toLowerCase() !== tipo) {
           return false;
@@ -792,11 +858,6 @@
       });
 
       lista = ordenarAnuncios(lista);
-
-      const destacadoPrincipal = lista.find(a => a.destacado === true);
-      if (destacadoPrincipal) {
-        lista = lista.filter(a => a !== destacadoPrincipal);
-      }
 
       renderizar(lista);
     }
@@ -814,7 +875,7 @@
       }
 
       CONTENEDOR.innerHTML = anuncios.map((anuncio, i) => {
-        const destacado = !!anuncio.destacado;
+        const destacado = esDestacadoActivo(anuncio);
         const tipo = String(anuncio.tipo || "general").trim().toLowerCase();
         const titulo = escapeHTML(anuncio.titulo || "Sin título");
         const texto = escapeHTML(anuncio.texto || "");
