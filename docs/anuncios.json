@@ -26,5 +26,33 @@
     "fechaFin": "2026-03-19",
     "orden": 0,
     "fechaPublicacion": ""
+  },
+  {
+    "id": "ANU-0002",
+    "fecha": "2026-03-19",
+    "tipo": "reunion",
+    "titulo": "Asamblea General (28/03/2026)",
+    "texto": "Varios puntos del día:\n.- Revisión de los Estatutos:\n       # Debatir para incluir expulsión por falta de pago.\n      # Propuesta de nuevos cofrades.\n     # Comentar fraternización con la otro Cofradia",
+    "destacado": true,
+    "visible": true,
+    "autor": "",
+    "enlace": "",
+    "fechaFin": "2026-03-19",
+    "orden": 0,
+    "fechaPublicacion": ""
+  },
+  {
+    "id": "ANU-0003",
+    "fecha": "2026-03-19",
+    "tipo": "tesoreria",
+    "titulo": "Pago Cuotas (28/03/2026)",
+    "texto": "Pago de las cuotas de este año",
+    "destacado": true,
+    "visible": false,
+    "autor": "",
+    "enlace": "",
+    "fechaFin": "",
+    "orden": 0,
+    "fechaPublicacion": ""
   }
 ]}
