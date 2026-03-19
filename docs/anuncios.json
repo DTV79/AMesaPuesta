@@ -48,7 +48,7 @@
     "titulo": "Pago Cuotas (28/03/2026)",
     "texto": "Pago de las cuotas de este año",
     "destacado": true,
-    "visible": false,
+    "visible": true,
     "autor": "",
     "enlace": "",
     "fechaFin": "",
