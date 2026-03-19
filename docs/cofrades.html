@@ -403,11 +403,6 @@
 
 <script>
   const fmt = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 });
-  const eur = new Intl.NumberFormat('es-ES', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-    useGrouping: true
-  });
 
   let ALL = [];
 
@@ -417,17 +412,22 @@
   }
 
   function formatearFecha(fecha){
-  if(!fecha) return "";
+    if(!fecha) return "";
 
-  const f = new Date(fecha);
-  if(isNaN(f)) return fecha;
+    const f = new Date(fecha);
+    if(isNaN(f)) return fecha;
 
-  const dia = String(f.getDate()).padStart(2,"0");
-  const mes = String(f.getMonth()+1).padStart(2,"0");
-  const año = f.getFullYear();
+    const dia = String(f.getDate()).padStart(2,"0");
+    const mes = String(f.getMonth()+1).padStart(2,"0");
+    const año = f.getFullYear();
 
-  return `${dia}/${mes}/${año}`;
-}
+    return `${dia}/${mes}/${año}`;
+  }
+
+  function formatearEuros(valor){
+    const n = Number(valor ?? 0);
+    return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " €";
+  }
 
   function apply(){
     const q = (document.getElementById('q').value || '').toLowerCase().trim();
@@ -507,15 +507,13 @@
     .then(data => {
       ALL = Array.isArray(data.cofrades) ? data.cofrades : [];
 
+      const resumen = data.resumen || {};
       const activos = ALL.filter(c => !isBaja(c)).length;
 
       document.getElementById('s_total_miembros').textContent = activos;
-      document.getElementById('s_cuotas').textContent =
-        Number(data.resumen.total_cuotas ?? 0).toLocaleString('es-ES') + ' €';
-      document.getElementById('s_pagos').textContent =
-        Number(data.resumen.total_gastos ?? 0).toLocaleString('es-ES') + ' €';
-      document.getElementById('s_remanente').textContent =
-        Number(data.resumen.total_remanente ?? 0).toLocaleString('es-ES') + ' €';
+      document.getElementById('s_cuotas').textContent = formatearEuros(resumen.total_cuotas);
+      document.getElementById('s_pagos').textContent = formatearEuros(resumen.total_gastos);
+      document.getElementById('s_remanente').textContent = formatearEuros(resumen.total_remanente);
 
       apply();
 
@@ -528,6 +526,7 @@
         `<tr><td class="muted" colspan="5" style="padding:18px 16px;">❌ Error cargando datos: ${err.message}</td></tr>`;
     });
 </script>
+
 
 </body>
 </html>
