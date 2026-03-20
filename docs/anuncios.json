@@ -34,7 +34,7 @@
     "fecha": "2026-03-19",
     "tipo": "reunion",
     "titulo": "Asamblea General (28/03/2026)",
-    "texto": "Varios puntos del día:\n.- Revisión de los Estatutos:\n       # Debatir para incluir expulsión por falta de pago.\n      # Propuesta de nuevos cofrades.\n     # Comentar fraternización con la otro Cofradia",
+    "texto": "Varios puntos del día:\n.- Revisión de los Estatutos:\n       # Debatir para incluir expulsión por falta de pago.\n      # Propuesta de nuevos cofrades.",
     "destacado": true,
     "visible": true,
     "autor": "",
@@ -61,40 +61,25 @@
   },
   {
     "id": "ANU-0004",
-    "fecha": "2026-03-19",
+    "fecha": "2026-03-20",
     "tipo": "general",
-    "titulo": "Prueba 1",
-    "texto": "Ver si sale arriba",
-    "destacado": true,
+    "titulo": "Confraternizar (28/03/2026)",
+    "texto": "La otra Cofradía nos propone hacer una comida conjunta entre los dos.\nSacar el tema para ver que opina la gente",
+    "destacado": false,
     "visible": true,
     "autor": "",
     "enlace": "",
     "fechaFin": "",
     "orden": 0,
     "fechaPublicacion": "",
-    "dias_destacado": ""
+    "dias_destacado": 9
   },
   {
     "id": "ANU-0005",
-    "fecha": "2026-03-19",
-    "tipo": "comida",
-    "titulo": "Prueba 2",
-    "texto": "Ver si sale arriba 2",
-    "destacado": true,
-    "visible": true,
-    "autor": "",
-    "enlace": "",
-    "fechaFin": "",
-    "orden": 0,
-    "fechaPublicacion": "",
-    "dias_destacado": ""
-  },
-  {
-    "id": "ANU-0006",
-    "fecha": "2026-03-19",
+    "fecha": "2026-03-20",
     "tipo": "recordatorio",
-    "titulo": "Prueba 3",
-    "texto": "Versi sale arriba 3",
+    "titulo": "Cumpeaños (28/03/2026)",
+    "texto": "El sábado de la comida es el cumpleaños de nuestro Cofrade Iñaki",
     "destacado": true,
     "visible": true,
     "autor": "",
@@ -102,6 +87,6 @@
     "fechaFin": "",
     "orden": 0,
     "fechaPublicacion": "",
-    "dias_destacado": ""
+    "dias_destacado": 9
   }
 ]}
