@@ -628,7 +628,7 @@
       </div>
 
       <div class="aviso-home-texto">
-        <strong id="tituloAvisoAnuncios">Nuevo anuncio destacado →</strong>
+        <strong id="tituloAvisoAnuncios">Nuevo anuncio destacado</strong>
         <span id="textoAvisoAnuncios"></span>
       </div>
     </a>
@@ -724,11 +724,11 @@
           badge.classList.add("pulse");
           botonAnuncios.classList.add("boton-menu--anuncios-activo");
 
-          if (destacados.length === 1) {
-            tituloAviso.textContent = "Hay 1 nuevo anuncio destacado →";
-          } else {
-            tituloAviso.textContent = `Hay ${destacados.length} nuevos anuncios destacados →`;
-          }
+        if (destacados.length === 1) {
+          tituloAviso.textContent = "Hay 1 nuevo anuncio destacado";
+        } else {
+          tituloAviso.textContent = `Hay ${destacados.length} nuevos anuncios destacados`;
+        }
 
           const storageKey = claveCierre(destacados);
           const fueCerrado = localStorage.getItem(storageKey) === "1";
