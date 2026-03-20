@@ -646,12 +646,12 @@
           </div>
 
           <div class="detalle-box">
-            <h3>Asistieron</h3>
+            <h3>Asistieron (${Array.isArray(rest.asistieron) ? rest.asistieron.length : 0})</h3>
             ${listaAHTML(rest.asistieron, true)}
           </div>
 
           <div class="detalle-box">
-            <h3>No asistieron</h3>
+            <h3>No asistieron (${Array.isArray(rest.no_asistieron) ? rest.no_asistieron.length : 0})</h3>
             ${listaAHTML(rest.no_asistieron, true)}
           </div>
         </div>
@@ -730,7 +730,7 @@
       input.value = v;
     }
   }
-  
+
   function aplicarFiltros(){
     const q = document.getElementById("buscador").value.trim().toLowerCase();
     const desde = parseFechaManual(document.getElementById("fecha-desde").value);
