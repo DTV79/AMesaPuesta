@@ -4,10 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#f7f4ef" />
   <title>AMesaPuesta</title>
 
   <style>
     :root{
+      color-scheme: light;
+
       --bg:#f7f4ef;
       --text:#1f1a17;
       --muted:#5b4334;
@@ -33,6 +36,7 @@
     *{ box-sizing:border-box; }
 
     html{
+      background:#f7f4ef !important;
       -webkit-text-size-adjust:100%;
       scroll-behavior:smooth;
     }
@@ -40,15 +44,27 @@
     body{
       margin:0;
       font-family: Georgia, "Times New Roman", serif;
-      color:var(--text);
+      color:var(--text) !important;
       background:
-        radial-gradient(circle at top, #ffffff 0%, var(--bg) 46%, #f2ece3 100%);
+        radial-gradient(circle at top, #ffffff 0%, var(--bg) 46%, #f2ece3 100%) !important;
       min-height:100vh;
+      min-height:100dvh;
     }
 
     img{
       max-width:100%;
       display:block;
+    }
+
+    svg{
+      max-width:100%;
+      height:auto;
+      display:block;
+    }
+
+    input, select, textarea, button{
+      font:inherit;
+      color:inherit;
     }
 
     a{ color:inherit; }
@@ -83,6 +99,7 @@
       box-shadow:var(--shadow-soft);
       padding:14px 16px 12px;
       backdrop-filter:blur(2px);
+      -webkit-backdrop-filter:blur(2px);
     }
 
     .logo-wrap{
@@ -531,6 +548,22 @@
 
       .aviso-home-link{
         align-self:center;
+      }
+    }
+
+    @media (prefers-color-scheme: dark){
+      :root{
+        color-scheme: light;
+      }
+
+      html{
+        background:#f7f4ef !important;
+      }
+
+      body{
+        color:var(--text) !important;
+        background:
+          radial-gradient(circle at top, #ffffff 0%, var(--bg) 46%, #f2ece3 100%) !important;
       }
     }
   </style>
