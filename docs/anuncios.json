@@ -24,7 +24,7 @@
     "visible": true,
     "autor": "",
     "enlace": "",
-    "fechaFin": "2026-03-19",
+    "fechaFin": "",
     "orden": 0,
     "fechaPublicacion": "",
     "dias_destacado": 10
@@ -39,10 +39,10 @@
     "visible": true,
     "autor": "",
     "enlace": "",
-    "fechaFin": "2026-03-19",
+    "fechaFin": "",
     "orden": 0,
     "fechaPublicacion": "",
-    "dias_destacado": ""
+    "dias_destacado": 10
   },
   {
     "id": "ANU-0003",
