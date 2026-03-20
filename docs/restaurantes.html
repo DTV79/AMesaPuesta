@@ -645,16 +645,12 @@
             <p><b>${formatearPrecio(rest.precio)}</b></p>
           </div>
 
-          <div class="detalle-box">
-            <h3>Asistieron</h3>
-            ${listaAHTML(rest.asistieron, true)}
+          if (destacados.length === 1) {
+            tituloAviso.textContent = "Hay 1 nuevo anuncio destacado";
+            } else {
+            tituloAviso.textContent = `Hay ${destacados.length} nuevos anuncios destacados`;
+            }
           </div>
-
-          <div class="detalle-box">
-            <h3>No asistieron</h3>
-            ${listaAHTML(rest.no_asistieron, true)}
-          </div>
-        </div>
       </div>
     `;
   }
