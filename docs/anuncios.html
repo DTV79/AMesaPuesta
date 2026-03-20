@@ -834,33 +834,43 @@
     }
 
     function filtrarAnuncios() {
-      const texto = normalizarTexto(BUSCADOR.value);
-      const tipo = FILTRO.value;
-      const soloDestacados = FILTRO_DEST.value === "destacados";
+  const texto = normalizarTexto(BUSCADOR.value);
+  const tipo = FILTRO.value;
+  const soloDestacados = FILTRO_DEST.value === "destacados";
 
-      const publicables = anunciosOriginales.filter(esPublicable);
-      pintarDestacadosPrincipales(publicables);
+  const publicables = anunciosOriginales.filter(esPublicable);
 
-      let lista = publicables.filter(anuncio => {
-        if (soloDestacados && !esDestacadoActivo(anuncio)) return false;
+  if (soloDestacados) {
+    DESTACADOS_PRINCIPALES.classList.remove("show");
+    DESTACADOS_PRINCIPALES.innerHTML = "";
+  } else {
+    pintarDestacadosPrincipales(publicables);
+  }
 
-        if (tipo !== "todos" && String(anuncio.tipo || "").toLowerCase() !== tipo) {
-          return false;
-        }
+  let lista = publicables.filter(anuncio => {
+    if (soloDestacados && !esDestacadoActivo(anuncio)) return false;
 
-        if (!texto) return true;
-
-        const bloque = normalizarTexto(
-          `${anuncio.titulo || ""} ${anuncio.texto || ""} ${anuncio.autor || ""} ${anuncio.tipo || ""}`
-        );
-
-        return bloque.includes(texto);
-      });
-
-      lista = ordenarAnuncios(lista);
-
-      renderizar(lista);
+    if (tipo !== "todos" && String(anuncio.tipo || "").toLowerCase() !== tipo) {
+      return false;
     }
+
+    if (!texto) return true;
+
+    const bloque = normalizarTexto(
+      `${anuncio.titulo || ""} ${anuncio.texto || ""} ${anuncio.autor || ""} ${anuncio.tipo || ""}`
+    );
+
+    return bloque.includes(texto);
+  });
+
+  lista = ordenarAnuncios(lista);
+
+  if (!soloDestacados) {
+    lista = lista.filter(anuncio => !esDestacadoActivo(anuncio));
+  }
+
+  renderizar(lista);
+}
 
     function renderizar(anuncios) {
       LOADING.style.display = "none";
