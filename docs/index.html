@@ -743,13 +743,13 @@
           badge.classList.add("pulse");
           botonAnuncios.classList.add("boton-menu--anuncios-activo");
 
-          if (destacados.length === 1) {
-            tituloAviso.textContent = "Hay 1 nuevo anuncio destacado";
-            textoAviso.textContent = "Hay un anuncio importante en el tablón.";
-          } else {
-            tituloAviso.textContent = `Hay ${destacados.length} nuevos anuncios destacados`;
-            textoAviso.textContent = "Hay varios anuncios importantes en el tablón.";
-          }
+         if (destacados.length === 1) {
+          tituloAviso.textContent = "Hay 1 nuevo anuncio destacado";
+        } else {
+           tituloAviso.textContent = `Hay ${destacados.length} nuevos anuncios destacados`;
+        }
+
+        textoAviso.style.display = "none";
 
           const storageKey = claveCierre(destacados);
           const fueCerrado = localStorage.getItem(storageKey) === "1";
