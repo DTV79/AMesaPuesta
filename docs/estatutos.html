@@ -2,13 +2,15 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f8f5f0" />
   <title>Estatutos | Cofradía A Mesa Puesta</title>
   <link rel="stylesheet" href="styles.css" />
 
   <style>
     :root{
+      color-scheme: light;
       --bg:#f8f5f0;
       --card:#ffffff;
       --card-soft:#fcfbf8;
@@ -32,7 +34,9 @@
     }
 
     html{
+      background:var(--bg) !important;
       scroll-behavior:smooth;
+      -webkit-text-size-adjust:100%;
     }
 
     body{
@@ -41,14 +45,22 @@
       background:
         radial-gradient(circle at top left, rgba(139,0,0,.04), transparent 18%),
         radial-gradient(circle at top right, rgba(139,0,0,.03), transparent 14%),
-        var(--bg);
-      color:var(--ink);
+        var(--bg) !important;
+      color:var(--ink) !important;
       line-height:1.65;
+      min-height:100vh;
+      min-height:100dvh;
     }
 
-    img{
+    img, svg{
       max-width:100%;
+      height:auto;
       display:block;
+    }
+
+    input, select, textarea, button{
+      font:inherit;
+      color:inherit;
     }
 
     a{
@@ -562,6 +574,18 @@
       #btnSubir svg{
         width:20px;
         height:20px;
+      }
+    }
+
+    @media (prefers-color-scheme: dark){
+      :root{
+        color-scheme: light;
+      }
+
+      html,
+      body{
+        background:var(--bg) !important;
+        color:var(--ink) !important;
       }
     }
   </style>
