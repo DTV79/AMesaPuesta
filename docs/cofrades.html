@@ -2,13 +2,16 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="color-scheme" content="light">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#f8f5f0" />
   <title>Cofrades</title>
   <link rel="stylesheet" href="styles.css" />
 
   <style>
     :root{
+      color-scheme: light;
+
       --bg:#f8f5f0;
       --card:#ffffff;
       --ink:#1f1f1f;
@@ -20,11 +23,29 @@
       --radius: 16px;
     }
 
+    html{
+      background:var(--bg) !important;
+      -webkit-text-size-adjust:100%;
+    }
+
     body{
       margin:0;
-      background:var(--bg);
-      color:var(--ink);
+      background:var(--bg) !important;
+      color:var(--ink) !important;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      min-height:100vh;
+      min-height:100dvh;
+    }
+
+    img, svg{
+      max-width:100%;
+      height:auto;
+      display:block;
+    }
+
+    input, select, textarea, button{
+      font:inherit;
+      color:inherit;
     }
 
     /* CABECERA IGUAL QUE RESTAURANTES */
@@ -366,6 +387,18 @@
       #btnSubir svg{
         width: 20px;
         height: 20px;
+      }
+    }
+
+    @media (prefers-color-scheme: dark){
+      :root{
+        color-scheme: light;
+      }
+
+      html,
+      body{
+        background:var(--bg) !important;
+        color:var(--ink) !important;
       }
     }
   </style>
