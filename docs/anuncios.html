@@ -672,338 +672,409 @@
     </svg>
   </button>
 
-  <script>
-    const CONTENEDOR = document.getElementById("anuncios");
-    const LOADING = document.getElementById("loading");
-    const BUSCADOR = document.getElementById("buscador");
-    const FILTRO = document.getElementById("filtroTipo");
-    const FILTRO_DEST = document.getElementById("filtroDestacados");
-    const DESTACADOS_PRINCIPALES = document.getElementById("destacadosPrincipales");
+ <script>
+  const CONTENEDOR = document.getElementById("anuncios");
+  const LOADING = document.getElementById("loading");
+  const BUSCADOR = document.getElementById("buscador");
+  const FILTRO = document.getElementById("filtroTipo");
+  const FILTRO_DEST = document.getElementById("filtroDestacados");
+  const DESTACADOS_PRINCIPALES = document.getElementById("destacadosPrincipales");
 
-    let anunciosOriginales = [];
+  let anunciosOriginales = [];
 
-    function escapeHTML(texto) {
-      return String(texto ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+  function escapeHTML(texto) {
+    return String(texto ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function formatearFecha(fechaISO) {
+    if (!fechaISO) return "";
+    const partes = fechaISO.split("-");
+    if (partes.length !== 3) return fechaISO;
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+
+  function fechaValida(fecha) {
+    return fecha && !isNaN(new Date(fecha).getTime());
+  }
+
+  function estaCaducado(fechaFin) {
+    if (!fechaValida(fechaFin)) return false;
+
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const fin = new Date(fechaFin);
+    fin.setHours(23, 59, 59, 999);
+
+    return fin < hoy;
+  }
+
+  function normalizarTexto(v) {
+    return String(v ?? "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim();
+  }
+
+  function capitalizar(texto) {
+    const t = String(texto ?? "").trim();
+    if (!t) return "";
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  }
+
+  function tipoCanonico(tipo) {
+    const t = normalizarTexto(tipo);
+
+    switch (t) {
+      case "comida":
+        return "comida";
+      case "reunion":
+        return "reunion";
+      case "tesoreria":
+        return "tesoreria";
+      case "urgente":
+        return "urgente";
+      case "recordatorio":
+        return "recordatorio";
+      case "general":
+        return "general";
+      default:
+        return t || "general";
     }
+  }
 
-    function formatearFecha(fechaISO) {
-      if (!fechaISO) return "";
-      const partes = fechaISO.split("-");
-      if (partes.length !== 3) return fechaISO;
-      return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  function etiquetaTipo(tipoOriginal) {
+    const canonico = tipoCanonico(tipoOriginal);
+
+    switch (canonico) {
+      case "reunion":
+        return "Reunión";
+      case "tesoreria":
+        return "Tesorería";
+      case "comida":
+        return "Comida";
+      case "urgente":
+        return "Urgente";
+      case "recordatorio":
+        return "Recordatorio";
+      case "general":
+        return "General";
+      default:
+        return capitalizar(String(tipoOriginal || "").trim()) || "General";
     }
+  }
 
-    function fechaValida(fecha) {
-      return fecha && !isNaN(new Date(fecha).getTime());
-    }
+  function numeroDiasDestacado(anuncio) {
+    const valor = String(anuncio.dias_destacado ?? "").trim();
+    const numero = parseInt(valor, 10);
+    return Number.isFinite(numero) && numero > 0 ? numero : 15;
+  }
 
-    function estaCaducado(fechaFin) {
-      if (!fechaValida(fechaFin)) return false;
+  function esDestacadoActivo(anuncio) {
+    if (anuncio.destacado === false) return false;
+    if (!fechaValida(anuncio.fecha)) return false;
+
+    const dias = numeroDiasDestacado(anuncio);
+
+    const fechaAnuncio = new Date(anuncio.fecha);
+    fechaAnuncio.setHours(0, 0, 0, 0);
+
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const diferenciaMs = hoy - fechaAnuncio;
+    const diferenciaDias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
+
+    return diferenciaDias >= 0 && diferenciaDias <= dias;
+  }
+
+  function esPublicable(anuncio) {
+    const visible = anuncio.visible !== false;
+    if (!visible) return false;
+    if (estaCaducado(anuncio.fechaFin)) return false;
+
+    if (fechaValida(anuncio.fechaPublicacion)) {
       const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0);
+      hoy.setHours(23, 59, 59, 999);
 
-      const fin = new Date(fechaFin);
-      fin.setHours(23, 59, 59, 999);
+      const publicacion = new Date(anuncio.fechaPublicacion);
+      publicacion.setHours(0, 0, 0, 0);
 
-      return fin < hoy;
+      if (publicacion > hoy) return false;
     }
 
-    function normalizarTexto(v) {
-      return String(v ?? "")
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
+    return true;
+  }
+
+  function iconoTipo(tipo) {
+    switch (tipoCanonico(tipo)) {
+      case "comida":
+        return "🍽️";
+      case "reunion":
+        return "👥";
+      case "tesoreria":
+        return "💰";
+      case "urgente":
+        return "⚠️";
+      case "recordatorio":
+        return "📝";
+      default:
+        return "📌";
     }
+  }
 
-    function numeroDiasDestacado(anuncio) {
-      const valor = String(anuncio.dias_destacado ?? "").trim();
-      const numero = parseInt(valor, 10);
-      return Number.isFinite(numero) && numero > 0 ? numero : 15;
-    }
+  function claseTipo(tipo) {
+    const t = tipoCanonico(tipo);
+    const validos = ["general", "comida", "reunion", "tesoreria", "urgente", "recordatorio"];
+    return validos.includes(t) ? `tipo-${t}` : "tipo-general";
+  }
 
-    function esDestacadoActivo(anuncio) {
-      if (anuncio.destacado === false) return false;
-      if (!fechaValida(anuncio.fecha)) return false;
+  function obtenerTipos(anuncios) {
+    const mapaTipos = new Map();
 
-      const dias = numeroDiasDestacado(anuncio);
+    anuncios
+      .filter(esPublicable)
+      .forEach(a => {
+        const original = String(a.tipo || "").trim();
+        const canonico = tipoCanonico(original);
+        if (!canonico) return;
 
-      const fechaAnuncio = new Date(anuncio.fecha);
-      fechaAnuncio.setHours(0, 0, 0, 0);
-
-      const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0);
-
-      const diferenciaMs = hoy - fechaAnuncio;
-      const diferenciaDias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
-
-      return diferenciaDias >= 0 && diferenciaDias <= dias;
-    }
-
-    function esPublicable(anuncio) {
-      const visible = anuncio.visible !== false;
-      if (!visible) return false;
-      if (estaCaducado(anuncio.fechaFin)) return false;
-
-      if (fechaValida(anuncio.fechaPublicacion)) {
-        const hoy = new Date();
-        hoy.setHours(23, 59, 59, 999);
-
-        const publicacion = new Date(anuncio.fechaPublicacion);
-        publicacion.setHours(0, 0, 0, 0);
-
-        if (publicacion > hoy) return false;
-      }
-
-      return true;
-    }
-
-    function iconoTipo(tipo) {
-      const t = String(tipo || "").toLowerCase();
-      switch (t) {
-        case "comida":
-          return "🍽️";
-        case "reunion":
-          return "👥";
-        case "tesoreria":
-          return "💰";
-        case "urgente":
-          return "⚠️";
-        case "recordatorio":
-          return "📝";
-        default:
-          return "📌";
-      }
-    }
-
-    function claseTipo(tipo) {
-      const t = String(tipo || "").toLowerCase().trim();
-      const validos = ["general","comida","reunion","tesoreria","urgente","recordatorio"];
-      return validos.includes(t) ? `tipo-${t}` : "tipo-general";
-    }
-
-    function obtenerTipos(anuncios) {
-      const tipos = [...new Set(
-        anuncios
-          .filter(esPublicable)
-          .map(a => String(a.tipo || "").trim().toLowerCase())
-          .filter(Boolean)
-      )].sort((a, b) => a.localeCompare(b, "es"));
-
-      FILTRO.innerHTML = `<option value="todos">Todos</option>` +
-        tipos.map(tipo => `<option value="${escapeHTML(tipo)}">${escapeHTML(tipo.charAt(0).toUpperCase() + tipo.slice(1))}</option>`).join("");
-    }
-
-    function ordenarAnuncios(lista) {
-      return [...lista].sort((a, b) => {
-        const urgenteA = String(a.tipo || "").toLowerCase().trim() === "urgente";
-        const urgenteB = String(b.tipo || "").toLowerCase().trim() === "urgente";
-        if (urgenteA !== urgenteB) return urgenteB - urgenteA;
-
-        const destA = esDestacadoActivo(a);
-        const destB = esDestacadoActivo(b);
-        if (destA !== destB) return destB - destA;
-
-        const ordenA = Number.isFinite(Number(a.orden)) ? Number(a.orden) : 999999;
-        const ordenB = Number.isFinite(Number(b.orden)) ? Number(b.orden) : 999999;
-        if (ordenA !== ordenB) return ordenA - ordenB;
-
-        const fechaA = fechaValida(a.fecha) ? new Date(a.fecha).getTime() : 0;
-        const fechaB = fechaValida(b.fecha) ? new Date(b.fecha).getTime() : 0;
-        return fechaB - fechaA;
+        if (!mapaTipos.has(canonico)) {
+          mapaTipos.set(canonico, etiquetaTipo(original));
+        }
       });
+
+    const tipos = [...mapaTipos.entries()].sort((a, b) =>
+      a[1].localeCompare(b[1], "es", { sensitivity: "base" })
+    );
+
+    FILTRO.innerHTML =
+      `<option value="todos">Todos</option>` +
+      tipos
+        .map(([valor, etiqueta]) =>
+          `<option value="${escapeHTML(valor)}">${escapeHTML(etiqueta)}</option>`
+        )
+        .join("");
+  }
+
+  function ordenarAnuncios(lista) {
+    return [...lista].sort((a, b) => {
+      const urgenteA = tipoCanonico(a.tipo) === "urgente";
+      const urgenteB = tipoCanonico(b.tipo) === "urgente";
+      if (urgenteA !== urgenteB) return urgenteB - urgenteA;
+
+      const destA = esDestacadoActivo(a);
+      const destB = esDestacadoActivo(b);
+      if (destA !== destB) return destB - destA;
+
+      const ordenA = Number.isFinite(Number(a.orden)) ? Number(a.orden) : 999999;
+      const ordenB = Number.isFinite(Number(b.orden)) ? Number(b.orden) : 999999;
+      if (ordenA !== ordenB) return ordenA - ordenB;
+
+      const fechaA = fechaValida(a.fecha) ? new Date(a.fecha).getTime() : 0;
+      const fechaB = fechaValida(b.fecha) ? new Date(b.fecha).getTime() : 0;
+      return fechaB - fechaA;
+    });
+  }
+
+  function pintarDestacadosPrincipales(anuncios) {
+    const candidatos = ordenarAnuncios(anuncios.filter(a => esDestacadoActivo(a)));
+
+    if (!candidatos.length) {
+      DESTACADOS_PRINCIPALES.classList.remove("show");
+      DESTACADOS_PRINCIPALES.innerHTML = "";
+      return;
     }
 
-    function pintarDestacadosPrincipales(anuncios) {
-      const candidatos = ordenarAnuncios(anuncios.filter(a => esDestacadoActivo(a)));
+    DESTACADOS_PRINCIPALES.innerHTML = `
+      <div class="destacados-header">📢 Anuncios destacados</div>
+      <div class="destacados-grid">
+        ${candidatos.map(a => {
+          const enlace = String(a.enlace || "").trim();
+          const autor = String(a.autor || "").trim();
+          const fecha = formatearFecha(a.fecha || "");
+          const dias = numeroDiasDestacado(a);
+          const tipoMostrado = etiquetaTipo(a.tipo);
 
-      if (!candidatos.length) {
-        DESTACADOS_PRINCIPALES.classList.remove("show");
-        DESTACADOS_PRINCIPALES.innerHTML = "";
-        return;
+          return `
+            <article class="destacado-principal">
+              <div class="destacado-barra"></div>
+              <div class="destacado-contenido">
+                <div class="destacado-etiqueta">📌 Destacado durante ${dias} día${dias === 1 ? "" : "s"}</div>
+                <h2 class="destacado-titulo">${escapeHTML(a.titulo || "Sin título")}</h2>
+                <div class="destacado-meta">
+                  <span>${iconoTipo(a.tipo)} ${escapeHTML(tipoMostrado)}</span>
+                  ${fecha ? `<span>📅 ${escapeHTML(fecha)}</span>` : ``}
+                  ${autor ? `<span>✍️ ${escapeHTML(autor)}</span>` : ``}
+                </div>
+                <p class="destacado-texto">${escapeHTML(a.texto || "").replace(/\n/g, "<br>")}</p>
+                <div class="destacado-acciones">
+                  ${enlace ? `<a class="btn-sec" href="${escapeHTML(enlace)}" target="_blank" rel="noopener noreferrer">Ver más</a>` : ``}
+                </div>
+              </div>
+            </article>
+          `;
+        }).join("")}
+      </div>
+    `;
+
+    DESTACADOS_PRINCIPALES.classList.add("show");
+  }
+
+  function filtrarAnuncios() {
+    const texto = normalizarTexto(BUSCADOR.value);
+    const tipoSeleccionado = FILTRO.value;
+    const soloDestacados = FILTRO_DEST.value === "destacados";
+
+    const publicables = anunciosOriginales.filter(esPublicable);
+
+    if (soloDestacados) {
+      DESTACADOS_PRINCIPALES.classList.remove("show");
+      DESTACADOS_PRINCIPALES.innerHTML = "";
+    } else {
+      pintarDestacadosPrincipales(publicables);
+    }
+
+    let lista = publicables.filter(anuncio => {
+      if (soloDestacados && !esDestacadoActivo(anuncio)) return false;
+
+      if (tipoSeleccionado !== "todos" && tipoCanonico(anuncio.tipo) !== tipoSeleccionado) {
+        return false;
       }
 
-      DESTACADOS_PRINCIPALES.innerHTML = `
-        <div class="destacados-header">📢 Anuncios destacados</div>
-        <div class="destacados-grid">
-          ${candidatos.map(a => {
-            const enlace = String(a.enlace || "").trim();
-            const autor = String(a.autor || "").trim();
-            const fecha = formatearFecha(a.fecha || "");
-            const tipo = String(a.tipo || "general").trim().toLowerCase();
-            const dias = numeroDiasDestacado(a);
+      if (!texto) return true;
 
-            return `
-              <article class="destacado-principal">
-                <div class="destacado-barra"></div>
-                <div class="destacado-contenido">
-                  <div class="destacado-etiqueta">📌 Destacado durante ${dias} día${dias === 1 ? "" : "s"}</div>
-                  <h2 class="destacado-titulo">${escapeHTML(a.titulo || "Sin título")}</h2>
-                  <div class="destacado-meta">
-                    <span>${iconoTipo(tipo)} ${escapeHTML(tipo || "general")}</span>
-                    ${fecha ? `<span>📅 ${escapeHTML(fecha)}</span>` : ``}
-                    ${autor ? `<span>✍️ ${escapeHTML(autor)}</span>` : ``}
-                  </div>
-                  <p class="destacado-texto">${escapeHTML(a.texto || "").replace(/\n/g, "<br>")}</p>
-                  <div class="destacado-acciones">
-                    ${enlace ? `<a class="btn-sec" href="${escapeHTML(enlace)}" target="_blank" rel="noopener noreferrer">Ver más</a>` : ``}
-                  </div>
-                </div>
-              </article>
-            `;
-          }).join("")}
+      const bloqueBusqueda = normalizarTexto(
+        [
+          anuncio.titulo || "",
+          anuncio.texto || "",
+          anuncio.autor || "",
+          anuncio.tipo || "",
+          etiquetaTipo(anuncio.tipo)
+        ].join(" ")
+      );
+
+      return bloqueBusqueda.includes(texto);
+    });
+
+    lista = ordenarAnuncios(lista);
+
+    if (!soloDestacados) {
+      lista = lista.filter(anuncio => !esDestacadoActivo(anuncio));
+    }
+
+    renderizar(lista);
+  }
+
+  function renderizar(anuncios) {
+    LOADING.style.display = "none";
+
+    if (!anuncios.length) {
+      CONTENEDOR.innerHTML = `
+        <div class="empty">
+          No hay anuncios que coincidan con la búsqueda o el filtro seleccionado.
         </div>
       `;
-
-      DESTACADOS_PRINCIPALES.classList.add("show");
+      return;
     }
 
-    function filtrarAnuncios() {
-      const texto = normalizarTexto(BUSCADOR.value);
-      const tipo = FILTRO.value;
-      const soloDestacados = FILTRO_DEST.value === "destacados";
+    CONTENEDOR.innerHTML = anuncios.map((anuncio, i) => {
+      const destacado = esDestacadoActivo(anuncio);
+      const tipoTexto = etiquetaTipo(anuncio.tipo);
+      const titulo = escapeHTML(anuncio.titulo || "Sin título");
+      const texto = escapeHTML(anuncio.texto || "");
+      const autor = escapeHTML(anuncio.autor || "");
+      const fecha = formatearFecha(anuncio.fecha || "");
+      const enlace = String(anuncio.enlace || "").trim();
+      const textoId = `texto-anuncio-${i}`;
 
-      const publicables = anunciosOriginales.filter(esPublicable);
+      return `
+        <article class="anuncio ${destacado ? "destacado" : ""}">
+          ${destacado ? `<div class="destacado-linea"></div>` : ``}
 
-      if (soloDestacados) {
-        DESTACADOS_PRINCIPALES.classList.remove("show");
-        DESTACADOS_PRINCIPALES.innerHTML = "";
-      } else {
-        pintarDestacadosPrincipales(publicables);
-      }
+          <div class="anuncio-top">
+            <div class="anuncio-head">
+              <div class="anuncio-meta">
+                <span class="pill pill-tipo ${claseTipo(anuncio.tipo)}">${iconoTipo(anuncio.tipo)} ${escapeHTML(tipoTexto)}</span>
+                ${destacado ? `<span class="pill pill-destacado">⭐ Destacado</span>` : ``}
+              </div>
+              <h2 class="anuncio-titulo">${titulo}</h2>
+            </div>
 
-      let lista = publicables.filter(anuncio => {
-        if (soloDestacados && !esDestacadoActivo(anuncio)) return false;
+            <div class="fecha">${fecha}</div>
+          </div>
 
-        if (tipo !== "todos" && String(anuncio.tipo || "").toLowerCase() !== tipo) {
-          return false;
-        }
+          <div id="${textoId}" class="anuncio-texto limitado">${texto.replace(/\n/g, "<br>")}</div>
 
-        if (!texto) return true;
+          <div class="anuncio-footer">
+            <div class="autor">${autor ? "Publicado por " + autor : ""}</div>
+            <div class="acciones">
+              <button type="button" class="mini-btn" onclick="toggleTexto('${textoId}', this)">Ver más</button>
+              ${enlace ? `<a class="mini-btn" href="${escapeHTML(enlace)}" target="_blank" rel="noopener noreferrer">Abrir enlace</a>` : ``}
+            </div>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
 
-        const bloque = normalizarTexto(
-          `${anuncio.titulo || ""} ${anuncio.texto || ""} ${anuncio.autor || ""} ${anuncio.tipo || ""}`
-        );
+  function toggleTexto(id, boton) {
+    const texto = document.getElementById(id);
+    if (!texto) return;
 
-        return bloque.includes(texto);
-      });
+    texto.classList.toggle("limitado");
+    boton.textContent = texto.classList.contains("limitado") ? "Ver más" : "Ver menos";
+  }
 
-      lista = ordenarAnuncios(lista);
+  async function cargarAnuncios() {
+    try {
+      const response = await fetch("./anuncios.json?v=" + Date.now(), { cache: "no-store" });
+      if (!response.ok) throw new Error("No se pudo cargar anuncios.json");
 
-      if (!soloDestacados) {
-        lista = lista.filter(anuncio => !esDestacadoActivo(anuncio));
-      }
+      const data = await response.json();
+      anunciosOriginales = Array.isArray(data.anuncios) ? data.anuncios : [];
 
-      renderizar(lista);
-    }
-
-    function renderizar(anuncios) {
+      obtenerTipos(anunciosOriginales);
+      filtrarAnuncios();
+    } catch (error) {
       LOADING.style.display = "none";
-
-      if (!anuncios.length) {
-        CONTENEDOR.innerHTML = `
-          <div class="empty">
-            No hay anuncios que coincidan con la búsqueda o el filtro seleccionado.
-          </div>
-        `;
-        return;
-      }
-
-      CONTENEDOR.innerHTML = anuncios.map((anuncio, i) => {
-        const destacado = esDestacadoActivo(anuncio);
-        const tipo = String(anuncio.tipo || "general").trim().toLowerCase();
-        const titulo = escapeHTML(anuncio.titulo || "Sin título");
-        const texto = escapeHTML(anuncio.texto || "");
-        const autor = escapeHTML(anuncio.autor || "");
-        const fecha = formatearFecha(anuncio.fecha || "");
-        const enlace = String(anuncio.enlace || "").trim();
-        const textoId = `texto-anuncio-${i}`;
-
-        return `
-          <article class="anuncio ${destacado ? "destacado" : ""}">
-            ${destacado ? `<div class="destacado-linea"></div>` : ``}
-
-            <div class="anuncio-top">
-              <div class="anuncio-head">
-                <div class="anuncio-meta">
-                  <span class="pill pill-tipo ${claseTipo(tipo)}">${iconoTipo(tipo)} ${escapeHTML(tipo)}</span>
-                  ${destacado ? `<span class="pill pill-destacado">⭐ Destacado</span>` : ``}
-                </div>
-                <h2 class="anuncio-titulo">${titulo}</h2>
-              </div>
-
-              <div class="fecha">${fecha}</div>
-            </div>
-
-            <div id="${textoId}" class="anuncio-texto limitado">${texto.replace(/\n/g, "<br>")}</div>
-
-            <div class="anuncio-footer">
-              <div class="autor">${autor ? "Publicado por " + autor : ""}</div>
-              <div class="acciones">
-                <button type="button" class="mini-btn" onclick="toggleTexto('${textoId}', this)">Ver más</button>
-                ${enlace ? `<a class="mini-btn" href="${escapeHTML(enlace)}" target="_blank" rel="noopener noreferrer">Abrir enlace</a>` : ``}
-              </div>
-            </div>
-          </article>
-        `;
-      }).join("");
+      CONTENEDOR.innerHTML = `
+        <div class="empty">
+          No se pudieron cargar los anuncios en este momento.
+        </div>
+      `;
+      console.error(error);
     }
+  }
 
-    function toggleTexto(id, boton) {
-      const texto = document.getElementById(id);
-      if (!texto) return;
+  BUSCADOR.addEventListener("input", filtrarAnuncios);
+  FILTRO.addEventListener("change", filtrarAnuncios);
+  FILTRO_DEST.addEventListener("change", filtrarAnuncios);
 
-      texto.classList.toggle("limitado");
-      boton.textContent = texto.classList.contains("limitado") ? "Ver más" : "Ver menos";
+  cargarAnuncios();
+
+  const btnSubir = document.getElementById("btnSubir");
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 300) {
+      btnSubir.classList.add("show");
+    } else {
+      btnSubir.classList.remove("show");
     }
+  });
 
-    async function cargarAnuncios() {
-      try {
-        const response = await fetch("./anuncios.json?v=" + Date.now(), { cache: "no-store" });
-        if (!response.ok) throw new Error("No se pudo cargar anuncios.json");
-
-        const data = await response.json();
-        anunciosOriginales = Array.isArray(data.anuncios) ? data.anuncios : [];
-
-        obtenerTipos(anunciosOriginales);
-        filtrarAnuncios();
-      } catch (error) {
-        LOADING.style.display = "none";
-        CONTENEDOR.innerHTML = `
-          <div class="empty">
-            No se pudieron cargar los anuncios en este momento.
-          </div>
-        `;
-        console.error(error);
-      }
-    }
-
-    BUSCADOR.addEventListener("input", filtrarAnuncios);
-    FILTRO.addEventListener("change", filtrarAnuncios);
-    FILTRO_DEST.addEventListener("change", filtrarAnuncios);
-
-    cargarAnuncios();
-
-    const btnSubir = document.getElementById('btnSubir');
-
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 300) {
-        btnSubir.classList.add('show');
-      } else {
-        btnSubir.classList.remove('show');
-      }
+  btnSubir.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
     });
-
-    btnSubir.addEventListener('click', () => {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    });
-  </script>
+  });
+</script>
 </body>
 </html>
