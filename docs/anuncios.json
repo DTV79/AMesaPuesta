@@ -2,7 +2,7 @@
   {
     "id": "ID",
     "fecha": "",
-    "tipo": "general",
+    "tipo": "General",
     "titulo": "Título",
     "texto": "Texto",
     "destacado": false,
@@ -17,7 +17,7 @@
   {
     "id": "ANU-0001",
     "fecha": "2026-03-21",
-    "tipo": "comida",
+    "tipo": "Comida",
     "titulo": "Comida",
     "texto": "🕒 Hora: 12:00 h (mediodía)\n📍 Punto de encuentro: Boby\nSE RUEGA PUNTUALIDAD\n\n🚕 Desplazamiento: Ida y vuelta en taxis\n📍 Destino: O Porriño",
     "destacado": true,
@@ -32,7 +32,7 @@
   {
     "id": "ANU-0002",
     "fecha": "2026-03-21",
-    "tipo": "reunion",
+    "tipo": "Reunión",
     "titulo": "Asamblea General",
     "texto": "ORDEN DEL DÍA:\n.- Nuevas incorporaciones.\n.- Sanciones por impago o retraso en los pagos establecidos.\n.- Plazos de respuestas y régimen de sanciones.\n.- Organizadores de la siguiente comida",
     "destacado": true,
@@ -47,7 +47,7 @@
   {
     "id": "ANU-0003",
     "fecha": "2026-03-21",
-    "tipo": "general",
+    "tipo": "Tesorería",
     "titulo": "Pago Cuotas",
     "texto": "Pago de las cuotas de este año",
     "destacado": false,
@@ -62,7 +62,7 @@
   {
     "id": "ANU-0004",
     "fecha": "2026-03-21",
-    "tipo": "general",
+    "tipo": "General",
     "titulo": "Confraternizar",
     "texto": "La otra Cofradía nos propone hacer una comida conjunta entre los dos.\nSacar el tema para ver que opina la gente",
     "destacado": false,
@@ -77,8 +77,8 @@
   {
     "id": "ANU-0005",
     "fecha": "2026-03-21",
-    "tipo": "recordatorio",
-    "titulo": "Cumpeaños",
+    "tipo": "Recordatorio",
+    "titulo": "Cumpleaños",
     "texto": "El sábado de la comida es el cumpleaños de nuestro Cofrade Iñaki",
     "destacado": true,
     "visible": true,
