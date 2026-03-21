@@ -16,9 +16,9 @@
   },
   {
     "id": "ANU-0001",
-    "fecha": "2026-03-21",
+    "fecha": "2026-03-28",
     "tipo": "comida",
-    "titulo": "Comida (28/03/2026)",
+    "titulo": "Comida",
     "texto": "🕒 Hora: 12:00 h (mediodía)\n📍 Punto de encuentro: Boby\nSE RUEGA PUNTUALIDAD\n\n🚕 Desplazamiento: Ida y vuelta en taxis\n📍 Destino: O Porriño",
     "destacado": true,
     "visible": true,
@@ -31,9 +31,9 @@
   },
   {
     "id": "ANU-0002",
-    "fecha": "2026-03-19",
+    "fecha": "2026-03-28",
     "tipo": "reunion",
-    "titulo": "Asamblea General (28/03/2026)",
+    "titulo": "Asamblea General",
     "texto": "ORDEN DEL DÍA:\n.- Nuevas incorporaciones.\n.- Sanciones por impago o retraso en los pagos establecidos.\n.- Plazos de respuestas y régimen de sanciones.\n.- Organizadores de la siguiente comida",
     "destacado": true,
     "visible": true,
@@ -42,13 +42,13 @@
     "fechaFin": "",
     "orden": 0,
     "fechaPublicacion": "",
-    "dias_destacado": 10
+    "dias_destacado": 8
   },
   {
     "id": "ANU-0003",
-    "fecha": "2026-03-19",
+    "fecha": "2026-03-28",
     "tipo": "general",
-    "titulo": "Pago Cuotas (28/03/2026)",
+    "titulo": "Pago Cuotas",
     "texto": "Pago de las cuotas de este año",
     "destacado": false,
     "visible": true,
@@ -61,9 +61,9 @@
   },
   {
     "id": "ANU-0004",
-    "fecha": "2026-03-20",
+    "fecha": "2026-03-28",
     "tipo": "general",
-    "titulo": "Confraternizar (28/03/2026)",
+    "titulo": "Confraternizar",
     "texto": "La otra Cofradía nos propone hacer una comida conjunta entre los dos.\nSacar el tema para ver que opina la gente",
     "destacado": false,
     "visible": true,
@@ -72,13 +72,13 @@
     "fechaFin": "",
     "orden": 0,
     "fechaPublicacion": "",
-    "dias_destacado": 9
+    "dias_destacado": ""
   },
   {
     "id": "ANU-0005",
-    "fecha": "2026-03-20",
+    "fecha": "0206-03-28",
     "tipo": "recordatorio",
-    "titulo": "Cumpeaños (28/03/2026)",
+    "titulo": "Cumpeaños",
     "texto": "El sábado de la comida es el cumpleaños de nuestro Cofrade Iñaki",
     "destacado": true,
     "visible": true,
@@ -87,6 +87,6 @@
     "fechaFin": "",
     "orden": 0,
     "fechaPublicacion": "",
-    "dias_destacado": 9
+    "dias_destacado": 8
   }
 ]}
