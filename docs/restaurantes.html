@@ -583,6 +583,10 @@
       ? `<a class="web-link" href="${rest.web}" target="_blank" rel="noopener noreferrer">${rest.web}</a>`
       : "—";
 
+    const direccionMapa = rest.direccion && String(rest.direccion).trim() !== ""
+      ? `<a class="web-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rest.direccion)}" target="_blank" rel="noopener noreferrer">📍 ${textoSeguro(rest.direccion)}</a>`
+      : "—";
+
     const descripcion = rest.descripcion && String(rest.descripcion).trim() !== ""
       ? rest.descripcion
       : "Sin comentario aún.";
@@ -600,7 +604,7 @@
 
         <div class="resumen">
           <p><b>Fecha:</b> ${formatearFecha(rest.fecha)}</p>
-          <p><b>Dirección:</b> ${textoSeguro(rest.direccion)}</p>
+          <p><b>Dirección:</b> ${direccionMapa}</p>
           <p><b>Teléfono:</b> ${textoSeguro(rest.telefono)}</p>
           <p><b>Web:</b> ${web}</p>
         </div>
