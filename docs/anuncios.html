@@ -738,7 +738,7 @@
 
       const d = new Date(valor);
       return isNaN(d.getTime()) ? null : d;
-    }
+      }
 
     function fechaValida(fecha) {
       return convertirFecha(fecha) !== null;
@@ -936,7 +936,7 @@
           ${candidatos.map(a => {
             const enlace = String(a.enlace || "").trim();
             const autor = String(a.autor || "").trim();
-            const fecha = formatearFecha(a.fecha || "");
+            const fecha = formatearFecha(a.fechaEvento || a.fecha || "");
             const dias = numeroDiasDestacado(a);
             const tipoMostrado = etiquetaTipo(a.tipo);
 
@@ -1040,7 +1040,7 @@
         const titulo = escapeHTML(anuncio.titulo || "Sin título");
         const texto = escapeHTML(anuncio.texto || "");
         const autor = escapeHTML(anuncio.autor || "");
-        const fecha = formatearFecha(anuncio.fecha || "");
+        const fecha = formatearFecha(anuncio.fechaEvento || anuncio.fecha || "");
         const enlace = String(anuncio.enlace || "").trim();
         const textoId = `texto-anuncio-${i}`;
 
