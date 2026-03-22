@@ -629,10 +629,33 @@
       scrollWheelZoom: true
     });
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
+    // 🧭 Mapa normal
+const capaOSM = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap'
+});
+
+// 🛰️ PNOA (ortofoto España)
+const capaPNOA = L.tileLayer(
+  "https://www.ign.es/wmts/pnoa-ma?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OI.OrthoimageCoverage&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+  {
+    maxZoom: 19,
+    attribution: "© IGN España (PNOA)"
+  }
+);
+
+// Activar por defecto
+capaOSM.addTo(map);
+
+// Selector de capas
+L.control.layers(
+  {
+    "🗺️ Mapa": capaOSM,
+    "🛰️ PNOA": capaPNOA
+  },
+  null,
+  { collapsed: false }
+).addTo(map);
 
     const markerCluster = L.markerClusterGroup({
       showCoverageOnHover: false,
