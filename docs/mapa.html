@@ -660,37 +660,25 @@
     });
 
     const capaPNOA = L.tileLayer(
-      "https://www.ign.es/wmts/pnoa-ma?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OI.OrthoimageCoverage&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
-      {
-        maxZoom: 19,
-        attribution: "© IGN España (PNOA)"
-      }
-    );
+  "https://www.ign.es/wmts/pnoa-ma?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OI.OrthoimageCoverage&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+  {
+    maxZoom: 19,
+    attribution: "© IGN España (PNOA)"
+  }
+);
 
-    const capaHibridaEtiquetas = L.tileLayer(
-      "https://www.ign.es/wmts/ign-base?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=IGNBaseTodo&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
-      {
-        maxZoom: 19,
-        opacity: 0.65,
-        attribution: "© IGN España"
-      }
-    );
+capaPNOA.addTo(map);
 
-    const baseHibrida = L.layerGroup([capaPNOA, capaHibridaEtiquetas]);
-
-    baseHibrida.addTo(map);
-
-    L.control.layers(
-      {
-        "🛰️ PNOA + etiquetas": baseHibrida,
-        "🛰️ PNOA": capaPNOA,
-        "🗺️ Mapa": capaOSM
-      },
-      null,
-      {
-        collapsed: false
-      }
-    ).addTo(map);
+L.control.layers(
+  {
+    "🛰️ PNOA": capaPNOA,
+    "🗺️ Mapa": capaOSM
+  },
+  null,
+  {
+    collapsed: false
+  }
+).addTo(map);
 
     const markerCluster = L.markerClusterGroup({
       showCoverageOnHover: false,
