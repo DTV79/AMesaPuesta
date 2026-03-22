@@ -7,15 +7,10 @@
   <meta name="theme-color" content="#f8f5f0" />
   <title>Mapa de restaurantes | Cofradía A Mesa Puesta</title>
 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    crossorigin=""
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
   <style>
     :root{
-      color-scheme: light;
       --bg:#f8f5f0;
       --card:#ffffff;
       --ink:#1f1f1f;
@@ -27,253 +22,132 @@
       --max:1200px;
     }
 
-    *{ box-sizing:border-box; }
-
-    html,body{
-      margin:0;
-      padding:0;
-      background:var(--bg);
-      color:var(--ink);
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-    }
-
     body{
-      min-height:100vh;
+      margin:0;
+      font-family:system-ui;
+      background:var(--bg);
     }
 
     .wrap{
       width:min(var(--max), calc(100% - 24px));
-      margin:0 auto;
-      padding:22px 0 30px;
+      margin:auto;
+      padding:20px 0;
     }
 
     .topbar{
       display:flex;
-      align-items:center;
       justify-content:space-between;
-      gap:16px;
-      margin-bottom:18px;
-      flex-wrap:wrap;
+      align-items:center;
+      margin-bottom:16px;
     }
 
-    .titlebox h1{
+    h1{
       margin:0;
-      font-size:clamp(1.7rem, 2.8vw, 2.4rem);
-      line-height:1.05;
       color:var(--accent);
     }
 
-    .titlebox p{
-      margin:8px 0 0;
-      color:var(--muted);
-      font-size:.98rem;
-    }
-
     .back-btn{
-      appearance:none;
-      border:1px solid var(--border);
       background:#fff;
-      color:var(--ink);
+      border:1px solid var(--border);
       padding:10px 16px;
       border-radius:999px;
-      font-weight:700;
       text-decoration:none;
+      font-weight:600;
       box-shadow:var(--shadow);
-      transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-      white-space:nowrap;
-    }
-
-    .back-btn:hover{
-      transform:translateY(-1px);
-      border-color:#d9d1c6;
-      box-shadow:0 12px 28px rgba(0,0,0,.10);
     }
 
     .panel{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:24px;
-      box-shadow:var(--shadow);
+      background:#fff;
+      border-radius:20px;
       overflow:hidden;
-    }
-
-    .panel-head{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:center;
-      padding:16px 18px;
-      border-bottom:1px solid var(--border);
-      background:linear-gradient(180deg,#fff,#fcfaf7);
-      flex-wrap:wrap;
-    }
-
-    .panel-head strong{
-      font-size:1rem;
-    }
-
-    .legend{
-      color:var(--muted);
-      font-size:.92rem;
+      box-shadow:var(--shadow);
     }
 
     #map{
-      width:100%;
-      height:72vh;
-      min-height:480px;
-      background:#eee;
-    }
-
-    .leaflet-popup-content{
-      margin:12px 14px;
-      line-height:1.45;
-      font-size:.95rem;
+      height:75vh;
+      min-height:450px;
     }
 
     .popup-title{
       font-weight:800;
       color:var(--accent);
       margin-bottom:6px;
-      font-size:1rem;
-    }
-
-    .popup-line{
-      color:var(--ink);
-      margin:4px 0;
-    }
-
-    .popup-muted{
-      color:var(--muted);
-      font-size:.92rem;
-    }
-
-    .footer-note{
-      margin-top:12px;
-      color:var(--muted);
-      font-size:.92rem;
-      text-align:center;
-    }
-
-    @media (max-width: 768px){
-      .wrap{
-        width:min(var(--max), calc(100% - 16px));
-        padding-top:14px;
-      }
-
-      .topbar{
-        align-items:flex-start;
-      }
-
-      #map{
-        height:68vh;
-        min-height:420px;
-      }
     }
   </style>
 </head>
+
 <body>
   <main class="wrap">
-    <div class="topbar">
-      <div class="titlebox">
-        <h1>Mapa de restaurantes</h1>
-        <p>Ubicación de todos los restaurantes visitados por la Cofradía</p>
-      </div>
 
-      <a class="back-btn" href="index.html">Volver</a>
+    <div class="topbar">
+      <h1>Mapa de restaurantes</h1>
+      <a class="back-btn" href="restaurantes.html">Volver</a>
     </div>
 
-    <section class="panel">
-      <div class="panel-head">
-        <strong>Restaurantes de la Cofradía</strong>
-        <div class="legend">Pulsa en un marcador para ver la información</div>
-      </div>
-
+    <div class="panel">
       <div id="map"></div>
-    </section>
+    </div>
 
-    <p class="footer-note">
-      Consejo: centra el mapa en Galicia o en vuestra zona habitual para que quede más bonito.
-    </p>
   </main>
 
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    crossorigin=""
-  ></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    const restaurantes = [
-      {
-        nombre: "Casa Pepe",
-        fecha: "2024-03-16",
-        direccion: "Calle Mayor 12, Pontevedra",
-        lat: 42.4318,
-        lng: -8.6444,
-        menu: "Cocido, vino tinto y filloas"
-      },
-      {
-        nombre: "Mesón O Lagar",
-        fecha: "2024-06-22",
-        direccion: "Praza de España 5, Vigo",
-        lat: 42.2406,
-        lng: -8.7207,
-        menu: "Pulpo, churrasco y postre casero"
-      },
-      {
-        nombre: "A Taberna do Porto",
-        fecha: "2025-01-18",
-        direccion: "Av. da Mariña 20, Vilagarcía",
-        lat: 42.5963,
-        lng: -8.7659,
-        menu: "Mariscada y tarta de Santiago"
-      }
-    ];
-
-    const map = L.map("map", {
-      scrollWheelZoom: true
-    });
+    const map = L.map("map");
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap'
+      maxZoom: 19
     }).addTo(map);
 
-    const bounds = [];
+    // 🔥 AQUÍ ESTÁ LA CLAVE: cargar tu JSON real
+    fetch("restaurantes.json")
+      .then(res => res.json())
+      .then(data => {
 
-    restaurantes.forEach(r => {
-      if (typeof r.lat !== "number" || typeof r.lng !== "number") return;
+        const restaurantes = data.restaurantes;
+        const bounds = [];
 
-      const marker = L.marker([r.lat, r.lng]).addTo(map);
+        restaurantes.forEach(r => {
 
-      marker.bindPopup(`
-        <div class="popup-title">${r.nombre}</div>
-        <div class="popup-line"><strong>Fecha:</strong> ${formateaFecha(r.fecha)}</div>
-        <div class="popup-line"><strong>Dirección:</strong> ${r.direccion}</div>
-        ${r.menu ? `<div class="popup-line"><strong>Menú:</strong> ${r.menu}</div>` : ""}
-      `);
+          if (!r.latitud || !r.longitud) return;
 
-      bounds.push([r.lat, r.lng]);
-    });
+          const lat = parseFloat(r.latitud);
+          const lng = parseFloat(r.longitud);
 
-    if (bounds.length === 1) {
-      map.setView(bounds[0], 14);
-    } else if (bounds.length > 1) {
-      map.fitBounds(bounds, { padding: [40, 40] });
-    } else {
-      map.setView([42.4338, -8.6480], 10);
-    }
+          if (isNaN(lat) || isNaN(lng)) return;
+
+          const marker = L.marker([lat, lng]).addTo(map);
+
+          marker.bindPopup(`
+            <div class="popup-title">${r.nombre}</div>
+            <div><strong>Fecha:</strong> ${formateaFecha(r.fecha)}</div>
+            <div><strong>Dirección:</strong> ${r.direccion}</div>
+            ${r.precio ? `<div><strong>Precio:</strong> ${r.precio}</div>` : ""}
+            ${r.descripcion ? `<div>${r.descripcion}</div>` : ""}
+          `);
+
+          bounds.push([lat, lng]);
+        });
+
+        if (bounds.length > 0) {
+          map.fitBounds(bounds, { padding: [40, 40] });
+        } else {
+          map.setView([42.4338, -8.648], 10);
+        }
+
+      })
+      .catch(err => {
+        console.error("Error cargando JSON:", err);
+      });
 
     function formateaFecha(fechaISO){
       if (!fechaISO) return "—";
       const d = new Date(fechaISO);
-      if (Number.isNaN(d.getTime())) return fechaISO;
+      if (isNaN(d)) return fechaISO;
 
-      return d.toLocaleDateString("es-ES", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric"
-      });
+      return d.toLocaleDateString("es-ES");
     }
   </script>
+
 </body>
 </html>
