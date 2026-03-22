@@ -421,6 +421,31 @@
       color:var(--ink) !important;
     }
 
+    .leaflet-control-layers{
+      border:none !important;
+      border-radius:16px !important;
+      box-shadow:0 10px 24px rgba(0,0,0,.12) !important;
+      overflow:hidden;
+    }
+
+    .leaflet-control-layers-toggle{
+      width:44px !important;
+      height:44px !important;
+    }
+
+    .leaflet-control-layers-expanded{
+      padding:12px 14px !important;
+      background:#fff !important;
+      color:var(--ink) !important;
+      min-width:180px;
+    }
+
+    .leaflet-control-layers label{
+      font-size:.95rem;
+      font-weight:600;
+      margin:4px 0;
+    }
+
     .footer-note{
       margin-top:12px;
       text-align:center;
@@ -551,7 +576,7 @@
 
       <div class="stats">
         <div class="stat">
-          <div class="stat-label">Total Restaurantes</div>
+          <div class="stat-label">Total en JSON</div>
           <div class="stat-value" id="statTotal">—</div>
         </div>
         <div class="stat">
@@ -629,33 +654,43 @@
       scrollWheelZoom: true
     });
 
-    // 🧭 Mapa normal
-const capaOSM = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 19,
-  attribution: '&copy; OpenStreetMap'
-});
+    const capaOSM = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    });
 
-// 🛰️ PNOA (ortofoto España)
-const capaPNOA = L.tileLayer(
-  "https://www.ign.es/wmts/pnoa-ma?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OI.OrthoimageCoverage&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
-  {
-    maxZoom: 19,
-    attribution: "© IGN España (PNOA)"
-  }
-);
+    const capaPNOA = L.tileLayer(
+      "https://www.ign.es/wmts/pnoa-ma?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OI.OrthoimageCoverage&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+      {
+        maxZoom: 19,
+        attribution: "© IGN España (PNOA)"
+      }
+    );
 
-// Activar por defecto
-capaOSM.addTo(map);
+    const capaHibridaEtiquetas = L.tileLayer(
+      "https://www.ign.es/wmts/ign-base?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=IGNBaseTodo&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+      {
+        maxZoom: 19,
+        opacity: 0.65,
+        attribution: "© IGN España"
+      }
+    );
 
-// Selector de capas
-L.control.layers(
-  {
-    "🗺️ Mapa": capaOSM,
-    "🛰️ PNOA": capaPNOA
-  },
-  null,
-  { collapsed: false }
-).addTo(map);
+    const baseHibrida = L.layerGroup([capaPNOA, capaHibridaEtiquetas]);
+
+    baseHibrida.addTo(map);
+
+    L.control.layers(
+      {
+        "🛰️ PNOA + etiquetas": baseHibrida,
+        "🛰️ PNOA": capaPNOA,
+        "🗺️ Mapa": capaOSM
+      },
+      null,
+      {
+        collapsed: false
+      }
+    ).addTo(map);
 
     const markerCluster = L.markerClusterGroup({
       showCoverageOnHover: false,
@@ -674,7 +709,8 @@ L.control.layers(
       filtrados: [],
       markers: [],
       bounds: [],
-      activeId: null
+      activeId: null,
+      userMarker: null
     };
 
     const elLoading = document.getElementById("loadingBox");
@@ -701,7 +737,7 @@ L.control.layers(
       try {
         map.setView(defaultCenter, defaultZoom);
 
-        const resp = await fetch("restaurantes.json", { cache: "no-store" });
+        const resp = await fetch("restaurantes.json?v=" + Date.now(), { cache: "no-store" });
         if (!resp.ok) {
           throw new Error("No se pudo cargar restaurantes.json");
         }
@@ -861,11 +897,7 @@ L.control.layers(
             <div class="item-name">${escHtml(r.nombre || "Restaurante sin nombre")}</div>
             <div class="item-line">${escHtml(formateaFecha(r.fecha) || "Fecha no disponible")}</div>
             <div class="item-line">${escHtml(r.direccion || "Dirección no disponible")}</div>
-            ${
-              r.precio
-                ? `<div class="item-line item-muted">Precio: ${escHtml(r.precio)}</div>`
-                : ""
-            }
+            ${r.precio ? `<div class="item-line item-muted">Precio: ${escHtml(r.precio)}</div>` : ""}
           </button>
         `;
       }).join("");
@@ -944,7 +976,11 @@ L.control.layers(
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
 
-          L.circleMarker([lat, lng], {
+          if (estado.userMarker) {
+            map.removeLayer(estado.userMarker);
+          }
+
+          estado.userMarker = L.circleMarker([lat, lng], {
             radius: 8,
             weight: 2,
             opacity: 1,
@@ -952,6 +988,7 @@ L.control.layers(
           }).addTo(map).bindPopup("Tu ubicación aproximada");
 
           map.setView([lat, lng], 14, { animate: true });
+          estado.userMarker.openPopup();
         },
         () => {
           alert("No se ha podido obtener tu ubicación.");
