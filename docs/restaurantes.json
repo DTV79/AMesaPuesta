@@ -17,8 +17,8 @@
     "no_asistieron": ["José Increíble"],
     "descripcion": "",
     "autor": "",
-    "latitud": 42.25211,
-    "longitud": -8.70286
+    "latitud": 42.25226,
+    "longitud": -8.70279
   },
   {
     "id": 0,
@@ -39,7 +39,7 @@
     "descripcion": "",
     "autor": "",
     "latitud": 42.48533,
-    "longitud": -8.86428
+    "longitud": -8.86427
   },
   {
     "id": 0,
@@ -80,8 +80,8 @@
     "no_asistieron": ["Capón","Miguel Capón","Pablo Canitrot","Quintana","Xabi","Herva"],
     "descripcion": "",
     "autor": "",
-    "latitud": 41.65092,
-    "longitud": -8.62285
+    "latitud": 41.65094,
+    "longitud": -8.62286
   },
   {
     "id": 0,
@@ -122,8 +122,8 @@
     "no_asistieron": ["Decio","Pablo Hermida","Sera","Herva"],
     "descripcion": "",
     "autor": "",
-    "latitud": 42.1304,
-    "longitud": -8.42982
+    "latitud": 42.12168,
+    "longitud": -8.42998
   },
   {
     "id": 0,
@@ -143,8 +143,8 @@
     "no_asistieron": ["Manolo Granja"],
     "descripcion": "",
     "autor": "",
-    "latitud": 42.02902,
-    "longitud": -8.83557
+    "latitud": 42.02883,
+    "longitud": -8.83594
   },
   {
     "id": 0,
@@ -164,8 +164,8 @@
     "no_asistieron": ["Capón","Miguel Capón","Quintana","Xabi","Isma Zeus"],
     "descripcion": "",
     "autor": "",
-    "latitud": 42.28602,
-    "longitud": -8.14421
+    "latitud": 42.28592,
+    "longitud": -8.14425
   },
   {
     "id": 0,
@@ -185,7 +185,7 @@
     "no_asistieron": ["Carlos Runner","Iñaki","Manolo Granja","Xabi"],
     "descripcion": "Caza, monte y tradición gallega en estado puro",
     "autor": "Diego",
-    "latitud": 42.34025,
-    "longitud": -8.45238
+    "latitud": 42.3405,
+    "longitud": -8.45235
   }
 ]}
