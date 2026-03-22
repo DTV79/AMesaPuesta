@@ -772,6 +772,7 @@
       const ano = extraerAno(fecha);
 
       return {
+        uid: `rest-${index}`,
         id: r.id ?? index + 1,
         nombre: limpiarTexto(r.nombre),
         direccion: limpiarTexto(r.direccion),
@@ -873,12 +874,12 @@
         });
 
         marker.on("click", () => {
-          estado.activeId = r.id;
+          estado.activeId = r.uid;
           resaltarActivoEnLista();
         });
 
         markerCluster.addLayer(marker);
-        estado.markers.push({ id: r.id, marker, data: r });
+        estado.markers.push({ uid: r.uid, marker, data: r });
         estado.bounds.push([r.latitud, r.longitud]);
       });
 
@@ -893,7 +894,7 @@
 
       const html = estado.filtrados.map(r => {
         return `
-          <button class="item" type="button" data-id="${escAttr(r.id)}">
+          <button class="item" type="button" data-id="${escAttr(r.uid)}">
             <div class="item-name">${escHtml(r.nombre || "Restaurante sin nombre")}</div>
             <div class="item-line">${escHtml(formateaFecha(r.fecha) || "Fecha no disponible")}</div>
             <div class="item-line">${escHtml(r.direccion || "Dirección no disponible")}</div>
@@ -906,8 +907,8 @@
 
       elLista.querySelectorAll(".item").forEach(btn => {
         btn.addEventListener("click", () => {
-          const id = btn.getAttribute("data-id");
-          irARestaurante(id);
+          const uid = btn.getAttribute("data-id");
+          irARestaurante(uid);
         });
       });
 
@@ -938,11 +939,11 @@
       });
     }
 
-    function irARestaurante(id) {
-      const encontrado = estado.markers.find(m => String(m.id) === String(id));
+    function irARestaurante(uid) {
+      const encontrado = estado.markers.find(m => m.uid === uid);
       if (!encontrado) return;
 
-      estado.activeId = encontrado.id;
+      estado.activeId = encontrado.uid;
       resaltarActivoEnLista();
 
       map.setView([encontrado.data.latitud, encontrado.data.longitud], 16, {
@@ -956,7 +957,7 @@
 
     function resaltarActivoEnLista() {
       elLista.querySelectorAll(".item").forEach(el => {
-        const activo = String(el.getAttribute("data-id")) === String(estado.activeId);
+        const activo = el.getAttribute("data-id") === estado.activeId;
         el.classList.toggle("active", activo);
 
         if (activo) {
