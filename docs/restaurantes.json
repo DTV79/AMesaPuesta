@@ -17,8 +17,8 @@
     "no_asistieron": ["José Increíble"],
     "descripcion": "",
     "autor": "",
-    "latitud": 42,
-    "longitud": -9
+    "latitud": 42.25211,
+    "longitud": -8.70286
   },
   {
     "id": 0,
@@ -38,8 +38,8 @@
     "no_asistieron": ["Carlos Runner","José Increíble","Pablo Canitrot","Pablo Hermida","Xabi"],
     "descripcion": "",
     "autor": "",
-    "latitud": 42,
-    "longitud": -9
+    "latitud": 42.48533,
+    "longitud": -8.86428
   },
   {
     "id": 0,
@@ -59,8 +59,8 @@
     "no_asistieron": ["Pablo Canitrot","Quintana"],
     "descripcion": "",
     "autor": "",
-    "latitud": 43,
-    "longitud": -8
+    "latitud": 42.66026,
+    "longitud": -8.11309
   },
   {
     "id": 0,
@@ -80,8 +80,8 @@
     "no_asistieron": ["Capón","Miguel Capón","Pablo Canitrot","Quintana","Xabi","Herva"],
     "descripcion": "",
     "autor": "",
-    "latitud": 42,
-    "longitud": -9
+    "latitud": 41.65092,
+    "longitud": -8.62285
   },
   {
     "id": 0,
@@ -101,8 +101,8 @@
     "no_asistieron": ["José Increíble","Pablo Canitrot","Xabi"],
     "descripcion": "",
     "autor": "",
-    "latitud": 42,
-    "longitud": -9
+    "latitud": 42.48533,
+    "longitud": -8.86428
   },
   {
     "id": 0,
@@ -122,8 +122,8 @@
     "no_asistieron": ["Decio","Pablo Hermida","Sera","Herva"],
     "descripcion": "",
     "autor": "",
-    "latitud": 42,
-    "longitud": -8
+    "latitud": 42.1304,
+    "longitud": -8.42982
   },
   {
     "id": 0,
@@ -143,8 +143,8 @@
     "no_asistieron": ["Manolo Granja"],
     "descripcion": "",
     "autor": "",
-    "latitud": 42,
-    "longitud": -9
+    "latitud": 42.02902,
+    "longitud": -8.83557
   },
   {
     "id": 0,
@@ -164,8 +164,8 @@
     "no_asistieron": ["Capón","Miguel Capón","Quintana","Xabi","Isma Zeus"],
     "descripcion": "",
     "autor": "",
-    "latitud": 42,
-    "longitud": -8
+    "latitud": 42.28602,
+    "longitud": -8.14421
   },
   {
     "id": 0,
@@ -185,7 +185,7 @@
     "no_asistieron": ["Carlos Runner","Iñaki","Manolo Granja","Xabi"],
     "descripcion": "Caza, monte y tradición gallega en estado puro",
     "autor": "Diego",
-    "latitud": 42,
-    "longitud": -8
+    "latitud": 42.34025,
+    "longitud": -8.45238
   }
 ]}
