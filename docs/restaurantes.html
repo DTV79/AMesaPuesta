@@ -17,6 +17,8 @@
     --ink:#1f1f1f;
     --muted:#6b7280;
     --accent:#8b0000;
+    --accent-dark:#6f0000;
+    --accent-soft:#f6eaea;
     --border:#e5e7eb;
     --shadow:0 8px 24px rgba(0,0,0,.08);
     --radius:18px;
@@ -53,20 +55,63 @@
     padding:0;
   }
 
+  .top-actions{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:24px;
+    flex-wrap:wrap;
+  }
+
+  .top-actions-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
   .volver{
-    display:inline-block;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
     background:#8b0000;
     color:white;
-    padding:8px 16px;
-    border-radius:6px;
+    padding:10px 16px;
+    border-radius:10px;
     text-decoration:none;
-    font-weight:600;
+    font-weight:700;
     font-size:14px;
-    margin-bottom:24px;
+    box-shadow:0 6px 16px rgba(139,0,0,.18);
+    transition:.2s;
   }
 
   .volver:hover{
-    opacity:.9;
+    opacity:.95;
+    transform:translateY(-1px);
+  }
+
+  .btn-mapa{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background:#fff;
+    color:var(--accent);
+    border:1px solid #d9cfcf;
+    padding:10px 16px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:700;
+    font-size:14px;
+    box-shadow:0 6px 16px rgba(0,0,0,.06);
+    transition:.2s;
+  }
+
+  .btn-mapa:hover{
+    background:#faf7f7;
+    border-color:#c9b1b1;
+    transform:translateY(-1px);
   }
 
   .filtros{
@@ -325,7 +370,6 @@
     font-size:15px;
   }
 
-  /* BOTÓN SUBIR ARRIBA */
   #btnSubir{
     position: fixed;
     right: 22px;
@@ -389,6 +433,22 @@
       letter-spacing:1px;
     }
 
+    .top-actions{
+      align-items:stretch;
+    }
+
+    .top-actions-left{
+      width:100%;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .volver,
+    .btn-mapa{
+      width:100%;
+    }
+
     #btnSubir{
       right: 16px;
       bottom: 16px;
@@ -428,7 +488,18 @@
 </header>
 
 <div class="container">
-  <a href="index.html" class="volver">← Volver</a>
+  <div class="top-actions">
+    <div class="top-actions-left">
+      <a href="index.html" class="volver">← Volver</a>
+
+      <a href="mapa.html" class="btn-mapa">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 5.1 9 3 3 5v16l6-2.1 6 2.1 6-2V3l-6 2.1ZM14 19l-4-1.4V5l4 1.4V19Z"/>
+        </svg>
+        Ver mapa
+      </a>
+    </div>
+  </div>
 
   <div class="filtros">
     <div class="buscador-wrap">
@@ -578,6 +649,13 @@
     return llenas + vacias;
   }
 
+  function tieneCoordenadasValidas(rest){
+    const lat = Number(String(rest.latitud ?? "").replace(",", "."));
+    const lng = Number(String(rest.longitud ?? "").replace(",", "."));
+
+    return Number.isFinite(lat) && Number.isFinite(lng) && !(lat === 0 && lng === 0);
+  }
+
   function crearFicha(rest, index){
     const web = rest.web && String(rest.web).trim() !== ""
       ? `<a class="web-link" href="${rest.web}" target="_blank" rel="noopener noreferrer">${rest.web}</a>`
@@ -595,6 +673,10 @@
       ? rest.autor
       : "Cofradía A Mesa Puesta";
 
+    const mapaRestaurante = tieneCoordenadasValidas(rest)
+      ? `<p><b>Mapa:</b> <a class="web-link" href="mapa.html" title="Ver este restaurante en el mapa">Disponible en mapa</a></p>`
+      : "";
+
     return `
       <div class="restaurante">
         <div class="restaurante-top">
@@ -607,6 +689,7 @@
           <p><b>Dirección:</b> ${direccionMapa}</p>
           <p><b>Teléfono:</b> ${textoSeguro(rest.telefono)}</p>
           <p><b>Web:</b> ${web}</p>
+          ${mapaRestaurante}
         </div>
 
         <div class="cita-cofrade">
@@ -710,7 +793,8 @@
     const contenedor = document.getElementById("lista-restaurantes");
     const contador = document.getElementById("contador");
 
-    contador.textContent = `Mostrando ${lista.length} restaurante${lista.length === 1 ? "" : "s"}`;
+    const conMapa = lista.filter(tieneCoordenadasValidas).length;
+    contador.textContent = `Mostrando ${lista.length} restaurante${lista.length === 1 ? "" : "s"} · ${conMapa} con ubicación en el mapa`;
 
     if(lista.length === 0){
       contenedor.innerHTML = `<div class="mensaje">No hay restaurantes que coincidan con la búsqueda.</div>`;
