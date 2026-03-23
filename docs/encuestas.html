@@ -1144,7 +1144,7 @@
     await cargarDatos();
   }catch(error){
     console.error(error);
-    alert("No se pudo registrar el voto.");
+    alert(error.message || "No se pudo registrar el voto.");
     voteButton.textContent = "Votar";
     voteButton.disabled = false;
   }
