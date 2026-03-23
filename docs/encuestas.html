@@ -913,229 +913,227 @@
       <div class="footer-space"></div>
     </div>
   </main>
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzPxPPBYBhzWRJSEm5TRHEJnW2cnxGSauLZnrUZ4UKQPwS8IP5_9I5CJWoD6JfiTQjA/exec";
 
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzPxPPBYBhzWRJSEm5TRHEJnW2cnxGSauLZnrUZ4UKQPwS8IP5_9I5CJWoD6JfiTQjA/exec";
+  const activeContainer = document.getElementById("activePolls");
+  const historyContainer = document.getElementById("historyPolls");
 
-    const activeContainer = document.getElementById("activePolls");
-    const historyContainer = document.getElementById("historyPolls");
+  let COFRADES = [];
 
-    const COFRADES = [
-      { id: "capon", nombre: "Capón" },
-      { id: "carlos", nombre: "Carlos" },
-      { id: "javi", nombre: "Javi" },
-      { id: "pablo", nombre: "Pablo" },
-      { id: "santi", nombre: "Santi" },
-      { id: "miguel", nombre: "Miguel" },
-      { id: "roi", nombre: "Roi" },
-      { id: "diego", nombre: "Diego" },
-      { id: "david", nombre: "David" },
-      { id: "brais", nombre: "Brais" },
-      { id: "iago", nombre: "Iago" }
-    ];
+  function safeArray(value){
+    return Array.isArray(value) ? value : [];
+  }
 
-    function safeArray(value){
-      return Array.isArray(value) ? value : [];
-    }
+  function safeString(value){
+    return typeof value === "string" ? value : "";
+  }
 
-    function safeString(value){
-      return typeof value === "string" ? value : "";
-    }
+  function safeNumber(value, fallback = 0){
+    const n = Number(value);
+    return Number.isFinite(n) ? n : fallback;
+  }
 
-    function safeNumber(value, fallback = 0){
-      const n = Number(value);
-      return Number.isFinite(n) ? n : fallback;
-    }
+  function escapeHtml(value){
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
 
-    function escapeHtml(value){
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
-    }
+  function badgeTypeLabel(type){
+    if(type === "publica") return "Pública";
+    if(type === "secreta") return "Secreta";
+    return "Participación visible";
+  }
 
-    function badgeTypeLabel(type){
-      if(type === "publica") return "Pública";
-      if(type === "secreta") return "Secreta";
-      return "Participación visible";
-    }
+  function badgeTypeClass(type){
+    if(type === "publica") return "publica";
+    if(type === "secreta") return "secreta";
+    return "participacion";
+  }
 
-    function badgeTypeClass(type){
-      if(type === "publica") return "publica";
-      if(type === "secreta") return "secreta";
-      return "participacion";
-    }
+  function typeIcon(){
+    return `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2v20"></path>
+        <path d="M4 8h16"></path>
+        <path d="M7 8V5h10v3"></path>
+      </svg>
+    `;
+  }
 
-    function typeIcon(){
-      return `
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 2v20"></path>
-          <path d="M4 8h16"></path>
-          <path d="M7 8V5h10v3"></path>
-        </svg>
-      `;
-    }
+  function percent(votes, total){
+    const v = safeNumber(votes, 0);
+    const t = safeNumber(total, 0);
+    if(!t) return 0;
+    return Math.round((v / t) * 100);
+  }
 
-    function percent(votes, total){
-      const v = safeNumber(votes, 0);
-      const t = safeNumber(total, 0);
-      if(!t) return 0;
-      return Math.round((v / t) * 100);
-    }
+  function formatCloseDate(value){
+    if(!value) return "";
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return safeString(value);
 
-    function formatCloseDate(value){
-      if(!value) return "";
-      const d = new Date(value);
-      if (Number.isNaN(d.getTime())) return safeString(value);
+    return "Cierra el " + d.toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric"
+    });
+  }
 
-      return "Cierra el " + d.toLocaleDateString("es-ES", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric"
-      });
-    }
+  function getMaxChoicesLabel(maxChoices){
+    const n = safeNumber(maxChoices, 1);
+    if(n <= 1) return "Solo 1 opción";
+    return `Hasta ${n} opciones`;
+  }
 
-    function getMaxChoicesLabel(maxChoices){
-      const n = safeNumber(maxChoices, 1);
-      if(n <= 1) return "Solo 1 opción";
-      return `Hasta ${n} opciones`;
-    }
+  function normalizeOption(option){
+    return {
+      name: escapeHtml(option?.name || ""),
+      votes: safeNumber(option?.votes, 0),
+      voters: safeArray(option?.voters).map(v => escapeHtml(v))
+    };
+  }
 
-    function normalizeOption(option){
-      return {
-        name: escapeHtml(option?.name || ""),
-        votes: safeNumber(option?.votes, 0),
-        voters: safeArray(option?.voters).map(v => escapeHtml(v))
-      };
-    }
+  function normalizePoll(poll){
+    const options = safeArray(poll?.options).map(normalizeOption);
+    const totalVotesFromApi = safeNumber(poll?.totalVotes, -1);
+    const totalVotes = totalVotesFromApi >= 0
+      ? totalVotesFromApi
+      : options.reduce((acc, option) => acc + safeNumber(option.votes, 0), 0);
 
-    function normalizePoll(poll){
-      const options = safeArray(poll?.options).map(normalizeOption);
-      const totalVotesFromApi = safeNumber(poll?.totalVotes, -1);
-      const totalVotes = totalVotesFromApi >= 0
-        ? totalVotesFromApi
-        : options.reduce((acc, option) => acc + safeNumber(option.votes, 0), 0);
+    const maxChoices =
+      safeNumber(poll?.maxChoices, 0) ||
+      safeNumber(poll?.max_choices, 0) ||
+      1;
 
-      const maxChoices =
-        safeNumber(poll?.maxChoices, 0) ||
-        safeNumber(poll?.max_choices, 0) ||
-        1;
+    return {
+      id: escapeHtml(poll?.id || ""),
+      title: escapeHtml(poll?.title || "Encuesta sin título"),
+      description: escapeHtml(poll?.description || ""),
+      type: ["publica", "secreta", "participacion"].includes(poll?.type) ? poll.type : "secreta",
+      status: poll?.status === "cerrada" ? "cerrada" : "abierta",
+      closes: poll?.closes || "",
+      showResults: poll?.showResults !== false,
+      maxChoices,
+      totalVotes,
+      votedMembers: safeArray(poll?.votedMembers).map(v => escapeHtml(v)),
+      options,
+      winner: poll?.winner && poll.winner.name
+        ? {
+            name: escapeHtml(poll.winner.name),
+            votes: safeNumber(poll.winner.votes, 0)
+          }
+        : null
+    };
+  }
 
-      return {
-        id: escapeHtml(poll?.id || ""),
-        title: escapeHtml(poll?.title || "Encuesta sin título"),
-        description: escapeHtml(poll?.description || ""),
-        type: ["publica", "secreta", "participacion"].includes(poll?.type) ? poll.type : "secreta",
-        status: poll?.status === "cerrada" ? "cerrada" : "abierta",
-        closes: poll?.closes || "",
-        showResults: poll?.showResults !== false,
-        maxChoices,
-        totalVotes,
-        votedMembers: safeArray(poll?.votedMembers).map(v => escapeHtml(v)),
-        options,
-        winner: poll?.winner && poll.winner.name
-          ? {
-              name: escapeHtml(poll.winner.name),
-              votes: safeNumber(poll.winner.votes, 0)
-            }
-          : null
-      };
-    }
+  function normalizeCofrade(member){
+    return {
+      id: escapeHtml(member?.id || ""),
+      nombre: escapeHtml(member?.nombre || member?.id || "")
+    };
+  }
 
-    function renderCofradeSelect(pollId){
-      return `
-        <div class="cofrade-field">
-          <label class="cofrade-label" for="cofrade-${pollId}">Quién vota</label>
-          <select class="cofrade-select" id="cofrade-${pollId}" data-poll-id="${pollId}">
-            <option value="">Selecciona cofrade</option>
-            ${COFRADES.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.nombre)}</option>`).join("")}
-          </select>
-        </div>
-      `;
-    }
+  function renderCofradeSelect(pollId){
+    const options = COFRADES.length
+      ? COFRADES.map(c => `<option value="${c.id}">${c.nombre}</option>`).join("")
+      : `<option value="">No hay cofrades disponibles</option>`;
 
-    function renderVisibilityBlock(poll){
-      if(poll.type === "publica"){
-        return `
-          <div class="visibility-panel">
-            <h4 class="mini-title">Detalle del voto</h4>
-            <div class="grouped-voters">
-              ${poll.options.map(option => `
-                <div class="group">
-                  <div class="group-title">
-                    <span>${option.name}</span>
-                    <span class="group-count">${option.voters.length} voto${option.voters.length !== 1 ? "s" : ""}</span>
-                  </div>
-                  <div class="chips">
-                    ${option.voters.length
-                      ? option.voters.map(voter => `<span class="chip">${voter}</span>`).join("")
-                      : `<span class="chip">Sin votos todavía</span>`
-                    }
-                  </div>
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        `;
-      }
+    return `
+      <div class="cofrade-field">
+        <label class="cofrade-label" for="cofrade-${pollId}">Quién vota</label>
+        <select class="cofrade-select" id="cofrade-${pollId}" data-poll-id="${pollId}">
+          <option value="">Selecciona cofrade</option>
+          ${options}
+        </select>
+      </div>
+    `;
+  }
 
-      if(poll.type === "participacion"){
-        return `
-          <div class="visibility-panel">
-            <h4 class="mini-title">Participación registrada</h4>
-            <div class="chips">
-              ${poll.votedMembers.length
-                ? poll.votedMembers.map(voter => `<span class="chip">${voter}</span>`).join("")
-                : `<span class="chip">Aún no ha votado nadie</span>`
-              }
-            </div>
-          </div>
-        `;
-      }
-
+  function renderVisibilityBlock(poll){
+    if(poll.type === "publica"){
       return `
         <div class="visibility-panel">
-          <h4 class="mini-title">Confidencialidad</h4>
-          <div class="muted-box">
-            Esta encuesta está marcada como <strong>secreta</strong>. La identidad de cada voto no se muestra en pantalla y aquí solo aparece el resultado agregado por opción.
+          <h4 class="mini-title">Detalle del voto</h4>
+          <div class="grouped-voters">
+            ${poll.options.map(option => `
+              <div class="group">
+                <div class="group-title">
+                  <span>${option.name}</span>
+                  <span class="group-count">${option.voters.length} voto${option.voters.length !== 1 ? "s" : ""}</span>
+                </div>
+                <div class="chips">
+                  ${option.voters.length
+                    ? option.voters.map(voter => `<span class="chip">${voter}</span>`).join("")
+                    : `<span class="chip">Sin votos todavía</span>`
+                  }
+                </div>
+              </div>
+            `).join("")}
           </div>
         </div>
       `;
     }
 
-    function renderPollCard(poll){
-      const winner = poll.winner;
-      const maxChoices = safeNumber(poll.maxChoices, 1);
-
+    if(poll.type === "participacion"){
       return `
-        <article class="card" data-poll-id="${poll.id}" data-max-choices="${maxChoices}">
-          <div class="poll-top">
-            <div>
-              <h3 class="poll-title">${poll.title}</h3>
-              <p class="poll-desc">${poll.description}</p>
-              <div class="badges">
-                <span class="badge ${badgeTypeClass(poll.type)}">
-                  ${typeIcon()}
-                  ${badgeTypeLabel(poll.type)}
-                </span>
-                <span class="badge ${poll.status}">
-                  ${poll.status === "abierta" ? "Abierta" : "Cerrada"}
-                </span>
-                <span class="badge neutral">
-                  ${formatCloseDate(poll.closes) || "Sin fecha de cierre"}
-                </span>
-                <span class="badge neutral">
-                  ${getMaxChoicesLabel(maxChoices)}
-                </span>
-              </div>
+        <div class="visibility-panel">
+          <h4 class="mini-title">Participación registrada</h4>
+          <div class="chips">
+            ${poll.votedMembers.length
+              ? poll.votedMembers.map(voter => `<span class="chip">${voter}</span>`).join("")
+              : `<span class="chip">Aún no ha votado nadie</span>`
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="visibility-panel">
+        <h4 class="mini-title">Confidencialidad</h4>
+        <div class="muted-box">
+          Esta encuesta está marcada como <strong>secreta</strong>. La identidad de cada voto no se muestra en pantalla y aquí solo aparece el resultado agregado por opción.
+        </div>
+      </div>
+    `;
+  }
+
+  function renderPollCard(poll){
+    const winner = poll.winner;
+    const maxChoices = safeNumber(poll.maxChoices, 1);
+
+    return `
+      <article class="card" data-poll-id="${poll.id}" data-max-choices="${maxChoices}">
+        <div class="poll-top">
+          <div>
+            <h3 class="poll-title">${poll.title}</h3>
+            <p class="poll-desc">${poll.description}</p>
+            <div class="badges">
+              <span class="badge ${badgeTypeClass(poll.type)}">
+                ${typeIcon()}
+                ${badgeTypeLabel(poll.type)}
+              </span>
+              <span class="badge ${poll.status}">
+                ${poll.status === "abierta" ? "Abierta" : "Cerrada"}
+              </span>
+              <span class="badge neutral">
+                ${formatCloseDate(poll.closes) || "Sin fecha de cierre"}
+              </span>
+              <span class="badge neutral">
+                ${getMaxChoicesLabel(maxChoices)}
+              </span>
             </div>
           </div>
+        </div>
 
-          ${
-            poll.status === "abierta"
-            ? `
+        ${
+          poll.status === "abierta"
+          ? `
               <div class="options">
                 ${poll.options.length
                   ? poll.options.map((option, index) => `
@@ -1151,7 +1149,7 @@
               ${renderCofradeSelect(poll.id)}
 
               <div class="poll-actions">
-                <button class="vote-btn" type="button" disabled>Votar</button>
+                <button class="vote-btn" type="button" disabled ${COFRADES.length ? "" : "title='No hay cofrades configurados'"}>Votar</button>
                 <div class="vote-note">
                   ${
                     poll.type === "publica"
@@ -1170,11 +1168,11 @@
                 Esta votación está cerrada y ya no admite nuevos votos.
               </div>
             `
-          }
+        }
 
-          ${
-            poll.showResults
-            ? `
+        ${
+          poll.showResults
+          ? `
               <div class="result-list">
                 ${poll.options.map(option => `
                   <div class="result-row">
@@ -1214,204 +1212,207 @@
                 : ""
               }
             `
-            : `
+          : `
               <div class="muted-box" style="margin-top:18px;">
                 Los resultados no están visibles por el momento.
               </div>
             `
-          }
-
-          ${renderVisibilityBlock(poll)}
-        </article>
-      `;
-    }
-
-    function renderHistoryCard(){
-      return `
-        <article class="card history-card">
-          <div class="history-top">
-            <div>
-              <h3 class="history-title">Histórico de votaciones</h3>
-              <p class="history-desc">Queda preparado para mostrar las encuestas cerradas cuando el backend las devuelva.</p>
-            </div>
-            <span class="badge cerrada">En preparación</span>
-          </div>
-
-          <div class="muted-box">
-            La conexión está activa. Ahora mismo se muestran las encuestas disponibles desde Google Sheets.
-          </div>
-        </article>
-      `;
-    }
-
-    function updateKpis(polls){
-      const totalVotes = polls.reduce((acc, poll) => acc + safeNumber(poll.totalVotes, 0), 0);
-      const activeCount = polls.filter(p => p.status === "abierta").length;
-      const publicCount = polls.filter(p => p.type === "publica").length;
-      const secretCount = polls.filter(p => p.type === "secreta").length;
-
-      document.getElementById("kpiActive").textContent = activeCount;
-      document.getElementById("kpiVotes").textContent = totalVotes;
-      document.getElementById("kpiPublic").textContent = publicCount;
-      document.getElementById("kpiSecret").textContent = secretCount;
-    }
-
-    function showCardStatus(card, message, kind){
-      const box = card.querySelector(".status-box");
-      if(!box) return;
-      box.hidden = false;
-      box.className = `status-box ${kind}`;
-      box.textContent = message;
-    }
-
-    function clearCardStatus(card){
-      const box = card.querySelector(".status-box");
-      if(!box) return;
-      box.hidden = true;
-      box.textContent = "";
-      box.className = "status-box";
-    }
-
-    function bindOptionSelection(){
-      document.querySelectorAll(".card[data-poll-id]").forEach(card => {
-        const optionButtons = Array.from(card.querySelectorAll(".option-btn"));
-        const voteButton = card.querySelector(".vote-btn");
-        const maxChoices = safeNumber(card.dataset.maxChoices, 1);
-        const select = card.querySelector(".cofrade-select");
-
-        if(!voteButton || !select || !optionButtons.length) return;
-
-        function selectedButtons(){
-          return optionButtons.filter(btn => btn.classList.contains("active"));
         }
 
-        function refreshVoteButton(){
-          voteButton.disabled = !(selectedButtons().length > 0 && select.value);
-        }
+        ${renderVisibilityBlock(poll)}
+      </article>
+    `;
+  }
 
-        optionButtons.forEach(btn => {
-          btn.addEventListener("click", () => {
-            clearCardStatus(card);
+  function renderHistoryCard(){
+    return `
+      <article class="card history-card">
+        <div class="history-top">
+          <div>
+            <h3 class="history-title">Histórico de votaciones</h3>
+            <p class="history-desc">Queda preparado para mostrar las encuestas cerradas cuando el backend las devuelva.</p>
+          </div>
+          <span class="badge cerrada">En preparación</span>
+        </div>
 
-            if(maxChoices <= 1){
-              optionButtons.forEach(b => b.classList.remove("active"));
+        <div class="muted-box">
+          La conexión está activa. Ahora mismo se muestran las encuestas disponibles desde Google Sheets.
+        </div>
+      </article>
+    `;
+  }
+
+  function updateKpis(polls){
+    const totalVotes = polls.reduce((acc, poll) => acc + safeNumber(poll.totalVotes, 0), 0);
+    const activeCount = polls.filter(p => p.status === "abierta").length;
+    const publicCount = polls.filter(p => p.type === "publica").length;
+    const secretCount = polls.filter(p => p.type === "secreta").length;
+
+    document.getElementById("kpiActive").textContent = activeCount;
+    document.getElementById("kpiVotes").textContent = totalVotes;
+    document.getElementById("kpiPublic").textContent = publicCount;
+    document.getElementById("kpiSecret").textContent = secretCount;
+  }
+
+  function showCardStatus(card, message, kind){
+    const box = card.querySelector(".status-box");
+    if(!box) return;
+    box.hidden = false;
+    box.className = `status-box ${kind}`;
+    box.textContent = message;
+  }
+
+  function clearCardStatus(card){
+    const box = card.querySelector(".status-box");
+    if(!box) return;
+    box.hidden = true;
+    box.textContent = "";
+    box.className = "status-box";
+  }
+
+  function bindOptionSelection(){
+    document.querySelectorAll(".card[data-poll-id]").forEach(card => {
+      const optionButtons = Array.from(card.querySelectorAll(".option-btn"));
+      const voteButton = card.querySelector(".vote-btn");
+      const maxChoices = safeNumber(card.dataset.maxChoices, 1);
+      const select = card.querySelector(".cofrade-select");
+
+      if(!voteButton || !select || !optionButtons.length) return;
+
+      function selectedButtons(){
+        return optionButtons.filter(btn => btn.classList.contains("active"));
+      }
+
+      function refreshVoteButton(){
+        voteButton.disabled = !(selectedButtons().length > 0 && select.value);
+      }
+
+      optionButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          clearCardStatus(card);
+
+          if(maxChoices <= 1){
+            optionButtons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+          } else {
+            const isActive = btn.classList.contains("active");
+            const count = selectedButtons().length;
+
+            if(isActive){
+              btn.classList.remove("active");
+            } else if(count < maxChoices){
               btn.classList.add("active");
             } else {
-              const isActive = btn.classList.contains("active");
-              const count = selectedButtons().length;
-
-              if(isActive){
-                btn.classList.remove("active");
-              } else if(count < maxChoices){
-                btn.classList.add("active");
-              } else {
-                showCardStatus(card, `Solo puedes elegir hasta ${maxChoices} opciones.`, "error");
-              }
+              showCardStatus(card, `Solo puedes elegir hasta ${maxChoices} opciones.`, "error");
             }
+          }
 
-            refreshVoteButton();
-          });
-        });
-
-        select.addEventListener("change", () => {
-          clearCardStatus(card);
           refreshVoteButton();
         });
+      });
 
-        voteButton.addEventListener("click", async () => {
-          const selected = selectedButtons();
-          if(!selected.length) return;
-          if(!select.value) return;
-
-          const pollId = card.dataset.pollId;
-          const cofradeId = select.value;
-          const cofradeNombre = select.options[select.selectedIndex]?.textContent?.trim() || cofradeId;
-          const options = selected.map(btn =>
-            btn.querySelector(".option-name")?.textContent?.trim() || ""
-          ).filter(Boolean);
-
-          try{
-            voteButton.disabled = true;
-            voteButton.textContent = "Enviando...";
-            clearCardStatus(card);
-
-            await enviarVoto({
-              pollId,
-              cofrade: cofradeId,
-              cofradeNombre,
-              options
-            });
-
-            showCardStatus(card, "Voto registrado correctamente.", "ok");
-            await cargarDatos();
-          }catch(error){
-            console.error(error);
-            showCardStatus(card, error.message || "No se pudo registrar el voto.", "error");
-            voteButton.textContent = "Votar";
-            refreshVoteButton();
-          }
-        });
-
+      select.addEventListener("change", () => {
+        clearCardStatus(card);
         refreshVoteButton();
       });
-    }
 
-    function renderAll(polls){
-      if(!polls.length){
-        activeContainer.innerHTML = `
-          <article class="card">
-            <div class="muted-box">
-              No hay encuestas disponibles en este momento.
-            </div>
-          </article>
-        `;
-      } else {
-        activeContainer.innerHTML = polls.map(renderPollCard).join("");
-      }
+      voteButton.addEventListener("click", async () => {
+        const selected = selectedButtons();
+        if(!selected.length || !select.value) return;
 
-      historyContainer.innerHTML = renderHistoryCard();
-      updateKpis(polls);
-      bindOptionSelection();
-    }
+        const pollId = card.dataset.pollId;
+        const cofradeId = select.value;
+        const cofradeNombre = select.options[select.selectedIndex]?.textContent?.trim() || cofradeId;
+        const options = selected.map(btn =>
+          btn.querySelector(".option-name")?.textContent?.trim() || ""
+        ).filter(Boolean);
 
-    async function cargarDatos(){
-      try{
-        const res = await fetch(API_URL, { method: "GET" });
-        const data = await res.json();
-        const polls = safeArray(data?.polls).map(normalizePoll);
-        renderAll(polls);
-      }catch(error){
-        console.error(error);
-        activeContainer.innerHTML = `
-          <article class="card">
-            <div class="muted-box">
-              No se pudieron cargar las encuestas. Revisa la conexión con Google Apps Script.
-            </div>
-          </article>
-        `;
-        historyContainer.innerHTML = "";
-      }
-    }
+        try{
+          voteButton.disabled = true;
+          voteButton.textContent = "Enviando...";
+          clearCardStatus(card);
 
-    async function enviarVoto(payload){
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify(payload)
+          await enviarVoto({
+            pollId,
+            cofrade: cofradeId,
+            cofradeNombre,
+            options
+          });
+
+          showCardStatus(card, "Voto registrado correctamente.", "ok");
+          await cargarDatos();
+        }catch(error){
+          console.error(error);
+          showCardStatus(card, error.message || "No se pudo registrar el voto.", "error");
+          voteButton.textContent = "Votar";
+          refreshVoteButton();
+        }
       });
 
-      const data = await res.json();
+      refreshVoteButton();
+    });
+  }
 
-      if(!data?.ok){
-        throw new Error(data?.error || "Error al votar");
-      }
-
-      return data;
+  function renderAll(polls){
+    if(!polls.length){
+      activeContainer.innerHTML = `
+        <article class="card">
+          <div class="muted-box">
+            No hay encuestas disponibles en este momento.
+          </div>
+        </article>
+      `;
+    } else {
+      activeContainer.innerHTML = polls.map(renderPollCard).join("");
     }
 
-    cargarDatos();
-  </script>
+    historyContainer.innerHTML = renderHistoryCard();
+    updateKpis(polls);
+    bindOptionSelection();
+  }
+
+  async function cargarDatos(){
+    try{
+      const res = await fetch(API_URL, { method: "GET" });
+      const data = await res.json();
+
+      COFRADES = safeArray(data?.cofrades).map(normalizeCofrade).filter(c => c.id);
+
+      const polls = safeArray(data?.polls).map(normalizePoll);
+      renderAll(polls);
+    }catch(error){
+      console.error(error);
+      activeContainer.innerHTML = `
+        <article class="card">
+          <div class="muted-box">
+            No se pudieron cargar las encuestas. Revisa la conexión con Google Apps Script.
+          </div>
+        </article>
+      `;
+      historyContainer.innerHTML = "";
+    }
+  }
+
+  async function enviarVoto(payload){
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if(!data?.ok){
+      throw new Error(data?.error || "Error al votar");
+    }
+
+    return data;
+  }
+
+  cargarDatos();
+</script>
+  
 </body>
 </html>
