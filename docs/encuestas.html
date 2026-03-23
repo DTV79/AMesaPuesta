@@ -1121,34 +1121,34 @@
       });
 
       voteButton.addEventListener("click", async () => {
-        const selected = card.querySelector(".option-btn.active");
-        if(!selected) return;
+  const selected = card.querySelector(".option-btn.active");
+  if(!selected) return;
 
-        const pollId = card.dataset.pollId;
-        const optionName = selected.querySelector(".option-name").textContent.trim();
-        const voterName = prompt("Tu nombre:");
+  const pollId = card.dataset.pollId;
+  const optionName = selected.querySelector(".option-name").textContent.trim();
+  const voterName = prompt("Tu nombre:");
 
-        if(!voterName) return;
+  if(!voterName) return;
 
-        try{
-          voteButton.disabled = true;
-          voteButton.textContent = "Enviando...";
+  try{
+    voteButton.disabled = true;
+    voteButton.textContent = "Enviando...";
 
-          await enviarVoto({
-            pollId,
-            voterName,
-            optionName
-          });
+    await enviarVoto({
+      pollId: pollId,
+      cofrade: voterName,
+      option: optionName
+    });
 
-          voteButton.textContent = "Voto registrado";
-          await cargarDatos();
-        }catch(error){
-          console.error(error);
-          alert("No se pudo registrar el voto.");
-          voteButton.textContent = "Votar";
-          voteButton.disabled = false;
-        }
-      });
+    voteButton.textContent = "Voto registrado";
+    await cargarDatos();
+  }catch(error){
+    console.error(error);
+    alert("No se pudo registrar el voto.");
+    voteButton.textContent = "Votar";
+    voteButton.disabled = false;
+  }
+});
     });
   }
 
