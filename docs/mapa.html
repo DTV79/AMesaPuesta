@@ -513,11 +513,14 @@
 
       .hero-actions{
         width:100%;
-        justify-content:stretch;
+        display:grid;
+        grid-template-columns:1fr;
       }
-
+      
       .hero-actions .btn{
-        flex:1 1 auto;
+        width:100%;
+        min-height:44px;
+        font-size:14px;
       }
 
       .stats{
