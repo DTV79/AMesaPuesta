@@ -926,16 +926,22 @@
         return;
       }
 
-      const html = estado.filtrados.map(r => {
-        return `
-          <button class="item" type="button" data-id="${escAttr(r.uid)}">
-            <div class="item-name">${escHtml(r.nombre || "Restaurante sin nombre")}</div>
-            <div class="item-line">${escHtml(formateaFecha(r.fecha) || "Fecha no disponible")}</div>
-            <div class="item-line">${escHtml(r.direccion || "Dirección no disponible")}</div>
-            ${r.precio ? `<div class="item-line item-muted">Precio: ${escHtml(r.precio)}</div>` : ""}
-          </button>
-        `;
-      }).join("");
+      const html = [...estado.filtrados]
+  .sort((a, b) => {
+    const fa = a.fecha ? new Date(a.fecha).getTime() : 0;
+    const fb = b.fecha ? new Date(b.fecha).getTime() : 0;
+    return fb - fa;
+  })
+  .map(r => {
+    return `
+      <button class="item" type="button" data-id="${escAttr(r.uid)}">
+        <div class="item-name">${escHtml(r.nombre || "Restaurante sin nombre")}</div>
+        <div class="item-line">${escHtml(formateaFecha(r.fecha) || "Fecha no disponible")}</div>
+        <div class="item-line">${escHtml(r.direccion || "Dirección no disponible")}</div>
+        ${r.precio ? `<div class="item-line item-muted">Precio: ${escHtml(r.precio)}</div>` : ""}
+      </button>
+    `;
+  }).join("");
 
       elLista.innerHTML = html;
 
