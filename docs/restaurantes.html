@@ -673,9 +673,7 @@
       ? rest.autor
       : "Cofradía A Mesa Puesta";
 
-    const mapaRestaurante = tieneCoordenadasValidas(rest)
-      ? `<p><b>Mapa:</b> <a class="web-link" href="mapa.html" title="Ver este restaurante en el mapa">Disponible en mapa</a></p>`
-      : "";
+    
 
     return `
       <div class="restaurante">
@@ -689,8 +687,7 @@
           <p><b>Dirección:</b> ${direccionMapa}</p>
           <p><b>Teléfono:</b> ${textoSeguro(rest.telefono)}</p>
           <p><b>Web:</b> ${web}</p>
-          ${mapaRestaurante}
-        </div>
+         </div>
 
         <div class="cita-cofrade">
           <p class="cita-texto">✒ “${descripcion}”</p>
