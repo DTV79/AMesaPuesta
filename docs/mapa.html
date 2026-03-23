@@ -599,7 +599,7 @@
 </head>
 <body>
   <main class="page">
-    <section class="hero">
+    <="hero">
       <div class="hero-top">
         <div class="hero-title">
           <div class="eyebrow">📍 Restaurantes de la Cofradía</div>
@@ -631,7 +631,7 @@
       </div>
     </section>
 
-    <section class="layout">
+    <="layout">
       <aside class="panel">
         <div class="panel-head">
           <h2 class="panel-title">Listado de restaurantes</h2>
@@ -661,7 +661,7 @@
         </div>
       </aside>
 
-      <section class="panel map-wrap">
+      <section class="panel map-wrap" id="bloqueMapa">
         <div class="map-type-bar">
           <button class="map-type-btn active" id="btnTipoPNOA" type="button">🛰️ PNOA</button>
           <button class="map-type-btn" id="btnTipoMapa" type="button">🗺️ Mapa</button>
@@ -973,12 +973,24 @@
       });
     }
 
-    function irARestaurante(uid) {
-      const encontrado = estado.markers.find(m => m.uid === uid);
-      if (!encontrado) return;
+   function irARestaurante(uid) {
+  const encontrado = estado.markers.find(m => m.uid === uid);
+  if (!encontrado) return;
 
-      estado.activeId = encontrado.uid;
-      resaltarActivoEnLista();
+  estado.activeId = encontrado.uid;
+  resaltarActivoEnLista();
+
+  const bloqueMapa = document.getElementById("bloqueMapa");
+  const esMovil = window.innerWidth <= 900;
+
+  if (esMovil && bloqueMapa) {
+    bloqueMapa.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+    setTimeout(() => {
+      map.invalidateSize();
 
       map.setView([encontrado.data.latitud, encontrado.data.longitud], 16, {
         animate: true
@@ -986,8 +998,18 @@
 
       setTimeout(() => {
         encontrado.marker.openPopup();
-      }, 180);
-    }
+      }, 220);
+    }, 500);
+  } else {
+    map.setView([encontrado.data.latitud, encontrado.data.longitud], 16, {
+      animate: true
+    });
+
+    setTimeout(() => {
+      encontrado.marker.openPopup();
+    }, 180);
+  }
+}
 
     function resaltarActivoEnLista() {
       elLista.querySelectorAll(".item").forEach(el => {
