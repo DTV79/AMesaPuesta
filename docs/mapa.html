@@ -604,10 +604,9 @@
           <h1>Mapa de restaurantes</h1>
          </div>
 
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="restaurantes.html">← Volver</a>
-          <button class="btn btn-soft" type="button" id="btnVerTodos">Ver todos</button>
-        </div>
+       <div class="hero-actions">
+         <a class="btn btn-soft" href="restaurantes.html">← Volver</a>
+      </div>
       </div>
 
       <div class="stats">
@@ -744,7 +743,7 @@
     const btnTipoPNOA = document.getElementById("btnTipoPNOA");
     const btnTipoMapa = document.getElementById("btnTipoMapa");
 
-    document.getElementById("btnVerTodos").addEventListener("click", ajustarVistaATodos);
+    
     document.getElementById("btnResetView").addEventListener("click", ajustarVistaATodos);
     document.getElementById("btnMiUbicacion").addEventListener("click", localizarUsuario);
     elBuscador.addEventListener("input", aplicarFiltros);
