@@ -822,26 +822,35 @@
       }
 
       .poll-actions{
-        margin-top:14px;
-        margin-bottom:0;
-      }
+  margin-top:12px;
+  margin-bottom:0;
+  gap:8px;
+}
 
-      .vote-note{
-        margin-top:4px;
-      }
+.vote-btn{
+  width:100%;
+}
 
-      .result-list{
-        margin-top:16px;
-      }
+.vote-note{
+  display:none;
+}
 
-      .winner{
-        margin-top:14px;
-      }
+.result-list{
+  margin-top:12px;
+}
 
-      .visibility-panel{
-        margin-top:14px;
-        padding-top:14px;
-      }
+.winner{
+  margin-top:12px;
+}
+
+.visibility-panel{
+  margin-top:12px;
+  padding-top:12px;
+}
+
+.status-box{
+  margin-top:10px;
+}
     }
 
     @media (max-width: 480px){
@@ -1332,30 +1341,28 @@
     }
 
     function bindPollToggles(){
-      const isMobile = window.matchMedia("(max-width: 720px)").matches;
+  const isMobile = window.matchMedia("(max-width: 720px)").matches;
 
-      document.querySelectorAll(".poll-card").forEach((card, index) => {
-        const toggle = card.querySelector(".poll-toggle");
-        if(!toggle) return;
+  document.querySelectorAll(".poll-card").forEach(card => {
+    const toggle = card.querySelector(".poll-toggle");
+    if(!toggle) return;
 
-        if(!isMobile){
-          card.classList.add("is-open");
-          toggle.setAttribute("aria-expanded", "true");
-          return;
-        }
-
-        if(index === 0){
-          card.classList.add("is-open");
-          toggle.setAttribute("aria-expanded", "true");
-        }
-
-        toggle.addEventListener("click", () => {
-          const isOpen = card.classList.contains("is-open");
-          card.classList.toggle("is-open", !isOpen);
-          toggle.setAttribute("aria-expanded", String(!isOpen));
-        });
-      });
+    if(!isMobile){
+      card.classList.add("is-open");
+      toggle.setAttribute("aria-expanded", "true");
+      return;
     }
+
+    card.classList.remove("is-open");
+    toggle.setAttribute("aria-expanded", "false");
+
+    toggle.addEventListener("click", () => {
+      const isOpen = card.classList.contains("is-open");
+      card.classList.toggle("is-open", !isOpen);
+      toggle.setAttribute("aria-expanded", String(!isOpen));
+    });
+  });
+}
 
     function bindOptionSelection(){
       document.querySelectorAll(".card[data-poll-id]").forEach(card => {
