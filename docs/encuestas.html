@@ -874,6 +874,20 @@
   const activeContainer = document.getElementById("activePolls");
   const historyContainer = document.getElementById("historyPolls");
 
+  const COFRADES = [
+    { id: "capon", nombre: "Capón" },
+    { id: "carlos", nombre: "Carlos" },
+    { id: "javi", nombre: "Javi" },
+    { id: "pablo", nombre: "Pablo" },
+    { id: "santi", nombre: "Santi" },
+    { id: "miguel", nombre: "Miguel" },
+    { id: "roi", nombre: "Roi" },
+    { id: "diego", nombre: "Diego" },
+    { id: "david", nombre: "David" },
+    { id: "brais", nombre: "Brais" },
+    { id: "iago", nombre: "Iago" }
+  ];
+
   function badgeTypeLabel(type){
     if(type === "publica") return "Pública";
     if(type === "secreta") return "Secreta";
@@ -911,6 +925,23 @@
       month: "long",
       year: "numeric"
     });
+  }
+
+  function getMaxChoicesLabel(maxChoices){
+    if(maxChoices <= 1) return "Solo 1 opción";
+    return `Hasta ${maxChoices} opciones`;
+  }
+
+  function renderCofradeSelect(pollId){
+    return `
+      <label style="display:block;margin-top:14px;">
+        <span style="display:block;margin-bottom:8px;font-weight:800;color:#5a4b40;">Quién vota</span>
+        <select class="cofrade-select" data-poll-id="${pollId}" style="width:100%;padding:13px 14px;border:1px solid var(--border);border-radius:16px;background:#fff;font:inherit;color:var(--text);">
+          <option value="">Selecciona cofrade</option>
+          ${COFRADES.map(c => `<option value="${c.id}" data-name="${c.nombre}">${c.nombre}</option>`).join("")}
+        </select>
+      </label>
+    `;
   }
 
   function renderVisibilityBlock(poll){
@@ -965,9 +996,10 @@
 
   function renderPollCard(poll){
     const winner = poll.winner || null;
+    const maxChoices = Number(poll.maxChoices || 1);
 
     return `
-      <article class="card" data-poll-id="${poll.id}">
+      <article class="card" data-poll-id="${poll.id}" data-max-choices="${maxChoices}">
         <div class="poll-top">
           <div>
             <h3 class="poll-title">${poll.title}</h3>
@@ -983,6 +1015,9 @@
               <span class="badge cerrada" style="background:#faf7f3;color:#6a5849;border-color:#eadfd5;">
                 ${formatCloseDate(poll.closes)}
               </span>
+              <span class="badge cerrada" style="background:#f3f1ee;color:#6a5849;border-color:#e2d8cc;">
+                ${getMaxChoicesLabel(maxChoices)}
+              </span>
             </div>
           </div>
         </div>
@@ -994,10 +1029,12 @@
             ${poll.options.map((option, index) => `
               <button class="option-btn" type="button" data-option-index="${index}">
                 <span class="option-name">${option.name}</span>
-                <span class="option-arrow">+</span>
+                <span class="option-arrow">${maxChoices > 1 ? "✓" : "+"}</span>
               </button>
             `).join("")}
           </div>
+
+          ${renderCofradeSelect(poll.id)}
 
           <div class="poll-actions">
             <button class="vote-btn" type="button" disabled>Votar</button>
@@ -1081,13 +1118,13 @@
         <div class="history-top">
           <div>
             <h3 class="history-title">Histórico de votaciones</h3>
-            <p class="history-desc">Cuando cierres encuestas en la hoja, aquí podremos mostrar también las cerradas.</p>
+            <p class="history-desc">Más adelante podemos mostrar aquí las encuestas cerradas.</p>
           </div>
           <span class="badge cerrada">En preparación</span>
         </div>
 
         <div class="muted-box">
-          Ahora mismo tu API está devolviendo solo las encuestas activas. La conexión ya funciona correctamente.
+          La conexión ya funciona. Ahora mismo estamos mostrando las encuestas activas.
         </div>
       </article>
     `;
@@ -1107,57 +1144,96 @@
 
   function bindOptionSelection(){
     document.querySelectorAll(".card[data-poll-id]").forEach(card => {
-      const optionButtons = card.querySelectorAll(".option-btn");
+      const optionButtons = [...card.querySelectorAll(".option-btn")];
       const voteButton = card.querySelector(".vote-btn");
+      const maxChoices = Number(card.dataset.maxChoices || 1);
+      const select = card.querySelector(".cofrade-select");
 
       if(!voteButton) return;
 
       optionButtons.forEach(btn => {
         btn.addEventListener("click", () => {
-          optionButtons.forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
-          voteButton.disabled = false;
+          if(maxChoices <= 1){
+            optionButtons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+          } else {
+            const activeCount = optionButtons.filter(b => b.classList.contains("active")).length;
+            const isActive = btn.classList.contains("active");
+
+            if(isActive){
+              btn.classList.remove("active");
+            } else {
+              if(activeCount >= maxChoices){
+                alert(`Solo puedes elegir hasta ${maxChoices} opciones.`);
+                return;
+              }
+              btn.classList.add("active");
+            }
+          }
+
+          const selectedCount = optionButtons.filter(b => b.classList.contains("active")).length;
+          voteButton.disabled = !(selectedCount > 0 && select && select.value);
         });
       });
 
+      if(select){
+        select.addEventListener("change", () => {
+          const selectedCount = optionButtons.filter(b => b.classList.contains("active")).length;
+          voteButton.disabled = !(selectedCount > 0 && select.value);
+        });
+      }
+
       voteButton.addEventListener("click", async () => {
-  const selected = card.querySelector(".option-btn.active");
-  if(!selected) return;
+        const selectedButtons = optionButtons.filter(b => b.classList.contains("active"));
+        if(!selectedButtons.length) return;
+        if(!select || !select.value) return;
 
-  const pollId = card.dataset.pollId;
-  const optionName = selected.querySelector(".option-name").textContent.trim();
-  const voterName = prompt("Tu nombre:");
+        const pollId = card.dataset.pollId;
+        const cofradeId = select.value;
+        const cofradeName = select.options[select.selectedIndex].textContent.trim();
+        const selectedOptions = selectedButtons.map(btn =>
+          btn.querySelector(".option-name").textContent.trim()
+        );
 
-  if(!voterName) return;
+        try{
+          voteButton.disabled = true;
+          voteButton.textContent = "Enviando...";
 
-  try{
-    voteButton.disabled = true;
-    voteButton.textContent = "Enviando...";
+          await enviarVoto({
+            pollId,
+            cofrade: cofradeId,
+            cofradeNombre: cofradeName,
+            options: selectedOptions
+          });
 
-    await enviarVoto({
-      pollId: pollId,
-      cofrade: voterName,
-      option: optionName
-    });
-
-    voteButton.textContent = "Voto registrado";
-    await cargarDatos();
-  }catch(error){
-    console.error(error);
-    alert("No se pudo registrar el voto.");
-    voteButton.textContent = "Votar";
-    voteButton.disabled = false;
-  }
-});
+          voteButton.textContent = "Voto registrado";
+          await cargarDatos();
+        }catch(error){
+          console.error(error);
+          alert(error.message || "No se pudo registrar el voto.");
+          voteButton.textContent = "Votar";
+          voteButton.disabled = false;
+        }
+      });
     });
   }
 
   async function cargarDatos(){
-    const res = await fetch(API_URL);
-    const data = await res.json();
-
-    const polls = Array.isArray(data.polls) ? data.polls : [];
-    renderAll(polls);
+    try{
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      const polls = Array.isArray(data.polls) ? data.polls : [];
+      renderAll(polls);
+    }catch(error){
+      console.error(error);
+      activeContainer.innerHTML = `
+        <article class="card">
+          <div class="muted-box">
+            No se pudieron cargar las encuestas. Revisa la conexión con Google Apps Script.
+          </div>
+        </article>
+      `;
+    }
   }
 
   async function enviarVoto(payload){
