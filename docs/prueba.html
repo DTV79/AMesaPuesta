@@ -1,1 +1,33 @@
 
+<div class="encuesta">
+  <h2>¿Dónde comemos la próxima vez?</h2>
+
+  <form id="pollForm">
+    <label><input type="radio" name="opcion" value="O Muíño"> O Muíño</label><br>
+    <label><input type="radio" name="opcion" value="Casa Pepe"> Casa Pepe</label><br>
+    <label><input type="radio" name="opcion" value="Asador X"> Asador X</label><br>
+
+    <button type="submit">Votar</button>
+  </form>
+
+  <div id="resultado" style="margin-top:10px;"></div>
+</div>
+
+<script>
+  const votos = {};
+
+  document.getElementById("pollForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    const opcion = document.querySelector('input[name="opcion"]:checked');
+    if(!opcion) return;
+
+    votos[opcion.value] = (votos[opcion.value] || 0) + 1;
+
+    let resultadoHTML = "<h3>Resultados:</h3>";
+    for(let key in votos){
+      resultadoHTML += `${key}: ${votos[key]} votos<br>`;
+    }
+
+    document.getElementById("resultado").innerHTML = resultadoHTML;
+  });
+</script>
