@@ -1,33 +1,1204 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#f7f4ef" />
+  <title>Encuestas | Cofradía A Mesa Puesta</title>
 
-<div class="encuesta">
-  <h2>¿Dónde comemos la próxima vez?</h2>
+  <style>
+    :root{
+      color-scheme: light;
 
-  <form id="pollForm">
-    <label><input type="radio" name="opcion" value="O Muíño"> O Muíño</label><br>
-    <label><input type="radio" name="opcion" value="Casa Pepe"> Casa Pepe</label><br>
-    <label><input type="radio" name="opcion" value="Asador X"> Asador X</label><br>
-
-    <button type="submit">Votar</button>
-  </form>
-
-  <div id="resultado" style="margin-top:10px;"></div>
-</div>
-
-<script>
-  const votos = {};
-
-  document.getElementById("pollForm").addEventListener("submit", function(e){
-    e.preventDefault();
-    const opcion = document.querySelector('input[name="opcion"]:checked');
-    if(!opcion) return;
-
-    votos[opcion.value] = (votos[opcion.value] || 0) + 1;
-
-    let resultadoHTML = "<h3>Resultados:</h3>";
-    for(let key in votos){
-      resultadoHTML += `${key}: ${votos[key]} votos<br>`;
+      --bg:#f7f4ef;
+      --card:#ffffff;
+      --card-soft:#fcfbf8;
+      --text:#1f1a17;
+      --muted:#6b7280;
+      --primary:#8b0000;
+      --primary-dark:#6f0000;
+      --primary-soft:#f6e9e9;
+      --gold:#b9892e;
+      --border:#e9dfd5;
+      --shadow:0 12px 26px rgba(0,0,0,.08);
+      --shadow-soft:0 8px 18px rgba(0,0,0,.05);
+      --radius:20px;
+      --max-width:1180px;
     }
 
-    document.getElementById("resultado").innerHTML = resultadoHTML;
-  });
-</script>
+    *{ box-sizing:border-box; }
+
+    html,body{
+      margin:0;
+      padding:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      -webkit-text-size-adjust:100%;
+    }
+
+    body{
+      min-height:100vh;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    .wrap{
+      width:min(var(--max-width), calc(100% - 28px));
+      margin:0 auto;
+    }
+
+    /* Header */
+    .site-header{
+      position:sticky;
+      top:0;
+      z-index:40;
+      backdrop-filter:saturate(140%) blur(10px);
+      background:rgba(247,244,239,.88);
+      border-bottom:1px solid rgba(233,223,213,.8);
+    }
+
+    .site-header-inner{
+      width:min(var(--max-width), calc(100% - 28px));
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:14px 0;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .brand-badge{
+      width:44px;
+      height:44px;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      color:#fff;
+      display:grid;
+      place-items:center;
+      box-shadow:var(--shadow-soft);
+      flex:0 0 auto;
+    }
+
+    .brand-badge svg{
+      width:22px;
+      height:22px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:1.9;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+
+    .brand-copy{
+      min-width:0;
+    }
+
+    .eyebrow{
+      margin:0 0 2px;
+      color:var(--muted);
+      font-size:.76rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      font-weight:700;
+    }
+
+    .brand-title{
+      margin:0;
+      font-size:1.02rem;
+      font-weight:800;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .back-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:11px 16px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:#fff;
+      font-weight:700;
+      color:var(--text);
+      box-shadow:var(--shadow-soft);
+      transition:.2s ease;
+      flex:0 0 auto;
+    }
+
+    .back-btn:hover{
+      transform:translateY(-1px);
+      border-color:#dccfc2;
+    }
+
+    .back-btn svg{
+      width:17px;
+      height:17px;
+      stroke:currentColor;
+      stroke-width:2.2;
+      fill:none;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+
+    /* Hero */
+    .hero{
+      padding:34px 0 18px;
+    }
+
+    .hero-card{
+      background:
+        radial-gradient(circle at top right, rgba(139,0,0,.08), transparent 28%),
+        linear-gradient(180deg, #fff, #fcfbf8);
+      border:1px solid var(--border);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:30px 26px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.25fr .85fr;
+      gap:22px;
+      align-items:start;
+    }
+
+    .hero h1{
+      margin:0 0 10px;
+      font-size:clamp(2rem, 4vw, 3rem);
+      line-height:1.04;
+      letter-spacing:-.03em;
+    }
+
+    .hero p{
+      margin:0;
+      color:#55463c;
+      font-size:1.02rem;
+      line-height:1.7;
+      max-width:760px;
+    }
+
+    .hero-kpis{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+    }
+
+    .kpi{
+      background:rgba(255,255,255,.92);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:16px 14px;
+      box-shadow:var(--shadow-soft);
+    }
+
+    .kpi-label{
+      color:var(--muted);
+      font-size:.84rem;
+      margin-bottom:6px;
+      font-weight:700;
+    }
+
+    .kpi-value{
+      font-size:1.6rem;
+      font-weight:900;
+      line-height:1;
+    }
+
+    /* Layout */
+    .main{
+      padding:16px 0 40px;
+    }
+
+    .section{
+      margin-top:24px;
+    }
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:14px;
+      margin-bottom:14px;
+    }
+
+    .section-title{
+      margin:0;
+      font-size:1.45rem;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .section-subtitle{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:.96rem;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:#59473b;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:.87rem;
+      font-weight:700;
+      white-space:nowrap;
+    }
+
+    .pill-dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:var(--primary);
+      display:inline-block;
+      box-shadow:0 0 0 4px rgba(139,0,0,.10);
+    }
+
+    .grid{
+      display:grid;
+      gap:16px;
+    }
+
+    .grid.active{
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.history{
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:24px;
+      box-shadow:var(--shadow-soft);
+      padding:22px;
+    }
+
+    .poll-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+      margin-bottom:14px;
+    }
+
+    .poll-title{
+      margin:0;
+      font-size:1.2rem;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .poll-desc{
+      margin:8px 0 0;
+      color:#5a4b40;
+      line-height:1.6;
+      font-size:.98rem;
+    }
+
+    .badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      border-radius:999px;
+      padding:7px 11px;
+      font-size:.8rem;
+      font-weight:800;
+      border:1px solid transparent;
+      white-space:nowrap;
+    }
+
+    .badge svg{
+      width:14px;
+      height:14px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:2;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+
+    .badge.publica{
+      background:#edf7ef;
+      color:#216638;
+      border-color:#cfe8d5;
+    }
+
+    .badge.secreta{
+      background:#f9f0da;
+      color:#846116;
+      border-color:#ecd8a0;
+    }
+
+    .badge.participacion{
+      background:#eef2ff;
+      color:#3f4aa8;
+      border-color:#d7ddff;
+    }
+
+    .badge.abierta{
+      background:#f6e9e9;
+      color:var(--primary);
+      border-color:#ead0d0;
+    }
+
+    .badge.cerrada{
+      background:#f3f4f6;
+      color:#61646b;
+      border-color:#e4e7ec;
+    }
+
+    .options{
+      margin-top:18px;
+      display:grid;
+      gap:12px;
+    }
+
+    .option-btn{
+      width:100%;
+      text-align:left;
+      border:1px solid var(--border);
+      background:linear-gradient(180deg,#fff,#fcfbf9);
+      border-radius:18px;
+      padding:14px 15px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      cursor:pointer;
+      transition:.2s ease;
+      color:var(--text);
+    }
+
+    .option-btn:hover{
+      transform:translateY(-1px);
+      border-color:#d8c9bb;
+      box-shadow:0 10px 18px rgba(0,0,0,.05);
+    }
+
+    .option-btn.active{
+      border-color:rgba(139,0,0,.42);
+      background:linear-gradient(180deg,#fff,#fbf2f2);
+      box-shadow:0 0 0 4px rgba(139,0,0,.08);
+    }
+
+    .option-name{
+      font-weight:800;
+      font-size:.98rem;
+    }
+
+    .option-arrow{
+      color:var(--muted);
+      font-size:1.05rem;
+      line-height:1;
+      flex:0 0 auto;
+    }
+
+    .poll-actions{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+
+    .vote-btn{
+      appearance:none;
+      border:none;
+      border-radius:999px;
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      color:#fff;
+      padding:13px 18px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 12px 22px rgba(139,0,0,.22);
+      transition:.2s ease;
+    }
+
+    .vote-btn:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.02);
+    }
+
+    .vote-btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+
+    .vote-note{
+      color:var(--muted);
+      font-size:.9rem;
+      line-height:1.5;
+    }
+
+    /* Results */
+    .result-list{
+      display:grid;
+      gap:14px;
+      margin-top:18px;
+    }
+
+    .result-row{
+      display:grid;
+      gap:8px;
+    }
+
+    .result-line{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      font-size:.95rem;
+    }
+
+    .result-name{
+      font-weight:800;
+    }
+
+    .result-meta{
+      color:#5d5046;
+      font-weight:700;
+      white-space:nowrap;
+    }
+
+    .bar{
+      width:100%;
+      height:14px;
+      border-radius:999px;
+      background:#efe6de;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .bar > span{
+      display:block;
+      height:100%;
+      border-radius:999px;
+      background:linear-gradient(90deg,var(--primary),#b32020);
+      width:0;
+      transition:width .5s ease;
+    }
+
+    .winner{
+      margin-top:18px;
+      background:linear-gradient(180deg,#fff8ea,#fffdf8);
+      border:1px solid #f0dfb0;
+      border-radius:18px;
+      padding:14px 15px;
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+    }
+
+    .winner-icon{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      background:#fff;
+      color:var(--gold);
+      display:grid;
+      place-items:center;
+      border:1px solid #eddcab;
+      flex:0 0 auto;
+    }
+
+    .winner-icon svg{
+      width:20px;
+      height:20px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:2;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+
+    .winner small{
+      display:block;
+      color:#8a6e2d;
+      font-weight:800;
+      margin-bottom:3px;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+
+    .winner strong{
+      display:block;
+      font-size:1rem;
+    }
+
+    /* Vote visibility blocks */
+    .visibility-panel{
+      margin-top:18px;
+      border-top:1px dashed #eadfd5;
+      padding-top:16px;
+    }
+
+    .mini-title{
+      margin:0 0 10px;
+      font-size:.92rem;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      color:#655446;
+      font-weight:900;
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:#faf7f3;
+      border:1px solid var(--border);
+      color:#4e4036;
+      border-radius:999px;
+      padding:9px 12px;
+      font-size:.88rem;
+      font-weight:700;
+    }
+
+    .chip strong{
+      font-weight:900;
+    }
+
+    .grouped-voters{
+      display:grid;
+      gap:12px;
+    }
+
+    .grouped-voters .group{
+      background:#faf8f5;
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+    }
+
+    .group-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:10px;
+      font-weight:900;
+    }
+
+    .group-count{
+      color:var(--muted);
+      font-size:.9rem;
+      font-weight:800;
+    }
+
+    .muted-box{
+      background:#faf8f5;
+      border:1px dashed #ddd1c5;
+      border-radius:16px;
+      padding:14px;
+      color:#6d6055;
+      line-height:1.6;
+      font-size:.93rem;
+    }
+
+    /* History cards */
+    .history-card{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      height:100%;
+    }
+
+    .history-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+    }
+
+    .history-title{
+      margin:0;
+      font-size:1.05rem;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .history-desc{
+      margin:7px 0 0;
+      color:#5f5046;
+      line-height:1.55;
+      font-size:.95rem;
+    }
+
+    .history-meta{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+
+    .meta-box{
+      background:var(--card-soft);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:12px;
+    }
+
+    .meta-label{
+      color:var(--muted);
+      font-size:.8rem;
+      font-weight:800;
+      margin-bottom:5px;
+    }
+
+    .meta-value{
+      font-size:.98rem;
+      font-weight:900;
+      line-height:1.25;
+    }
+
+    .footer-space{
+      height:16px;
+    }
+
+    /* Mobile */
+    @media (max-width: 980px){
+      .hero-grid,
+      .grid.active,
+      .grid.history{
+        grid-template-columns:1fr;
+      }
+
+      .history-meta{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 720px){
+      .site-header-inner{
+        gap:10px;
+      }
+
+      .brand-title{
+        font-size:.96rem;
+      }
+
+      .hero-card{
+        padding:24px 18px;
+        border-radius:24px;
+      }
+
+      .card{
+        padding:18px;
+        border-radius:20px;
+      }
+
+      .hero-kpis{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .poll-top,
+      .history-top,
+      .section-head,
+      .poll-actions{
+        flex-direction:column;
+        align-items:stretch;
+      }
+
+      .back-btn{
+        align-self:flex-start;
+      }
+
+      .winner{
+        align-items:flex-start;
+      }
+    }
+
+    @media (max-width: 480px){
+      .wrap,
+      .site-header-inner{
+        width:min(var(--max-width), calc(100% - 18px));
+      }
+
+      .hero{
+        padding-top:18px;
+      }
+
+      .hero h1{
+        font-size:1.9rem;
+      }
+
+      .hero p{
+        font-size:.97rem;
+      }
+
+      .kpi-value{
+        font-size:1.35rem;
+      }
+
+      .hero-kpis{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <div class="brand">
+        <div class="brand-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M7 10h10"></path>
+            <path d="M8 6h8"></path>
+            <path d="M9 14h6"></path>
+            <path d="M5 4h14v12a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4V4z"></path>
+          </svg>
+        </div>
+        <div class="brand-copy">
+          <p class="eyebrow">Cofradía A Mesa Puesta</p>
+          <h1 class="brand-title">Encuestas</h1>
+        </div>
+      </div>
+
+      <a class="back-btn" href="index.html" aria-label="Volver al inicio">
+        <svg viewBox="0 0 24 24">
+          <path d="M15 18l-6-6 6-6"></path>
+        </svg>
+        Volver
+      </a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-card">
+        <div class="hero-grid">
+          <div>
+            <h1>Decisiones gastronómicas con voto de cofradía.</h1>
+            <p>
+              Un panel elegante para proponer, votar y consultar resultados. Preparado para
+              encuestas <strong>públicas</strong>, <strong>secretas</strong> y de
+              <strong>participación visible</strong>, con histórico y resultado destacado.
+            </p>
+          </div>
+
+          <div class="hero-kpis">
+            <div class="kpi">
+              <div class="kpi-label">Encuestas activas</div>
+              <div class="kpi-value" id="kpiActive">0</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Votos emitidos</div>
+              <div class="kpi-value" id="kpiVotes">0</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Públicas</div>
+              <div class="kpi-value" id="kpiPublic">0</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Secretas</div>
+              <div class="kpi-value" id="kpiSecret">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main">
+    <div class="wrap">
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Encuestas activas</h2>
+            <p class="section-subtitle">Ejemplos listos para mostrar los tres modos de votación.</p>
+          </div>
+          <div class="pill">
+            <span class="pill-dot"></span>
+            Demo visual preparada para conectar con Google Sheets
+          </div>
+        </div>
+
+        <div class="grid active" id="activePolls"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Histórico de votaciones</h2>
+            <p class="section-subtitle">Archivo de decisiones y resultados ya cerrados.</p>
+          </div>
+        </div>
+
+        <div class="grid history" id="historyPolls"></div>
+      </section>
+
+      <div class="footer-space"></div>
+    </div>
+  </main>
+
+  <script>
+    const polls = [
+      {
+        id: "poll-abril",
+        title: "¿Dónde celebramos la próxima comida de abril?",
+        description: "Votación abierta para elegir el próximo destino gastronómico de la Cofradía.",
+        type: "publica",
+        status: "abierta",
+        closes: "Cierra el 12 de abril",
+        totalVotes: 8,
+        options: [
+          { name: "O Muíño", votes: 3, voters: ["Capón", "Carlos", "Javi"] },
+          { name: "Casa Pepe", votes: 2, voters: ["Santi", "Pablo"] },
+          { name: "A Curva", votes: 2, voters: ["Miguel", "Roi"] },
+          { name: "Mesón do Porto", votes: 1, voters: ["Diego"] }
+        ],
+        note: "Modo público: se ve quién ha votado cada opción."
+      },
+      {
+        id: "poll-premio",
+        title: "Mejor restaurante del año 2026",
+        description: "Votación de carácter más solemne, configurada en modalidad secreta.",
+        type: "secreta",
+        status: "abierta",
+        closes: "Cierra el 30 de junio",
+        totalVotes: 11,
+        options: [
+          { name: "Casa Pepe", votes: 4, voters: ["Capón", "Carlos", "Javi", "Santi"] },
+          { name: "O Muíño", votes: 3, voters: ["Pablo", "Roi", "Miguel"] },
+          { name: "Asador Atlántico", votes: 2, voters: ["Diego", "Brais"] },
+          { name: "A Curva", votes: 2, voters: ["Iago", "David"] }
+        ],
+        note: "Modo secreto: solo se muestran resultados, no el detalle individual del voto."
+      },
+      {
+        id: "poll-fecha",
+        title: "Fecha para la comida de verano",
+        description: "Aquí interesa comprobar participación, pero sin desvelar la preferencia de cada cofrade.",
+        type: "participacion",
+        status: "abierta",
+        closes: "Cierra el 2 de mayo",
+        totalVotes: 9,
+        votedMembers: ["Capón", "Carlos", "Javi", "Santi", "Pablo", "Miguel", "Roi", "Diego", "David"],
+        options: [
+          { name: "Sábado 6 de julio", votes: 4, voters: ["Capón", "Carlos", "Javi", "Santi"] },
+          { name: "Sábado 13 de julio", votes: 3, voters: ["Pablo", "Miguel", "Roi"] },
+          { name: "Sábado 20 de julio", votes: 2, voters: ["Diego", "David"] }
+        ],
+        note: "Participación visible: se sabe quién ha votado, pero no a qué opción."
+      }
+    ];
+
+    const history = [
+      {
+        title: "Mejor comida de 2025",
+        description: "Encuesta cerrada para decidir la mejor experiencia gastronómica del ejercicio.",
+        type: "secreta",
+        closed: "Cerrada el 21 de diciembre de 2025",
+        winner: "Casa Pepe",
+        votes: 14,
+        turnout: "14 de 17 cofrades"
+      },
+      {
+        title: "Fecha para la comida de Navidad",
+        description: "Votación operativa para cuadrar asistencia y calendario.",
+        type: "publica",
+        closed: "Cerrada el 4 de noviembre de 2025",
+        winner: "Sábado 14 de diciembre",
+        votes: 12,
+        turnout: "12 de 17 cofrades"
+      },
+      {
+        title: "Zona para la comida de otoño",
+        description: "Consulta previa para decidir entre costa, centro o interior.",
+        type: "participacion",
+        closed: "Cerrada el 18 de septiembre de 2025",
+        winner: "Zona centro",
+        votes: 10,
+        turnout: "10 de 17 cofrades"
+      },
+      {
+        title: "Premio a la mejor sobremesa",
+        description: "Votación interna con resultado final destacado en el tablón de la cofradía.",
+        type: "secreta",
+        closed: "Cerrada el 28 de junio de 2025",
+        winner: "Sobremesa de Casa Manolo",
+        votes: 13,
+        turnout: "13 de 17 cofrades"
+      }
+    ];
+
+    const activeContainer = document.getElementById("activePolls");
+    const historyContainer = document.getElementById("historyPolls");
+
+    function badgeTypeLabel(type){
+      if(type === "publica") return "Pública";
+      if(type === "secreta") return "Secreta";
+      return "Participación visible";
+    }
+
+    function badgeTypeClass(type){
+      if(type === "publica") return "publica";
+      if(type === "secreta") return "secreta";
+      return "participacion";
+    }
+
+    function typeIcon(){
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2v20"></path>
+          <path d="M4 8h16"></path>
+          <path d="M7 8V5h10v3"></path>
+        </svg>
+      `;
+    }
+
+    function winnerOption(options){
+      return [...options].sort((a,b) => b.votes - a.votes)[0];
+    }
+
+    function percent(votes, total){
+      if(!total) return 0;
+      return Math.round((votes / total) * 100);
+    }
+
+    function renderVisibilityBlock(poll){
+      if(poll.type === "publica"){
+        return `
+          <div class="visibility-panel">
+            <h4 class="mini-title">Detalle del voto</h4>
+            <div class="grouped-voters">
+              ${poll.options.map(option => `
+                <div class="group">
+                  <div class="group-title">
+                    <span>${option.name}</span>
+                    <span class="group-count">${option.voters.length} voto${option.voters.length !== 1 ? "s" : ""}</span>
+                  </div>
+                  <div class="chips">
+                    ${option.voters.map(voter => `<span class="chip">${voter}</span>`).join("")}
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      }
+
+      if(poll.type === "participacion"){
+        return `
+          <div class="visibility-panel">
+            <h4 class="mini-title">Participación registrada</h4>
+            <div class="chips">
+              ${poll.votedMembers.map(voter => `<span class="chip">${voter}</span>`).join("")}
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="visibility-panel">
+          <h4 class="mini-title">Confidencialidad</h4>
+          <div class="muted-box">
+            Esta encuesta está marcada como <strong>secreta</strong>. La identidad de cada voto no se muestra
+            en pantalla y aquí solo aparece el resultado agregado por opción.
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPollCard(poll){
+      const winner = winnerOption(poll.options);
+
+      return `
+        <article class="card" data-poll-id="${poll.id}">
+          <div class="poll-top">
+            <div>
+              <h3 class="poll-title">${poll.title}</h3>
+              <p class="poll-desc">${poll.description}</p>
+              <div class="badges">
+                <span class="badge ${badgeTypeClass(poll.type)}">
+                  ${typeIcon()}
+                  ${badgeTypeLabel(poll.type)}
+                </span>
+                <span class="badge ${poll.status}">
+                  ${poll.status === "abierta" ? "Abierta" : "Cerrada"}
+                </span>
+                <span class="badge cerrada" style="background:#faf7f3;color:#6a5849;border-color:#eadfd5;">
+                  ${poll.closes}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="options">
+            ${poll.options.map((option, index) => `
+              <button class="option-btn" type="button" data-option-index="${index}">
+                <span class="option-name">${option.name}</span>
+                <span class="option-arrow">+</span>
+              </button>
+            `).join("")}
+          </div>
+
+          <div class="poll-actions">
+            <button class="vote-btn" type="button" disabled>Votar</button>
+            <div class="vote-note">${poll.note}</div>
+          </div>
+
+          <div class="result-list">
+            ${poll.options.map(option => `
+              <div class="result-row">
+                <div class="result-line">
+                  <span class="result-name">${option.name}</span>
+                  <span class="result-meta">${option.votes} votos · ${percent(option.votes, poll.totalVotes)}%</span>
+                </div>
+                <div class="bar">
+                  <span style="width:${percent(option.votes, poll.totalVotes)}%"></span>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+
+          <div class="winner">
+            <div class="winner-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M8 21h8"></path>
+                <path d="M12 17v4"></path>
+                <path d="M7 4h10v4a5 5 0 0 1-10 0V4z"></path>
+                <path d="M17 6h2a2 2 0 0 1 0 4h-2"></path>
+                <path d="M7 6H5a2 2 0 0 0 0 4h2"></path>
+              </svg>
+            </div>
+            <div>
+              <small>Opción destacada</small>
+              <strong>${winner.name}</strong>
+              <div style="margin-top:4px;color:#6d5a2f;font-weight:700;">
+                ${winner.votes} votos · ${percent(winner.votes, poll.totalVotes)}% del total
+              </div>
+            </div>
+          </div>
+
+          ${renderVisibilityBlock(poll)}
+        </article>
+      `;
+    }
+
+    function renderHistoryCard(item){
+      return `
+        <article class="card history-card">
+          <div class="history-top">
+            <div>
+              <h3 class="history-title">${item.title}</h3>
+              <p class="history-desc">${item.description}</p>
+            </div>
+            <span class="badge ${badgeTypeClass(item.type)}">
+              ${typeIcon()}
+              ${badgeTypeLabel(item.type)}
+            </span>
+          </div>
+
+          <div class="history-meta">
+            <div class="meta-box">
+              <div class="meta-label">Estado</div>
+              <div class="meta-value">${item.closed}</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Ganadora</div>
+              <div class="meta-value">${item.winner}</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Participación</div>
+              <div class="meta-value">${item.turnout}</div>
+            </div>
+          </div>
+
+          <div class="muted-box">
+            <strong>Total de votos:</strong> ${item.votes}
+          </div>
+        </article>
+      `;
+    }
+
+    function renderAll(){
+      activeContainer.innerHTML = polls.map(renderPollCard).join("");
+      historyContainer.innerHTML = history.map(renderHistoryCard).join("");
+
+      const totalVotes = polls.reduce((acc, poll) => acc + poll.totalVotes, 0);
+      const activeCount = polls.filter(p => p.status === "abierta").length;
+      const publicCount = polls.filter(p => p.type === "publica").length;
+      const secretCount = polls.filter(p => p.type === "secreta").length;
+
+      document.getElementById("kpiActive").textContent = activeCount;
+      document.getElementById("kpiVotes").textContent = totalVotes;
+      document.getElementById("kpiPublic").textContent = publicCount;
+      document.getElementById("kpiSecret").textContent = secretCount;
+
+      bindOptionSelection();
+    }
+
+    function bindOptionSelection(){
+      document.querySelectorAll(".card[data-poll-id]").forEach(card => {
+        const optionButtons = card.querySelectorAll(".option-btn");
+        const voteButton = card.querySelector(".vote-btn");
+
+        optionButtons.forEach(btn => {
+          btn.addEventListener("click", () => {
+            optionButtons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            voteButton.disabled = false;
+          });
+        });
+
+        voteButton.addEventListener("click", () => {
+          const selected = card.querySelector(".option-btn.active");
+          if(!selected) return;
+
+          const optionText = selected.querySelector(".option-name").textContent.trim();
+          voteButton.textContent = "Voto registrado";
+          voteButton.disabled = true;
+
+          setTimeout(() => {
+            voteButton.textContent = "Votar";
+            optionButtons.forEach(b => b.classList.remove("active"));
+          }, 1400);
+
+          console.log("Demo de voto en:", card.dataset.pollId, "->", optionText);
+        });
+      });
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
