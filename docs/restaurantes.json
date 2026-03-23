@@ -57,8 +57,8 @@
     "precio": "352",
     "asistieron": ["Capón","Carlos Runner","Decio","Diego","Iñaki","José Increíble","Manolo Granja","Miguel Capón","Ovi","Pablo Hermida","Xabi"],
     "no_asistieron": ["Pablo Canitrot","Quintana"],
-    "descripcion": "",
-    "autor": "",
+    "descripcion": "No es un simple cocido… es EL COCIDO",
+    "autor": "Diego",
     "latitud": 42.66138,
     "longitud": -8.11208
   },
@@ -78,8 +78,8 @@
     "precio": "350,4",
     "asistieron": ["Carlos Runner","Decio","Diego","Iñaki","José Increíble","Manolo Granja","Ovi","Pablo Hermida","Sera"],
     "no_asistieron": ["Capón","Miguel Capón","Pablo Canitrot","Quintana","Xabi","Herva"],
-    "descripcion": "",
-    "autor": "",
+    "descripcion": "Si te gusta \"O Bacallau\", este es el sitio",
+    "autor": "Diego",
     "latitud": 41.65094,
     "longitud": -8.62286
   },
@@ -141,8 +141,8 @@
     "precio": "600",
     "asistieron": ["Capón","Carlos Runner","Decio","Diego","Iñaki","José Increíble","Miguel Capón","Ovi","Pablo Hermida","Quintana","Xabi","Sera","Herva","Isma Zeus"],
     "no_asistieron": ["Manolo Granja"],
-    "descripcion": "",
-    "autor": "",
+    "descripcion": "Lugar enxebre donde saben lo que se hacen",
+    "autor": "Diego",
     "latitud": 42.02883,
     "longitud": -8.83594
   },
