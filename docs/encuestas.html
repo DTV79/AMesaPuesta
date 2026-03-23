@@ -868,200 +868,120 @@
       <div class="footer-space"></div>
     </div>
   </main>
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzPxPPBYBhzWRJSEm5TRHEJnW2cnxGSauLZnrUZ4UKQPwS8IP5_9I5CJWoD6JfiTQjA/exec";
 
-  <script>
-    const polls = [
-      {
-        id: "poll-abril",
-        title: "¿Dónde celebramos la próxima comida de abril?",
-        description: "Votación abierta para elegir el próximo destino gastronómico de la Cofradía.",
-        type: "publica",
-        status: "abierta",
-        closes: "Cierra el 12 de abril",
-        totalVotes: 8,
-        options: [
-          { name: "O Muíño", votes: 3, voters: ["Capón", "Carlos", "Javi"] },
-          { name: "Casa Pepe", votes: 2, voters: ["Santi", "Pablo"] },
-          { name: "A Curva", votes: 2, voters: ["Miguel", "Roi"] },
-          { name: "Mesón do Porto", votes: 1, voters: ["Diego"] }
-        ],
-        note: "Modo público: se ve quién ha votado cada opción."
-      },
-      {
-        id: "poll-premio",
-        title: "Mejor restaurante del año 2026",
-        description: "Votación de carácter más solemne, configurada en modalidad secreta.",
-        type: "secreta",
-        status: "abierta",
-        closes: "Cierra el 30 de junio",
-        totalVotes: 11,
-        options: [
-          { name: "Casa Pepe", votes: 4, voters: ["Capón", "Carlos", "Javi", "Santi"] },
-          { name: "O Muíño", votes: 3, voters: ["Pablo", "Roi", "Miguel"] },
-          { name: "Asador Atlántico", votes: 2, voters: ["Diego", "Brais"] },
-          { name: "A Curva", votes: 2, voters: ["Iago", "David"] }
-        ],
-        note: "Modo secreto: solo se muestran resultados, no el detalle individual del voto."
-      },
-      {
-        id: "poll-fecha",
-        title: "Fecha para la comida de verano",
-        description: "Aquí interesa comprobar participación, pero sin desvelar la preferencia de cada cofrade.",
-        type: "participacion",
-        status: "abierta",
-        closes: "Cierra el 2 de mayo",
-        totalVotes: 9,
-        votedMembers: ["Capón", "Carlos", "Javi", "Santi", "Pablo", "Miguel", "Roi", "Diego", "David"],
-        options: [
-          { name: "Sábado 6 de julio", votes: 4, voters: ["Capón", "Carlos", "Javi", "Santi"] },
-          { name: "Sábado 13 de julio", votes: 3, voters: ["Pablo", "Miguel", "Roi"] },
-          { name: "Sábado 20 de julio", votes: 2, voters: ["Diego", "David"] }
-        ],
-        note: "Participación visible: se sabe quién ha votado, pero no a qué opción."
-      }
-    ];
+  const activeContainer = document.getElementById("activePolls");
+  const historyContainer = document.getElementById("historyPolls");
 
-    const history = [
-      {
-        title: "Mejor comida de 2025",
-        description: "Encuesta cerrada para decidir la mejor experiencia gastronómica del ejercicio.",
-        type: "secreta",
-        closed: "Cerrada el 21 de diciembre de 2025",
-        winner: "Casa Pepe",
-        votes: 14,
-        turnout: "14 de 17 cofrades"
-      },
-      {
-        title: "Fecha para la comida de Navidad",
-        description: "Votación operativa para cuadrar asistencia y calendario.",
-        type: "publica",
-        closed: "Cerrada el 4 de noviembre de 2025",
-        winner: "Sábado 14 de diciembre",
-        votes: 12,
-        turnout: "12 de 17 cofrades"
-      },
-      {
-        title: "Zona para la comida de otoño",
-        description: "Consulta previa para decidir entre costa, centro o interior.",
-        type: "participacion",
-        closed: "Cerrada el 18 de septiembre de 2025",
-        winner: "Zona centro",
-        votes: 10,
-        turnout: "10 de 17 cofrades"
-      },
-      {
-        title: "Premio a la mejor sobremesa",
-        description: "Votación interna con resultado final destacado en el tablón de la cofradía.",
-        type: "secreta",
-        closed: "Cerrada el 28 de junio de 2025",
-        winner: "Sobremesa de Casa Manolo",
-        votes: 13,
-        turnout: "13 de 17 cofrades"
-      }
-    ];
+  function badgeTypeLabel(type){
+    if(type === "publica") return "Pública";
+    if(type === "secreta") return "Secreta";
+    return "Participación visible";
+  }
 
-    const activeContainer = document.getElementById("activePolls");
-    const historyContainer = document.getElementById("historyPolls");
+  function badgeTypeClass(type){
+    if(type === "publica") return "publica";
+    if(type === "secreta") return "secreta";
+    return "participacion";
+  }
 
-    function badgeTypeLabel(type){
-      if(type === "publica") return "Pública";
-      if(type === "secreta") return "Secreta";
-      return "Participación visible";
-    }
+  function typeIcon(){
+    return `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2v20"></path>
+        <path d="M4 8h16"></path>
+        <path d="M7 8V5h10v3"></path>
+      </svg>
+    `;
+  }
 
-    function badgeTypeClass(type){
-      if(type === "publica") return "publica";
-      if(type === "secreta") return "secreta";
-      return "participacion";
-    }
+  function winnerOption(options){
+    return [...options].sort((a,b) => b.votes - a.votes)[0] || null;
+  }
 
-    function typeIcon(){
-      return `
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 2v20"></path>
-          <path d="M4 8h16"></path>
-          <path d="M7 8V5h10v3"></path>
-        </svg>
-      `;
-    }
+  function percent(votes, total){
+    if(!total) return 0;
+    return Math.round((votes / total) * 100);
+  }
 
-    function winnerOption(options){
-      return [...options].sort((a,b) => b.votes - a.votes)[0];
-    }
-
-    function percent(votes, total){
-      if(!total) return 0;
-      return Math.round((votes / total) * 100);
-    }
-
-    function renderVisibilityBlock(poll){
-      if(poll.type === "publica"){
-        return `
-          <div class="visibility-panel">
-            <h4 class="mini-title">Detalle del voto</h4>
-            <div class="grouped-voters">
-              ${poll.options.map(option => `
-                <div class="group">
-                  <div class="group-title">
-                    <span>${option.name}</span>
-                    <span class="group-count">${option.voters.length} voto${option.voters.length !== 1 ? "s" : ""}</span>
-                  </div>
-                  <div class="chips">
-                    ${option.voters.map(voter => `<span class="chip">${voter}</span>`).join("")}
-                  </div>
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        `;
-      }
-
-      if(poll.type === "participacion"){
-        return `
-          <div class="visibility-panel">
-            <h4 class="mini-title">Participación registrada</h4>
-            <div class="chips">
-              ${poll.votedMembers.map(voter => `<span class="chip">${voter}</span>`).join("")}
-            </div>
-          </div>
-        `;
-      }
-
+  function renderVisibilityBlock(poll){
+    if(poll.type === "publica"){
       return `
         <div class="visibility-panel">
-          <h4 class="mini-title">Confidencialidad</h4>
-          <div class="muted-box">
-            Esta encuesta está marcada como <strong>secreta</strong>. La identidad de cada voto no se muestra
-            en pantalla y aquí solo aparece el resultado agregado por opción.
+          <h4 class="mini-title">Detalle del voto</h4>
+          <div class="grouped-voters">
+            ${poll.options.map(option => `
+              <div class="group">
+                <div class="group-title">
+                  <span>${option.name}</span>
+                  <span class="group-count">${option.voters.length} voto${option.voters.length !== 1 ? "s" : ""}</span>
+                </div>
+                <div class="chips">
+                  ${option.voters.length
+                    ? option.voters.map(voter => `<span class="chip">${voter}</span>`).join("")
+                    : `<span class="chip">Sin votos todavía</span>`
+                  }
+                </div>
+              </div>
+            `).join("")}
           </div>
         </div>
       `;
     }
 
-    function renderPollCard(poll){
-      const winner = winnerOption(poll.options);
-
+    if(poll.type === "participacion"){
       return `
-        <article class="card" data-poll-id="${poll.id}">
-          <div class="poll-top">
-            <div>
-              <h3 class="poll-title">${poll.title}</h3>
-              <p class="poll-desc">${poll.description}</p>
-              <div class="badges">
-                <span class="badge ${badgeTypeClass(poll.type)}">
-                  ${typeIcon()}
-                  ${badgeTypeLabel(poll.type)}
-                </span>
-                <span class="badge ${poll.status}">
-                  ${poll.status === "abierta" ? "Abierta" : "Cerrada"}
-                </span>
-                <span class="badge cerrada" style="background:#faf7f3;color:#6a5849;border-color:#eadfd5;">
-                  ${poll.closes}
-                </span>
-              </div>
+        <div class="visibility-panel">
+          <h4 class="mini-title">Participación registrada</h4>
+          <div class="chips">
+            ${poll.votedMembers.length
+              ? poll.votedMembers.map(voter => `<span class="chip">${voter}</span>`).join("")
+              : `<span class="chip">Aún no ha votado nadie</span>`
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="visibility-panel">
+        <h4 class="mini-title">Confidencialidad</h4>
+        <div class="muted-box">
+          Esta encuesta está marcada como <strong>secreta</strong>. La identidad de cada voto no se muestra
+          en pantalla y aquí solo aparece el resultado agregado por opción.
+        </div>
+      </div>
+    `;
+  }
+
+  function renderPollCard(poll){
+    const winner = winnerOption(poll.options);
+
+    return `
+      <article class="card" data-poll-id="${poll.id}">
+        <div class="poll-top">
+          <div>
+            <h3 class="poll-title">${poll.title}</h3>
+            <p class="poll-desc">${poll.description || ""}</p>
+            <div class="badges">
+              <span class="badge ${badgeTypeClass(poll.type)}">
+                ${typeIcon()}
+                ${badgeTypeLabel(poll.type)}
+              </span>
+              <span class="badge ${poll.status}">
+                ${poll.status === "abierta" ? "Abierta" : "Cerrada"}
+              </span>
+              <span class="badge cerrada" style="background:#faf7f3;color:#6a5849;border-color:#eadfd5;">
+                ${poll.closes || ""}
+              </span>
             </div>
           </div>
+        </div>
 
+        ${
+          poll.status === "abierta"
+          ? `
           <div class="options">
             ${poll.options.map((option, index) => `
               <button class="option-btn" type="button" data-option-index="${index}">
@@ -1073,23 +993,33 @@
 
           <div class="poll-actions">
             <button class="vote-btn" type="button" disabled>Votar</button>
-            <div class="vote-note">${poll.note}</div>
+            <div class="vote-note">${poll.note || ""}</div>
           </div>
+          `
+          : `
+          <div class="muted-box" style="margin-top:18px;">
+            Esta votación está cerrada y ya no admite nuevos votos.
+          </div>
+          `
+        }
 
-          <div class="result-list">
-            ${poll.options.map(option => `
-              <div class="result-row">
-                <div class="result-line">
-                  <span class="result-name">${option.name}</span>
-                  <span class="result-meta">${option.votes} votos · ${percent(option.votes, poll.totalVotes)}%</span>
-                </div>
-                <div class="bar">
-                  <span style="width:${percent(option.votes, poll.totalVotes)}%"></span>
-                </div>
+        <div class="result-list">
+          ${poll.options.map(option => `
+            <div class="result-row">
+              <div class="result-line">
+                <span class="result-name">${option.name}</span>
+                <span class="result-meta">${option.votes} votos · ${percent(option.votes, poll.totalVotes)}%</span>
               </div>
-            `).join("")}
-          </div>
+              <div class="bar">
+                <span style="width:${percent(option.votes, poll.totalVotes)}%"></span>
+              </div>
+            </div>
+          `).join("")}
+        </div>
 
+        ${
+          winner
+          ? `
           <div class="winner">
             <div class="winner-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24">
@@ -1108,97 +1038,175 @@
               </div>
             </div>
           </div>
+          `
+          : ""
+        }
 
-          ${renderVisibilityBlock(poll)}
-        </article>
-      `;
-    }
+        ${renderVisibilityBlock(poll)}
+      </article>
+    `;
+  }
 
-    function renderHistoryCard(item){
-      return `
-        <article class="card history-card">
-          <div class="history-top">
-            <div>
-              <h3 class="history-title">${item.title}</h3>
-              <p class="history-desc">${item.description}</p>
-            </div>
-            <span class="badge ${badgeTypeClass(item.type)}">
-              ${typeIcon()}
-              ${badgeTypeLabel(item.type)}
-            </span>
+  function renderHistoryCard(item){
+    return `
+      <article class="card history-card">
+        <div class="history-top">
+          <div>
+            <h3 class="history-title">${item.title}</h3>
+            <p class="history-desc">${item.description || ""}</p>
           </div>
+          <span class="badge ${badgeTypeClass(item.type)}">
+            ${typeIcon()}
+            ${badgeTypeLabel(item.type)}
+          </span>
+        </div>
 
-          <div class="history-meta">
-            <div class="meta-box">
-              <div class="meta-label">Estado</div>
-              <div class="meta-value">${item.closed}</div>
-            </div>
-            <div class="meta-box">
-              <div class="meta-label">Ganadora</div>
-              <div class="meta-value">${item.winner}</div>
-            </div>
-            <div class="meta-box">
-              <div class="meta-label">Participación</div>
-              <div class="meta-value">${item.turnout}</div>
-            </div>
+        <div class="history-meta">
+          <div class="meta-box">
+            <div class="meta-label">Estado</div>
+            <div class="meta-value">${item.closed || "Cerrada"}</div>
           </div>
-
-          <div class="muted-box">
-            <strong>Total de votos:</strong> ${item.votes}
+          <div class="meta-box">
+            <div class="meta-label">Ganadora</div>
+            <div class="meta-value">${item.winner || "-"}</div>
           </div>
-        </article>
-      `;
-    }
+          <div class="meta-box">
+            <div class="meta-label">Participación</div>
+            <div class="meta-value">${item.turnout || "-"}</div>
+          </div>
+        </div>
 
-    function renderAll(){
-      activeContainer.innerHTML = polls.map(renderPollCard).join("");
-      historyContainer.innerHTML = history.map(renderHistoryCard).join("");
+        <div class="muted-box">
+          <strong>Total de votos:</strong> ${item.votes || 0}
+        </div>
+      </article>
+    `;
+  }
 
-      const totalVotes = polls.reduce((acc, poll) => acc + poll.totalVotes, 0);
-      const activeCount = polls.filter(p => p.status === "abierta").length;
-      const publicCount = polls.filter(p => p.type === "publica").length;
-      const secretCount = polls.filter(p => p.type === "secreta").length;
+  function normalizePoll(apiPoll){
+    const options = (apiPoll.options || []).map(opt => ({
+      name: opt.name,
+      votes: Number(opt.votes || 0),
+      voters: Array.isArray(opt.voters) ? opt.voters : []
+    }));
 
-      document.getElementById("kpiActive").textContent = activeCount;
-      document.getElementById("kpiVotes").textContent = totalVotes;
-      document.getElementById("kpiPublic").textContent = publicCount;
-      document.getElementById("kpiSecret").textContent = secretCount;
+    const totalVotes = options.reduce((acc, opt) => acc + opt.votes, 0);
 
-      bindOptionSelection();
-    }
+    return {
+      id: apiPoll.id,
+      title: apiPoll.title,
+      description: apiPoll.description || "",
+      type: apiPoll.type || "secreta",
+      status: apiPoll.status || "abierta",
+      closes: apiPoll.closes || "",
+      totalVotes,
+      votedMembers: Array.isArray(apiPoll.votedMembers) ? apiPoll.votedMembers : [],
+      options,
+      note:
+        apiPoll.type === "publica"
+          ? "Modo público: se ve quién ha votado cada opción."
+          : apiPoll.type === "participacion"
+          ? "Participación visible: se sabe quién ha votado, pero no a qué opción."
+          : "Modo secreto: solo se muestran resultados, no el detalle individual del voto."
+    };
+  }
 
-    function bindOptionSelection(){
-      document.querySelectorAll(".card[data-poll-id]").forEach(card => {
-        const optionButtons = card.querySelectorAll(".option-btn");
-        const voteButton = card.querySelector(".vote-btn");
+  function renderAll(polls, history){
+    activeContainer.innerHTML = polls.map(renderPollCard).join("");
+    historyContainer.innerHTML = history.map(renderHistoryCard).join("");
 
-        optionButtons.forEach(btn => {
-          btn.addEventListener("click", () => {
-            optionButtons.forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            voteButton.disabled = false;
-          });
-        });
+    const totalVotes = polls.reduce((acc, poll) => acc + poll.totalVotes, 0);
+    const activeCount = polls.filter(p => p.status === "abierta").length;
+    const publicCount = polls.filter(p => p.type === "publica").length;
+    const secretCount = polls.filter(p => p.type === "secreta").length;
 
-        voteButton.addEventListener("click", () => {
-          const selected = card.querySelector(".option-btn.active");
-          if(!selected) return;
+    document.getElementById("kpiActive").textContent = activeCount;
+    document.getElementById("kpiVotes").textContent = totalVotes;
+    document.getElementById("kpiPublic").textContent = publicCount;
+    document.getElementById("kpiSecret").textContent = secretCount;
 
-          const optionText = selected.querySelector(".option-name").textContent.trim();
-          voteButton.textContent = "Voto registrado";
-          voteButton.disabled = true;
+    bindOptionSelection();
+  }
 
-          setTimeout(() => {
-            voteButton.textContent = "Votar";
-            optionButtons.forEach(b => b.classList.remove("active"));
-          }, 1400);
+  function bindOptionSelection(){
+    document.querySelectorAll(".card[data-poll-id]").forEach(card => {
+      const optionButtons = card.querySelectorAll(".option-btn");
+      const voteButton = card.querySelector(".vote-btn");
 
-          console.log("Demo de voto en:", card.dataset.pollId, "->", optionText);
+      if(!voteButton) return;
+
+      optionButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          optionButtons.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          voteButton.disabled = false;
         });
       });
+
+      voteButton.addEventListener("click", async () => {
+        const selected = card.querySelector(".option-btn.active");
+        if(!selected) return;
+
+        const pollId = card.dataset.pollId;
+        const optionIndex = Number(selected.dataset.optionIndex);
+        const optionName = selected.querySelector(".option-name").textContent.trim();
+        const voterName = prompt("Tu nombre:");
+
+        if(!voterName) return;
+
+        try{
+          voteButton.disabled = true;
+          voteButton.textContent = "Enviando...";
+
+          await enviarVoto({
+            pollId,
+            voterName,
+            optionName,
+            optionIndex
+          });
+
+          voteButton.textContent = "Voto registrado";
+          await cargarDatos();
+        }catch(error){
+          console.error(error);
+          alert("No se pudo registrar el voto.");
+          voteButton.textContent = "Votar";
+          voteButton.disabled = false;
+        }
+      });
+    });
+  }
+
+  async function cargarDatos(){
+    const res = await fetch(API_URL);
+    const data = await res.json();
+
+    const polls = Array.isArray(data.polls) ? data.polls.map(normalizePoll) : [];
+    const history = Array.isArray(data.history) ? data.history : [];
+
+    renderAll(polls, history);
+  }
+
+  async function enviarVoto(payload){
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if(!data.ok){
+      throw new Error(data.error || "Error al votar");
     }
 
-    renderAll();
-  </script>
+    return data;
+  }
+
+  cargarDatos();
+</script>
+  
 </body>
 </html>
