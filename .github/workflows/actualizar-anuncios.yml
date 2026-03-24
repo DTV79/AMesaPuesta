@@ -1,1 +1,40 @@
+name: Actualizar anuncios desde Google Sheets
 
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/30 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  actualizar-anuncios:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Descargar anuncios JSON desde Apps Script
+        run: |
+          curl -L "${{ secrets.ANUNCIOS_API_URL }}" -o docs/anuncios.json
+
+      - name: Validar y formatear JSON
+        run: |
+          python -m json.tool docs/anuncios.json > /tmp/anuncios-validado.json
+          mv /tmp/anuncios-validado.json docs/anuncios.json
+
+      - name: Comprobar si hay cambios
+        id: cambios
+        run: |
+          git diff --quiet docs/anuncios.json && echo "sin_cambios=true" >> $GITHUB_OUTPUT || echo "sin_cambios=false" >> $GITHUB_OUTPUT
+
+      - name: Commit y push
+        if: steps.cambios.outputs.sin_cambios == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/anuncios.json
+          git commit -m "Actualiza anuncios.json desde Google Sheets"
+          git push
