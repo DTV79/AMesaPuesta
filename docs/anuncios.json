@@ -79,6 +79,22 @@
             "autor": "",
             "enlace": "",
             "orden": 0
+        },
+        {
+            "id": "ANU-0006",
+            "fecha": "2026-03-25",
+            "fechaPublicacion": "2026-03-25",
+            "fechaFin": "",
+            "fechaEvento": "",
+            "tipo": "General",
+            "titulo": "Prueba",
+            "texto": "A ver si sale bine",
+            "destacado": true,
+            "dias_destacado": "",
+            "visible": true,
+            "autor": "",
+            "enlace": "",
+            "orden": 0
         }
     ]
 }
