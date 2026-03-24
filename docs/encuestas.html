@@ -191,10 +191,11 @@
     }
 
     .hero-kpis{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:12px;
-    }
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  max-width:260px;
+}
 
     .kpi{
       background:rgba(255,255,255,.92);
@@ -921,24 +922,12 @@
             </p>
           </div>
 
-          <div class="hero-kpis">
-            <div class="kpi">
-              <div class="kpi-label">Encuestas activas</div>
-              <div class="kpi-value" id="kpiActive">0</div>
-            </div>
-            <div class="kpi">
-              <div class="kpi-label">Votos emitidos</div>
-              <div class="kpi-value" id="kpiVotes">0</div>
-            </div>
-            <div class="kpi">
-              <div class="kpi-label">Públicas</div>
-              <div class="kpi-value" id="kpiPublic">0</div>
-            </div>
-            <div class="kpi">
-              <div class="kpi-label">Secretas</div>
-              <div class="kpi-value" id="kpiSecret">0</div>
-            </div>
-          </div>
+          <<div class="hero-kpis">
+  <div class="kpi">
+    <div class="kpi-label">Encuestas activas</div>
+    <div class="kpi-value" id="kpiActive">0</div>
+  </div>
+</div>
         </div>
       </div>
     </div>
@@ -952,11 +941,7 @@
             <h2 class="section-title">Encuestas activas</h2>
             <p class="section-subtitle">Consulta, vota y revisa los resultados de la Cofradía.</p>
           </div>
-          <div class="pill">
-            <span class="pill-dot"></span>
-            Votación real de cofradía
-          </div>
-        </div>
+         </div>
 
         <div class="grid active" id="activePolls"></div>
       </section>
@@ -964,8 +949,7 @@
       <section class="section">
         <div class="section-head">
           <div>
-            <h2 class="section-title">Histórico de votaciones</h2>
-            <p class="section-subtitle">Preparado para mostrar encuestas cerradas cuando el backend las devuelva.</p>
+            <h2 class="section-title">Histórico de encuestas</h2>
           </div>
         </div>
 
@@ -1390,16 +1374,9 @@
   }
 
   function updateKpis(polls){
-    const totalVotes = polls.reduce((acc, poll) => acc + safeNumber(poll.totalVotes, 0), 0);
-    const activeCount = polls.filter(p => p.status === "abierta").length;
-    const publicCount = polls.filter(p => p.type === "publica").length;
-    const secretCount = polls.filter(p => p.type === "secreta").length;
-
-    document.getElementById("kpiActive").textContent = activeCount;
-    document.getElementById("kpiVotes").textContent = totalVotes;
-    document.getElementById("kpiPublic").textContent = publicCount;
-    document.getElementById("kpiSecret").textContent = secretCount;
-  }
+  const activeCount = polls.filter(p => p.status === "abierta").length;
+  document.getElementById("kpiActive").textContent = activeCount;
+}
 
   function showCardStatus(card, message, kind){
     const box = card.querySelector(".status-box");
