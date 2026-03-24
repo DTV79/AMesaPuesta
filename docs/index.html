@@ -593,6 +593,15 @@
             Restaurantes
           </a>
 
+          <a href="encuestas.html" class="boton-menu">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2v20"></path>
+              <path d="M4 8h16"></path>
+              <path d="M7 8V5h10v3"></path>
+            </svg>
+            Encuestas
+          </a>
+
           <a href="himno.html" class="boton-menu">
             <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/>
@@ -724,11 +733,11 @@
           badge.classList.add("pulse");
           botonAnuncios.classList.add("boton-menu--anuncios-activo");
 
-        if (destacados.length === 1) {
-          tituloAviso.textContent = "Hay 1 nuevo anuncio destacado";
-        } else {
-          tituloAviso.textContent = `Hay ${destacados.length} nuevos anuncios destacados`;
-        }
+          if (destacados.length === 1) {
+            tituloAviso.textContent = "Hay 1 nuevo anuncio destacado";
+          } else {
+            tituloAviso.textContent = `Hay ${destacados.length} nuevos anuncios destacados`;
+          }
 
           const storageKey = claveCierre(destacados);
           const fueCerrado = localStorage.getItem(storageKey) === "1";
