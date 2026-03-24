@@ -1062,37 +1062,51 @@
     }
 
     function normalizePoll(poll){
-      const options = safeArray(poll?.options).map(normalizeOption);
-      const totalVotesFromApi = safeNumber(poll?.totalVotes, -1);
-      const totalVotes = totalVotesFromApi >= 0
-        ? totalVotesFromApi
-        : options.reduce((acc, option) => acc + safeNumber(option.votes, 0), 0);
+  const options = safeArray(poll?.options).map(normalizeOption);
+  const totalVotesFromApi = safeNumber(poll?.totalVotes, -1);
+  const totalVotes = totalVotesFromApi >= 0
+    ? totalVotesFromApi
+    : options.reduce((acc, option) => acc + safeNumber(option.votes, 0), 0);
 
-      const maxChoices =
-        safeNumber(poll?.maxChoices, 0) ||
-        safeNumber(poll?.max_choices, 0) ||
-        1;
+  const maxChoices =
+    safeNumber(poll?.maxChoices, 0) ||
+    safeNumber(poll?.max_choices, 0) ||
+    1;
 
-      return {
-        id: escapeHtml(poll?.id || ""),
-        title: escapeHtml(poll?.title || "Encuesta sin título"),
-        description: escapeHtml(poll?.description || ""),
-        type: ["publica", "secreta", "participacion"].includes(poll?.type) ? poll.type : "secreta",
-        status: poll?.status === "cerrada" ? "cerrada" : "abierta",
-        closes: poll?.closes || "",
-        showResults: poll?.showResults !== false,
-        maxChoices,
-        totalVotes,
-        votedMembers: safeArray(poll?.votedMembers).map(v => escapeHtml(v)),
-        options,
-        winner: poll?.winner && poll.winner.name
-          ? {
-              name: escapeHtml(poll.winner.name),
-              votes: safeNumber(poll.winner.votes, 0)
-            }
-          : null
-      };
-    }
+  return {
+    id: escapeHtml(poll?.id || ""),
+    title: escapeHtml(poll?.title || "Encuesta sin título"),
+    description: escapeHtml(poll?.description || ""),
+    type: ["publica", "secreta", "participacion"].includes(poll?.type) ? poll.type : "secreta",
+    status: poll?.status === "cerrada" ? "cerrada" : "abierta",
+    closedByDate: !!poll?.closedByDate,
+    closes: poll?.closes || "",
+    countdownText: escapeHtml(poll?.countdownText || ""),
+    showResults: poll?.showResults !== false,
+    maxChoices,
+    totalVotes,
+    votedMembers: safeArray(poll?.votedMembers).map(v => escapeHtml(v)),
+    options,
+    winner: poll?.winner && poll.winner.name
+      ? {
+          name: escapeHtml(poll.winner.name),
+          votes: safeNumber(poll.winner.votes, 0)
+        }
+      : null,
+    isTie: !!poll?.isTie,
+    winners: safeArray(poll?.winners).map(w => ({
+      name: escapeHtml(w?.name || ""),
+      votes: safeNumber(w?.votes, 0)
+    }))
+  };
+}
+
+    function renderStatusBadge(poll){
+  if (poll.status === "cerrada" && poll.closedByDate) {
+    return `<span class="badge cerrada">Cerrada por fecha</span>`;
+  }
+  return `<span class="badge ${poll.status}">${poll.status === "abierta" ? "Abierta" : "Cerrada"}</span>`;
+}
 
     function normalizeCofrade(member){
       return {
@@ -1182,11 +1196,14 @@
                   ${badgeTypeLabel(poll.type)}
                 </span>
                 <span class="badge ${poll.status}">
-                  ${poll.status === "abierta" ? "Abierta" : "Cerrada"}
-                </span>
+                ${renderStatusBadge(poll)}
                 <span class="badge neutral">
-                  ${formatCloseDate(poll.closes) || "Sin fecha de cierre"}
+                ${formatCloseDate(poll.closes) || "Sin fecha de cierre"}
                 </span>
+                ${poll.status === "abierta" && poll.countdownText
+                ? `<span class="badge neutral">${poll.countdownText}</span>`
+                : ""
+            }
                 <span class="badge neutral">
                   ${getMaxChoicesLabel(maxChoices)}
                 </span>
@@ -1257,29 +1274,39 @@
                   </div>
 
                   ${
-                    winner
-                    ? `
-                      <div class="winner">
-                        <div class="winner-icon" aria-hidden="true">
-                          <svg viewBox="0 0 24 24">
-                            <path d="M8 21h8"></path>
-                            <path d="M12 17v4"></path>
-                            <path d="M7 4h10v4a5 5 0 0 1-10 0V4z"></path>
-                            <path d="M17 6h2a2 2 0 0 1 0 4h-2"></path>
-                            <path d="M7 6H5a2 2 0 0 0 0 4h2"></path>
-                          </svg>
-                        </div>
-                        <div>
-                          <small>Opción destacada</small>
-                          <strong>${winner.name}</strong>
-                          <div style="margin-top:4px;color:#6d5a2f;font-weight:700;">
-                            ${winner.votes} votos · ${percent(winner.votes, poll.totalVotes)}% del total
-                          </div>
-                        </div>
-                      </div>
-                    `
-                    : ""
-                  }
+  winner
+  ? `
+    <div class="winner">
+      <div class="winner-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M8 21h8"></path>
+          <path d="M12 17v4"></path>
+          <path d="M7 4h10v4a5 5 0 0 1-10 0V4z"></path>
+          <path d="M17 6h2a2 2 0 0 1 0 4h-2"></path>
+          <path d="M7 6H5a2 2 0 0 0 0 4h2"></path>
+        </svg>
+      </div>
+      <div>
+        <small>${poll.isTie ? "Empate" : "Opción destacada"}</small>
+        <strong>
+          ${
+            poll.isTie && poll.winners.length
+              ? poll.winners.map(w => w.name).join(" · ")
+              : winner.name
+          }
+        </strong>
+        <div style="margin-top:4px;color:#6d5a2f;font-weight:700;">
+          ${
+            poll.isTie && poll.winners.length
+              ? `Empate con ${winner.votes} votos`
+              : `${winner.votes} votos · ${percent(winner.votes, poll.totalVotes)}% del total`
+          }
+        </div>
+      </div>
+    </div>
+  `
+  : ""
+}
                 `
               : `
                   <div class="muted-box" style="margin-top:14px;">
@@ -1448,23 +1475,45 @@
     }
 
     function renderAll(polls){
-      if(!polls.length){
-        activeContainer.innerHTML = `
-          <article class="card">
-            <div class="muted-box">
-              No hay encuestas disponibles en este momento.
-            </div>
-          </article>
-        `;
-      } else {
-        activeContainer.innerHTML = polls.map(renderPollCard).join("");
-      }
+  const activePolls = polls.filter(p => p.status === "abierta");
+  const closedPolls = polls.filter(p => p.status === "cerrada");
 
-      historyContainer.innerHTML = renderHistoryCard();
-      updateKpis(polls);
-      bindPollToggles();
-      bindOptionSelection();
-    }
+  if(!activePolls.length){
+    activeContainer.innerHTML = `
+      <article class="card">
+        <div class="muted-box">
+          No hay encuestas activas en este momento.
+        </div>
+      </article>
+    `;
+  } else {
+    activeContainer.innerHTML = activePolls.map(renderPollCard).join("");
+  }
+
+  if(!closedPolls.length){
+    historyContainer.innerHTML = `
+      <article class="card history-card">
+        <div class="history-top">
+          <div>
+            <h3 class="history-title">Histórico de votaciones</h3>
+            <p class="history-desc">Todavía no hay encuestas cerradas.</p>
+          </div>
+          <span class="badge cerrada">Vacío</span>
+        </div>
+
+        <div class="muted-box">
+          Cuando una encuesta se cierre manualmente o por fecha, aparecerá aquí.
+        </div>
+      </article>
+    `;
+  } else {
+    historyContainer.innerHTML = closedPolls.map(renderPollCard).join("");
+  }
+
+  updateKpis(activePolls);
+  bindPollToggles();
+  bindOptionSelection();
+}
 
     async function cargarDatos(){
       try{
