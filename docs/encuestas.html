@@ -213,7 +213,7 @@
 
     .hero-kpis{
       display:grid;
-      grid-template-columns:minmax(180px,260px);
+      grid-template-columns:minmax(180px,220px);
       gap:12px;
       margin-top:22px;
     }
@@ -226,6 +226,12 @@
       box-shadow:var(--shadow-soft);
     }
 
+    .kpi.kpi-active{
+      max-width:220px;
+      min-width:190px;
+      padding:14px 14px 12px;
+    }
+
     .kpi-label{
       color:var(--muted);
       font-size:.84rem;
@@ -233,10 +239,19 @@
       font-weight:700;
     }
 
+    .kpi.kpi-active .kpi-label{
+      text-align:center;
+      margin-bottom:8px;
+    }
+
     .kpi-value{
       font-size:1.6rem;
       font-weight:900;
       line-height:1;
+    }
+
+    .kpi.kpi-active .kpi-value{
+      text-align:center;
     }
 
     .hero-side{
@@ -251,7 +266,7 @@
       border-radius:24px;
       background:linear-gradient(180deg,#fff,#fcfbf8);
       box-shadow:var(--shadow-soft);
-      padding:22px;
+      padding:20px;
       display:flex;
       flex-direction:column;
       justify-content:center;
@@ -282,13 +297,32 @@
       font-size:1.08rem;
       font-weight:900;
       letter-spacing:-.02em;
-      margin-bottom:8px;
+      margin-bottom:10px;
     }
 
-    .hero-side-text{
-      color:#5f5046;
-      line-height:1.6;
+    .hero-types{
+      display:grid;
+      gap:10px;
+    }
+
+    .hero-type-item{
+      background:#faf7f3;
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:10px 12px;
+    }
+
+    .hero-type-item strong{
+      display:block;
       font-size:.96rem;
+      margin-bottom:3px;
+    }
+
+    .hero-type-item span{
+      display:block;
+      color:#5f5046;
+      line-height:1.45;
+      font-size:.9rem;
     }
 
     .main{
@@ -981,7 +1015,7 @@
             </p>
 
             <div class="hero-kpis">
-              <div class="kpi">
+              <div class="kpi kpi-active">
                 <div class="kpi-label">Encuestas activas</div>
                 <div class="kpi-value" id="kpiActive">0</div>
               </div>
@@ -992,14 +1026,33 @@
             <div class="hero-side-card">
               <div class="hero-side-icon">
                 <svg viewBox="0 0 24 24">
-                  <path d="M12 2v20"></path>
-                  <path d="M4 8h16"></path>
-                  <path d="M7 8V5h10v3"></path>
+                  <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
+                  <path d="M7 8h2"></path>
+                  <path d="M11 8h6"></path>
+                  <path d="M7 12h2"></path>
+                  <path d="M11 12h6"></path>
+                  <path d="M7 16h2"></path>
+                  <path d="M11 16h6"></path>
                 </svg>
               </div>
-              <div class="hero-side-title">Encuestas de la cofradía</div>
-              <div class="hero-side-text">
-                Votaciones públicas, secretas y de participación visible.
+
+              <div class="hero-side-title">Tipos de encuestas</div>
+
+              <div class="hero-types">
+                <div class="hero-type-item">
+                  <strong>Pública</strong>
+                  <span>Se ve quién vota cada opción.</span>
+                </div>
+
+                <div class="hero-type-item">
+                  <strong>Secreta</strong>
+                  <span>Solo se muestra el resultado final.</span>
+                </div>
+
+                <div class="hero-type-item">
+                  <strong>Participación</strong>
+                  <span>Se ve quién votó, pero no qué eligió.</span>
+                </div>
               </div>
             </div>
           </div>
