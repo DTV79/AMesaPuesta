@@ -1388,40 +1388,42 @@
     }
 
     function renderWinnerBlock(poll){
-      const winner = poll.winner;
-      if (!winner) return "";
+  const winner = poll.winner;
+  if (!winner) return "";
 
-      return `
-        <div class="winner">
-          <div class="winner-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M8 21h8"></path>
-              <path d="M12 17v4"></path>
-              <path d="M7 4h10v4a5 5 0 0 1-10 0V4z"></path>
-              <path d="M17 6h2a2 2 0 0 1 0 4h-2"></path>
-              <path d="M7 6H5a2 2 0 0 0 0 4h2"></path>
-            </svg>
-          </div>
-          <div>
-            <small>${poll.isTie ? "Empate" : "Opción destacada"}</small>
-            <strong>
-              ${
-                poll.isTie && poll.winners.length
-                  ? poll.winners.map(w => w.name).join(" · ")
-                  : winner.name
-              }
-            </strong>
-            <div style="margin-top:4px;color:#6d5a2f;font-weight:700;">
-              ${
-                poll.isTie && poll.winners.length
-                  ? `Empate con ${winner.votes} votos`
-                  : `${winner.votes} votos · ${percent(winner.votes, poll.totalVotes)}% del total`
-              }
-            </div>
-          </div>
+  if (poll.type !== "publica") return "";
+
+  return `
+    <div class="winner">
+      <div class="winner-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M8 21h8"></path>
+          <path d="M12 17v4"></path>
+          <path d="M7 4h10v4a5 5 0 0 1-10 0V4z"></path>
+          <path d="M17 6h2a2 2 0 0 1 0 4h-2"></path>
+          <path d="M7 6H5a2 2 0 0 0 0 4h2"></path>
+        </svg>
+      </div>
+      <div>
+        <small>${poll.isTie ? "Empate" : "Opción destacada"}</small>
+        <strong>
+          ${
+            poll.isTie && poll.winners.length
+              ? poll.winners.map(w => w.name).join(" · ")
+              : winner.name
+          }
+        </strong>
+        <div style="margin-top:4px;color:#6d5a2f;font-weight:700;">
+          ${
+            poll.isTie && poll.winners.length
+              ? `Empate con ${winner.votes} votos`
+              : `${winner.votes} votos · ${percent(winner.votes, poll.totalVotes)}% del total`
+          }
         </div>
-      `;
-    }
+      </div>
+    </div>
+  `;
+}
 
     function renderPollCard(poll){
       const maxChoices = safeNumber(poll.maxChoices, 1);
