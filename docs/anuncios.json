@@ -79,22 +79,6 @@
             "autor": "",
             "enlace": "",
             "orden": 0
-        },
-        {
-            "id": "ANU-0006",
-            "fecha": "2026-03-25",
-            "fechaPublicacion": "2026-03-25",
-            "fechaFin": "",
-            "fechaEvento": "2026-03-25",
-            "tipo": "General",
-            "titulo": "Prueba",
-            "texto": "Prueba 2",
-            "destacado": false,
-            "dias_destacado": "",
-            "visible": true,
-            "autor": "",
-            "enlace": "",
-            "orden": 0
         }
     ]
 }
