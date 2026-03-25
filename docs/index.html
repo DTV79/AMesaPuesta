@@ -73,9 +73,9 @@
       width:min(calc(100% - 28px), var(--max-width));
       margin:0 auto;
       padding:
-        max(2px, env(safe-area-inset-top))
+        max(0px, env(safe-area-inset-top))
         0
-        max(18px, env(safe-area-inset-bottom))
+        max(14px, env(safe-area-inset-bottom))
         0;
     }
 
@@ -84,7 +84,7 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      padding:0 0 4px;
+      padding:0;
     }
 
     .brand-panel{
@@ -97,19 +97,20 @@
       border:1px solid var(--panel-border);
       border-radius:34px;
       box-shadow:var(--shadow-soft);
-      padding:4px 16px 10px;
+      padding:0 16px 8px;
       backdrop-filter:blur(2px);
       -webkit-backdrop-filter:blur(2px);
+      margin-top:-8px;
     }
 
     .logo-wrap{
       position:relative;
-      width:min(100%, 470px);
+      width:min(100%, 450px);
       aspect-ratio:1 / 1;
       display:flex;
       align-items:center;
       justify-content:center;
-      margin:-18px auto 0;
+      margin:-34px auto -14px;
     }
 
     .arc{
@@ -119,33 +120,33 @@
       height:100%;
       overflow:visible;
       pointer-events:none;
-      transform:translateY(-6px);
+      transform:translateY(-12px);
     }
 
     .arc-text{
       fill:#1e1a17;
-      font-size:25px;
+      font-size:24px;
       font-weight:700;
-      letter-spacing:2.2px;
+      letter-spacing:2px;
       text-transform:uppercase;
     }
 
     .logo{
-      width:min(70%, 360px);
+      width:min(66%, 330px);
       height:auto;
       object-fit:contain;
-      margin-top:-6px;
+      margin-top:-14px;
       background:transparent;
       filter:drop-shadow(0 6px 12px rgba(0,0,0,.14));
     }
 
     .slogan{
-      margin-top:-52px;
-      margin-bottom:2px;
+      margin-top:-74px;
+      margin-bottom:0;
       text-align:center;
       color:var(--muted);
       font-size:clamp(18px, 2vw, 28px);
-      line-height:1.15;
+      line-height:1.12;
       font-weight:700;
       max-width:100%;
       white-space:nowrap;
@@ -156,8 +157,8 @@
       max-width:860px;
       display:grid;
       grid-template-columns:repeat(6, minmax(0, 1fr));
-      gap:16px;
-      margin:2px auto 0;
+      gap:14px;
+      margin:0 auto 0;
     }
 
     .boton-menu{
@@ -166,8 +167,8 @@
       align-items:center;
       justify-content:center;
       gap:10px;
-      min-height:64px;
-      padding:14px 16px;
+      min-height:60px;
+      padding:13px 16px;
       border-radius:18px;
       text-decoration:none;
       color:#fff;
@@ -237,7 +238,7 @@
       position:relative;
       width:100%;
       max-width:var(--content-width);
-      margin:12px auto 0;
+      margin:8px auto 0;
       display:flex;
       align-items:center;
       gap:16px;
@@ -361,28 +362,28 @@
 
     @media (max-width: 980px){
       .brand-panel{
-        padding:6px 14px 10px;
+        padding:0 14px 8px;
+        margin-top:-6px;
       }
 
       .logo-wrap{
-        margin-top:-16px;
+        margin:-28px auto -12px;
       }
 
       .arc{
-        transform:translateY(-4px);
+        transform:translateY(-8px);
       }
 
       .menu-principal{
         grid-template-columns:repeat(2, minmax(0, 1fr));
         max-width:640px;
-        margin-top:2px;
       }
 
       .slogan{
         white-space:normal;
         font-size:clamp(20px, 3vw, 30px);
-        margin-top:-42px;
-        margin-bottom:6px;
+        margin-top:-60px;
+        margin-bottom:4px;
       }
 
       .boton-menu{
@@ -398,51 +399,51 @@
 
       .hero{
         padding-top:0;
-        padding-bottom:6px;
+        padding-bottom:4px;
       }
 
       .brand-panel{
         border-radius:24px;
-        padding:8px 12px 10px;
+        padding:0 12px 8px;
+        margin-top:-4px;
       }
 
       .logo-wrap{
-        width:min(100%, 340px);
-        margin-top:-34px;
-        margin-bottom:0;
+        width:min(100%, 320px);
+        margin:-34px auto -18px;
       }
 
       .arc-text{
-        font-size:22px;
-        letter-spacing:1.3px;
+        font-size:21px;
+        letter-spacing:1.2px;
       }
 
       .arc{
-        transform:translateY(0);
+        transform:translateY(-6px);
       }
 
       .logo{
-        width:min(64%, 215px);
-        margin-top:-8px;
+        width:min(62%, 200px);
+        margin-top:-12px;
       }
 
       .slogan{
-        font-size:clamp(15px, 4.8vw, 21px);
-        line-height:1.18;
-        margin-top:-68px;
-        margin-bottom:10px;
+        font-size:clamp(15px, 4.8vw, 20px);
+        line-height:1.16;
+        margin-top:-62px;
+        margin-bottom:8px;
         padding:0 4px;
         white-space:normal;
       }
 
       .menu-principal{
-        gap:12px;
-        margin:0 auto 0;
+        gap:10px;
+        margin:0 auto;
       }
 
       .boton-menu{
-        min-height:54px;
-        padding:12px 10px;
+        min-height:52px;
+        padding:11px 10px;
         border-radius:15px;
         font-size:16px;
         gap:7px;
@@ -462,7 +463,7 @@
       }
 
       .aviso-home{
-        margin-top:12px;
+        margin-top:10px;
         gap:10px;
         padding:12px 12px;
         padding-right:42px;
@@ -494,8 +495,8 @@
 
     @media (max-width: 390px){
       .logo-wrap{
-        width:min(100%, 300px);
-        margin-top:-28px;
+        width:min(100%, 286px);
+        margin:-28px auto -16px;
       }
 
       .arc-text{
@@ -504,12 +505,12 @@
       }
 
       .logo{
-        width:min(58%, 175px);
-        margin-top:-6px;
+        width:min(58%, 170px);
+        margin-top:-10px;
       }
 
       .slogan{
-        margin-top:-32px;
+        margin-top:-40px;
       }
 
       .menu-principal{
@@ -518,8 +519,8 @@
       }
 
       .boton-menu{
-        min-height:52px;
-        font-size:16px;
+        min-height:50px;
+        font-size:15px;
       }
 
       .aviso-home{
