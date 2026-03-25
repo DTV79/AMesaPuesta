@@ -1175,16 +1175,6 @@
       return "participacion";
     }
 
-    function typeIcon(){
-      return `
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 2v20"></path>
-          <path d="M4 8h16"></path>
-          <path d="M7 8V5h10v3"></path>
-        </svg>
-      `;
-    }
-
     function percent(votes, total){
       const v = safeNumber(votes, 0);
       const t = safeNumber(total, 0);
@@ -1212,19 +1202,24 @@
     function formatCloseDate(value){
       if(!value) return "";
 
-      const d = parseDateValue(value);
-      if (!d) return safeString(value);
+      const raw = String(value).trim();
+      const d = parseDateValue(raw);
+      if (!d) return safeString(raw);
 
-      const hasExplicitTime = /\d{2}:\d{2}/.test(String(value));
+      const hasExplicitTime = /^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}$/.test(raw);
 
       if (hasExplicitTime) {
-        return "Cierra el " + d.toLocaleString("es-ES", {
+        const [datePart, timePart] = raw.split(/\s+/);
+        const dateOnly = new Date(datePart + "T00:00:00");
+        if (Number.isNaN(dateOnly.getTime())) return safeString(raw);
+
+        const fecha = dateOnly.toLocaleDateString("es-ES", {
           day: "2-digit",
           month: "long",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit"
+          year: "numeric"
         });
+
+        return `Cierra el ${fecha}, ${timePart}`;
       }
 
       return "Cierra el " + d.toLocaleDateString("es-ES", {
@@ -1381,49 +1376,61 @@
         <div class="visibility-panel">
           <h4 class="mini-title">Confidencialidad</h4>
           <div class="muted-box">
-            Esta encuesta está marcada como <strong>secreta</strong>. La identidad de cada voto no se muestra en pantalla y aquí solo aparece el resultado agregado por opción.
+            Esta encuesta está marcada como <strong>secreta</strong>. La identidad de cada voto no se muestra en pantalla y aquí solo aparece el resultado agregado por opción cuando la votación está cerrada.
           </div>
         </div>
       `;
     }
 
     function renderWinnerBlock(poll){
-  const winner = poll.winner;
-  if (!winner) return "";
+      const winner = poll.winner;
+      if (!winner) return "";
+      if (poll.type !== "publica") return "";
 
-  if (poll.type !== "publica") return "";
-
-  return `
-    <div class="winner">
-      <div class="winner-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24">
-          <path d="M8 21h8"></path>
-          <path d="M12 17v4"></path>
-          <path d="M7 4h10v4a5 5 0 0 1-10 0V4z"></path>
-          <path d="M17 6h2a2 2 0 0 1 0 4h-2"></path>
-          <path d="M7 6H5a2 2 0 0 0 0 4h2"></path>
-        </svg>
-      </div>
-      <div>
-        <small>${poll.isTie ? "Empate" : "Opción destacada"}</small>
-        <strong>
-          ${
-            poll.isTie && poll.winners.length
-              ? poll.winners.map(w => w.name).join(" · ")
-              : winner.name
-          }
-        </strong>
-        <div style="margin-top:4px;color:#6d5a2f;font-weight:700;">
-          ${
-            poll.isTie && poll.winners.length
-              ? `Empate con ${winner.votes} votos`
-              : `${winner.votes} votos · ${percent(winner.votes, poll.totalVotes)}% del total`
-          }
+      return `
+        <div class="winner">
+          <div class="winner-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M8 21h8"></path>
+              <path d="M12 17v4"></path>
+              <path d="M7 4h10v4a5 5 0 0 1-10 0V4z"></path>
+              <path d="M17 6h2a2 2 0 0 1 0 4h-2"></path>
+              <path d="M7 6H5a2 2 0 0 0 0 4h2"></path>
+            </svg>
+          </div>
+          <div>
+            <small>${poll.isTie ? "Empate" : "Opción destacada"}</small>
+            <strong>
+              ${
+                poll.isTie && poll.winners.length
+                  ? poll.winners.map(w => w.name).join(" · ")
+                  : winner.name
+              }
+            </strong>
+            <div style="margin-top:4px;color:#6d5a2f;font-weight:700;">
+              ${
+                poll.isTie && poll.winners.length
+                  ? `Empate con ${winner.votes} votos`
+                  : `${winner.votes} votos · ${percent(winner.votes, poll.totalVotes)}% del total`
+              }
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  `;
-}
+      `;
+    }
+
+    function shouldShowResults(poll){
+      if (!poll.showResults) return false;
+      if (poll.type === "secreta" && poll.status !== "cerrada") return false;
+      return true;
+    }
+
+    function renderResultsHiddenMessage(poll){
+      if (poll.type === "secreta" && poll.status !== "cerrada") {
+        return "Los resultados de esta encuesta secreta solo se mostrarán cuando la votación esté cerrada.";
+      }
+      return "Los resultados no están visibles por el momento.";
+    }
 
     function renderPollCard(poll){
       const maxChoices = safeNumber(poll.maxChoices, 1);
@@ -1432,6 +1439,7 @@
         poll.eligibleVotersCount > 0
           ? `${poll.votedEligibleCount} de ${poll.eligibleVotersCount} votos`
           : "";
+      const resultsVisible = shouldShowResults(poll);
 
       return `
         <article class="card poll-card" data-poll-id="${poll.id}" data-max-choices="${maxChoices}">
@@ -1493,7 +1501,7 @@
                         ? "Modo público: se ve quién ha votado cada opción."
                         : poll.type === "participacion"
                         ? "Participación visible: se sabe quién ha votado, pero no a qué opción."
-                        : "Modo secreto: solo se muestran resultados, no el detalle individual del voto."
+                        : "Modo secreto: solo se mostrarán resultados cuando la encuesta esté cerrada."
                     }
                   </div>
                 </div>
@@ -1514,7 +1522,7 @@
             }
 
             ${
-              poll.showResults
+              resultsVisible
               ? `
                 <div class="result-list">
                   ${poll.options.map(option => `
@@ -1534,7 +1542,7 @@
               `
               : `
                 <div class="muted-box" style="margin-top:14px;">
-                  Los resultados no están visibles por el momento.
+                  ${renderResultsHiddenMessage(poll)}
                 </div>
               `
             }
