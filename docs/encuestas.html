@@ -125,32 +125,20 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      gap:10px;
-      padding:11px 18px;
-      border:1px solid #e7c7c7;
-      border-radius:999px;
-      background:linear-gradient(180deg,#fff7f7,#f9ecec);
-      color:var(--primary);
-      font-weight:800;
-      box-shadow:0 8px 18px rgba(139,0,0,.08);
-      transition:.2s ease;
+      padding:8px 16px;
+      border:none;
+      border-radius:6px;
+      background:#8b0000;
+      color:#fff;
+      font-weight:600;
+      font-size:14px;
+      box-shadow:none;
+      transition:opacity .2s ease;
       flex:0 0 auto;
     }
 
     .back-btn:hover{
-      transform:translateY(-1px);
-      border-color:#dca9a9;
-      background:linear-gradient(180deg,#fff,#f7e5e5);
-    }
-
-    .back-btn svg{
-      width:17px;
-      height:17px;
-      stroke:currentColor;
-      stroke-width:2.2;
-      fill:none;
-      stroke-linecap:round;
-      stroke-linejoin:round;
+      opacity:.9;
     }
 
     .hero{
@@ -284,13 +272,13 @@
     }
 
     .hero-side-icon svg{
-    width:24px;
-    height:24px;
-    fill:none;
-    stroke:currentColor;
-    stroke-width:2;
-    stroke-linecap:round;
-    stroke-linejoin:round;
+      width:24px;
+      height:24px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:2;
+      stroke-linecap:round;
+      stroke-linejoin:round;
     }
 
     .hero-side-title{
@@ -797,6 +785,48 @@
       display:block;
     }
 
+    #btnSubir{
+      position:fixed;
+      right:22px;
+      bottom:22px;
+      width:52px;
+      height:52px;
+      border:none;
+      border-radius:50%;
+      background:linear-gradient(135deg,#8b0000,#b30000);
+      color:#fff;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 10px 24px rgba(139,0,0,.28);
+      opacity:0;
+      visibility:hidden;
+      transform:translateY(10px) scale(.95);
+      transition:opacity .25s ease, transform .25s ease, visibility .25s ease, background .2s ease;
+      z-index:9999;
+    }
+
+    #btnSubir.show{
+      opacity:1;
+      visibility:visible;
+      transform:translateY(0) scale(1);
+    }
+
+    #btnSubir:hover{
+      background:linear-gradient(135deg,#760000,#990000);
+    }
+
+    #btnSubir:active{
+      transform:scale(.96);
+    }
+
+    #btnSubir svg{
+      width:22px;
+      height:22px;
+      fill:currentColor;
+    }
+
     @media (max-width: 980px){
       .hero-grid,
       .grid.active,
@@ -947,6 +977,20 @@
       }
     }
 
+    @media (max-width: 700px){
+      #btnSubir{
+        right:16px;
+        bottom:16px;
+        width:48px;
+        height:48px;
+      }
+
+      #btnSubir svg{
+        width:20px;
+        height:20px;
+      }
+    }
+
     @media (max-width: 480px){
       .wrap,
       .site-header-inner{
@@ -993,12 +1037,7 @@
         </div>
       </div>
 
-      <a class="back-btn" href="index.html" aria-label="Volver al inicio">
-        <svg viewBox="0 0 24 24">
-          <path d="M15 18l-6-6 6-6"></path>
-        </svg>
-        Volver
-      </a>
+      <a class="back-btn" href="index.html" aria-label="Volver al inicio">← Volver</a>
     </div>
   </header>
 
@@ -1026,15 +1065,15 @@
             <div class="hero-side-card">
               <div class="hero-side-icon">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
-                <path d="M7.5 8.5l1.2 1.2 2-2.4"></path>
-                <path d="M13 8h4"></path>
-                <path d="M7.5 12.5l1.2 1.2 2-2.4"></path>
-                <path d="M13 12h4"></path>
-                <path d="M7.5 16.5l1.2 1.2 2-2.4"></path>
-                <path d="M13 16h4"></path>
-              </svg>
-            </div>
+                  <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
+                  <path d="M7.5 8.5l1.2 1.2 2-2.4"></path>
+                  <path d="M13 8h4"></path>
+                  <path d="M7.5 12.5l1.2 1.2 2-2.4"></path>
+                  <path d="M13 12h4"></path>
+                  <path d="M7.5 16.5l1.2 1.2 2-2.4"></path>
+                  <path d="M13 16h4"></path>
+                </svg>
+              </div>
 
               <div class="hero-side-title">Tipos de encuestas</div>
 
@@ -1087,6 +1126,12 @@
       <div class="footer-space"></div>
     </div>
   </main>
+
+  <button id="btnSubir" title="Subir arriba" aria-label="Subir arriba">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 5l-7 7 1.41 1.41L11 8.83V20h2V8.83l4.59 4.58L19 12z"/>
+    </svg>
+  </button>
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzPxPPBYBhzWRJSEm5TRHEJnW2cnxGSauLZnrUZ4UKQPwS8IP5_9I5CJWoD6JfiTQjA/exec";
@@ -1708,6 +1753,23 @@
     }
 
     cargarDatos();
+
+    const btnSubir = document.getElementById("btnSubir");
+
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 300) {
+        btnSubir.classList.add("show");
+      } else {
+        btnSubir.classList.remove("show");
+      }
+    });
+
+    btnSubir.addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    });
   </script>
 </body>
 </html>
