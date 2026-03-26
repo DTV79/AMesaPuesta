@@ -1474,7 +1474,11 @@
             </svg>
           </div>
           <div>
-            <small>${poll.isTie ? "Empate" : "Opción destacada"}</small>
+            <small>
+              ${poll.status === "abierta"
+                ? (poll.isTie ? "Empate provisional" : "Va ganando")
+                : (poll.isTie ? "Empate" : "Opción destacada")}
+            </small>
             <strong>
               ${
                 poll.isTie && poll.winners.length
@@ -1547,22 +1551,42 @@
       if (poll.type === "publica") {
         return `
           <div class="visibility-panel">
-            <h4 class="mini-title">Voto visible durante la encuesta</h4>
-            <div class="grouped-voters">
+            <h4 class="mini-title">Resultado provisional</h4>
+
+            <div class="result-list">
               ${poll.options.map(option => `
-                <div class="group">
-                  <div class="group-title">
-                    <span>${option.name}</span>
-                    <span class="group-count">${option.voters.length} voto${option.voters.length !== 1 ? "s" : ""}</span>
+                <div class="result-row">
+                  <div class="result-line">
+                    <span class="result-name">${option.name}</span>
+                    <span class="result-meta">${option.votes} votos · ${percent(option.votes, poll.totalVotes)}%</span>
                   </div>
-                  <div class="chips">
-                    ${option.voters.length
-                      ? option.voters.map(voter => `<span class="chip">${voter}</span>`).join("")
-                      : `<span class="chip">Sin votos todavía</span>`
-                    }
+                  <div class="bar">
+                    <span style="width:${percent(option.votes, poll.totalVotes)}%"></span>
                   </div>
                 </div>
               `).join("")}
+            </div>
+
+            ${renderWinnerBlock(poll)}
+
+            <div class="visibility-panel">
+              <h4 class="mini-title">Voto visible durante la encuesta</h4>
+              <div class="grouped-voters">
+                ${poll.options.map(option => `
+                  <div class="group">
+                    <div class="group-title">
+                      <span>${option.name}</span>
+                      <span class="group-count">${option.voters.length} voto${option.voters.length !== 1 ? "s" : ""}</span>
+                    </div>
+                    <div class="chips">
+                      ${option.voters.length
+                        ? option.voters.map(voter => `<span class="chip">${voter}</span>`).join("")
+                        : `<span class="chip">Sin votos todavía</span>`
+                      }
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
             </div>
           </div>
         `;
@@ -1648,7 +1672,7 @@
               <div class="poll-summary">
                 ${
                   poll.type === "publica"
-                    ? "Encuesta pública: al abrirla puedes ver qué cofrade ha votado cada opción."
+                    ? "Encuesta pública: al abrirla puedes ver qué cofrade ha votado cada opción y quién va ganando."
                     : poll.type === "participacion"
                     ? "Participación visible: al abrirla puedes ver quién ha votado, pero no qué ha elegido."
                     : "Encuesta secreta: mientras siga abierta no se muestra ni la identidad del voto ni el resultado."
