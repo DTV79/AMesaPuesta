@@ -491,6 +491,12 @@
       border-color:#eadfd5;
     }
 
+    .badge.recent{
+      background:#fff6de;
+      color:#8a6515;
+      border-color:#f1deaa;
+    }
+
     .options{
       margin-top:18px;
       display:grid;
@@ -1187,6 +1193,17 @@
       <section class="section">
         <div class="section-head">
           <div>
+            <h2 class="section-title">Cerradas recientemente</h2>
+            <p class="section-subtitle">Resultados recién cerrados, visibles un rato antes de pasar al histórico.</p>
+          </div>
+        </div>
+
+        <div class="grid history" id="recentPolls"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
             <h2 class="section-title">Histórico de encuestas</h2>
             <p class="section-subtitle">Se carga aparte para hacer la página más ágil.</p>
           </div>
@@ -1214,6 +1231,7 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbzPxPPBYBhzWRJSEm5TRHEJnW2cnxGSauLZnrUZ4UKQPwS8IP5_9I5CJWoD6JfiTQjA/exec";
 
     const activeContainer = document.getElementById("activePolls");
+    const recentContainer = document.getElementById("recentPolls");
     const historyContainer = document.getElementById("historyPolls");
     const btnSubir = document.getElementById("btnSubir");
     const toggleHistoryBtn = document.getElementById("toggleHistoryBtn");
@@ -1312,6 +1330,20 @@
       });
     }
 
+    function formatClosedAt(value){
+      if(!value) return "";
+      const d = parseDateValue(value);
+      if(!d) return "";
+
+      return d.toLocaleString("es-ES", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
     function getMaxChoicesLabel(maxChoices){
       const n = safeNumber(maxChoices, 1);
       if(n <= 1) return "Solo 1 opción";
@@ -1347,6 +1379,8 @@
         closedByDate: !!poll?.closedByDate,
         closedByParticipation: !!poll?.closedByParticipation,
         closes: poll?.closes || "",
+        closedAt: poll?.closedAt || "",
+        isRecentlyClosed: !!poll?.isRecentlyClosed,
         countdownText: escapeHtml(poll?.countdownText || ""),
         showResults: poll?.showResults !== false,
         maxChoices,
@@ -1722,7 +1756,7 @@
       `;
     }
 
-    function renderClosedPollCard(poll){
+    function renderClosedPollCard(poll, scope = "history"){
       const maxChoices = safeNumber(poll.maxChoices, 1);
       const eligibleLabel = poll.votersMode === "cofrades" ? "Solo cofrades" : "Vota todo el mundo";
       const participationLabel =
@@ -1731,7 +1765,7 @@
           : "";
 
       return `
-        <article class="card poll-card" data-poll-id="${poll.id}" data-max-choices="${maxChoices}" data-scope="history">
+        <article class="card poll-card" data-poll-id="${poll.id}" data-max-choices="${maxChoices}" data-scope="${scope}">
           <div class="poll-top">
             <div>
               <h3 class="poll-title">${poll.title}</h3>
@@ -1739,16 +1773,23 @@
               <div class="badges">
                 <span class="badge ${badgeTypeClass(poll.type)}">${badgeTypeLabel(poll.type)}</span>
                 ${renderStatusBadge(poll)}
+                ${poll.isRecentlyClosed ? `<span class="badge recent">Recién cerrada</span>` : ""}
                 <span class="badge neutral">${formatCloseDate(poll.closes) || "Sin fecha de cierre"}</span>
                 <span class="badge neutral">${getMaxChoicesLabel(maxChoices)}</span>
                 <span class="badge neutral">${eligibleLabel}</span>
                 ${participationLabel ? `<span class="badge neutral">${participationLabel}</span>` : ""}
               </div>
+
+              ${poll.closedAt ? `
+                <div class="poll-summary">
+                  Cerrada el ${formatClosedAt(poll.closedAt)}.
+                </div>
+              ` : ""}
             </div>
           </div>
 
           <button class="poll-toggle" type="button" aria-expanded="false">
-            <span>Ver resultados</span>
+            <span>${scope === "recent" ? "Ver resultado final" : "Ver resultados"}</span>
             <span class="poll-toggle-icon">+</span>
           </button>
 
@@ -1797,6 +1838,7 @@
           <div class="loading-text"><span class="loading-dot"></span>Cargando encuestas activas…</div>
         </article>
       `;
+      recentContainer.innerHTML = "";
       historyContainer.hidden = true;
       historyContainer.innerHTML = "";
       historySummary.textContent = "Aún no cargado";
@@ -1853,9 +1895,9 @@
       const toggle = card.querySelector(".poll-toggle");
       if(toggle) toggle.setAttribute("aria-expanded", String(willOpen));
 
-      if (willOpen) {
+      if (willOpen && card.dataset.scope === "active") {
         lastOpenPollId = pollId;
-      } else if (lastOpenPollId === pollId) {
+      } else if (!willOpen && lastOpenPollId === pollId) {
         lastOpenPollId = "";
       }
     }
@@ -1894,19 +1936,20 @@
             </div>
 
             <div class="muted-box">
-              Cuando una encuesta se cierre manualmente, por fecha o por participación completa, aparecerá aquí.
+              Cuando una encuesta deje de estar en “cerradas recientemente”, aparecerá aquí.
             </div>
           </article>
         `;
         return;
       }
 
-      historyContainer.innerHTML = closedPolls.map(renderClosedPollCard).join("");
+      historyContainer.innerHTML = closedPolls.map(poll => renderClosedPollCard(poll, "history")).join("");
     }
 
     function renderAll(polls){
       const activePolls = polls.filter(p => p.status === "abierta");
-      const closedPolls = polls.filter(p => p.status === "cerrada");
+      const recentPolls = polls.filter(p => p.status === "cerrada" && p.isRecentlyClosed);
+      const closedPolls = polls.filter(p => p.status === "cerrada" && !p.isRecentlyClosed);
 
       if(!activePolls.length){
         activeContainer.innerHTML = `
@@ -1918,6 +1961,18 @@
         `;
       } else {
         activeContainer.innerHTML = activePolls.map(renderActivePollCard).join("");
+      }
+
+      if(!recentPolls.length){
+        recentContainer.innerHTML = `
+          <article class="card">
+            <div class="muted-box">
+              No hay encuestas cerradas recientemente.
+            </div>
+          </article>
+        `;
+      } else {
+        recentContainer.innerHTML = recentPolls.map(poll => renderClosedPollCard(poll, "recent")).join("");
       }
 
       renderHistory(closedPolls);
@@ -1957,6 +2012,7 @@
             </div>
           </article>
         `;
+        recentContainer.innerHTML = "";
         historyContainer.hidden = true;
         historyContainer.innerHTML = "";
         historySummary.textContent = "Sin datos";
@@ -2083,12 +2139,17 @@
       refreshVoteButton(card);
     });
 
-    historyContainer.addEventListener("click", (event) => {
-      const toggle = event.target.closest(".poll-toggle");
-      if(!toggle) return;
-      const card = toggle.closest(".poll-card");
-      if(card) toggleCard(card);
-    });
+    function bindClosedContainerToggle(container){
+      container.addEventListener("click", (event) => {
+        const toggle = event.target.closest(".poll-toggle");
+        if(!toggle) return;
+        const card = toggle.closest(".poll-card");
+        if(card) toggleCard(card);
+      });
+    }
+
+    bindClosedContainerToggle(recentContainer);
+    bindClosedContainerToggle(historyContainer);
 
     toggleHistoryBtn.addEventListener("click", () => {
       historyExpanded = !historyExpanded;
