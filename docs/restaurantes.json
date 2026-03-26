@@ -187,5 +187,26 @@
     "autor": "Diego",
     "latitud": 42.3405,
     "longitud": -8.45235
+  },
+  {
+    "id": 0,
+    "nombre": "Siosi",
+    "direccion": "Lugar O Painzal, 13, 36400 Cans, Pontevedra",
+    "telefono": "612 47 17 95",
+    "web": "https://tamararestaurant.es/restaurante/restaurante-siosi/",
+    "fecha": "2026-03-28",
+    "resenas": "",
+    "organizadores": ["Capón","Ovi"],
+    "entrantes": [],
+    "platos_principales": [],
+    "postres": [],
+    "bebidas": [],
+    "precio": "825",
+    "asistieron": [],
+    "no_asistieron": [],
+    "descripcion": "",
+    "autor": "",
+    "latitud": 42.15692,
+    "longitud": -8.5987
   }
 ]}
