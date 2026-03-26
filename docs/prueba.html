@@ -11,15 +11,15 @@
     :root{
       color-scheme: light;
       --bg:#f7f4ef;
+      --card:#ffffff;
+      --card-soft:#fcfbf8;
       --text:#1f1a17;
       --muted:#5b4334;
       --primary:#a40000;
       --primary-dark:#860000;
       --primary-soft:#f6e9e9;
       --gold:#b9892e;
-      --panel-border:rgba(232,221,210,.82);
-      --card:#ffffff;
-      --card-soft:#fcfbf8;
+      --border:rgba(232,221,210,.86);
       --shadow:0 12px 26px rgba(0,0,0,.10);
       --shadow-soft:0 6px 18px rgba(0,0,0,.06);
       --radius:22px;
@@ -37,10 +37,10 @@
     body{
       margin:0;
       color:var(--text);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
       background:
         radial-gradient(circle at top, rgba(185,137,46,.10), transparent 24%),
         linear-gradient(180deg, #fbf8f3 0%, var(--bg) 100%);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height:100vh;
     }
 
@@ -49,7 +49,7 @@
       text-decoration:none;
     }
 
-    .shell{
+    .wrap{
       width:min(var(--max-width), calc(100% - 28px));
       margin:0 auto;
     }
@@ -57,16 +57,16 @@
     .topbar{
       position:sticky;
       top:0;
-      z-index:40;
+      z-index:50;
       backdrop-filter:saturate(180%) blur(12px);
-      background:rgba(247,244,239,.80);
-      border-bottom:1px solid rgba(232,221,210,.9);
+      background:rgba(247,244,239,.82);
+      border-bottom:1px solid var(--border);
     }
 
     .topbar-inner{
       width:min(var(--max-width), calc(100% - 28px));
       margin:0 auto;
-      min-height:68px;
+      min-height:70px;
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -81,20 +81,20 @@
     }
 
     .brand-badge{
-      width:42px;
-      height:42px;
+      width:44px;
+      height:44px;
       border-radius:14px;
       display:grid;
       place-items:center;
-      background:linear-gradient(180deg, #fff7ea 0%, #f3e4c4 100%);
-      border:1px solid rgba(185,137,46,.35);
+      background:linear-gradient(180deg,#fff7ea 0%,#f3e4c4 100%);
+      border:1px solid rgba(185,137,46,.34);
       box-shadow:var(--shadow-soft);
       flex:0 0 auto;
     }
 
     .brand-badge svg{
-      width:22px;
-      height:22px;
+      width:23px;
+      height:23px;
       fill:var(--gold);
     }
 
@@ -154,7 +154,7 @@
       background:
         radial-gradient(circle at top right, rgba(185,137,46,.12), transparent 26%),
         linear-gradient(135deg, #fffdf9 0%, #fbf6ef 100%);
-      border:1px solid var(--panel-border);
+      border:1px solid var(--border);
       border-radius:30px;
       box-shadow:var(--shadow);
       padding:34px 26px;
@@ -177,7 +177,7 @@
       gap:8px;
       padding:8px 12px;
       border-radius:999px;
-      background:rgba(255,255,255,.78);
+      background:rgba(255,255,255,.82);
       border:1px solid rgba(185,137,46,.24);
       color:var(--gold);
       font-size:.82rem;
@@ -223,9 +223,7 @@
       cursor:pointer;
     }
 
-    .btn:hover{
-      transform:translateY(-1px);
-    }
+    .btn:hover{ transform:translateY(-1px); }
 
     .btn-primary{
       background:linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
@@ -253,7 +251,7 @@
 
     .section-head h2{
       margin:0;
-      font-size:1.4rem;
+      font-size:1.45rem;
       letter-spacing:-.02em;
     }
 
@@ -263,15 +261,20 @@
       font-size:.97rem;
     }
 
-    .live-grid{
+    .grid{
       display:grid;
-      grid-template-columns:repeat(12, minmax(0, 1fr));
+      grid-template-columns:repeat(12,minmax(0,1fr));
       gap:16px;
     }
 
+    .col-4{ grid-column:span 4; }
+    .col-6{ grid-column:span 6; }
+    .col-8{ grid-column:span 8; }
+    .col-12{ grid-column:span 12; }
+
     .card{
       background:var(--card);
-      border:1px solid var(--panel-border);
+      border:1px solid var(--border);
       border-radius:22px;
       box-shadow:var(--shadow-soft);
       overflow:hidden;
@@ -280,6 +283,10 @@
 
     .card-body{
       padding:20px;
+    }
+
+    .card-body.loading{
+      opacity:.72;
     }
 
     .card-title{
@@ -310,11 +317,6 @@
       white-space:nowrap;
     }
 
-    .span-4{ grid-column:span 4; }
-    .span-6{ grid-column:span 6; }
-    .span-8{ grid-column:span 8; }
-    .span-12{ grid-column:span 12; }
-
     .kicker{
       font-size:.8rem;
       color:var(--gold);
@@ -332,9 +334,7 @@
       margin:0 0 8px;
     }
 
-    .muted{
-      color:var(--muted);
-    }
+    .muted{ color:var(--muted); }
 
     .meta{
       display:grid;
@@ -387,7 +387,7 @@
 
     .stats-grid{
       display:grid;
-      grid-template-columns:repeat(2, minmax(0,1fr));
+      grid-template-columns:repeat(2,minmax(0,1fr));
       gap:12px;
     }
 
@@ -413,14 +413,14 @@
 
     .quick-links{
       display:grid;
-      grid-template-columns:repeat(5, minmax(0,1fr));
+      grid-template-columns:repeat(5,minmax(0,1fr));
       gap:14px;
       margin-top:16px;
     }
 
     .quick-link{
       background:#fff;
-      border:1px solid var(--panel-border);
+      border:1px solid var(--border);
       border-radius:20px;
       box-shadow:var(--shadow-soft);
       padding:18px 16px;
@@ -443,7 +443,7 @@
       border-radius:14px;
       display:grid;
       place-items:center;
-      background:linear-gradient(180deg, #fff7ea 0%, #f3e4c4 100%);
+      background:linear-gradient(180deg,#fff7ea 0%,#f3e4c4 100%);
       border:1px solid rgba(185,137,46,.28);
       color:var(--gold);
       font-size:1.2rem;
@@ -463,8 +463,8 @@
 
     .feature{
       margin:24px 0 36px;
-      background:linear-gradient(135deg, #fffdf9 0%, #fbf6ef 100%);
-      border:1px solid var(--panel-border);
+      background:linear-gradient(135deg,#fffdf9 0%,#fbf6ef 100%);
+      border:1px solid var(--border);
       border-radius:26px;
       box-shadow:var(--shadow-soft);
       padding:24px;
@@ -520,33 +520,15 @@
       text-align:center;
     }
 
-    .loading{
-      opacity:.7;
-    }
-
     @media (max-width:980px){
-      .span-4,
-      .span-6,
-      .span-8{
-        grid-column:span 12;
-      }
-
-      .quick-links{
-        grid-template-columns:repeat(2, minmax(0,1fr));
-      }
-
-      .feature{
-        grid-template-columns:1fr;
-      }
-
-      .nav{
-        display:none;
-      }
+      .col-4,.col-6,.col-8{ grid-column:span 12; }
+      .quick-links{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .feature{ grid-template-columns:1fr; }
+      .nav{ display:none; }
     }
 
     @media (max-width:640px){
-      .shell,
-      .topbar-inner{
+      .wrap,.topbar-inner{
         width:min(var(--max-width), calc(100% - 18px));
       }
 
@@ -575,21 +557,14 @@
         grid-template-columns:1fr;
       }
 
-      .brand-title{
-        font-size:.96rem;
-      }
+      .brand-title{ font-size:.96rem; }
+      .brand-subtitle{ font-size:.78rem; }
 
-      .brand-subtitle{
-        font-size:.78rem;
-      }
-
-      .hero-actions,
-      .card-actions{
+      .hero-actions,.card-actions{
         flex-direction:column;
       }
 
-      .btn,
-      .mini-btn{
+      .btn,.mini-btn{
         width:100%;
       }
     }
@@ -620,14 +595,14 @@
     </div>
   </header>
 
-  <main class="shell">
+  <main class="wrap">
     <section class="hero">
       <div class="hero-card">
         <span class="eyebrow">Cofradía · Actualidad</span>
         <h1>Todo lo importante de la Cofradía, de un vistazo.</h1>
         <p>
           Consulta la próxima comida, la encuesta activa, el último anuncio y un resumen rápido
-          del estado actual de la Cofradía en una sola portada.
+          del estado actual de la Cofradía sin salir de la portada.
         </p>
 
         <div class="hero-actions">
@@ -645,13 +620,14 @@
         </div>
       </div>
 
-      <div class="live-grid">
-        <article class="card span-4" id="card-proxima">
+      <div class="grid">
+        <article class="card col-4" id="card-proxima">
           <div class="card-body loading">
             <div class="card-title">
               <h3>Próxima comida</h3>
               <span class="badge">Agenda</span>
             </div>
+
             <div class="kicker">Próximo encuentro</div>
             <p class="big-value" id="proxima-titulo">Cargando…</p>
             <p class="muted" id="proxima-subtitulo">Esperando datos</p>
@@ -681,12 +657,13 @@
           </div>
         </article>
 
-        <article class="card span-4" id="card-encuesta">
+        <article class="card col-4" id="card-encuesta">
           <div class="card-body loading">
             <div class="card-title">
               <h3>Encuesta activa</h3>
               <span class="badge">Votación</span>
             </div>
+
             <div class="kicker">Participación</div>
             <p class="big-value" id="encuesta-titulo">Cargando…</p>
             <p class="muted" id="encuesta-subtitulo">Esperando datos</p>
@@ -712,12 +689,13 @@
           </div>
         </article>
 
-        <article class="card span-4" id="card-anuncio">
+        <article class="card col-4" id="card-anuncio">
           <div class="card-body loading">
             <div class="card-title">
               <h3>Último anuncio</h3>
               <span class="badge">Tablón</span>
             </div>
+
             <div class="kicker">Novedad reciente</div>
             <p class="big-value" id="anuncio-titulo">Cargando…</p>
             <p class="muted" id="anuncio-texto">Esperando datos</p>
@@ -739,7 +717,7 @@
           </div>
         </article>
 
-        <article class="card span-8" id="card-resumen">
+        <article class="card col-8" id="card-resumen">
           <div class="card-body loading">
             <div class="card-title">
               <h3>Resumen rápido</h3>
@@ -772,7 +750,7 @@
           </div>
         </article>
 
-        <article class="card span-4">
+        <article class="card col-4">
           <div class="card-body">
             <div class="card-title">
               <h3>Acceso rápido</h3>
@@ -782,19 +760,23 @@
             <div class="meta">
               <div class="meta-row">
                 <span>Restaurantes</span>
-                <strong><a href="restaurantes.html" style="color:var(--primary);">Abrir</a></strong>
+                <strong><a href="restaurantes.html" style="color:var(--primary)">Abrir</a></strong>
               </div>
               <div class="meta-row">
                 <span>Cofrades</span>
-                <strong><a href="cofrades.html" style="color:var(--primary);">Abrir</a></strong>
+                <strong><a href="cofrades.html" style="color:var(--primary)">Abrir</a></strong>
+              </div>
+              <div class="meta-row">
+                <span>Encuestas</span>
+                <strong><a href="encuestas.html" style="color:var(--primary)">Abrir</a></strong>
+              </div>
+              <div class="meta-row">
+                <span>Anuncios</span>
+                <strong><a href="anuncios.html" style="color:var(--primary)">Abrir</a></strong>
               </div>
               <div class="meta-row">
                 <span>Estatutos</span>
-                <strong><a href="estatutos.html" style="color:var(--primary);">Abrir</a></strong>
-              </div>
-              <div class="meta-row">
-                <span>Himno</span>
-                <strong><a href="himno.html" style="color:var(--primary);">Abrir</a></strong>
+                <strong><a href="estatutos.html" style="color:var(--primary)">Abrir</a></strong>
               </div>
             </div>
           </div>
@@ -814,13 +796,13 @@
         <a class="quick-link" href="restaurantes.html">
           <div class="quick-icon">🍽</div>
           <strong>Restaurantes</strong>
-          <span>Consulta el mapa, el listado y toda la información de los sitios visitados.</span>
+          <span>Consulta el mapa, el listado y la información de los sitios visitados.</span>
         </a>
 
         <a class="quick-link" href="cofrades.html">
           <div class="quick-icon">👥</div>
           <strong>Cofrades</strong>
-          <span>Visualiza miembros, datos de participación y resumen económico.</span>
+          <span>Visualiza miembros, participación y resumen económico.</span>
         </a>
 
         <a class="quick-link" href="encuestas.html">
@@ -845,11 +827,10 @@
 
     <section class="feature" aria-labelledby="destacado-title">
       <div>
-        <h3 id="destacado-title">Un vistazo rápido antes de sentarse a la mesa</h3>
+        <h3 id="destacado-title">Una portada con función real</h3>
         <p>
-          Esta portada está preparada para servir como panel principal de la Cofradía.
-          En cuanto conectes los JSON reales, todo el contenido se actualizará de forma automática
-          sin tocar el diseño.
+          Esta versión no es solo decorativa: sirve como panel principal de la Cofradía.
+          En cuanto conectes los datos reales, todo lo importante aparecerá aquí arriba de forma automática.
         </p>
       </div>
 
@@ -866,10 +847,6 @@
   </footer>
 
   <script>
-    /*
-      CONFIGURA AQUÍ TUS URLS REALES
-      Puedes poner archivos JSON locales o endpoints de Apps Script.
-    */
     const DATA_URLS = {
       proximaComida: 'data/proxima-comida.json',
       encuestaActiva: 'data/encuesta-activa.json',
@@ -941,7 +918,7 @@
     async function loadBlock(url, fallback){
       try{
         return await fetchJson(url);
-      }catch(e){
+      }catch(err){
         return fallback;
       }
     }
@@ -956,10 +933,8 @@
       setLink('proxima-link', data.enlace || 'agenda.html');
       finishLoading('card-proxima');
 
-      if (data.titulo) {
-        setText('destacado-titulo', data.titulo);
-      }
-      if (data.fecha || data.lugar) {
+      if (data.titulo) setText('destacado-titulo', data.titulo);
+      if (data.fecha || data.lugar){
         setText('destacado-texto', `${data.fecha || 'Fecha por definir'} · ${data.lugar || 'Lugar pendiente'}`);
       }
     }
