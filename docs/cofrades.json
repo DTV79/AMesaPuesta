@@ -1,11 +1,11 @@
 ﻿{
   "resumen": {
     "total_miembros": 17,
-    "total_pagos_comidas": 127,
-    "total_comidas_asistidas": 96,
-    "total_gastos": 1280,
+    "total_pagos_comidas": 143,
+    "total_comidas_asistidas": 111,
+    "total_gastos": 1440,
     "total_cuotas": 3030,
-    "total_remanente": 1750
+    "total_remanente": 1590
   },
   "cofrades": [
     {
@@ -14,11 +14,11 @@
       "fecha_baja": "",
       "categoria": "Cofrade Fundador",
       "tiempo_cofradia": "1447",
-      "pagos_comidas": 9,
-      "comidas_asistidas": 7,
+      "pagos_comidas": 10,
+      "comidas_asistidas": 8,
       "cuotas_al_dia": "Sí",
-      "gastos": 90,
-      "remanente": 110,
+      "gastos": 100,
+      "remanente": 100,
       "cuotas": 200
     },
     {
@@ -27,11 +27,11 @@
       "fecha_baja": "",
       "categoria": "Cofrade Fundador",
       "tiempo_cofradia": "1447",
-      "pagos_comidas": 9,
-      "comidas_asistidas": 7,
+      "pagos_comidas": 10,
+      "comidas_asistidas": 8,
       "cuotas_al_dia": "Sí",
-      "gastos": 90,
-      "remanente": 110,
+      "gastos": 100,
+      "remanente": 100,
       "cuotas": 200
     },
     {
@@ -40,11 +40,11 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1305",
-      "pagos_comidas": 8,
-      "comidas_asistidas": 7,
+      "pagos_comidas": 9,
+      "comidas_asistidas": 8,
       "cuotas_al_dia": "Sí",
-      "gastos": 80,
-      "remanente": 110,
+      "gastos": 90,
+      "remanente": 100,
       "cuotas": 190
     },
     {
@@ -53,11 +53,11 @@
       "fecha_baja": "",
       "categoria": "Cofrade Fundador",
       "tiempo_cofradia": "1447",
-      "pagos_comidas": 9,
-      "comidas_asistidas": 9,
+      "pagos_comidas": 10,
+      "comidas_asistidas": 10,
       "cuotas_al_dia": "Sí",
-      "gastos": 90,
-      "remanente": 110,
+      "gastos": 100,
+      "remanente": 100,
       "cuotas": 200
     },
     {
@@ -66,11 +66,11 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1371",
-      "pagos_comidas": 9,
-      "comidas_asistidas": 8,
+      "pagos_comidas": 10,
+      "comidas_asistidas": 9,
       "cuotas_al_dia": "Sí",
-      "gastos": 90,
-      "remanente": 110,
+      "gastos": 100,
+      "remanente": 100,
       "cuotas": 200
     },
     {
@@ -79,11 +79,11 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1371",
-      "pagos_comidas": 9,
-      "comidas_asistidas": 6,
+      "pagos_comidas": 10,
+      "comidas_asistidas": 7,
       "cuotas_al_dia": "Sí",
-      "gastos": 90,
-      "remanente": 110,
+      "gastos": 100,
+      "remanente": 100,
       "cuotas": 200
     },
     {
@@ -92,11 +92,11 @@
       "fecha_baja": "",
       "categoria": "Cofrade Fundador",
       "tiempo_cofradia": "1447",
-      "pagos_comidas": 9,
-      "comidas_asistidas": 7,
+      "pagos_comidas": 10,
+      "comidas_asistidas": 8,
       "cuotas_al_dia": "Sí",
-      "gastos": 90,
-      "remanente": 110,
+      "gastos": 100,
+      "remanente": 100,
       "cuotas": 200
     },
     {
@@ -105,11 +105,11 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1371",
-      "pagos_comidas": 9,
-      "comidas_asistidas": 7,
+      "pagos_comidas": 10,
+      "comidas_asistidas": 8,
       "cuotas_al_dia": "Sí",
-      "gastos": 90,
-      "remanente": 110,
+      "gastos": 100,
+      "remanente": 100,
       "cuotas": 200
     },
     {
@@ -118,11 +118,11 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1371",
-      "pagos_comidas": 9,
-      "comidas_asistidas": 9,
+      "pagos_comidas": 10,
+      "comidas_asistidas": 10,
       "cuotas_al_dia": "Sí",
-      "gastos": 90,
-      "remanente": 110,
+      "gastos": 100,
+      "remanente": 100,
       "cuotas": 200
     },
     {
@@ -144,11 +144,11 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1371",
-      "pagos_comidas": 9,
-      "comidas_asistidas": 7,
+      "pagos_comidas": 10,
+      "comidas_asistidas": 8,
       "cuotas_al_dia": "Sí",
-      "gastos": 90,
-      "remanente": 110,
+      "gastos": 100,
+      "remanente": 100,
       "cuotas": 200
     },
     {
@@ -157,11 +157,11 @@
       "fecha_baja": "",
       "categoria": "Cofrade Fundador",
       "tiempo_cofradia": "1447",
-      "pagos_comidas": 9,
-      "comidas_asistidas": 6,
+      "pagos_comidas": 10,
+      "comidas_asistidas": 7,
       "cuotas_al_dia": "Sí",
-      "gastos": 90,
-      "remanente": 110,
+      "gastos": 100,
+      "remanente": 100,
       "cuotas": 200
     },
     {
@@ -170,11 +170,11 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1305",
-      "pagos_comidas": 8,
-      "comidas_asistidas": 3,
+      "pagos_comidas": 9,
+      "comidas_asistidas": 4,
       "cuotas_al_dia": "Sí",
-      "gastos": 80,
-      "remanente": 110,
+      "gastos": 90,
+      "remanente": 100,
       "cuotas": 190
     },
     {
@@ -183,11 +183,11 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1069",
-      "pagos_comidas": 6,
-      "comidas_asistidas": 5,
+      "pagos_comidas": 7,
+      "comidas_asistidas": 6,
       "cuotas_al_dia": "Sí",
-      "gastos": 60,
-      "remanente": 110,
+      "gastos": 70,
+      "remanente": 100,
       "cuotas": 170
     },
     {
@@ -196,11 +196,11 @@
       "fecha_baja": "",
       "categoria": "Aprendiz",
       "tiempo_cofradia": "1069",
-      "pagos_comidas": 6,
+      "pagos_comidas": 7,
       "comidas_asistidas": 4,
       "cuotas_al_dia": "Sí",
-      "gastos": 60,
-      "remanente": 110,
+      "gastos": 70,
+      "remanente": 100,
       "cuotas": 170
     },
     {
@@ -209,11 +209,11 @@
       "fecha_baja": "",
       "categoria": "Aprendiz",
       "tiempo_cofradia": "698",
-      "pagos_comidas": 3,
-      "comidas_asistidas": 2,
+      "pagos_comidas": 4,
+      "comidas_asistidas": 3,
       "cuotas_al_dia": "Sí",
-      "gastos": 30,
-      "remanente": 110,
+      "gastos": 40,
+      "remanente": 100,
       "cuotas": 140
     },
     {
@@ -222,11 +222,11 @@
       "fecha_baja": "",
       "categoria": "Aprendiz",
       "tiempo_cofradia": "369",
-      "pagos_comidas": 2,
-      "comidas_asistidas": 2,
+      "pagos_comidas": 3,
+      "comidas_asistidas": 3,
       "cuotas_al_dia": "Sí",
-      "gastos": 30,
-      "remanente": 100,
+      "gastos": 40,
+      "remanente": 90,
       "cuotas": 130
     }
   ]
