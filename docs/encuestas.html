@@ -1543,18 +1543,53 @@
       `;
     }
 
-    function buildActiveSummary(poll){
+    function renderActiveLiveInfo(poll){
       if (poll.type === "publica") {
-        return `Participación actual: ${poll.votedEligibleCount} de ${poll.eligibleVotersCount || 0} votos registrados.`;
+        return `
+          <div class="visibility-panel">
+            <h4 class="mini-title">Voto visible durante la encuesta</h4>
+            <div class="grouped-voters">
+              ${poll.options.map(option => `
+                <div class="group">
+                  <div class="group-title">
+                    <span>${option.name}</span>
+                    <span class="group-count">${option.voters.length} voto${option.voters.length !== 1 ? "s" : ""}</span>
+                  </div>
+                  <div class="chips">
+                    ${option.voters.length
+                      ? option.voters.map(voter => `<span class="chip">${voter}</span>`).join("")
+                      : `<span class="chip">Sin votos todavía</span>`
+                    }
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `;
       }
 
       if (poll.type === "participacion") {
-        return `Participación visible: ${poll.votedEligibleCount} de ${poll.eligibleVotersCount || 0} personas elegibles han votado.`;
+        return `
+          <div class="visibility-panel">
+            <h4 class="mini-title">Participación registrada</h4>
+            <div class="chips">
+              ${poll.votedMembers.length
+                ? poll.votedMembers.map(voter => `<span class="chip">${voter}</span>`).join("")
+                : `<span class="chip">Aún no ha votado nadie</span>`
+              }
+            </div>
+          </div>
+        `;
       }
 
-      return poll.status === "abierta"
-        ? "Encuesta secreta abierta. El resultado solo se mostrará al cerrarse."
-        : "Encuesta secreta cerrada.";
+      return `
+        <div class="visibility-panel">
+          <h4 class="mini-title">Confidencialidad</h4>
+          <div class="muted-box">
+            Esta encuesta está marcada como <strong>secreta</strong>. Mientras esté abierta no se muestra quién votó ni el resultado por opción.
+          </div>
+        </div>
+      `;
     }
 
     function renderResultsBlock(poll){
@@ -1609,7 +1644,16 @@
                 <span class="badge neutral">${eligibleLabel}</span>
                 ${participationLabel ? `<span class="badge neutral">${participationLabel}</span>` : ""}
               </div>
-              <div class="poll-summary">${buildActiveSummary(poll)}</div>
+
+              <div class="poll-summary">
+                ${
+                  poll.type === "publica"
+                    ? "Encuesta pública: al abrirla puedes ver qué cofrade ha votado cada opción."
+                    : poll.type === "participacion"
+                    ? "Participación visible: al abrirla puedes ver quién ha votado, pero no qué ha elegido."
+                    : "Encuesta secreta: mientras siga abierta no se muestra ni la identidad del voto ni el resultado."
+                }
+              </div>
             </div>
           </div>
 
@@ -1640,13 +1684,15 @@
                   poll.type === "publica"
                     ? "Modo público: se ve quién ha votado cada opción."
                     : poll.type === "participacion"
-                    ? "Participación visible: se sabe quién ha votado, pero no a qué opción. Los resultados se mostrarán al cerrar."
+                    ? "Participación visible: se sabe quién ha votado, pero no a qué opción."
                     : "Modo secreto: solo se mostrarán resultados cuando la encuesta esté cerrada."
                 }
               </div>
             </div>
 
             <div class="status-box" id="status-${poll.id}" hidden></div>
+
+            ${renderActiveLiveInfo(poll)}
           </div>
         </article>
       `;
@@ -1734,10 +1780,6 @@
       toggleHistoryBtn.textContent = "Mostrar histórico";
     }
 
-    function getPollById(pollId){
-      return ALL_POLLS.find(p => p.id === pollId) || null;
-    }
-
     function getSelectedButtons(card){
       return Array.from(card.querySelectorAll(".option-btn.active"));
     }
@@ -1796,6 +1838,7 @@
 
     function restoreOpenCard(){
       if(!lastOpenPollId) return;
+      if (typeof CSS === "undefined" || typeof CSS.escape !== "function") return;
       const card = document.querySelector(`.poll-card[data-poll-id="${CSS.escape(lastOpenPollId)}"][data-scope="active"]`);
       if(!card) return;
       toggleCard(card);
@@ -1974,9 +2017,11 @@
 
         await cargarDatos({ preserveHistoryState: true, preserveOpenCard: true });
 
-        const updatedCard = document.querySelector(`.poll-card[data-poll-id="${CSS.escape(pollId)}"][data-scope="active"]`);
-        if(updatedCard){
-          showCardStatus(updatedCard, "Voto registrado correctamente.", "ok");
+        if (typeof CSS !== "undefined" && typeof CSS.escape === "function") {
+          const updatedCard = document.querySelector(`.poll-card[data-poll-id="${CSS.escape(pollId)}"][data-scope="active"]`);
+          if(updatedCard){
+            showCardStatus(updatedCard, "Voto registrado correctamente.", "ok");
+          }
         }
       }catch(error){
         console.error(error);
