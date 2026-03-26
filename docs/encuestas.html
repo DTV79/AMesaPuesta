@@ -517,6 +517,10 @@
       appearance:none;
     }
 
+    .cofrade-select option[disabled]{
+      color:#9b8f84;
+    }
+
     .poll-actions{
       display:flex;
       justify-content:space-between;
@@ -1295,21 +1299,45 @@
       };
     }
 
+    function hasMemberAlreadyVoted(poll, memberId, memberName){
+      const votedNames = safeArray(poll.votedMembers).map(v => String(v).trim().toLowerCase());
+      const normalizedName = String(memberName || "").trim().toLowerCase();
+      const normalizedId = String(memberId || "").trim().toLowerCase();
+
+      return votedNames.includes(normalizedName) || votedNames.includes(normalizedId);
+    }
+
+    function shouldMarkVotedMembers(poll){
+      return poll.type === "publica" || poll.type === "participacion";
+    }
+
     function getEligibleCofradesForPoll(poll){
-      if (poll.votersMode !== "cofrades") {
-        return COFRADES;
+      const base = poll.votersMode !== "cofrades"
+        ? COFRADES
+        : COFRADES.filter(c => c.rango === "cofrade" || c.rango === "cofrade fundador");
+
+      if (!shouldMarkVotedMembers(poll)) {
+        return base.map(c => ({
+          ...c,
+          voted:false
+        }));
       }
 
-      return COFRADES.filter(c =>
-        c.rango === "cofrade" || c.rango === "cofrade fundador"
-      );
+      return base.map(c => ({
+        ...c,
+        voted: hasMemberAlreadyVoted(poll, c.id, c.nombre)
+      }));
     }
 
     function renderCofradeSelect(poll){
       const eligible = getEligibleCofradesForPoll(poll);
 
       const options = eligible.length
-        ? eligible.map(c => `<option value="${c.id}">${c.nombre}</option>`).join("")
+        ? eligible.map(c => {
+            const text = c.voted ? `${c.nombre} — ya votó` : c.nombre;
+            const disabled = c.voted ? " disabled" : "";
+            return `<option value="${c.id}"${disabled}>${text}</option>`;
+          }).join("")
         : `<option value="">No hay cofrades disponibles</option>`;
 
       return `
@@ -1422,12 +1450,16 @@
     function shouldShowResults(poll){
       if (!poll.showResults) return false;
       if (poll.type === "secreta" && poll.status !== "cerrada") return false;
+      if (poll.type === "participacion" && poll.status !== "cerrada") return false;
       return true;
     }
 
     function renderResultsHiddenMessage(poll){
       if (poll.type === "secreta" && poll.status !== "cerrada") {
         return "Los resultados de esta encuesta secreta solo se mostrarán cuando la votación esté cerrada.";
+      }
+      if (poll.type === "participacion" && poll.status !== "cerrada") {
+        return "En esta encuesta de participación visible solo se muestra quién ha votado. Los resultados aparecerán cuando la votación esté cerrada.";
       }
       return "Los resultados no están visibles por el momento.";
     }
@@ -1500,7 +1532,7 @@
                       poll.type === "publica"
                         ? "Modo público: se ve quién ha votado cada opción."
                         : poll.type === "participacion"
-                        ? "Participación visible: se sabe quién ha votado, pero no a qué opción."
+                        ? "Participación visible: se sabe quién ha votado, pero no a qué opción. Los resultados se mostrarán al cerrar."
                         : "Modo secreto: solo se mostrarán resultados cuando la encuesta esté cerrada."
                     }
                   </div>
@@ -1650,7 +1682,7 @@
 
           const pollId = card.dataset.pollId;
           const cofradeId = select.value;
-          const cofradeNombre = select.options[select.selectedIndex]?.textContent?.trim() || cofradeId;
+          const cofradeNombre = select.options[select.selectedIndex]?.textContent?.replace(/\s+—\s+ya votó$/i, '').trim() || cofradeId;
           const options = selected.map(btn =>
             btn.querySelector(".option-name")?.textContent?.trim() || ""
           ).filter(Boolean);
