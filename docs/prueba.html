@@ -10,744 +10,1002 @@
   <style>
     :root{
       color-scheme: light;
-
       --bg:#f7f4ef;
       --text:#1f1a17;
       --muted:#5b4334;
       --primary:#a40000;
       --primary-dark:#860000;
-      --primary-soft:#b80d0d;
-      --panel-border:rgba(232,221,210,.78);
+      --primary-soft:#f6e9e9;
+      --gold:#b9892e;
+      --panel-border:rgba(232,221,210,.82);
+      --card:#ffffff;
+      --card-soft:#fcfbf8;
       --shadow:0 12px 26px rgba(0,0,0,.10);
       --shadow-soft:0 6px 18px rgba(0,0,0,.06);
+      --radius:22px;
       --max-width:1120px;
-      --content-width:980px;
-
-      --notice-bg-1:#f06a8f;
-      --notice-bg-2:#c93060;
-      --notice-border:#e56e96;
-      --notice-text:#fff4f8;
-      --notice-title:#ffffff;
-      --notice-link:#ffffff;
-      --notice-icon-bg:rgba(255,255,255,.16);
-      --notice-dot:#ff4f88;
     }
 
     *{ box-sizing:border-box; }
 
     html{
-      background:#f7f4ef !important;
+      background:var(--bg) !important;
       -webkit-text-size-adjust:100%;
       scroll-behavior:smooth;
     }
 
     body{
       margin:0;
-      font-family: Georgia, "Times New Roman", serif;
-      color:var(--text) !important;
+      color:var(--text);
       background:
-        radial-gradient(circle at top, #ffffff 0%, var(--bg) 46%, #f2ece3 100%) !important;
+        radial-gradient(circle at top, rgba(185,137,46,.10), transparent 24%),
+        linear-gradient(180deg, #fbf8f3 0%, var(--bg) 100%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height:100vh;
-      min-height:100dvh;
     }
 
-    img{
-      max-width:100%;
-      display:block;
-    }
-
-    svg{
-      max-width:100%;
-      height:auto;
-      display:block;
-    }
-
-    input, select, textarea, button{
-      font:inherit;
+    a{
       color:inherit;
+      text-decoration:none;
     }
 
-    a{ color:inherit; }
-
-    .page-shell{
-      width:min(calc(100% - 28px), var(--max-width));
+    .shell{
+      width:min(var(--max-width), calc(100% - 28px));
       margin:0 auto;
-      padding:
-        max(0px, env(safe-area-inset-top))
-        0
-        max(14px, env(safe-area-inset-bottom))
-        0;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:40;
+      backdrop-filter:saturate(180%) blur(12px);
+      background:rgba(247,244,239,.80);
+      border-bottom:1px solid rgba(232,221,210,.9);
+    }
+
+    .topbar-inner{
+      width:min(var(--max-width), calc(100% - 28px));
+      margin:0 auto;
+      min-height:68px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .brand-badge{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(180deg, #fff7ea 0%, #f3e4c4 100%);
+      border:1px solid rgba(185,137,46,.35);
+      box-shadow:var(--shadow-soft);
+      flex:0 0 auto;
+    }
+
+    .brand-badge svg{
+      width:22px;
+      height:22px;
+      fill:var(--gold);
+    }
+
+    .brand-text{
+      min-width:0;
+    }
+
+    .brand-title{
+      margin:0;
+      font-size:1rem;
+      font-weight:800;
+      letter-spacing:.02em;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .brand-subtitle{
+      margin:2px 0 0;
+      font-size:.82rem;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .nav a{
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:.95rem;
+      font-weight:700;
+      color:var(--muted);
+      transition:transform .18s ease, background-color .18s ease, color .18s ease;
+    }
+
+    .nav a:hover{
+      background:#fff;
+      color:var(--primary);
+      transform:translateY(-1px);
     }
 
     .hero{
-      width:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding:0;
+      padding:34px 0 16px;
     }
 
-    .brand-panel{
-      width:100%;
-      max-width:var(--content-width);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      background:rgba(255,255,255,.50);
-      border:1px solid var(--panel-border);
-      border-radius:34px;
-      box-shadow:var(--shadow-soft);
-      padding:0 16px 8px;
-      backdrop-filter:blur(2px);
-      -webkit-backdrop-filter:blur(2px);
-      margin-top:-8px;
-    }
-
-    .logo-wrap{
+    .hero-card{
       position:relative;
-      width:min(100%, 450px);
-      aspect-ratio:1 / 1;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      margin:-34px auto -14px;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at top right, rgba(185,137,46,.12), transparent 26%),
+        linear-gradient(135deg, #fffdf9 0%, #fbf6ef 100%);
+      border:1px solid var(--panel-border);
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      padding:34px 26px;
     }
 
-    .arc{
+    .hero-card::after{
+      content:"";
       position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      overflow:visible;
+      inset:auto -60px -60px auto;
+      width:180px;
+      height:180px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(164,0,0,.07), transparent 68%);
       pointer-events:none;
-      transform:translateY(-12px);
     }
 
-    .arc-text{
-      fill:#1e1a17;
-      font-size:24px;
-      font-weight:700;
-      letter-spacing:2px;
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(185,137,46,.24);
+      color:var(--gold);
+      font-size:.82rem;
+      font-weight:800;
+      letter-spacing:.06em;
       text-transform:uppercase;
     }
 
-    .logo{
-      width:min(66%, 330px);
-      height:auto;
-      object-fit:contain;
-      margin-top:-14px;
-      background:transparent;
-      filter:drop-shadow(0 6px 12px rgba(0,0,0,.14));
+    .hero h1{
+      margin:16px 0 10px;
+      font-size:clamp(2rem, 4.8vw, 3.4rem);
+      line-height:1.05;
+      letter-spacing:-.03em;
     }
 
-    .slogan{
-      margin-top:-74px;
-      margin-bottom:0;
-      text-align:center;
+    .hero p{
+      margin:0;
+      max-width:760px;
       color:var(--muted);
-      font-size:clamp(18px, 2vw, 28px);
-      line-height:1.12;
-      font-weight:700;
-      max-width:100%;
-      white-space:nowrap;
+      font-size:1.04rem;
+      line-height:1.65;
     }
 
-    .menu-principal{
-      width:100%;
-      max-width:860px;
-      display:grid;
-      grid-template-columns:repeat(6, minmax(0, 1fr));
-      gap:14px;
-      margin:0 auto 0;
-    }
-
-    .boton-menu{
-      position:relative;
+    .hero-actions{
       display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:22px;
+    }
+
+    .btn{
+      min-height:48px;
+      padding:12px 18px;
+      border-radius:14px;
+      border:1px solid transparent;
+      display:inline-flex;
       align-items:center;
       justify-content:center;
       gap:10px;
-      min-height:60px;
-      padding:13px 16px;
-      border-radius:18px;
-      text-decoration:none;
+      font-weight:800;
+      font-size:.97rem;
+      transition:transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease;
+      cursor:pointer;
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .btn-primary{
+      background:linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
       color:#fff;
-      background:linear-gradient(180deg, var(--primary-soft) 0%, var(--primary) 45%, var(--primary-dark) 100%);
-      box-shadow:var(--shadow);
-      font-size:20px;
-      font-weight:700;
-      line-height:1.2;
-      text-align:center;
-      transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
-      -webkit-tap-highlight-color:transparent;
-      grid-column:span 2;
+      box-shadow:0 10px 20px rgba(164,0,0,.18);
     }
 
-    .boton-menu svg{
-      width:20px;
-      height:20px;
-      flex:0 0 20px;
+    .btn-secondary{
+      background:#fff;
+      color:var(--primary);
+      border-color:rgba(164,0,0,.16);
     }
 
-    .boton-menu:hover{
-      transform:translateY(-2px);
-      box-shadow:0 14px 24px rgba(0,0,0,.14);
-      filter:brightness(1.02);
+    .section{
+      padding:14px 0 8px;
     }
 
-    .boton-menu:active{
-      transform:scale(.985);
-    }
-
-    .boton-menu--anuncios-activo{
-      box-shadow:
-        0 12px 26px rgba(0,0,0,.10),
-        0 0 0 2px rgba(243,221,184,.9);
-    }
-
-    .boton-menu--cofrades{ grid-column:1 / span 2; }
-    .boton-menu--restaurantes{ grid-column:3 / span 2; }
-    .boton-menu--himno{ grid-column:5 / span 2; }
-
-    .boton-menu--estatutos{ grid-column:1 / span 2; }
-    .boton-menu--anuncios{ grid-column:3 / span 2; }
-    .boton-menu--encuestas{ grid-column:5 / span 2; }
-
-    .badge-anuncios{
-      position:absolute;
-      top:10px;
-      right:12px;
-      width:11px;
-      height:11px;
-      border-radius:50%;
-      background:var(--notice-dot);
-      box-shadow:0 0 0 3px rgba(255,255,255,.95);
-    }
-
-    .badge-anuncios.pulse{
-      animation:pulseDot 1.8s infinite;
-    }
-
-    @keyframes pulseDot{
-      0%{ transform:scale(1); box-shadow:0 0 0 3px rgba(255,255,255,.95), 0 0 0 0 rgba(180,0,0,.30); }
-      70%{ transform:scale(1); box-shadow:0 0 0 3px rgba(255,255,255,.95), 0 0 0 8px rgba(180,0,0,0); }
-      100%{ transform:scale(1); box-shadow:0 0 0 3px rgba(255,255,255,.95), 0 0 0 0 rgba(180,0,0,0); }
-    }
-
-    .aviso-home{
-      position:relative;
-      width:100%;
-      max-width:var(--content-width);
-      margin:8px auto 0;
+    .section-head{
       display:flex;
-      align-items:center;
+      align-items:end;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .section-head h2{
+      margin:0;
+      font-size:1.4rem;
+      letter-spacing:-.02em;
+    }
+
+    .section-head p{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:.97rem;
+    }
+
+    .live-grid{
+      display:grid;
+      grid-template-columns:repeat(12, minmax(0, 1fr));
       gap:16px;
-      padding:14px 16px;
-      padding-right:48px;
-      border-radius:24px;
-      background:linear-gradient(180deg, var(--notice-bg-1) 0%, var(--notice-bg-2) 100%);
-      color:var(--notice-text);
-      border:1px solid var(--notice-border);
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--panel-border);
+      border-radius:22px;
       box-shadow:var(--shadow-soft);
-      animation:fadeUp .28s ease;
       overflow:hidden;
-      text-decoration:none;
-      cursor:pointer;
-      transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
-    }
-
-    .aviso-home:hover{
-      transform:translateY(-2px);
-      box-shadow:0 12px 24px rgba(0,0,0,.12);
-      filter:brightness(1.02);
-    }
-
-    .aviso-home::before{
-      content:"";
-      position:absolute;
-      top:0;
-      left:-120%;
-      width:120%;
-      height:100%;
-      background:linear-gradient(
-        120deg,
-        transparent 0%,
-        rgba(255,255,255,.30) 50%,
-        transparent 100%
-      );
-      transform:skewX(-20deg);
-      animation:brilloAviso 4s ease-in-out infinite;
-      pointer-events:none;
-    }
-
-    .aviso-home[hidden]{
-      display:none !important;
-    }
-
-    .aviso-home-cerrar{
-      position:absolute;
-      top:8px;
-      right:10px;
-      width:28px;
-      height:28px;
-      border:0;
-      border-radius:50%;
-      background:rgba(255,255,255,.16);
-      color:var(--notice-title);
-      font-size:18px;
-      line-height:1;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      z-index:2;
-    }
-
-    .aviso-home-cerrar:hover{
-      background:rgba(255,255,255,.24);
-    }
-
-    .aviso-home-icono{
-      width:54px;
-      height:54px;
-      border-radius:50%;
-      background:var(--notice-icon-bg);
-      color:var(--notice-title);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex:0 0 54px;
-      position:relative;
-      z-index:1;
-    }
-
-    .aviso-home-icono svg{
-      width:24px;
-      height:24px;
-    }
-
-    .aviso-home-texto{
       min-width:0;
+    }
+
+    .card-body{
+      padding:20px;
+    }
+
+    .card-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .card-title h3{
+      margin:0;
+      font-size:1.02rem;
+      letter-spacing:-.01em;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:28px;
+      padding:5px 10px;
+      border-radius:999px;
+      background:var(--primary-soft);
+      color:var(--primary);
+      font-size:.78rem;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .span-4{ grid-column:span 4; }
+    .span-6{ grid-column:span 6; }
+    .span-8{ grid-column:span 8; }
+    .span-12{ grid-column:span 12; }
+
+    .kicker{
+      font-size:.8rem;
+      color:var(--gold);
+      font-weight:800;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+
+    .big-value{
+      font-size:1.55rem;
+      font-weight:900;
+      line-height:1.12;
+      letter-spacing:-.03em;
+      margin:0 0 8px;
+    }
+
+    .muted{
+      color:var(--muted);
+    }
+
+    .meta{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .meta-row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      font-size:.95rem;
+    }
+
+    .meta-row span:first-child{
+      color:var(--muted);
+    }
+
+    .meta-row strong{
+      text-align:right;
+    }
+
+    .card-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    .mini-btn{
+      min-height:44px;
+      padding:10px 14px;
+      border-radius:12px;
+      font-weight:800;
+      font-size:.92rem;
+      background:#fff;
+      color:var(--primary);
+      border:1px solid rgba(164,0,0,.14);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .mini-btn.primary{
+      background:var(--primary);
+      color:#fff;
+      border-color:var(--primary);
+    }
+
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:12px;
+    }
+
+    .stat{
+      background:var(--card-soft);
+      border:1px solid rgba(232,221,210,.9);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .stat-label{
+      color:var(--muted);
+      font-size:.84rem;
+      margin-bottom:6px;
+    }
+
+    .stat-value{
+      font-size:1.3rem;
+      font-weight:900;
+      letter-spacing:-.03em;
+      line-height:1.1;
+    }
+
+    .quick-links{
+      display:grid;
+      grid-template-columns:repeat(5, minmax(0,1fr));
+      gap:14px;
+      margin-top:16px;
+    }
+
+    .quick-link{
+      background:#fff;
+      border:1px solid var(--panel-border);
+      border-radius:20px;
+      box-shadow:var(--shadow-soft);
+      padding:18px 16px;
       display:flex;
       flex-direction:column;
-      gap:3px;
-      flex:1;
-      position:relative;
-      z-index:1;
+      gap:10px;
+      transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      min-height:132px;
     }
 
-    .aviso-home-texto strong{
-      font-size:18px;
-      line-height:1.1;
-      color:var(--notice-title);
-      text-decoration:underline;
-      text-underline-offset:3px;
-      text-decoration-thickness:1.5px;
+    .quick-link:hover{
+      transform:translateY(-2px);
+      border-color:rgba(164,0,0,.18);
+      box-shadow:0 10px 22px rgba(0,0,0,.08);
     }
 
-    .aviso-home-texto span{
-      display:none;
+    .quick-icon{
+      width:44px;
+      height:44px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(180deg, #fff7ea 0%, #f3e4c4 100%);
+      border:1px solid rgba(185,137,46,.28);
+      color:var(--gold);
+      font-size:1.2rem;
+      font-weight:900;
     }
 
-    @keyframes fadeUp{
-      from{ opacity:0; transform:translateY(8px); }
-      to{ opacity:1; transform:translateY(0); }
+    .quick-link strong{
+      font-size:1rem;
+      line-height:1.2;
     }
 
-    @keyframes brilloAviso{
-      0%{ left:-120%; }
-      40%{ left:120%; }
-      100%{ left:120%; }
+    .quick-link span{
+      color:var(--muted);
+      font-size:.92rem;
+      line-height:1.45;
     }
 
-    @media (max-width: 980px){
-      .brand-panel{
-        padding:0 14px 8px;
-        margin-top:-6px;
+    .feature{
+      margin:24px 0 36px;
+      background:linear-gradient(135deg, #fffdf9 0%, #fbf6ef 100%);
+      border:1px solid var(--panel-border);
+      border-radius:26px;
+      box-shadow:var(--shadow-soft);
+      padding:24px;
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:20px;
+      align-items:center;
+    }
+
+    .feature h3{
+      margin:0 0 10px;
+      font-size:1.45rem;
+      letter-spacing:-.02em;
+    }
+
+    .feature p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.65;
+    }
+
+    .feature-box{
+      background:#fff;
+      border:1px solid rgba(232,221,210,.92);
+      border-radius:20px;
+      padding:18px;
+    }
+
+    .feature-box .label{
+      color:var(--gold);
+      font-size:.82rem;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+
+    .feature-box .title{
+      margin:8px 0 6px;
+      font-size:1.2rem;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .feature-box .small{
+      color:var(--muted);
+      font-size:.94rem;
+    }
+
+    footer{
+      padding:16px 0 30px;
+      color:var(--muted);
+      font-size:.92rem;
+      text-align:center;
+    }
+
+    .loading{
+      opacity:.7;
+    }
+
+    @media (max-width:980px){
+      .span-4,
+      .span-6,
+      .span-8{
+        grid-column:span 12;
       }
 
-      .logo-wrap{
-        margin:-28px auto -12px;
+      .quick-links{
+        grid-template-columns:repeat(2, minmax(0,1fr));
       }
 
-      .arc{
-        transform:translateY(-8px);
+      .feature{
+        grid-template-columns:1fr;
       }
 
-      .menu-principal{
-        grid-template-columns:repeat(2, minmax(0, 1fr));
-        max-width:640px;
-      }
-
-      .slogan{
-        white-space:normal;
-        font-size:clamp(20px, 3vw, 30px);
-        margin-top:-60px;
-        margin-bottom:4px;
-      }
-
-      .boton-menu{
-        grid-column:auto !important;
+      .nav{
+        display:none;
       }
     }
 
-    @media (max-width: 640px){
-      .page-shell{
-        width:min(calc(100% - 18px), 100%);
-        padding-top:0;
+    @media (max-width:640px){
+      .shell,
+      .topbar-inner{
+        width:min(var(--max-width), calc(100% - 18px));
       }
 
       .hero{
-        padding-top:0;
-        padding-bottom:4px;
+        padding:20px 0 10px;
       }
 
-      .brand-panel{
+      .hero-card{
+        padding:22px 16px;
         border-radius:24px;
-        padding:0 12px 8px;
-        margin-top:-4px;
       }
 
-      .logo-wrap{
-        width:min(100%, 320px);
-        margin:-34px auto -18px;
+      .section{
+        padding:10px 0 4px;
       }
 
-      .arc-text{
-        font-size:21px;
-        letter-spacing:1.2px;
+      .card-body{
+        padding:16px;
       }
 
-      .arc{
-        transform:translateY(-6px);
+      .stats-grid{
+        grid-template-columns:1fr;
       }
 
-      .logo{
-        width:min(62%, 200px);
-        margin-top:-12px;
+      .quick-links{
+        grid-template-columns:1fr;
       }
 
-      .slogan{
-        font-size:clamp(15px, 4.8vw, 20px);
-        line-height:1.16;
-        margin-top:-62px;
-        margin-bottom:8px;
-        padding:0 4px;
-        white-space:normal;
+      .brand-title{
+        font-size:.96rem;
       }
 
-      .menu-principal{
-        gap:10px;
-        margin:0 auto;
+      .brand-subtitle{
+        font-size:.78rem;
       }
 
-      .boton-menu{
-        min-height:52px;
-        padding:11px 10px;
-        border-radius:15px;
-        font-size:16px;
-        gap:7px;
+      .hero-actions,
+      .card-actions{
+        flex-direction:column;
       }
 
-      .boton-menu svg{
-        width:17px;
-        height:17px;
-        flex-basis:17px;
-      }
-
-      .badge-anuncios{
-        top:8px;
-        right:10px;
-        width:10px;
-        height:10px;
-      }
-
-      .aviso-home{
-        margin-top:10px;
-        gap:10px;
-        padding:12px 12px;
-        padding-right:42px;
-        border-radius:20px;
-      }
-
-      .aviso-home-cerrar{
-        top:6px;
-        right:8px;
-        width:26px;
-        height:26px;
-      }
-
-      .aviso-home-icono{
-        width:44px;
-        height:44px;
-        flex-basis:44px;
-      }
-
-      .aviso-home-icono svg{
-        width:20px;
-        height:20px;
-      }
-
-      .aviso-home-texto strong{
-        font-size:16px;
-      }
-    }
-
-    @media (max-width: 390px){
-      .logo-wrap{
-        width:min(100%, 286px);
-        margin:-28px auto -16px;
-      }
-
-      .arc-text{
-        font-size:15px;
-        letter-spacing:1px;
-      }
-
-      .logo{
-        width:min(58%, 170px);
-        margin-top:-10px;
-      }
-
-      .slogan{
-        margin-top:-40px;
-      }
-
-      .menu-principal{
-        grid-template-columns:repeat(2, minmax(0, 1fr));
-        max-width:320px;
-      }
-
-      .boton-menu{
-        min-height:50px;
-        font-size:15px;
-      }
-
-      .aviso-home{
-        align-items:flex-start;
-      }
-    }
-
-    @media (prefers-color-scheme: dark){
-      :root{
-        color-scheme: light;
-      }
-
-      html{
-        background:#f7f4ef !important;
-      }
-
-      body{
-        color:var(--text) !important;
-        background:
-          radial-gradient(circle at top, #ffffff 0%, var(--bg) 46%, #f2ece3 100%) !important;
+      .btn,
+      .mini-btn{
+        width:100%;
       }
     }
   </style>
 </head>
 <body>
-  <div class="page-shell">
-    <main class="hero">
-      <section class="brand-panel">
-        <div class="logo-wrap">
-          <svg class="arc" viewBox="0 0 400 400" aria-hidden="true">
-            <defs>
-              <path id="topArc" d="M 70 180 A 130 130 0 0 1 330 180" />
-            </defs>
-
-            <text class="arc-text">
-              <textPath href="#topArc" startOffset="50%" text-anchor="middle">
-                COFRADÍA A MESA PUESTA
-              </textPath>
-            </text>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" aria-label="Inicio">
+        <div class="brand-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M7 3h10a1 1 0 0 1 .8 1.6l-1.3 1.73a2 2 0 0 0-.4 1.2V19a1 1 0 0 1-1.45.9L12 18.5l-2.65 1.4A1 1 0 0 1 7.9 19V7.53a2 2 0 0 0-.4-1.2L6.2 4.6A1 1 0 0 1 7 3z"/>
           </svg>
-
-          <img
-            class="logo"
-            src="./Fotos/logo-cangrejo.png"
-            alt="Logo AMesaPuesta"
-          />
         </div>
-
-        <p class="slogan">A mesa puesta... y el vaso lleno desde 2022</p>
-
-        <div class="menu-principal">
-          <a href="cofrades.html" class="boton-menu boton-menu--cofrades">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M16 11c1.66 0 3-1.79 3-4s-1.34-4-3-4-3 1.79-3 4 1.34 4 3 4zm-8 0c1.66 0 3-1.79 3-4S9.66 3 8 3 5 4.79 5 7s1.34 4 3 4zm0 2c-2.67 0-8 1.34-8 4v3h10v-3c0-1.02.39-1.97 1.02-2.78C10.21 13.44 8.94 13 8 13zm8 0c-.94 0-2.21.44-3.02 1.22C13.61 15.03 14 15.98 14 17v3h10v-3c0-2.66-5.33-4-8-4z"/>
-            </svg>
-            Cofrades
-          </a>
-
-          <a href="restaurantes.html" class="boton-menu boton-menu--restaurantes">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.21 1.79 4 4 4v9h2v-9c2.21 0 4-1.79 4-4V2h-2v7zm4-7v20h2v-8h3V2h-5z"/>
-            </svg>
-            Restaurantes
-          </a>
-
-          <a href="himno.html" class="boton-menu boton-menu--himno">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/>
-            </svg>
-            Himno
-          </a>
-
-          <a href="estatutos.html" class="boton-menu boton-menu--estatutos">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M14.7 5.3 18.7 9.3 17.3 10.7 13.3 6.7 14.7 5.3zM12.6 7.4 16.6 11.4 7.4 20.6 3.4 16.6 12.6 7.4zM2 21h10v2H2v-2z"/>
-            </svg>
-            Estatutos
-          </a>
-
-          <a href="anuncios.html" class="boton-menu boton-menu--anuncios" id="botonAnuncios">
-            <span id="badgeAnuncios" class="badge-anuncios" hidden></span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 10v4c0 .55.45 1 1 1h3l4 3V6L7 9H4c-.55 0-1 .45-1 1zm13.5 2c0-1.77-1-3.29-2.5-4.03v8.05c1.5-.73 2.5-2.25 2.5-4.02zm-2.5-9.5v2.06c2.89.86 5 3.54 5 6.44s-2.11 5.58-5 6.44v2.06c4.01-.91 7-4.49 7-8.5s-2.99-7.59-7-8.5z"/>
-            </svg>
-            Tablón
-          </a>
-
-          <a href="encuestas.html" class="boton-menu boton-menu--encuestas">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm2 4v2h2V7H7zm4 0v2h6V7h-6zM7 11v2h2v-2H7zm4 0v2h6v-2h-6zM7 15v2h2v-2H7zm4 0v2h6v-2h-6z"/>
-            </svg>
-            Encuestas
-          </a>
+        <div class="brand-text">
+          <p class="brand-title">Cofradía A Mesa Puesta</p>
+          <p class="brand-subtitle">Web oficial</p>
         </div>
-      </section>
-    </main>
+      </a>
 
-    <a href="anuncios.html" id="avisoAnuncios" class="aviso-home" hidden>
-      <button type="button" id="cerrarAvisoAnuncios" class="aviso-home-cerrar" aria-label="Cerrar aviso">×</button>
+      <nav class="nav" aria-label="Principal">
+        <a href="restaurantes.html">Restaurantes</a>
+        <a href="cofrades.html">Cofrades</a>
+        <a href="encuestas.html">Encuestas</a>
+        <a href="anuncios.html">Anuncios</a>
+        <a href="estatutos.html">Estatutos</a>
+      </nav>
+    </div>
+  </header>
 
-      <div class="aviso-home-icono">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M3 10v4c0 .55.45 1 1 1h3l4 3V6L7 9H4c-.55 0-1 .45-1 1zm13.5 2c0-1.77-1-3.29-2.5-4.03v8.05c1.5-.73 2.5-2.25 2.5-4.02zm-2.5-9.5v2.06c2.89.86 5 3.54 5 6.44s-2.11 5.58-5 6.44v2.06c4.01-.91 7-4.49 7-8.5s-2.99-7.59-7-8.5z"/>
-        </svg>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-card">
+        <span class="eyebrow">Cofradía · Actualidad</span>
+        <h1>Todo lo importante de la Cofradía, de un vistazo.</h1>
+        <p>
+          Consulta la próxima comida, la encuesta activa, el último anuncio y un resumen rápido
+          del estado actual de la Cofradía en una sola portada.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="encuestas.html">Ir a encuestas</a>
+          <a class="btn btn-secondary" href="anuncios.html">Ver anuncios</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="ahora-mismo-title">
+      <div class="section-head">
+        <div>
+          <h2 id="ahora-mismo-title">Ahora mismo</h2>
+          <p>Resumen dinámico de la actividad de la Cofradía.</p>
+        </div>
       </div>
 
-      <div class="aviso-home-texto">
-        <strong id="tituloAvisoAnuncios">Nuevo anuncio destacado</strong>
-        <span id="textoAvisoAnuncios"></span>
+      <div class="live-grid">
+        <article class="card span-4" id="card-proxima">
+          <div class="card-body loading">
+            <div class="card-title">
+              <h3>Próxima comida</h3>
+              <span class="badge">Agenda</span>
+            </div>
+            <div class="kicker">Próximo encuentro</div>
+            <p class="big-value" id="proxima-titulo">Cargando…</p>
+            <p class="muted" id="proxima-subtitulo">Esperando datos</p>
+
+            <div class="meta">
+              <div class="meta-row">
+                <span>Fecha</span>
+                <strong id="proxima-fecha">—</strong>
+              </div>
+              <div class="meta-row">
+                <span>Hora</span>
+                <strong id="proxima-hora">—</strong>
+              </div>
+              <div class="meta-row">
+                <span>Lugar</span>
+                <strong id="proxima-lugar">—</strong>
+              </div>
+              <div class="meta-row">
+                <span>Estado</span>
+                <strong id="proxima-estado">—</strong>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <a class="mini-btn primary" id="proxima-link" href="agenda.html">Ver detalles</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card span-4" id="card-encuesta">
+          <div class="card-body loading">
+            <div class="card-title">
+              <h3>Encuesta activa</h3>
+              <span class="badge">Votación</span>
+            </div>
+            <div class="kicker">Participación</div>
+            <p class="big-value" id="encuesta-titulo">Cargando…</p>
+            <p class="muted" id="encuesta-subtitulo">Esperando datos</p>
+
+            <div class="meta">
+              <div class="meta-row">
+                <span>Estado</span>
+                <strong id="encuesta-estado">—</strong>
+              </div>
+              <div class="meta-row">
+                <span>Participación</span>
+                <strong id="encuesta-participacion">—</strong>
+              </div>
+              <div class="meta-row">
+                <span>Cierre</span>
+                <strong id="encuesta-cierre">—</strong>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <a class="mini-btn primary" id="encuesta-link" href="encuestas.html">Ir a votar</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card span-4" id="card-anuncio">
+          <div class="card-body loading">
+            <div class="card-title">
+              <h3>Último anuncio</h3>
+              <span class="badge">Tablón</span>
+            </div>
+            <div class="kicker">Novedad reciente</div>
+            <p class="big-value" id="anuncio-titulo">Cargando…</p>
+            <p class="muted" id="anuncio-texto">Esperando datos</p>
+
+            <div class="meta">
+              <div class="meta-row">
+                <span>Fecha</span>
+                <strong id="anuncio-fecha">—</strong>
+              </div>
+              <div class="meta-row">
+                <span>Autor</span>
+                <strong id="anuncio-autor">—</strong>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <a class="mini-btn" id="anuncio-link" href="anuncios.html">Leer anuncio</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card span-8" id="card-resumen">
+          <div class="card-body loading">
+            <div class="card-title">
+              <h3>Resumen rápido</h3>
+              <span class="badge">Cofradía</span>
+            </div>
+
+            <div class="stats-grid">
+              <div class="stat">
+                <div class="stat-label">Cofrades</div>
+                <div class="stat-value" id="resumen-cofrades">—</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Restaurantes visitados</div>
+                <div class="stat-value" id="resumen-restaurantes">—</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Comidas celebradas</div>
+                <div class="stat-value" id="resumen-comidas">—</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Encuestas activas</div>
+                <div class="stat-value" id="resumen-encuestas">—</div>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <a class="mini-btn" href="cofrades.html">Ver cofrades</a>
+              <a class="mini-btn" href="restaurantes.html">Ver restaurantes</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card span-4">
+          <div class="card-body">
+            <div class="card-title">
+              <h3>Acceso rápido</h3>
+              <span class="badge">Navegación</span>
+            </div>
+
+            <div class="meta">
+              <div class="meta-row">
+                <span>Restaurantes</span>
+                <strong><a href="restaurantes.html" style="color:var(--primary);">Abrir</a></strong>
+              </div>
+              <div class="meta-row">
+                <span>Cofrades</span>
+                <strong><a href="cofrades.html" style="color:var(--primary);">Abrir</a></strong>
+              </div>
+              <div class="meta-row">
+                <span>Estatutos</span>
+                <strong><a href="estatutos.html" style="color:var(--primary);">Abrir</a></strong>
+              </div>
+              <div class="meta-row">
+                <span>Himno</span>
+                <strong><a href="himno.html" style="color:var(--primary);">Abrir</a></strong>
+              </div>
+            </div>
+          </div>
+        </article>
       </div>
-    </a>
-  </div>
+    </section>
+
+    <section class="section" aria-labelledby="secciones-title">
+      <div class="section-head">
+        <div>
+          <h2 id="secciones-title">Secciones principales</h2>
+          <p>Accesos directos a los apartados más importantes de la web.</p>
+        </div>
+      </div>
+
+      <div class="quick-links">
+        <a class="quick-link" href="restaurantes.html">
+          <div class="quick-icon">🍽</div>
+          <strong>Restaurantes</strong>
+          <span>Consulta el mapa, el listado y toda la información de los sitios visitados.</span>
+        </a>
+
+        <a class="quick-link" href="cofrades.html">
+          <div class="quick-icon">👥</div>
+          <strong>Cofrades</strong>
+          <span>Visualiza miembros, datos de participación y resumen económico.</span>
+        </a>
+
+        <a class="quick-link" href="encuestas.html">
+          <div class="quick-icon">🗳</div>
+          <strong>Encuestas</strong>
+          <span>Participa en las votaciones activas y consulta su estado.</span>
+        </a>
+
+        <a class="quick-link" href="anuncios.html">
+          <div class="quick-icon">📌</div>
+          <strong>Anuncios</strong>
+          <span>Mantente al día con las últimas comunicaciones del tablón.</span>
+        </a>
+
+        <a class="quick-link" href="estatutos.html">
+          <div class="quick-icon">⚖</div>
+          <strong>Estatutos</strong>
+          <span>Revisa las normas, principios y funcionamiento de la Cofradía.</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="feature" aria-labelledby="destacado-title">
+      <div>
+        <h3 id="destacado-title">Un vistazo rápido antes de sentarse a la mesa</h3>
+        <p>
+          Esta portada está preparada para servir como panel principal de la Cofradía.
+          En cuanto conectes los JSON reales, todo el contenido se actualizará de forma automática
+          sin tocar el diseño.
+        </p>
+      </div>
+
+      <div class="feature-box">
+        <div class="label">Destacado</div>
+        <div class="title" id="destacado-titulo">La Cofradía en marcha</div>
+        <div class="small" id="destacado-texto">Próxima parada: nueva comida, nueva votación y nuevas decisiones a mesa puesta.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Cofradía A Mesa Puesta
+  </footer>
 
   <script>
-    (async function () {
-      const aviso = document.getElementById("avisoAnuncios");
-      const badge = document.getElementById("badgeAnuncios");
-      const botonAnuncios = document.getElementById("botonAnuncios");
-      const cerrarAviso = document.getElementById("cerrarAvisoAnuncios");
-      const tituloAviso = document.getElementById("tituloAvisoAnuncios");
+    /*
+      CONFIGURA AQUÍ TUS URLS REALES
+      Puedes poner archivos JSON locales o endpoints de Apps Script.
+    */
+    const DATA_URLS = {
+      proximaComida: 'data/proxima-comida.json',
+      encuestaActiva: 'data/encuesta-activa.json',
+      ultimoAnuncio: 'data/ultimo-anuncio.json',
+      resumen: 'data/resumen-portada.json'
+    };
 
-      function fechaValida(fecha) {
-        return fecha && !isNaN(new Date(fecha).getTime());
+    const FALLBACK_DATA = {
+      proximaComida: {
+        titulo: 'Comida pendiente de confirmar',
+        subtitulo: 'Aún no hay una convocatoria publicada',
+        fecha: 'Por definir',
+        hora: '—',
+        lugar: 'Pendiente',
+        estado: 'Sin confirmar',
+        enlace: 'agenda.html'
+      },
+      encuestaActiva: {
+        titulo: 'No hay encuesta activa',
+        subtitulo: 'Cuando se abra una nueva votación aparecerá aquí',
+        estado: 'Cerrada',
+        participacion: '—',
+        cierre: '—',
+        enlace: 'encuestas.html'
+      },
+      ultimoAnuncio: {
+        titulo: 'Sin anuncios recientes',
+        texto: 'El tablón no tiene publicaciones nuevas en este momento.',
+        fecha: '—',
+        autor: 'Secretaría',
+        enlace: 'anuncios.html'
+      },
+      resumen: {
+        cofrades: 0,
+        restaurantes: 0,
+        comidas: 0,
+        encuestas: 0
       }
+    };
 
-      function estaCaducado(fechaFin) {
-        if (!fechaValida(fechaFin)) return false;
+    function setText(id, value){
+      const el = document.getElementById(id);
+      if (el) el.textContent = value ?? '—';
+    }
 
-        const hoy = new Date();
-        hoy.setHours(0, 0, 0, 0);
+    function setLink(id, href){
+      const el = document.getElementById(id);
+      if (el && href) el.href = href;
+    }
 
-        const fin = new Date(fechaFin);
-        fin.setHours(23, 59, 59, 999);
+    function safeNumber(value){
+      if (value === null || value === undefined || value === '') return '—';
+      const n = Number(value);
+      if (Number.isNaN(n)) return value;
+      return n.toLocaleString('es-ES');
+    }
 
-        return fin < hoy;
+    function finishLoading(cardId){
+      const card = document.querySelector('#' + cardId + ' .card-body');
+      if (card) card.classList.remove('loading');
+    }
+
+    async function fetchJson(url){
+      const res = await fetch(url, { cache:'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return await res.json();
+    }
+
+    async function loadBlock(url, fallback){
+      try{
+        return await fetchJson(url);
+      }catch(e){
+        return fallback;
       }
+    }
 
-      function esPublicable(a) {
-        if (a.visible === false) return false;
-        if (estaCaducado(a.fechaFin)) return false;
+    function renderProxima(data){
+      setText('proxima-titulo', data.titulo || 'Próxima comida');
+      setText('proxima-subtitulo', data.subtitulo || '');
+      setText('proxima-fecha', data.fecha || '—');
+      setText('proxima-hora', data.hora || '—');
+      setText('proxima-lugar', data.lugar || '—');
+      setText('proxima-estado', data.estado || '—');
+      setLink('proxima-link', data.enlace || 'agenda.html');
+      finishLoading('card-proxima');
 
-        if (fechaValida(a.fechaPublicacion)) {
-          const hoy = new Date();
-          hoy.setHours(23, 59, 59, 999);
-
-          const publicacion = new Date(a.fechaPublicacion);
-          publicacion.setHours(0, 0, 0, 0);
-
-          if (publicacion > hoy) return false;
-        }
-
-        return true;
+      if (data.titulo) {
+        setText('destacado-titulo', data.titulo);
       }
-
-      function obtenerTimestamp(a) {
-        if (fechaValida(a.fecha)) return new Date(a.fecha).getTime();
-        return 0;
+      if (data.fecha || data.lugar) {
+        setText('destacado-texto', `${data.fecha || 'Fecha por definir'} · ${data.lugar || 'Lugar pendiente'}`);
       }
+    }
 
-      function numeroDiasDestacado(a) {
-        const valor = String(a.dias_destacado ?? "").trim();
-        const numero = parseInt(valor, 10);
-        return Number.isFinite(numero) && numero > 0 ? numero : 15;
-      }
+    function renderEncuesta(data){
+      setText('encuesta-titulo', data.titulo || 'Encuesta');
+      setText('encuesta-subtitulo', data.subtitulo || '');
+      setText('encuesta-estado', data.estado || '—');
+      setText('encuesta-participacion', data.participacion || '—');
+      setText('encuesta-cierre', data.cierre || '—');
+      setLink('encuesta-link', data.enlace || 'encuestas.html');
+      finishLoading('card-encuesta');
+    }
 
-      function esDestacadoActivo(a) {
-        if (a.destacado === false) return false;
-        if (!fechaValida(a.fecha)) return false;
+    function renderAnuncio(data){
+      setText('anuncio-titulo', data.titulo || 'Último anuncio');
+      setText('anuncio-texto', data.texto || '');
+      setText('anuncio-fecha', data.fecha || '—');
+      setText('anuncio-autor', data.autor || '—');
+      setLink('anuncio-link', data.enlace || 'anuncios.html');
+      finishLoading('card-anuncio');
+    }
 
-        const dias = numeroDiasDestacado(a);
+    function renderResumen(data){
+      setText('resumen-cofrades', safeNumber(data.cofrades));
+      setText('resumen-restaurantes', safeNumber(data.restaurantes));
+      setText('resumen-comidas', safeNumber(data.comidas));
+      setText('resumen-encuestas', safeNumber(data.encuestas));
+      finishLoading('card-resumen');
+    }
 
-        const fechaAnuncio = new Date(a.fecha);
-        fechaAnuncio.setHours(0, 0, 0, 0);
+    async function init(){
+      const [proxima, encuesta, anuncio, resumen] = await Promise.all([
+        loadBlock(DATA_URLS.proximaComida, FALLBACK_DATA.proximaComida),
+        loadBlock(DATA_URLS.encuestaActiva, FALLBACK_DATA.encuestaActiva),
+        loadBlock(DATA_URLS.ultimoAnuncio, FALLBACK_DATA.ultimoAnuncio),
+        loadBlock(DATA_URLS.resumen, FALLBACK_DATA.resumen)
+      ]);
 
-        const hoy = new Date();
-        hoy.setHours(0, 0, 0, 0);
+      renderProxima(proxima);
+      renderEncuesta(encuesta);
+      renderAnuncio(anuncio);
+      renderResumen(resumen);
+    }
 
-        const diferenciaMs = hoy - fechaAnuncio;
-        const diferenciaDias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
-
-        return diferenciaDias >= 0 && diferenciaDias <= dias;
-      }
-
-      function claveCierre(destacados) {
-        return "aviso_anuncios_cerrado_" + destacados.map(a => a.id || `${a.fecha || ""}-${a.titulo || ""}`).join("|");
-      }
-
-      try {
-        const res = await fetch("./anuncios.json?v=" + Date.now(), { cache: "no-store" });
-        if (!res.ok) return;
-
-        const data = await res.json();
-        const anuncios = Array.isArray(data.anuncios) ? data.anuncios : [];
-
-        const destacados = anuncios
-          .filter(a => esPublicable(a) && esDestacadoActivo(a))
-          .sort((a, b) => obtenerTimestamp(b) - obtenerTimestamp(a));
-
-        if (destacados.length > 0) {
-          badge.hidden = false;
-          badge.classList.add("pulse");
-          botonAnuncios.classList.add("boton-menu--anuncios-activo");
-
-          if (destacados.length === 1) {
-            tituloAviso.textContent = "Hay 1 nuevo anuncio destacado";
-          } else {
-            tituloAviso.textContent = `Hay ${destacados.length} nuevos anuncios destacados`;
-          }
-
-          const storageKey = claveCierre(destacados);
-          const fueCerrado = localStorage.getItem(storageKey) === "1";
-
-          if (!fueCerrado) {
-            aviso.hidden = false;
-          }
-
-          cerrarAviso.addEventListener("click", function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            aviso.hidden = true;
-            localStorage.setItem(storageKey, "1");
-          });
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    })();
+    init();
   </script>
 </body>
 </html>
