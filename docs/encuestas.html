@@ -171,18 +171,22 @@
     }
 
     .hero-badge{
-      display:inline-flex;
-      align-items:center;
-      width:max-content;
-      padding:8px 12px;
-      border-radius:999px;
-      background:#f6e9e9;
-      border:1px solid #ead0d0;
-      color:var(--primary);
-      font-size:.82rem;
-      font-weight:800;
-      margin-bottom:14px;
-    }
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:max-content;
+  min-width:220px;
+  padding:12px 20px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#fbefef,#f6e3e3);
+  border:1px solid #e4caca;
+  color:var(--primary);
+  font-size:1rem;
+  font-weight:900;
+  letter-spacing:.01em;
+  box-shadow:0 8px 18px rgba(139,0,0,.06);
+  margin-bottom:16px;
+}
 
     .hero h1{
       margin:0 0 10px;
@@ -953,6 +957,7 @@
     }
 
     @media (max-width: 720px){
+           
       .site-header-inner{
         gap:10px;
       }
@@ -961,6 +966,13 @@
         font-size:.96rem;
       }
 
+      .hero-badge{
+  min-width:0;
+  width:100%;
+  max-width:260px;
+  font-size:.95rem;
+  padding:11px 16px;
+}
       .hero-card{
         padding:24px 18px;
         border-radius:24px;
@@ -1127,7 +1139,7 @@
             <h1>Decisiones gastronómicas con voto de cofradía.</h1>
             <p>
               Consulta encuestas activas, revisa resultados y organiza las decisiones gastronómicas
-              de la Cofradía con un sistema claro, elegante y adaptado a móvil.
+              de la Cofradía, todo claro, fácil y desde el móvil.
             </p>
 
             <div class="hero-kpis">
