@@ -342,6 +342,41 @@
       font-size:.96rem;
     }
 
+    .history-controls{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .history-summary{
+      color:var(--muted);
+      font-size:.92rem;
+      font-weight:700;
+    }
+
+    .secondary-btn{
+      appearance:none;
+      border:1px solid #d9c8bc;
+      background:#fff;
+      color:#5a463b;
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      box-shadow:var(--shadow-soft);
+    }
+
+    .secondary-btn:hover{
+      transform:translateY(-1px);
+      border-color:#cdb6a7;
+    }
+
+    .secondary-btn[hidden]{
+      display:none !important;
+    }
+
     .grid{
       display:grid;
       gap:16px;
@@ -402,16 +437,6 @@
       font-weight:800;
       border:1px solid transparent;
       white-space:nowrap;
-    }
-
-    .badge svg{
-      width:14px;
-      height:14px;
-      fill:none;
-      stroke:currentColor;
-      stroke-width:2;
-      stroke-linecap:round;
-      stroke-linejoin:round;
     }
 
     .badge.publica{
@@ -727,6 +752,34 @@
       font-size:.93rem;
     }
 
+    .loading-card{
+      min-height:116px;
+      display:flex;
+      align-items:center;
+    }
+
+    .loading-text{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      color:#6d6055;
+      font-weight:700;
+    }
+
+    .loading-dot{
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      background:var(--primary);
+      opacity:.8;
+      animation:pulse 1.1s ease-in-out infinite;
+    }
+
+    @keyframes pulse{
+      0%, 100%{ transform:scale(.85); opacity:.45; }
+      50%{ transform:scale(1); opacity:1; }
+    }
+
     .status-box{
       margin-top:14px;
     }
@@ -770,22 +823,49 @@
       letter-spacing:-.02em;
     }
 
-    .history-desc{
-      margin:7px 0 0;
-      color:#5f5046;
-      line-height:1.55;
-      font-size:.95rem;
-    }
-
     .footer-space{
       height:16px;
     }
 
     .poll-toggle{
-      display:none;
+      display:flex;
+      width:100%;
+      margin-top:12px;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      border-radius:16px;
+      padding:13px 14px;
+      font-weight:800;
+      cursor:pointer;
+      transition:border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .poll-toggle:hover{
+      border-color:#d8c9bb;
+      box-shadow:0 8px 16px rgba(0,0,0,.04);
+    }
+
+    .poll-toggle-icon{
+      font-size:1.1rem;
+      color:var(--muted);
+      transition:transform .2s ease;
+      flex:0 0 auto;
+    }
+
+    .poll-card.is-open .poll-toggle-icon{
+      transform:rotate(45deg);
     }
 
     .poll-body{
+      display:none;
+      margin-top:14px;
+    }
+
+    .poll-card.is-open .poll-body{
       display:block;
     }
 
@@ -911,42 +991,6 @@
 
       .poll-desc{
         display:none;
-      }
-
-      .poll-toggle{
-        display:flex;
-        width:100%;
-        margin-top:12px;
-        align-items:center;
-        justify-content:space-between;
-        gap:12px;
-        border:1px solid var(--border);
-        background:#fff;
-        color:var(--text);
-        border-radius:16px;
-        padding:13px 14px;
-        font-weight:800;
-        cursor:pointer;
-      }
-
-      .poll-toggle-icon{
-        font-size:1.1rem;
-        color:var(--muted);
-        transition:transform .2s ease;
-        flex:0 0 auto;
-      }
-
-      .poll-card.is-open .poll-toggle-icon{
-        transform:rotate(45deg);
-      }
-
-      .poll-body{
-        display:none;
-        margin-top:14px;
-      }
-
-      .poll-card.is-open .poll-body{
-        display:block;
       }
 
       .poll-actions{
@@ -1121,10 +1165,16 @@
         <div class="section-head">
           <div>
             <h2 class="section-title">Histórico de encuestas</h2>
+            <p class="section-subtitle">Se carga aparte para hacer la página más ágil.</p>
+          </div>
+
+          <div class="history-controls">
+            <span class="history-summary" id="historySummary">Aún no cargado</span>
+            <button class="secondary-btn" id="toggleHistoryBtn" type="button">Mostrar histórico</button>
           </div>
         </div>
 
-        <div class="grid history" id="historyPolls"></div>
+        <div class="grid history" id="historyPolls" hidden></div>
       </section>
 
       <div class="footer-space"></div>
@@ -1142,8 +1192,13 @@
 
     const activeContainer = document.getElementById("activePolls");
     const historyContainer = document.getElementById("historyPolls");
+    const btnSubir = document.getElementById("btnSubir");
+    const toggleHistoryBtn = document.getElementById("toggleHistoryBtn");
+    const historySummary = document.getElementById("historySummary");
 
     let COFRADES = [];
+    let ALL_POLLS = [];
+    let historyExpanded = false;
 
     function safeArray(value){
       return Array.isArray(value) ? value : [];
@@ -1606,18 +1661,24 @@
       box.className = "status-box";
     }
 
-    function bindPollToggles(){
-      const isMobile = window.matchMedia("(max-width: 720px)").matches;
+    function renderLoadingState(){
+      activeContainer.innerHTML = `
+        <article class="card loading-card">
+          <div class="loading-text"><span class="loading-dot"></span>Cargando encuestas activas…</div>
+        </article>
+      `;
 
+      historyContainer.hidden = true;
+      historyContainer.innerHTML = "";
+      historySummary.textContent = "Aún no cargado";
+      toggleHistoryBtn.hidden = false;
+      toggleHistoryBtn.textContent = "Mostrar histórico";
+    }
+
+    function bindPollToggles(){
       document.querySelectorAll(".poll-card").forEach(card => {
         const toggle = card.querySelector(".poll-toggle");
         if(!toggle) return;
-
-        if(!isMobile){
-          card.classList.add("is-open");
-          toggle.setAttribute("aria-expanded", "true");
-          return;
-        }
 
         card.classList.remove("is-open");
         toggle.setAttribute("aria-expanded", "false");
@@ -1644,11 +1705,13 @@
         }
 
         function refreshVoteButton(){
-          voteButton.disabled = !(selectedButtons().length > 0 && select.value);
+          voteButton.disabled = !(selectedButtons().length > 0 && select.value) || voteButton.dataset.sending === "true";
         }
 
         optionButtons.forEach(btn => {
           btn.addEventListener("click", () => {
+            if(voteButton.dataset.sending === "true") return;
+
             clearCardStatus(card);
 
             if(maxChoices <= 1){
@@ -1672,13 +1735,14 @@
         });
 
         select.addEventListener("change", () => {
+          if(voteButton.dataset.sending === "true") return;
           clearCardStatus(card);
           refreshVoteButton();
         });
 
         voteButton.addEventListener("click", async () => {
           const selected = selectedButtons();
-          if(!selected.length || !select.value) return;
+          if(!selected.length || !select.value || voteButton.dataset.sending === "true") return;
 
           const pollId = card.dataset.pollId;
           const cofradeId = select.value;
@@ -1688,8 +1752,11 @@
           ).filter(Boolean);
 
           try{
+            voteButton.dataset.sending = "true";
             voteButton.disabled = true;
             voteButton.textContent = "Enviando...";
+            select.disabled = true;
+            optionButtons.forEach(btn => btn.disabled = true);
             clearCardStatus(card);
 
             await enviarVoto({
@@ -1700,17 +1767,59 @@
             });
 
             showCardStatus(card, "Voto registrado correctamente.", "ok");
-            await cargarDatos();
+            await cargarDatos({ preserveHistoryState: true });
           }catch(error){
             console.error(error);
             showCardStatus(card, error.message || "No se pudo registrar el voto.", "error");
+            voteButton.dataset.sending = "false";
             voteButton.textContent = "Votar";
+            select.disabled = false;
+            optionButtons.forEach(btn => btn.disabled = false);
             refreshVoteButton();
           }
         });
 
+        voteButton.dataset.sending = "false";
         refreshVoteButton();
       });
+    }
+
+    function renderHistory(closedPolls){
+      if(!historyExpanded){
+        historyContainer.hidden = true;
+        historyContainer.innerHTML = "";
+        toggleHistoryBtn.textContent = "Mostrar histórico";
+        historySummary.textContent = closedPolls.length
+          ? `${closedPolls.length} encuesta${closedPolls.length !== 1 ? "s" : ""} cerrada${closedPolls.length !== 1 ? "s" : ""}`
+          : "No hay encuestas cerradas";
+        return;
+      }
+
+      historyContainer.hidden = false;
+      toggleHistoryBtn.textContent = "Ocultar histórico";
+      historySummary.textContent = closedPolls.length
+        ? `${closedPolls.length} encuesta${closedPolls.length !== 1 ? "s" : ""} cerrada${closedPolls.length !== 1 ? "s" : ""}`
+        : "No hay encuestas cerradas";
+
+      if(!closedPolls.length){
+        historyContainer.innerHTML = `
+          <article class="card history-card">
+            <div class="history-top">
+              <div>
+                <h3 class="history-title">Todavía no hay encuestas cerradas.</h3>
+              </div>
+              <span class="badge cerrada">Vacío</span>
+            </div>
+
+            <div class="muted-box">
+              Cuando una encuesta se cierre manualmente, por fecha o por participación completa, aparecerá aquí.
+            </div>
+          </article>
+        `;
+        return;
+      }
+
+      historyContainer.innerHTML = closedPolls.map(renderPollCard).join("");
     }
 
     function renderAll(polls){
@@ -1729,39 +1838,31 @@
         activeContainer.innerHTML = activePolls.map(renderPollCard).join("");
       }
 
-      if(!closedPolls.length){
-        historyContainer.innerHTML = `
-          <article class="card history-card">
-            <div class="history-top">
-              <div>
-                <h3 class="history-title">Todavía no hay encuestas cerradas.</h3>
-              </div>
-              <span class="badge cerrada">Vacío</span>
-            </div>
-
-            <div class="muted-box">
-              Cuando una encuesta se cierre manualmente, por fecha o por participación completa, aparecerá aquí.
-            </div>
-          </article>
-        `;
-      } else {
-        historyContainer.innerHTML = closedPolls.map(renderPollCard).join("");
-      }
-
+      renderHistory(closedPolls);
       updateKpis(activePolls);
       bindPollToggles();
       bindOptionSelection();
     }
 
-    async function cargarDatos(){
+    async function cargarDatos({ preserveHistoryState = true } = {}){
+      if(!preserveHistoryState){
+        historyExpanded = false;
+      }
+
+      renderLoadingState();
+
       try{
-        const res = await fetch(API_URL, { method: "GET" });
+        const res = await fetch(API_URL, {
+          method: "GET",
+          cache: "no-store"
+        });
+
         const data = await res.json();
 
         COFRADES = safeArray(data?.cofrades).map(normalizeCofrade).filter(c => c.id);
-        const polls = safeArray(data?.polls).map(normalizePoll);
+        ALL_POLLS = safeArray(data?.polls).map(normalizePoll);
 
-        renderAll(polls);
+        renderAll(ALL_POLLS);
       }catch(error){
         console.error(error);
         activeContainer.innerHTML = `
@@ -1771,7 +1872,9 @@
             </div>
           </article>
         `;
+        historyContainer.hidden = true;
         historyContainer.innerHTML = "";
+        historySummary.textContent = "Sin datos";
       }
     }
 
@@ -1793,17 +1896,16 @@
       return data;
     }
 
-    cargarDatos();
+    toggleHistoryBtn.addEventListener("click", () => {
+      historyExpanded = !historyExpanded;
+      renderAll(ALL_POLLS);
+    });
 
-    const btnSubir = document.getElementById("btnSubir");
+    cargarDatos({ preserveHistoryState: false });
 
     window.addEventListener("scroll", () => {
-      if (window.scrollY > 300) {
-        btnSubir.classList.add("show");
-      } else {
-        btnSubir.classList.remove("show");
-      }
-    });
+      btnSubir.classList.toggle("show", window.scrollY > 300);
+    }, { passive: true });
 
     btnSubir.addEventListener("click", () => {
       window.scrollTo({
