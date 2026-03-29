@@ -79,6 +79,22 @@
             "autor": "",
             "enlace": "",
             "orden": 0
+        },
+        {
+            "id": "ANU-0006",
+            "fecha": "2026-03-29",
+            "fechaPublicacion": "2026-03-29",
+            "fechaFin": "",
+            "fechaEvento": "2026-03-28",
+            "tipo": "Tesorer\u00eda",
+            "titulo": "Desglose de Pagos",
+            "texto": "\ud83c\udf7d\ufe0f Comida Siosi\n.- Importe total: 825 \u20ac\n.- Parte bote Cofrad\u00eda: 240 \u20ac\n.- Resto a repartir: 585 \u20ac\n.- Pago por asistente: 39 \u20ac\n\n\ud83c\udf7a Cervezas en el Boby\n.- Importe total: 54,90 \u20ac\n.- Personas que pagan: todos excepto Miguel, Quintana y Sera\n.- Pago por persona: 4,58 \u20ac\n\n\ud83d\udcb8 Pagos a Diego\n   Cofrade                    Importe              Estado\nMiguel Cap\u00f3n              43,58 \u20ac           Pendiente\nDiego Cap\u00f3n               43,58 \u20ac           Pendiente\nJos\u00e9                            43,57 \u20ac           Pendiente\nCarlos                         43,57 \u20ac           Pendiente\nPablo                          43,58 \u20ac           Pendiente\nPepe                           43,58 \u20ac           Pendiente\nQuintana                     39,00 \u20ac          \u2705 Pagado\nManolo                        43,57 \u20ac          Pendiente\nI\u00f1aki                            43,58 \u20ac          Pendiente\nDecio                          43,58 \u20ac          Pendiente\nSera                            39,00 \u20ac          Pendiente\nOvi                             -11,33 \u20ac          \ud83d\udd01 Diego le debe\nIsma Zeus                   43,58 \u20ac          Pendiente\nXabi                             43,58 \u20ac          Pendiente",
+            "destacado": true,
+            "dias_destacado": "",
+            "visible": true,
+            "autor": "",
+            "enlace": "",
+            "orden": 0
         }
     ]
 }
