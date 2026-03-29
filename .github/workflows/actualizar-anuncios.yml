@@ -21,7 +21,7 @@ jobs:
 
       - name: Descargar anuncios desde Apps Script
         env:
-          ANUNCIOS_URL: ${{ secrets.ANUNCIOS_URL }}
+          ANUNCIOS_URL: ${{ secrets.ANUNCIOS_API_URL }}
         run: |
           set -e
 
