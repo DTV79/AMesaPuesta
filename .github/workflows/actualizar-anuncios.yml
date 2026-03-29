@@ -1,40 +1,67 @@
-name: Actualizar anuncios desde Google Sheets
+name: actualizar-anuncios
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "*/15 * * * *"
 
 permissions:
   contents: write
 
 jobs:
-  actualizar-anuncios:
+  actualizar:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Descargar repositorio
+      - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Descargar anuncios JSON desde Apps Script
-        run: |
-          curl -L "${{ secrets.ANUNCIOS_API_URL }}" -o docs/anuncios.json
+      - name: Crear carpeta data si no existe
+        run: mkdir -p data
 
-      - name: Validar y formatear JSON
+      - name: Descargar anuncios desde Apps Script
+        env:
+          ANUNCIOS_URL: ${{ secrets.ANUNCIOS_URL }}
         run: |
-          python -m json.tool docs/anuncios.json > /tmp/anuncios-validado.json
-          mv /tmp/anuncios-validado.json docs/anuncios.json
+          set -e
 
-      - name: Comprobar si hay cambios
-        id: cambios
+          if [ -z "$ANUNCIOS_URL" ]; then
+            echo "ERROR: El secret ANUNCIOS_URL está vacío o no existe."
+            exit 1
+          fi
+
+          echo "Descargando anuncios..."
+          HTTP_CODE=$(curl -L -sS -o data/anuncios.json -w "%{http_code}" "$ANUNCIOS_URL")
+
+          echo "HTTP_CODE=$HTTP_CODE"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "ERROR: La URL no devolvió 200."
+            echo "Contenido recibido:"
+            cat data/anuncios.json || true
+            exit 1
+          fi
+
+          echo "Primeras líneas del archivo descargado:"
+          head -n 20 data/anuncios.json || true
+
+      - name: Validar JSON
         run: |
-          git diff --quiet docs/anuncios.json && echo "sin_cambios=true" >> $GITHUB_OUTPUT || echo "sin_cambios=false" >> $GITHUB_OUTPUT
+          python - <<'PY'
+          import json
+          with open("data/anuncios.json", "r", encoding="utf-8") as f:
+              json.load(f)
+          print("JSON válido")
+          PY
 
-      - name: Commit y push
-        if: steps.cambios.outputs.sin_cambios == 'false'
+      - name: Configurar Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/anuncios.json
-          git commit -m "Actualiza anuncios.json desde Google Sheets"
+
+      - name: Commit y push si hay cambios
+        run: |
+          git add data/anuncios.json
+          git diff --cached --quiet && echo "Sin cambios" && exit 0
+          git commit -m "Actualizar anuncios"
           git push
