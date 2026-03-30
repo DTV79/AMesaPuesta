@@ -23,7 +23,7 @@ jobs:
           set -e
 
           if [ -z "$ANUNCIOS_URL" ]; then
-            echo "ERROR: El secret ANUNCIOS_URL está vacío o no existe."
+            echo "ERROR: El secret ANUNCIOS_API_URL está vacío o no existe."
             exit 1
           fi
 
@@ -58,7 +58,7 @@ jobs:
 
       - name: Commit y push si hay cambios
         run: |
-          git add data/anuncios.json
+          git add docs/anuncios.json
           git diff --cached --quiet && echo "Sin cambios" && exit 0
           git commit -m "Actualizar anuncios"
           git push
