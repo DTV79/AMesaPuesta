@@ -4,8 +4,8 @@
     "total_pagos_comidas": 143,
     "total_comidas_asistidas": 111,
     "total_gastos": 1590,
-    "total_cuotas": 3040,
-    "total_remanente": 1450
+    "total_cuotas": 3030,
+    "total_remanente": 1440
   },
   "cofrades": [
     {
@@ -226,8 +226,8 @@
       "comidas_asistidas": 3,
       "cuotas_al_dia": "Sí",
       "gastos": 40,
-      "remanente": 100,
-      "cuotas": 140
+      "remanente": 90,
+      "cuotas": 130
     }
   ]
 }
