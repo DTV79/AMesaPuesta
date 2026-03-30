@@ -1,11 +1,11 @@
 ﻿{
   "resumen": {
     "total_miembros": 17,
-    "total_pagos_comidas": 143,
-    "total_comidas_asistidas": 111,
-    "total_gastos": 1440,
-    "total_cuotas": 3040,
-    "total_remanente": 1600
+    "total_pagos_comidas": 111,
+    "total_comidas_asistidas": 143,
+    "total_gastos": 0,
+    "total_cuotas": 1450,
+    "total_remanente": 1590
   },
   "cofrades": [
     {
@@ -14,12 +14,12 @@
       "fecha_baja": "",
       "categoria": "Cofrade Fundador",
       "tiempo_cofradia": "1451",
-      "pagos_comidas": 10,
-      "comidas_asistidas": 8,
-      "cuotas_al_dia": "Sí",
-      "gastos": 100,
-      "remanente": 100,
-      "cuotas": 200
+      "pagos_comidas": 8,
+      "comidas_asistidas": 10,
+      "cuotas_al_dia": "8",
+      "gastos": 0,
+      "remanente": 110,
+      "cuotas": 90
     },
     {
       "miembro": "Carlos Runner",
@@ -27,12 +27,12 @@
       "fecha_baja": "",
       "categoria": "Cofrade Fundador",
       "tiempo_cofradia": "1451",
-      "pagos_comidas": 10,
-      "comidas_asistidas": 8,
-      "cuotas_al_dia": "Sí",
-      "gastos": 100,
-      "remanente": 100,
-      "cuotas": 200
+      "pagos_comidas": 8,
+      "comidas_asistidas": 10,
+      "cuotas_al_dia": "8",
+      "gastos": 0,
+      "remanente": 110,
+      "cuotas": 90
     },
     {
       "miembro": "Decio",
@@ -40,12 +40,12 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1309",
-      "pagos_comidas": 9,
-      "comidas_asistidas": 8,
-      "cuotas_al_dia": "Sí",
-      "gastos": 90,
+      "pagos_comidas": 7,
+      "comidas_asistidas": 9,
+      "cuotas_al_dia": "8",
+      "gastos": 0,
       "remanente": 100,
-      "cuotas": 190
+      "cuotas": 90
     },
     {
       "miembro": "Diego",
@@ -53,12 +53,12 @@
       "fecha_baja": "",
       "categoria": "Cofrade Fundador",
       "tiempo_cofradia": "1451",
-      "pagos_comidas": 10,
+      "pagos_comidas": 8,
       "comidas_asistidas": 10,
-      "cuotas_al_dia": "Sí",
-      "gastos": 100,
-      "remanente": 100,
-      "cuotas": 200
+      "cuotas_al_dia": "10",
+      "gastos": 0,
+      "remanente": 110,
+      "cuotas": 90
     },
     {
       "miembro": "Iñaki",
@@ -66,12 +66,12 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1375",
-      "pagos_comidas": 10,
-      "comidas_asistidas": 9,
-      "cuotas_al_dia": "Sí",
-      "gastos": 100,
-      "remanente": 100,
-      "cuotas": 200
+      "pagos_comidas": 8,
+      "comidas_asistidas": 10,
+      "cuotas_al_dia": "9",
+      "gastos": 0,
+      "remanente": 110,
+      "cuotas": 90
     },
     {
       "miembro": "José Increíble",
@@ -79,12 +79,12 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1375",
-      "pagos_comidas": 10,
-      "comidas_asistidas": 7,
-      "cuotas_al_dia": "Sí",
-      "gastos": 100,
-      "remanente": 100,
-      "cuotas": 200
+      "pagos_comidas": 8,
+      "comidas_asistidas": 10,
+      "cuotas_al_dia": "7",
+      "gastos": 0,
+      "remanente": 110,
+      "cuotas": 90
     },
     {
       "miembro": "Manolo Granja",
@@ -92,12 +92,12 @@
       "fecha_baja": "",
       "categoria": "Cofrade Fundador",
       "tiempo_cofradia": "1451",
-      "pagos_comidas": 10,
-      "comidas_asistidas": 8,
-      "cuotas_al_dia": "Sí",
-      "gastos": 100,
-      "remanente": 100,
-      "cuotas": 200
+      "pagos_comidas": 8,
+      "comidas_asistidas": 10,
+      "cuotas_al_dia": "8",
+      "gastos": 0,
+      "remanente": 110,
+      "cuotas": 90
     },
     {
       "miembro": "Miguel Capón",
@@ -105,12 +105,12 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1375",
-      "pagos_comidas": 10,
-      "comidas_asistidas": 8,
-      "cuotas_al_dia": "Sí",
-      "gastos": 100,
-      "remanente": 100,
-      "cuotas": 200
+      "pagos_comidas": 8,
+      "comidas_asistidas": 10,
+      "cuotas_al_dia": "8",
+      "gastos": 0,
+      "remanente": 110,
+      "cuotas": 90
     },
     {
       "miembro": "Ovi",
@@ -118,12 +118,12 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1375",
-      "pagos_comidas": 10,
+      "pagos_comidas": 8,
       "comidas_asistidas": 10,
-      "cuotas_al_dia": "Sí",
-      "gastos": 100,
-      "remanente": 100,
-      "cuotas": 200
+      "cuotas_al_dia": "10",
+      "gastos": 0,
+      "remanente": 110,
+      "cuotas": 90
     },
     {
       "miembro": "Pablo Canitrot",
@@ -132,11 +132,11 @@
       "categoria": "Baja Cofradía",
       "tiempo_cofradia": "397",
       "pagos_comidas": 4,
-      "comidas_asistidas": 0,
-      "cuotas_al_dia": "-",
-      "gastos": 40,
-      "remanente": 0,
-      "cuotas": 40
+      "comidas_asistidas": 4,
+      "cuotas_al_dia": "0",
+      "gastos": 0,
+      "remanente": 40,
+      "cuotas": 0
     },
     {
       "miembro": "Pablo Hermida",
@@ -144,12 +144,12 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1375",
-      "pagos_comidas": 10,
-      "comidas_asistidas": 8,
-      "cuotas_al_dia": "Sí",
-      "gastos": 100,
-      "remanente": 100,
-      "cuotas": 200
+      "pagos_comidas": 8,
+      "comidas_asistidas": 10,
+      "cuotas_al_dia": "8",
+      "gastos": 0,
+      "remanente": 110,
+      "cuotas": 90
     },
     {
       "miembro": "Quintana",
@@ -157,12 +157,12 @@
       "fecha_baja": "",
       "categoria": "Cofrade Fundador",
       "tiempo_cofradia": "1451",
-      "pagos_comidas": 10,
-      "comidas_asistidas": 7,
-      "cuotas_al_dia": "Sí",
-      "gastos": 100,
-      "remanente": 100,
-      "cuotas": 200
+      "pagos_comidas": 8,
+      "comidas_asistidas": 10,
+      "cuotas_al_dia": "7",
+      "gastos": 0,
+      "remanente": 110,
+      "cuotas": 90
     },
     {
       "miembro": "Xabi",
@@ -170,12 +170,12 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1309",
-      "pagos_comidas": 9,
-      "comidas_asistidas": 4,
-      "cuotas_al_dia": "Sí",
-      "gastos": 90,
+      "pagos_comidas": 7,
+      "comidas_asistidas": 9,
+      "cuotas_al_dia": "4",
+      "gastos": 0,
       "remanente": 100,
-      "cuotas": 190
+      "cuotas": 90
     },
     {
       "miembro": "Sera",
@@ -183,12 +183,12 @@
       "fecha_baja": "",
       "categoria": "Cofrade",
       "tiempo_cofradia": "1073",
-      "pagos_comidas": 7,
-      "comidas_asistidas": 6,
-      "cuotas_al_dia": "Sí",
-      "gastos": 70,
-      "remanente": 100,
-      "cuotas": 170
+      "pagos_comidas": 5,
+      "comidas_asistidas": 7,
+      "cuotas_al_dia": "6",
+      "gastos": 0,
+      "remanente": 80,
+      "cuotas": 90
     },
     {
       "miembro": "Herva",
@@ -196,12 +196,12 @@
       "fecha_baja": "",
       "categoria": "Aprendiz",
       "tiempo_cofradia": "1073",
-      "pagos_comidas": 7,
-      "comidas_asistidas": 4,
-      "cuotas_al_dia": "Sí",
-      "gastos": 70,
-      "remanente": 100,
-      "cuotas": 170
+      "pagos_comidas": 5,
+      "comidas_asistidas": 7,
+      "cuotas_al_dia": "4",
+      "gastos": 0,
+      "remanente": 80,
+      "cuotas": 90
     },
     {
       "miembro": "Isma Zeus",
@@ -209,12 +209,12 @@
       "fecha_baja": "",
       "categoria": "Aprendiz",
       "tiempo_cofradia": "702",
-      "pagos_comidas": 4,
-      "comidas_asistidas": 3,
-      "cuotas_al_dia": "Sí",
-      "gastos": 40,
-      "remanente": 100,
-      "cuotas": 140
+      "pagos_comidas": 2,
+      "comidas_asistidas": 4,
+      "cuotas_al_dia": "3",
+      "gastos": 0,
+      "remanente": 50,
+      "cuotas": 90
     },
     {
       "miembro": "Pepe",
@@ -222,12 +222,12 @@
       "fecha_baja": "",
       "categoria": "Aprendiz",
       "tiempo_cofradia": "373",
-      "pagos_comidas": 3,
+      "pagos_comidas": 1,
       "comidas_asistidas": 3,
-      "cuotas_al_dia": "Sí",
-      "gastos": 40,
-      "remanente": 100,
-      "cuotas": 140
+      "cuotas_al_dia": "3",
+      "gastos": 0,
+      "remanente": 40,
+      "cuotas": 100
     }
   ]
 }
