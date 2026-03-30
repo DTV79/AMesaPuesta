@@ -16,9 +16,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Crear carpeta data si no existe
-        run: mkdir -p data
-
       - name: Descargar anuncios desde Apps Script
         env:
           ANUNCIOS_URL: ${{ secrets.ANUNCIOS_API_URL }}
@@ -31,25 +28,25 @@ jobs:
           fi
 
           echo "Descargando anuncios..."
-          HTTP_CODE=$(curl -L -sS -o data/anuncios.json -w "%{http_code}" "$ANUNCIOS_URL")
+          HTTP_CODE=$(curl -L -sS -o docs/anuncios.json -w "%{http_code}" "$ANUNCIOS_URL")
 
           echo "HTTP_CODE=$HTTP_CODE"
 
           if [ "$HTTP_CODE" != "200" ]; then
             echo "ERROR: La URL no devolvió 200."
             echo "Contenido recibido:"
-            cat data/anuncios.json || true
+            cat docs/anuncios.json || true
             exit 1
           fi
 
           echo "Primeras líneas del archivo descargado:"
-          head -n 20 data/anuncios.json || true
+          head -n 20 docs/anuncios.json || true
 
       - name: Validar JSON
         run: |
           python - <<'PY'
           import json
-          with open("data/anuncios.json", "r", encoding="utf-8") as f:
+          with open("docs/anuncios.json", "r", encoding="utf-8") as f:
               json.load(f)
           print("JSON válido")
           PY
