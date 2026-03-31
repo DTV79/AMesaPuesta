@@ -208,26 +208,5 @@
     "autor": "Miguel Capón",
     "latitud": 42.15692,
     "longitud": -8.5987
-  },
-  {
-    "id": 0,
-    "nombre": "¿...?",
-    "direccion": "",
-    "telefono": "",
-    "web": "",
-    "fecha": "",
-    "resenas": "",
-    "organizadores": ["Decio","Quintana"],
-    "entrantes": [],
-    "platos_principales": [],
-    "postres": [],
-    "bebidas": [],
-    "precio": "",
-    "asistieron": [],
-    "no_asistieron": [],
-    "descripcion": "",
-    "autor": "",
-    "latitud": 0,
-    "longitud": 0
   }
 ]}
