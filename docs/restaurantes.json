@@ -17,6 +17,11 @@
     "no_asistieron": ["José Increíble"],
     "descripcion": "La primera de muchas",
     "autor": "Manolo Granja",
+    
+    "fotos": [
+    "Fotos/manolo/manolo_1.webp",
+    "Fotos/manolo/manolo_2.webp"
+    ]
     "latitud": 42.25226,
     "longitud": -8.70279
   },
