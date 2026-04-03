@@ -178,6 +178,8 @@
     "no_asistieron": ["Capón","Miguel Capón","Quintana","Xabi","Isma Zeus"],
     "descripcion": "",
     "autor": "",
+    "carpeta_fotos": "pucheiro",
+    "fotos": 6,
     "latitud": 42.28592,
     "longitud": -8.14425
   },
@@ -199,6 +201,8 @@
     "no_asistieron": ["Carlos Runner","Iñaki","Manolo Granja","Xabi"],
     "descripcion": "Caza, monte y tradición gallega en estado puro",
     "autor": "Diego",
+    "carpeta_fotos": "nagarola",
+    "fotos": 7,
     "latitud": 42.3405,
     "longitud": -8.45235
   },
@@ -220,6 +224,8 @@
     "no_asistieron": ["Herva"],
     "descripcion": "Onte tocou un bo chuletón, uns comeron muito e outros parece que non",
     "autor": "Miguel Capón",
+    "carpeta_fotos": "siosi",
+    "fotos": 10,
     "latitud": 42.15692,
     "longitud": -8.5987
   }
