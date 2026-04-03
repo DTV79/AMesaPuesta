@@ -979,7 +979,7 @@
             type="button"
             aria-label="Ver fotos de ${textoSeguro(rest.nombre)}"
             title="Ver fotos"
-            onclick="abrirGaleria(${index}, 0)"
+            onclick="abrirGaleriaDesdeDatos('${String(rest.nombre || "").replace(/'/g, "\\'")}', '${String(rest.carpeta_fotos || "").replace(/'/g, "\\'")}', ${Number(rest.fotos || 0)}, 0)"
             ${mostrarBotonFotos ? "" : "hidden"}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1120,26 +1120,22 @@
     pintarRestaurantes(filtrados);
   }
 
-  function abrirGaleria(indexRestaurante, indiceFoto = 0){
-    const rest = TODOS_LOS_RESTAURANTES[indexRestaurante];
+  function abrirGaleriaDesdeDatos(nombre, carpeta, totalFotos, indiceFoto = 0){
+  if(!carpeta || !totalFotos || totalFotos <= 0) return;
 
-    if(!rest || !tieneFotos(rest)) return;
+  GALERIA_ACTUAL = {
+    nombre: nombre || "Galería",
+    fotos: Number(totalFotos),
+    carpeta: String(carpeta).trim(),
+    total: Number(totalFotos),
+    indice: Math.max(0, Math.min(indiceFoto, Number(totalFotos) - 1))
+  };
 
-    const totalFotos = Number(rest.fotos);
+  document.getElementById("galeriaModal").classList.add("abierto");
+  document.body.style.overflow = "hidden";
 
-    GALERIA_ACTUAL = {
-      nombre: rest.nombre || "Galería",
-      fotos: totalFotos,
-      carpeta: String(rest.carpeta_fotos || "").trim(),
-      total: totalFotos,
-      indice: Math.max(0, Math.min(indiceFoto, totalFotos - 1))
-    };
-
-    document.getElementById("galeriaModal").classList.add("abierto");
-    document.body.style.overflow = "hidden";
-
-    renderGaleria();
-  }
+  renderGaleria();
+}
 
   function cerrarGaleria(){
     document.getElementById("galeriaModal").classList.remove("abierto");
