@@ -40,6 +40,8 @@
     "no_asistieron": ["Carlos Runner","José Increíble","Pablo Canitrot","Pablo Hermida","Xabi"],
     "descripcion": "",
     "autor": "",
+    "carpeta_fotos": "larexo",
+    "fotos": 4,
     "latitud": 42.48533,
     "longitud": -8.86427
   },
@@ -61,6 +63,8 @@
     "no_asistieron": ["Pablo Canitrot","Quintana"],
     "descripcion": "No es un simple cocido… es EL COCIDO",
     "autor": "Diego",
+    "carpeta_fotos": "curras",
+    "fotos": 6,
     "latitud": 42.66138,
     "longitud": -8.11208
   },
