@@ -109,6 +109,8 @@
     "no_asistieron": ["José Increíble","Pablo Canitrot","Xabi"],
     "descripcion": "",
     "autor": "",
+    "carpeta_fotos": "larexo_2",
+    "fotos": 3,
     "latitud": 42.48533,
     "longitud": -8.86428
   },
@@ -130,6 +132,8 @@
     "no_asistieron": ["Decio","Pablo Hermida","Sera","Herva"],
     "descripcion": "",
     "autor": "",
+    "carpeta_fotos": "nande",
+    "fotos": 3,
     "latitud": 42.12168,
     "longitud": -8.42998
   },
@@ -151,6 +155,8 @@
     "no_asistieron": ["Manolo Granja"],
     "descripcion": "Lugar enxebre donde saben lo que se hacen",
     "autor": "Diego",
+    "carpeta_fotos": "paco",
+    "fotos": 9,
     "latitud": 42.02883,
     "longitud": -8.83594
   },
