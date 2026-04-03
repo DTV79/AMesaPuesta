@@ -86,6 +86,8 @@
     "no_asistieron": ["Capón","Miguel Capón","Pablo Canitrot","Quintana","Xabi","Herva"],
     "descripcion": "Si te gusta \"O Bacallau\", este es el sitio",
     "autor": "Diego",
+    "carpeta_fotos": "afonso",
+    "fotos": 6,
     "latitud": 41.65094,
     "longitud": -8.62286
   },
