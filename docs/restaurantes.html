@@ -11,7 +11,6 @@
 <style>
   :root{
     color-scheme: light;
-
     --bg:#f8f5f0;
     --card:#ffffff;
     --ink:#1f1f1f;
@@ -403,45 +402,45 @@
   }
 
   #btnSubir{
-    position: fixed;
-    right: 22px;
-    bottom: 22px;
-    width: 52px;
-    height: 52px;
-    border: none;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #8b0000, #b30000);
-    color: #fff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 24px rgba(139,0,0,.28);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px) scale(.95);
-    transition: opacity .25s ease, transform .25s ease, visibility .25s ease, background .2s ease;
-    z-index: 9999;
+    position:fixed;
+    right:22px;
+    bottom:22px;
+    width:52px;
+    height:52px;
+    border:none;
+    border-radius:50%;
+    background:linear-gradient(135deg, #8b0000, #b30000);
+    color:#fff;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 10px 24px rgba(139,0,0,.28);
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(10px) scale(.95);
+    transition:opacity .25s ease, transform .25s ease, visibility .25s ease, background .2s ease;
+    z-index:9999;
   }
 
   #btnSubir.show{
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0) scale(1);
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0) scale(1);
   }
 
   #btnSubir:hover{
-    background: linear-gradient(135deg, #760000, #990000);
+    background:linear-gradient(135deg, #760000, #990000);
   }
 
   #btnSubir:active{
-    transform: scale(.96);
+    transform:scale(.96);
   }
 
   #btnSubir svg{
-    width: 22px;
-    height: 22px;
-    fill: currentColor;
+    width:22px;
+    height:22px;
+    fill:currentColor;
   }
 
   .galeria-modal{
@@ -547,13 +546,8 @@
     background:#fff;
   }
 
-  .galeria-nav.prev{
-    left:12px;
-  }
-
-  .galeria-nav.next{
-    right:12px;
-  }
+  .galeria-nav.prev{ left:12px; }
+  .galeria-nav.next{ right:12px; }
 
   .galeria-info{
     padding:10px 16px 0;
@@ -667,15 +661,15 @@
     }
 
     #btnSubir{
-      right: 16px;
-      bottom: 16px;
-      width: 48px;
-      height: 48px;
+      right:16px;
+      bottom:16px;
+      width:48px;
+      height:48px;
     }
 
     #btnSubir svg{
-      width: 20px;
-      height: 20px;
+      width:20px;
+      height:20px;
     }
 
     .galeria-contenido{
@@ -700,12 +694,9 @@
   }
 
   @media (prefers-color-scheme: dark){
-    :root{
-      color-scheme: light;
-    }
+    :root{ color-scheme: light; }
 
-    html,
-    body{
+    html, body{
       background:var(--bg) !important;
       color:var(--ink) !important;
     }
@@ -741,43 +732,22 @@
   <div class="filtros">
     <div class="buscador-wrap">
       <span class="buscador-icono">🔎</span>
-      <input
-        type="search"
-        id="buscador"
-        class="buscador"
-        placeholder="Buscar por restaurante, lugar, organizador ..."
-      >
+      <input type="search" id="buscador" class="buscador" placeholder="Buscar por restaurante, lugar, organizador ...">
     </div>
 
     <div class="fechas-wrap">
       <div class="fecha-box">
         <label for="fecha-desde">Desde</label>
-        <input
-          type="text"
-          id="fecha-desde"
-          class="fecha-input"
-          inputmode="numeric"
-          placeholder="dd/mm/aaaa"
-          maxlength="10"
-        >
+        <input type="text" id="fecha-desde" class="fecha-input" inputmode="numeric" placeholder="dd/mm/aaaa" maxlength="10">
       </div>
 
       <div class="fecha-box">
         <label for="fecha-hasta">Hasta</label>
-        <input
-          type="text"
-          id="fecha-hasta"
-          class="fecha-input"
-          inputmode="numeric"
-          placeholder="dd/mm/aaaa"
-          maxlength="10"
-        >
+        <input type="text" id="fecha-hasta" class="fecha-input" inputmode="numeric" placeholder="dd/mm/aaaa" maxlength="10">
       </div>
     </div>
 
-    <button id="limpiar" class="btn-limpiar" type="button">
-      Limpiar filtros
-    </button>
+    <button id="limpiar" class="btn-limpiar" type="button">Limpiar filtros</button>
   </div>
 
   <div id="contador" class="contador">Cargando restaurantes…</div>
@@ -821,7 +791,6 @@
 
   let GALERIA_ACTUAL = {
     nombre: "",
-    fotos: 0,
     carpeta: "",
     total: 0,
     indice: 0
@@ -829,6 +798,12 @@
 
   let touchStartX = 0;
   let touchEndX = 0;
+
+  function escaparJS(valor){
+    return String(valor ?? "")
+      .replace(/\\/g, "\\\\")
+      .replace(/'/g, "\\'");
+  }
 
   function formatearFecha(fecha){
     if(!fecha) return "—";
@@ -928,7 +903,9 @@
   }
 
   function tieneFotos(rest){
-    return Number.isInteger(rest.fotos) && rest.fotos > 0 && !!String(rest.carpeta_fotos || "").trim();
+    const total = Number(rest.fotos);
+    const carpeta = String(rest.carpeta_fotos || "").trim();
+    return total > 0 && carpeta !== "";
   }
 
   function crearFicha(rest, index){
@@ -949,6 +926,9 @@
       : "Cofradía A Mesa Puesta";
 
     const mostrarBotonFotos = tieneFotos(rest);
+    const nombreJS = escaparJS(rest.nombre || "");
+    const carpetaJS = escaparJS(rest.carpeta_fotos || "");
+    const totalFotos = Number(rest.fotos || 0);
 
     return `
       <div class="restaurante">
@@ -979,7 +959,7 @@
             type="button"
             aria-label="Ver fotos de ${textoSeguro(rest.nombre)}"
             title="Ver fotos"
-            onclick="abrirGaleriaDesdeDatos('${String(rest.nombre || "").replace(/'/g, "\\'")}', '${String(rest.carpeta_fotos || "").replace(/'/g, "\\'")}', ${Number(rest.fotos || 0)}, 0)"
+            onclick="abrirGaleriaDesdeDatos('${nombreJS}', '${carpetaJS}', ${totalFotos}, 0)"
             ${mostrarBotonFotos ? "" : "hidden"}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1121,21 +1101,22 @@
   }
 
   function abrirGaleriaDesdeDatos(nombre, carpeta, totalFotos, indiceFoto = 0){
-  if(!carpeta || !totalFotos || totalFotos <= 0) return;
+    const total = Number(totalFotos);
+    const carpetaLimpia = String(carpeta || "").trim();
 
-  GALERIA_ACTUAL = {
-    nombre: nombre || "Galería",
-    fotos: Number(totalFotos),
-    carpeta: String(carpeta).trim(),
-    total: Number(totalFotos),
-    indice: Math.max(0, Math.min(indiceFoto, Number(totalFotos) - 1))
-  };
+    if(!carpetaLimpia || total <= 0) return;
 
-  document.getElementById("galeriaModal").classList.add("abierto");
-  document.body.style.overflow = "hidden";
+    GALERIA_ACTUAL = {
+      nombre: nombre || "Galería",
+      carpeta: carpetaLimpia,
+      total: total,
+      indice: Math.max(0, Math.min(indiceFoto, total - 1))
+    };
 
-  renderGaleria();
-}
+    document.getElementById("galeriaModal").classList.add("abierto");
+    document.body.style.overflow = "hidden";
+    renderGaleria();
+  }
 
   function cerrarGaleria(){
     document.getElementById("galeriaModal").classList.remove("abierto");
