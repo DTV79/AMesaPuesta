@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#f8f5f0" />
+  <title>Tablón de anuncios</title>
+
+  <style>
+    :root{
+      color-scheme: light;
+      --bg:#f8f5f0;
+      --card:#ffffff;
+      --ink:#1f1f1f;
+      --muted:#6b7280;
+      --accent:#8b0000;
+      --accent-2:#b38b59;
+      --border:#e7e2d9;
+      --shadow:0 10px 30px rgba(0,0,0,.08);
+      --shadow-soft:0 8px 22px rgba(0,0,0,.06);
+      --max:1100px;
+    }
+
+    *{ box-sizing:border-box; }
+
+    html{
+      background:var(--bg) !important;
+      -webkit-text-size-adjust:100%;
+    }
+
+    body{
+      margin:0;
+      padding:0;
+      background:var(--bg) !important;
+      color:var(--ink) !important;
+      font-family:Georgia, "Times New Roman", serif;
+      min-height:100vh;
+      min-height:100dvh;
+    }
+
+    img, svg{
+      max-width:100%;
+      height:auto;
+      display:block;
+    }
+
+    input, select, textarea, button{
+      font:inherit;
+      color:inherit;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    .page{
+      width:min(var(--max), calc(100% - 28px));
+      margin:0 auto;
+      padding:22px 0 40px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      margin-bottom:22px;
+      flex-wrap:wrap;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+      flex:1;
+    }
+
+    .eyebrow{
+      font-size:.78rem;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--accent);
+      font-weight:700;
+    }
+
+    .title{
+      margin:0;
+      font-size:clamp(2rem, 3vw, 2.8rem);
+      line-height:1.05;
+      color:var(--accent);
+      font-weight:700;
+    }
+
+    .subtitle{
+      margin:0;
+      color:var(--muted);
+      font-size:1rem;
+      line-height:1.4;
+    }
+
+    .back-wrap{
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      min-width:120px;
+    }
+
+   .back-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 16px;
+  border:none;
+  border-radius:6px;
+  background:#8b0000;
+  color:#fff;
+  font-weight:600;
+  font-size:14px;
+  line-height:1;
+  white-space:nowrap;
+  box-shadow:none;
+  transition:opacity .2s ease;
+}
+
+.back-btn:hover{
+  opacity:.9;
+}
+
+    .hero-card{
+      background:linear-gradient(135deg, rgba(139,0,0,.96), rgba(90,0,0,.92));
+      color:#fff;
+      border-radius:24px;
+      padding:28px 26px;
+      box-shadow:var(--shadow);
+      margin-bottom:22px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero-card::after{
+      content:"";
+      position:absolute;
+      inset:auto -60px -60px auto;
+      width:180px;
+      height:180px;
+      border-radius:50%;
+      background:rgba(255,255,255,.08);
+    }
+
+    .hero-card h2{
+      margin:0 0 10px;
+      font-size:clamp(1.5rem, 2.5vw, 2rem);
+      line-height:1.15;
+    }
+
+    .hero-card p{
+      margin:0;
+      max-width:780px;
+      font-size:1rem;
+      line-height:1.6;
+      color:rgba(255,255,255,.92);
+    }
+
+    .destacados-principales{
+      display:none;
+      margin-bottom:22px;
+      animation:aparecer .35s ease;
+    }
+
+    .destacados-principales.show{
+      display:block;
+    }
+
+    .destacados-header{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:14px;
+      color:var(--accent);
+      font-weight:700;
+      font-size:1.08rem;
+    }
+
+    .destacados-grid{
+      display:grid;
+      gap:16px;
+    }
+
+    .destacado-principal{
+      background:linear-gradient(135deg, #fff8ec, #fffdf8);
+      border:1px solid #e8d3af;
+      border-radius:22px;
+      box-shadow:0 14px 34px rgba(103,61,15,.10);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .destacado-principal::before{
+      content:"";
+      position:absolute;
+      top:14px;
+      right:18px;
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:#b38b59;
+      box-shadow:0 0 0 4px rgba(179,139,89,.15);
+    }
+
+    .destacado-barra{
+      height:6px;
+      background:linear-gradient(90deg, var(--accent-2), #d6b07b);
+    }
+
+    .destacado-contenido{
+      padding:22px 22px 20px;
+    }
+
+    .destacado-etiqueta{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:#fff1d8;
+      color:#8a5a00;
+      border:1px solid #ead2a0;
+      font-size:.85rem;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+
+    .destacado-titulo{
+      margin:0 0 10px;
+      font-size:clamp(1.35rem, 2.3vw, 1.85rem);
+      line-height:1.15;
+      color:var(--accent);
+    }
+
+    .destacado-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 14px;
+      color:var(--muted);
+      font-size:.95rem;
+      margin-bottom:12px;
+    }
+
+    .destacado-texto{
+      margin:0;
+      line-height:1.75;
+      color:#2e2e2e;
+      font-size:1rem;
+      white-space:pre-line;
+    }
+
+    .destacado-acciones{
+      margin-top:16px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .btn-sec{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid #dec8a9;
+      color:#7b4b12;
+      font-weight:700;
+      transition:.2s ease;
+      cursor:pointer;
+    }
+
+    .btn-sec:hover{
+      transform:translateY(-1px);
+      background:#fffaf2;
+    }
+
+    .controls{
+      display:grid;
+      grid-template-columns:minmax(220px, 1.2fr) minmax(180px, .7fr) minmax(180px, .6fr);
+      gap:14px;
+      margin-bottom:22px;
+    }
+
+    .control{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:12px 14px;
+      box-shadow:var(--shadow-soft);
+    }
+
+    .control label{
+      display:block;
+      font-size:.78rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:7px;
+      font-weight:700;
+    }
+
+    .control input,
+    .control select{
+      width:100%;
+      border:0;
+      outline:none;
+      background:transparent;
+      color:var(--ink);
+      font-size:1rem;
+      font-family:inherit;
+    }
+
+    .anuncios-wrap{
+      display:grid;
+      gap:18px;
+    }
+
+    .anuncio{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow:var(--shadow-soft);
+      overflow:hidden;
+      transition:.22s ease;
+      animation:aparecer .35s ease;
+    }
+
+    .anuncio:hover{
+      transform:translateY(-2px);
+    }
+
+    .anuncio.destacado{
+      border-color:#d8c09b;
+      box-shadow:0 14px 34px rgba(103,61,15,.12);
+    }
+
+    .destacado-linea{
+      height:5px;
+      background:linear-gradient(90deg, var(--accent-2), #d6b07b);
+    }
+
+    .anuncio-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      padding:18px 20px 0;
+    }
+
+    .anuncio-head{
+      min-width:0;
+      flex:1;
+    }
+
+    .anuncio-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:.82rem;
+      font-weight:700;
+      line-height:1;
+    }
+
+    .pill-tipo{ text-transform:capitalize; }
+    .tipo-general{ background:#f2f2f2; color:#505050; border:1px solid #e1e1e1; }
+    .tipo-comida{ background:#fbecef; color:#8b2f40; border:1px solid #f1d3da; }
+    .tipo-reunion{ background:#edf6f1; color:#2f6b52; border:1px solid #d4eadf; }
+    .tipo-tesoreria{ background:#fff7e8; color:#8a6215; border:1px solid #edd9a8; }
+    .tipo-urgente{ background:#fff0f0; color:#9d1f1f; border:1px solid #f0c7c7; }
+    .tipo-recordatorio{ background:#f4f0fa; color:#654a89; border:1px solid #e2d7f3; }
+
+    .pill-destacado{
+      background:#fff4df;
+      color:#8a5a00;
+      border:1px solid #ead2a0;
+    }
+
+    .fecha{
+      color:var(--muted);
+      font-size:.96rem;
+      white-space:nowrap;
+      padding-top:2px;
+    }
+
+    .anuncio-titulo{
+      margin:0 0 10px;
+      font-size:clamp(1.2rem, 2vw, 1.5rem);
+      line-height:1.2;
+      color:var(--accent);
+    }
+
+    .anuncio-texto{
+      padding:0 20px 10px;
+      color:#2f2f2f;
+      line-height:1.75;
+      font-size:1rem;
+      white-space:pre-line;
+    }
+
+    .anuncio-texto.limitado{
+      display:-webkit-box;
+      -webkit-line-clamp:4;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      white-space:normal;
+    }
+
+    .anuncio-footer{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:0 20px 18px;
+    }
+
+    .autor{
+      color:var(--muted);
+      font-size:.95rem;
+      font-style:italic;
+    }
+
+    .acciones{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .mini-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:9px 13px;
+      border-radius:999px;
+      border:1px solid #dcc8ac;
+      background:#fffaf2;
+      color:#7b4b12;
+      font-weight:700;
+      transition:.2s ease;
+      cursor:pointer;
+      font-family:inherit;
+      font-size:.93rem;
+    }
+
+    .mini-btn:hover{
+      transform:translateY(-1px);
+      background:#fff4e5;
+    }
+
+    .empty{
+      background:var(--card);
+      border:1px dashed #d9d0c3;
+      border-radius:18px;
+      padding:28px 20px;
+      text-align:center;
+      color:var(--muted);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .loading{
+      text-align:center;
+      color:var(--muted);
+      padding:24px 0 8px;
+      font-size:1rem;
+    }
+
+    .footnote{
+      margin-top:26px;
+      text-align:center;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+
+    @keyframes aparecer{
+      from{ opacity:0; transform:translateY(8px); }
+      to{ opacity:1; transform:translateY(0); }
+    }
+
+    #btnSubir{
+      position:fixed;
+      right:22px;
+      bottom:22px;
+      width:52px;
+      height:52px;
+      border:none;
+      border-radius:50%;
+      background:linear-gradient(135deg,#8b0000,#b30000);
+      color:#fff;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 10px 24px rgba(139,0,0,.28);
+      opacity:0;
+      visibility:hidden;
+      transform:translateY(10px) scale(.95);
+      transition:opacity .25s ease, transform .25s ease, visibility .25s ease, background .2s ease;
+      z-index:9999;
+    }
+
+    #btnSubir.show{
+      opacity:1;
+      visibility:visible;
+      transform:translateY(0) scale(1);
+    }
+
+    #btnSubir:hover{
+      background:linear-gradient(135deg,#760000,#990000);
+    }
+
+    #btnSubir:active{
+      transform:scale(.96);
+    }
+
+    #btnSubir svg{
+      width:22px;
+      height:22px;
+      fill:currentColor;
+    }
+
+    @media (max-width: 920px){
+      .controls{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 640px){
+      .page{
+        width:min(var(--max), calc(100% - 18px));
+        padding-top:16px;
+      }
+
+      .brand{ width:100%; }
+
+      .back-wrap{
+        width:100%;
+        justify-content:flex-start;
+      }
+
+      .hero-card{
+        padding:22px 18px;
+        border-radius:20px;
+      }
+
+      .anuncio-top{
+        flex-direction:column;
+        gap:8px;
+      }
+
+      .fecha{ padding-top:0; }
+
+      .anuncio-texto,
+      .anuncio-footer{
+        padding-left:18px;
+        padding-right:18px;
+      }
+
+      .destacado-contenido{
+        padding:18px 18px 17px;
+      }
+
+      #btnSubir{
+        right:16px;
+        bottom:16px;
+        width:48px;
+        height:48px;
+      }
+
+      #btnSubir svg{
+        width:20px;
+        height:20px;
+      }
+    }
+
+    @media (prefers-color-scheme: dark){
+      :root{
+        color-scheme: light;
+      }
+
+      html,
+      body{
+        background:var(--bg) !important;
+        color:var(--ink) !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="eyebrow">Cofradía A Mesa Puesta</div>
+        <h1 class="title">Tablón de anuncios</h1>
+        <p class="subtitle">Novedades, avisos y comunicaciones de la cofradía</p>
+      </div>
+
+      <div class="back-wrap">
+        <a class="back-btn" href="index.html">← Volver</a>
+      </div>
+    </header>
+
+    <section class="hero-card">
+      <h2>Información importante de la cofradía</h2>
+      <p>
+        En este espacio se recogen los anuncios relevantes, convocatorias, recordatorios
+        y cualquier otra comunicación de interés para los cofrades.
+      </p>
+    </section>
+
+    <section id="destacadosPrincipales" class="destacados-principales" aria-live="polite"></section>
+
+    <section class="controls">
+      <div class="control">
+        <label for="buscador">Buscar anuncio</label>
+        <input
+          type="text"
+          id="buscador"
+          placeholder="Buscar por título, texto, autor o tipo"
+        />
+      </div>
+
+      <div class="control">
+        <label for="filtroTipo">Filtrar por tipo</label>
+        <select id="filtroTipo">
+          <option value="todos">Todos</option>
+        </select>
+      </div>
+
+      <div class="control">
+        <label for="filtroDestacados">Mostrar</label>
+        <select id="filtroDestacados">
+          <option value="todos">Todos los anuncios</option>
+          <option value="destacados">Solo destacados</option>
+        </select>
+      </div>
+    </section>
+
+    <div id="loading" class="loading">Cargando anuncios...</div>
+    <section id="anuncios" class="anuncios-wrap" aria-live="polite"></section>
+
+    <div class="footnote">
+      Los anuncios destacados activos aparecen primero y también se muestran arriba del listado.
+    </div>
+
+  </main>
+
+  <button id="btnSubir" title="Subir arriba" aria-label="Subir arriba">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 5l-7 7 1.41 1.41L11 8.83V20h2V8.83l4.59 4.58L19 12z"/>
+    </svg>
+  </button>
+
+  <script>
+    const CONTENEDOR = document.getElementById("anuncios");
+    const LOADING = document.getElementById("loading");
+    const BUSCADOR = document.getElementById("buscador");
+    const FILTRO = document.getElementById("filtroTipo");
+    const FILTRO_DEST = document.getElementById("filtroDestacados");
+    const DESTACADOS_PRINCIPALES = document.getElementById("destacadosPrincipales");
+
+    let anunciosOriginales = [];
+
+    function escapeHTML(texto) {
+      return String(texto ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function normalizarTexto(v) {
+      return String(v ?? "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+    }
+
+    function capitalizar(texto) {
+      const t = String(texto ?? "").trim();
+      if (!t) return "";
+      return t.charAt(0).toUpperCase() + t.slice(1);
+    }
+
+    function esValorVerdadero(v) {
+      const t = normalizarTexto(v);
+      return t === "si" || t === "true" || t === "1" || t === "x" || t === "yes";
+    }
+
+    function convertirFecha(fecha) {
+      const valor = String(fecha ?? "").trim();
+      if (!valor) return null;
+
+      if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+        const d = new Date(valor + "T00:00:00");
+        return isNaN(d.getTime()) ? null : d;
+      }
+
+      const match = valor.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+      if (match) {
+        let dia = parseInt(match[1], 10);
+        let mes = parseInt(match[2], 10);
+        let anio = parseInt(match[3], 10);
+
+        if (anio < 100) {
+          anio += 2000;
+        } else if (anio < 1000) {
+          anio += 1800;
+        }
+
+        const iso = `${anio.toString().padStart(4, "0")}-${String(mes).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+        const d = new Date(iso + "T00:00:00");
+        return isNaN(d.getTime()) ? null : d;
+      }
+
+      const d = new Date(valor);
+      return isNaN(d.getTime()) ? null : d;
+      }
+
+    function fechaValida(fecha) {
+      return convertirFecha(fecha) !== null;
+    }
+
+    function formatearFecha(fechaEntrada) {
+      const fecha = convertirFecha(fechaEntrada);
+      if (!fecha) return String(fechaEntrada ?? "");
+      const dia = String(fecha.getDate()).padStart(2, "0");
+      const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+      const anio = fecha.getFullYear();
+      return `${dia}/${mes}/${anio}`;
+    }
+
+    function estaCaducado(fechaFin) {
+      const fin = convertirFecha(fechaFin);
+      if (!fin) return false;
+
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+
+      fin.setHours(23, 59, 59, 999);
+      return fin < hoy;
+    }
+
+    function numeroDiasDestacado(anuncio) {
+      const valor = String(anuncio.dias_destacado ?? anuncio["dias destacado"] ?? anuncio["Días Destacado"] ?? "").trim();
+      const numero = parseInt(valor, 10);
+      return Number.isFinite(numero) && numero > 0 ? numero : 15;
+    }
+
+    function tipoCanonico(tipo) {
+      const t = normalizarTexto(tipo);
+
+      switch (t) {
+        case "comida":
+          return "comida";
+        case "reunion":
+          return "reunion";
+        case "tesoreria":
+          return "tesoreria";
+        case "urgente":
+          return "urgente";
+        case "recordatorio":
+          return "recordatorio";
+        case "general":
+          return "general";
+        default:
+          return t || "general";
+      }
+    }
+
+    function etiquetaTipo(tipoOriginal) {
+      const canonico = tipoCanonico(tipoOriginal);
+
+      switch (canonico) {
+        case "reunion":
+          return "Reunión";
+        case "tesoreria":
+          return "Tesorería";
+        case "comida":
+          return "Comida";
+        case "urgente":
+          return "Urgente";
+        case "recordatorio":
+          return "Recordatorio";
+        case "general":
+          return "General";
+        default:
+          return capitalizar(String(tipoOriginal || "").trim()) || "General";
+      }
+    }
+
+    function esDestacadoActivo(anuncio) {
+      if (!esValorVerdadero(anuncio.destacado)) return false;
+
+      const fechaAnuncio = convertirFecha(anuncio.fecha);
+      if (!fechaAnuncio) return false;
+
+      const dias = numeroDiasDestacado(anuncio);
+
+      fechaAnuncio.setHours(0, 0, 0, 0);
+
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+
+      const diferenciaMs = hoy - fechaAnuncio;
+      const diferenciaDias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
+
+      return diferenciaDias >= 0 && diferenciaDias <= dias;
+    }
+
+    function esPublicable(anuncio) {
+      if (!esValorVerdadero(anuncio.visible)) return false;
+      if (estaCaducado(anuncio.fechaFin)) return false;
+
+      const publicacion = convertirFecha(anuncio.fechaPublicacion);
+      if (publicacion) {
+        const hoy = new Date();
+        hoy.setHours(23, 59, 59, 999);
+
+        publicacion.setHours(0, 0, 0, 0);
+
+        if (publicacion > hoy) return false;
+      }
+
+      return true;
+    }
+
+    function iconoTipo(tipo) {
+      switch (tipoCanonico(tipo)) {
+        case "comida":
+          return "🍽️";
+        case "reunion":
+          return "👥";
+        case "tesoreria":
+          return "💰";
+        case "urgente":
+          return "⚠️";
+        case "recordatorio":
+          return "📝";
+        default:
+          return "📌";
+      }
+    }
+
+    function claseTipo(tipo) {
+      const t = tipoCanonico(tipo);
+      const validos = ["general","comida","reunion","tesoreria","urgente","recordatorio"];
+      return validos.includes(t) ? `tipo-${t}` : "tipo-general";
+    }
+
+    function obtenerTipos(anuncios) {
+      const mapaTipos = new Map();
+
+      anuncios
+        .filter(esPublicable)
+        .forEach(a => {
+          const original = String(a.tipo || "").trim();
+          const canonico = tipoCanonico(original);
+          if (!canonico) return;
+
+          if (!mapaTipos.has(canonico)) {
+            mapaTipos.set(canonico, etiquetaTipo(original));
+          }
+        });
+
+      const tipos = [...mapaTipos.entries()].sort((a, b) =>
+        a[1].localeCompare(b[1], "es", { sensitivity: "base" })
+      );
+
+      FILTRO.innerHTML =
+        `<option value="todos">Todos</option>` +
+        tipos
+          .map(([valor, etiqueta]) =>
+            `<option value="${escapeHTML(valor)}">${escapeHTML(etiqueta)}</option>`
+          )
+          .join("");
+    }
+
+    function ordenarAnuncios(lista) {
+      return [...lista].sort((a, b) => {
+        const urgenteA = tipoCanonico(a.tipo) === "urgente";
+        const urgenteB = tipoCanonico(b.tipo) === "urgente";
+        if (urgenteA !== urgenteB) return urgenteB - urgenteA;
+
+        const destA = esDestacadoActivo(a);
+        const destB = esDestacadoActivo(b);
+        if (destA !== destB) return destB - destA;
+
+        const ordenA = Number.isFinite(Number(a.orden)) ? Number(a.orden) : 999999;
+        const ordenB = Number.isFinite(Number(b.orden)) ? Number(b.orden) : 999999;
+        if (ordenA !== ordenB) return ordenA - ordenB;
+
+        const fechaA = convertirFecha(a.fecha);
+        const fechaB = convertirFecha(b.fecha);
+        const timeA = fechaA ? fechaA.getTime() : 0;
+        const timeB = fechaB ? fechaB.getTime() : 0;
+        return timeB - timeA;
+      });
+    }
+
+    function pintarDestacadosPrincipales(anuncios) {
+      const candidatos = ordenarAnuncios(anuncios.filter(a => esDestacadoActivo(a)));
+
+      if (!candidatos.length) {
+        DESTACADOS_PRINCIPALES.classList.remove("show");
+        DESTACADOS_PRINCIPALES.innerHTML = "";
+        return;
+      }
+
+      DESTACADOS_PRINCIPALES.innerHTML = `
+        <div class="destacados-header">📢 Anuncios destacados</div>
+        <div class="destacados-grid">
+          ${candidatos.map(a => {
+            const enlace = String(a.enlace || "").trim();
+            const autor = String(a.autor || "").trim();
+            const fecha = formatearFecha(a.fechaEvento || a.fecha || "");
+            const dias = numeroDiasDestacado(a);
+            const tipoMostrado = etiquetaTipo(a.tipo);
+
+            return `
+              <article class="destacado-principal">
+                <div class="destacado-barra"></div>
+                <div class="destacado-contenido">
+                  <div class="destacado-etiqueta">📌 Destacado durante ${dias} día${dias === 1 ? "" : "s"}</div>
+                  <h2 class="destacado-titulo">${escapeHTML(a.titulo || "Sin título")}</h2>
+                  <div class="destacado-meta">
+                    <span>${iconoTipo(a.tipo)} ${escapeHTML(tipoMostrado)}</span>
+                    ${fecha ? `<span>📅 ${escapeHTML(fecha)}</span>` : ``}
+                    ${autor ? `<span>✍️ ${escapeHTML(autor)}</span>` : ``}
+                  </div>
+                  <p class="destacado-texto">${escapeHTML(a.texto || "").replace(/\n/g, "<br>")}</p>
+                  <div class="destacado-acciones">
+                    ${enlace ? `<a class="btn-sec" href="${escapeHTML(enlace)}" target="_blank" rel="noopener noreferrer">Ver más</a>` : ``}
+                  </div>
+                </div>
+              </article>
+            `;
+          }).join("")}
+        </div>
+      `;
+
+      DESTACADOS_PRINCIPALES.classList.add("show");
+    }
+
+    function filtrarAnuncios() {
+      const texto = normalizarTexto(BUSCADOR.value);
+      const tipoSeleccionado = FILTRO.value;
+      const modoMostrar = FILTRO_DEST.value;
+
+      const hayBusqueda = texto !== "";
+      const hayFiltroTipo = tipoSeleccionado !== "todos";
+      const soloDestacados = modoMostrar === "destacados";
+
+      const publicables = anunciosOriginales.filter(esPublicable);
+
+      let listaFiltrada = publicables.filter(anuncio => {
+        if (hayFiltroTipo && tipoCanonico(anuncio.tipo) !== tipoSeleccionado) {
+          return false;
+        }
+
+        if (soloDestacados && !esDestacadoActivo(anuncio)) {
+          return false;
+        }
+
+        if (hayBusqueda) {
+          const bloqueBusqueda = normalizarTexto(
+            [
+              anuncio.titulo || "",
+              anuncio.texto || "",
+              anuncio.autor || "",
+              anuncio.tipo || "",
+              etiquetaTipo(anuncio.tipo)
+            ].join(" ")
+          );
+
+          if (!bloqueBusqueda.includes(texto)) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+
+      listaFiltrada = ordenarAnuncios(listaFiltrada);
+
+      const hayFiltrosActivos = hayBusqueda || hayFiltroTipo || soloDestacados;
+
+      if (hayFiltrosActivos) {
+        DESTACADOS_PRINCIPALES.classList.remove("show");
+        DESTACADOS_PRINCIPALES.innerHTML = "";
+        renderizar(listaFiltrada);
+        return;
+      }
+
+      const destacados = listaFiltrada.filter(anuncio => esDestacadoActivo(anuncio));
+      const normales = listaFiltrada.filter(anuncio => !esDestacadoActivo(anuncio));
+
+      pintarDestacadosPrincipales(destacados);
+      renderizar(normales);
+    }
+
+    function renderizar(anuncios) {
+      LOADING.style.display = "none";
+
+      if (!anuncios.length) {
+        CONTENEDOR.innerHTML = `
+          <div class="empty">
+            No hay anuncios que coincidan con la búsqueda o el filtro seleccionado.
+          </div>
+        `;
+        return;
+      }
+
+      CONTENEDOR.innerHTML = anuncios.map((anuncio, i) => {
+        const destacado = esDestacadoActivo(anuncio);
+        const tipoTexto = etiquetaTipo(anuncio.tipo);
+        const titulo = escapeHTML(anuncio.titulo || "Sin título");
+        const texto = escapeHTML(anuncio.texto || "");
+        const autor = escapeHTML(anuncio.autor || "");
+        const fecha = formatearFecha(anuncio.fechaEvento || anuncio.fecha || "");
+        const enlace = String(anuncio.enlace || "").trim();
+        const textoId = `texto-anuncio-${i}`;
+
+        return `
+          <article class="anuncio ${destacado ? "destacado" : ""}">
+            ${destacado ? `<div class="destacado-linea"></div>` : ``}
+
+            <div class="anuncio-top">
+              <div class="anuncio-head">
+                <div class="anuncio-meta">
+                  <span class="pill pill-tipo ${claseTipo(anuncio.tipo)}">${iconoTipo(anuncio.tipo)} ${escapeHTML(tipoTexto)}</span>
+                  ${destacado ? `<span class="pill pill-destacado">⭐ Destacado</span>` : ``}
+                </div>
+                <h2 class="anuncio-titulo">${titulo}</h2>
+              </div>
+
+              <div class="fecha">${fecha}</div>
+            </div>
+
+            <div id="${textoId}" class="anuncio-texto limitado">${texto.replace(/\n/g, "<br>")}</div>
+
+            <div class="anuncio-footer">
+              <div class="autor">${autor ? "Publicado por " + autor : ""}</div>
+              <div class="acciones">
+                <button type="button" class="mini-btn" onclick="toggleTexto('${textoId}', this)">Ver más</button>
+                ${enlace ? `<a class="mini-btn" href="${escapeHTML(enlace)}" target="_blank" rel="noopener noreferrer">Abrir enlace</a>` : ``}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function toggleTexto(id, boton) {
+      const texto = document.getElementById(id);
+      if (!texto) return;
+
+      texto.classList.toggle("limitado");
+      boton.textContent = texto.classList.contains("limitado") ? "Ver más" : "Ver menos";
+    }
+
+    async function cargarAnuncios() {
+      try {
+        const response = await fetch("./anuncios.json?v=" + Date.now(), { cache: "no-store" });
+        if (!response.ok) throw new Error("No se pudo cargar anuncios.json");
+
+        const data = await response.json();
+        anunciosOriginales = Array.isArray(data.anuncios) ? data.anuncios : [];
+
+        obtenerTipos(anunciosOriginales);
+        filtrarAnuncios();
+      } catch (error) {
+        LOADING.style.display = "none";
+        CONTENEDOR.innerHTML = `
+          <div class="empty">
+            No se pudieron cargar los anuncios en este momento.
+          </div>
+        `;
+        console.error(error);
+      }
+    }
+
+    BUSCADOR.addEventListener("input", filtrarAnuncios);
+    FILTRO.addEventListener("change", filtrarAnuncios);
+    FILTRO_DEST.addEventListener("change", filtrarAnuncios);
+
+    cargarAnuncios();
+
+    const btnSubir = document.getElementById("btnSubir");
+
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 300) {
+        btnSubir.classList.add("show");
+      } else {
+        btnSubir.classList.remove("show");
+      }
+    });
+
+    btnSubir.addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    });
+  </script>
+</body>
+</html>
