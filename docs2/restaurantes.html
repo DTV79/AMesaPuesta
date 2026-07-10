@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f8f5f0">
+<title>Restaurantes</title>
+<link rel="stylesheet" href="styles.css">
+
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#f8f5f0;
+    --card:#ffffff;
+    --ink:#1f1f1f;
+    --muted:#6b7280;
+    --accent:#8b0000;
+    --accent-dark:#6f0000;
+    --accent-soft:#f6eaea;
+    --border:#e5e7eb;
+    --shadow:0 8px 24px rgba(0,0,0,.08);
+    --radius:18px;
+  }
+
+  html{
+    background:var(--bg) !important;
+    -webkit-text-size-adjust:100%;
+  }
+
+  body{
+    margin:0;
+    font-family:system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+    background:var(--bg) !important;
+    color:var(--ink) !important;
+    min-height:100vh;
+    min-height:100dvh;
+  }
+
+  img, svg{
+    max-width:100%;
+    height:auto;
+    display:block;
+  }
+
+  input, select, textarea, button{
+    font:inherit;
+    color:inherit;
+  }
+
+  .container{
+    width:min(1100px,92vw);
+    margin:20px auto 60px;
+    padding:0;
+  }
+
+  .top-actions{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:24px;
+    flex-wrap:wrap;
+  }
+
+  .top-actions-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .volver{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:#8b0000;
+    color:white;
+    padding:10px 16px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:700;
+    font-size:14px;
+    box-shadow:0 6px 16px rgba(139,0,0,.18);
+    transition:.2s;
+  }
+
+  .volver:hover{
+    opacity:.95;
+    transform:translateY(-1px);
+  }
+
+  .btn-mapa{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background:#fff;
+    color:var(--accent);
+    border:1px solid #d9cfcf;
+    padding:10px 16px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:700;
+    font-size:14px;
+    box-shadow:0 6px 16px rgba(0,0,0,.06);
+    transition:.2s;
+  }
+
+  .btn-mapa:hover{
+    background:#faf7f7;
+    border-color:#c9b1b1;
+    transform:translateY(-1px);
+  }
+
+  .filtros{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin-bottom:10px;
+  }
+
+  .buscador-wrap{
+    position:relative;
+    width:100%;
+  }
+
+  .buscador-icono{
+    position:absolute;
+    left:14px;
+    top:50%;
+    transform:translateY(-50%);
+    color:var(--muted);
+    font-size:14px;
+    pointer-events:none;
+  }
+
+  .buscador{
+    width:100%;
+    box-sizing:border-box;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#fff;
+    box-shadow:0 4px 10px rgba(0,0,0,0.06);
+    outline:none;
+    padding:12px 16px 12px 38px;
+    font-size:15px;
+  }
+
+  .fechas-wrap{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    width:100%;
+  }
+
+  .fecha-box{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+
+  .fecha-box label{
+    font-size:12px;
+    color:var(--muted);
+    font-weight:600;
+  }
+
+  .fecha-input{
+    width:100%;
+    box-sizing:border-box;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#fff;
+    box-shadow:0 4px 10px rgba(0,0,0,0.06);
+    outline:none;
+    padding:10px 12px;
+    font-size:14px;
+  }
+
+  .fecha-input::placeholder{
+    color:#9ca3af;
+  }
+
+  .buscador:focus,
+  .fecha-input:focus{
+    border-color:rgba(139,0,0,.45);
+  }
+
+  .btn-limpiar{
+    background:transparent;
+    border:1px solid #d8caca;
+    color:var(--muted);
+    border-radius:8px;
+    padding:8px 10px;
+    font-size:12px;
+    cursor:pointer;
+    font-weight:500;
+    white-space:nowrap;
+    transition:.2s;
+    align-self:flex-start;
+  }
+
+  .btn-limpiar:hover{
+    background:#faf7f7;
+    color:#8b0000;
+    border-color:#c9b1b1;
+  }
+
+  .contador{
+    margin-bottom:22px;
+    color:var(--muted);
+    font-size:14px;
+  }
+
+  .lista-restaurantes{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:20px;
+  }
+
+  .restaurante{
+    background:white;
+    padding:18px;
+    border-radius:12px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    border:1px solid var(--border);
+  }
+
+  .restaurante-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    margin-bottom:12px;
+  }
+
+  .restaurante h2{
+    margin:0;
+    font-size:20px;
+    color:var(--accent);
+    line-height:1.2;
+  }
+
+  .resenas{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    min-width:96px;
+    font-size:20px;
+    font-weight:700;
+    color:#d4a017;
+    letter-spacing:2px;
+    line-height:1;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+
+  .resumen p{
+    margin:6px 0;
+    font-size:14px;
+    line-height:1.45;
+  }
+
+  .cita-cofrade{
+    margin-top:12px;
+    padding-top:10px;
+    border-top:1px solid #f0eeee;
+  }
+
+  .cita-texto{
+    margin:0;
+    font-size:15px;
+    line-height:1.55;
+    font-style:italic;
+    color:#8b0000;
+    font-weight:600;
+  }
+
+  .cita-autor{
+    margin-top:6px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--muted);
+  }
+
+  .web-link{
+    color:var(--accent);
+    text-decoration:none;
+    word-break:break-word;
+  }
+
+  .web-link:hover{
+    text-decoration:underline;
+  }
+
+  .acciones-restaurante{
+    margin-top:14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .btn-detalles{
+    background:#8b0000;
+    color:white;
+    border:none;
+    padding:9px 14px;
+    border-radius:8px;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+  }
+
+  .btn-detalles:hover{
+    opacity:.92;
+  }
+
+  .btn-fotos{
+    width:42px;
+    height:42px;
+    border:none;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:#fff;
+    color:var(--accent);
+    border:1px solid #d9cfcf;
+    box-shadow:0 6px 16px rgba(0,0,0,.06);
+    cursor:pointer;
+    transition:.2s;
+    flex-shrink:0;
+  }
+
+  .btn-fotos:hover{
+    background:#faf7f7;
+    border-color:#c9b1b1;
+    transform:translateY(-1px);
+  }
+
+  .btn-fotos svg{
+    width:19px;
+    height:19px;
+  }
+
+  .btn-fotos[hidden]{
+    display:none !important;
+  }
+
+  .detalles{
+    display:none;
+    margin-top:16px;
+    padding-top:16px;
+    border-top:1px solid var(--border);
+  }
+
+  .detalles.abierto{
+    display:block;
+  }
+
+  .detalle-box{
+    background:#fcfbfb;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-bottom:12px;
+  }
+
+  .detalle-box h3{
+    margin:0 0 8px 0;
+    color:var(--accent);
+    font-size:15px;
+  }
+
+  .detalle-box ul{
+    margin:0;
+    padding-left:18px;
+  }
+
+  .detalle-box li,
+  .detalle-box p{
+    margin:5px 0;
+    font-size:14px;
+    line-height:1.45;
+  }
+
+  .muted{
+    color:var(--muted);
+  }
+
+  .mensaje{
+    grid-column:1 / -1;
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    border:1px solid var(--border);
+    font-size:15px;
+  }
+
+  #btnSubir{
+    position:fixed;
+    right:22px;
+    bottom:22px;
+    width:52px;
+    height:52px;
+    border:none;
+    border-radius:50%;
+    background:linear-gradient(135deg, #8b0000, #b30000);
+    color:#fff;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 10px 24px rgba(139,0,0,.28);
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(10px) scale(.95);
+    transition:opacity .25s ease, transform .25s ease, visibility .25s ease, background .2s ease;
+    z-index:9999;
+  }
+
+  #btnSubir.show{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0) scale(1);
+  }
+
+  #btnSubir:hover{
+    background:linear-gradient(135deg, #760000, #990000);
+  }
+
+  #btnSubir:active{
+    transform:scale(.96);
+  }
+
+  #btnSubir svg{
+    width:22px;
+    height:22px;
+    fill:currentColor;
+  }
+
+  .galeria-modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.72);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    z-index:10000;
+  }
+
+  .galeria-modal.abierto{
+    display:flex;
+  }
+
+  .galeria-contenido{
+    position:relative;
+    width:min(960px, 100%);
+    max-height:92vh;
+    background:#fff;
+    border-radius:18px;
+    box-shadow:0 20px 50px rgba(0,0,0,.28);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .galeria-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:14px 16px;
+    border-bottom:1px solid #eee;
+    background:#fff;
+  }
+
+  .galeria-titulo{
+    margin:0;
+    font-size:18px;
+    color:var(--accent);
+    line-height:1.2;
+  }
+
+  .galeria-cerrar{
+    width:40px;
+    height:40px;
+    border:none;
+    border-radius:999px;
+    background:#f7f3f3;
+    color:#7a1d1d;
+    font-size:24px;
+    line-height:1;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+
+  .galeria-cerrar:hover{
+    background:#efe6e6;
+  }
+
+  .galeria-principal-wrap{
+    position:relative;
+    background:#111;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:280px;
+    touch-action:pan-y;
+    user-select:none;
+  }
+
+  .galeria-principal{
+    width:100%;
+    max-height:60vh;
+    object-fit:contain;
+    cursor:zoom-in;
+    background:#111;
+  }
+
+  .galeria-nav{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:46px;
+    height:46px;
+    border:none;
+    border-radius:999px;
+    background:rgba(255,255,255,.92);
+    color:#7a1d1d;
+    font-size:26px;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 8px 18px rgba(0,0,0,.16);
+  }
+
+  .galeria-nav:hover{
+    background:#fff;
+  }
+
+  .galeria-nav.prev{ left:12px; }
+  .galeria-nav.next{ right:12px; }
+
+  .galeria-info{
+    padding:10px 16px 0;
+    font-size:13px;
+    color:var(--muted);
+  }
+
+  .galeria-miniaturas{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(90px, 1fr));
+    gap:10px;
+    padding:14px 16px 16px;
+    background:#fff;
+    overflow:auto;
+  }
+
+  .miniatura{
+    border:2px solid transparent;
+    border-radius:12px;
+    padding:0;
+    background:#fff;
+    cursor:pointer;
+    overflow:hidden;
+  }
+
+  .miniatura.activa{
+    border-color:#8b0000;
+  }
+
+  .miniatura img{
+    width:100%;
+    height:76px;
+    object-fit:cover;
+    display:block;
+  }
+
+  .visor-full{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.92);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:10020;
+  }
+
+  .visor-full.abierto{
+    display:flex;
+  }
+
+  .visor-full img{
+    max-width:96vw;
+    max-height:92vh;
+    object-fit:contain;
+  }
+
+  .visor-full-cerrar{
+    position:absolute;
+    top:18px;
+    right:18px;
+    width:46px;
+    height:46px;
+    border:none;
+    border-radius:999px;
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    font-size:28px;
+    cursor:pointer;
+  }
+
+  @media (max-width: 800px){
+    .lista-restaurantes{
+      grid-template-columns:1fr;
+    }
+
+    .fechas-wrap{
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .fecha-input{
+      font-size:13px;
+      padding:10px 10px;
+    }
+
+    .resenas{
+      min-width:88px;
+      font-size:18px;
+      letter-spacing:1px;
+    }
+
+    .top-actions{
+      align-items:stretch;
+    }
+
+    .top-actions-left{
+      width:100%;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .volver,
+    .btn-mapa{
+      width:100%;
+    }
+
+    .acciones-restaurante{
+      justify-content:flex-start;
+    }
+
+    #btnSubir{
+      right:16px;
+      bottom:16px;
+      width:48px;
+      height:48px;
+    }
+
+    #btnSubir svg{
+      width:20px;
+      height:20px;
+    }
+
+    .galeria-contenido{
+      width:100%;
+      max-height:94vh;
+      border-radius:16px;
+    }
+
+    .galeria-principal{
+      max-height:46vh;
+    }
+
+    .galeria-nav{
+      width:42px;
+      height:42px;
+      font-size:22px;
+    }
+
+    .miniatura img{
+      height:68px;
+    }
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root{ color-scheme: light; }
+
+    html, body{
+      background:var(--bg) !important;
+      color:var(--ink) !important;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<header class="page-header">
+  <h1>
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="white" viewBox="0 0 24 24">
+      <path d="M11 9H9V2H7v7H5V2H3v7c0 2.21 1.79 4 4 4v9h2v-9c2.21 0 4-1.79 4-4V2h-2v7zm4-7v20h2v-8h3V2h-5z"/>
+    </svg>
+    Restaurantes
+  </h1>
+</header>
+
+<div class="container">
+  <div class="top-actions">
+    <div class="top-actions-left">
+      <a href="index.html" class="volver">← Volver</a>
+
+      <a href="mapa.html" class="btn-mapa">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 5.1 9 3 3 5v16l6-2.1 6 2.1 6-2V3l-6 2.1ZM14 19l-4-1.4V5l4 1.4V19Z"/>
+        </svg>
+        Ver mapa
+      </a>
+    </div>
+  </div>
+
+  <div class="filtros">
+    <div class="buscador-wrap">
+      <span class="buscador-icono">🔎</span>
+      <input type="search" id="buscador" class="buscador" placeholder="Buscar por restaurante, lugar, organizador ...">
+    </div>
+
+    <div class="fechas-wrap">
+      <div class="fecha-box">
+        <label for="fecha-desde">Desde</label>
+        <input type="text" id="fecha-desde" class="fecha-input" inputmode="numeric" placeholder="dd/mm/aaaa" maxlength="10">
+      </div>
+
+      <div class="fecha-box">
+        <label for="fecha-hasta">Hasta</label>
+        <input type="text" id="fecha-hasta" class="fecha-input" inputmode="numeric" placeholder="dd/mm/aaaa" maxlength="10">
+      </div>
+    </div>
+
+    <button id="limpiar" class="btn-limpiar" type="button">Limpiar filtros</button>
+  </div>
+
+  <div id="contador" class="contador">Cargando restaurantes…</div>
+
+  <div id="lista-restaurantes" class="lista-restaurantes">
+    <div class="mensaje">Cargando restaurantes…</div>
+  </div>
+</div>
+
+<button id="btnSubir" title="Subir arriba" aria-label="Subir arriba">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 5l-7 7 1.41 1.41L11 8.83V20h2V8.83l4.59 4.58L19 12z"/>
+  </svg>
+</button>
+
+<div id="galeriaModal" class="galeria-modal" aria-hidden="true">
+  <div class="galeria-contenido" role="dialog" aria-modal="true" aria-labelledby="galeriaTitulo">
+    <div class="galeria-header">
+      <h2 id="galeriaTitulo" class="galeria-titulo">Galería</h2>
+      <button class="galeria-cerrar" type="button" aria-label="Cerrar galería" onclick="cerrarGaleria()">×</button>
+    </div>
+
+    <div id="galeriaSwipeArea" class="galeria-principal-wrap">
+      <button class="galeria-nav prev" type="button" aria-label="Foto anterior" onclick="moverGaleria(-1)">‹</button>
+      <img id="galeriaImagenPrincipal" class="galeria-principal" src="" alt="" loading="eager" onclick="abrirVisorFull()">
+      <button class="galeria-nav next" type="button" aria-label="Foto siguiente" onclick="moverGaleria(1)">›</button>
+    </div>
+
+    <div id="galeriaInfo" class="galeria-info"></div>
+    <div id="galeriaMiniaturas" class="galeria-miniaturas"></div>
+  </div>
+</div>
+
+<div id="visorFull" class="visor-full" aria-hidden="true">
+  <button class="visor-full-cerrar" type="button" aria-label="Cerrar imagen ampliada" onclick="cerrarVisorFull()">×</button>
+  <img id="visorFullImg" src="" alt="">
+</div>
+
+<script>
+  let TODOS_LOS_RESTAURANTES = [];
+
+  let GALERIA_ACTUAL = {
+    nombre: "",
+    carpeta: "",
+    total: 0,
+    indice: 0
+  };
+
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  function escaparJS(valor){
+    return String(valor ?? "")
+      .replace(/\\/g, "\\\\")
+      .replace(/'/g, "\\'");
+  }
+
+  function formatearFecha(fecha){
+    if(!fecha) return "—";
+
+    const f = new Date(fecha);
+    if(isNaN(f)) return fecha;
+
+    const dia = String(f.getDate()).padStart(2,"0");
+    const mes = String(f.getMonth() + 1).padStart(2,"0");
+    const año = f.getFullYear();
+
+    return `${dia}/${mes}/${año}`;
+  }
+
+  function parseFechaManual(texto){
+    if(!texto) return null;
+
+    const limpio = texto.trim();
+
+    let dia, mes, año;
+    let m;
+
+    m = limpio.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})$/);
+    if(m){
+      dia = Number(m[1]);
+      mes = Number(m[2]);
+      año = Number(m[3]);
+    } else {
+      m = limpio.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if(!m) return null;
+      año = Number(m[1]);
+      mes = Number(m[2]);
+      dia = Number(m[3]);
+    }
+
+    const f = new Date(año, mes - 1, dia);
+
+    if(
+      f.getFullYear() !== año ||
+      f.getMonth() !== mes - 1 ||
+      f.getDate() !== dia
+    ){
+      return null;
+    }
+
+    f.setHours(0,0,0,0);
+    return f;
+  }
+
+  function listaAHTML(lista, ordenar = false){
+    if(!Array.isArray(lista) || lista.length === 0){
+      return '<p class="muted">Sin datos</p>';
+    }
+
+    const items = [...lista];
+
+    if(ordenar){
+      items.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+    }
+
+    return `<ul>${items.map(item => `<li>${item}</li>`).join("")}</ul>`;
+  }
+
+  function textoSeguro(valor){
+    return (valor !== undefined && valor !== null && String(valor).trim() !== "") ? valor : "—";
+  }
+
+  function formatearPrecio(valor){
+    if(valor === undefined || valor === null || valor === "") return "—";
+
+    const numero = Number(valor);
+    if(isNaN(numero)) return valor;
+
+    return numero.toLocaleString("es-ES", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }) + " €";
+  }
+
+  function renderResenas(resenas){
+    const n = Number(resenas);
+
+    if (isNaN(n) || n <= 0) return "Sin reseña";
+
+    const valor = Math.max(0, Math.min(5, Math.round(n)));
+    const llenas = "★".repeat(valor);
+    const vacias = "☆".repeat(5 - valor);
+
+    return llenas + vacias;
+  }
+
+  function tieneCoordenadasValidas(rest){
+    const lat = Number(String(rest.latitud ?? "").replace(",", "."));
+    const lng = Number(String(rest.longitud ?? "").replace(",", "."));
+
+    return Number.isFinite(lat) && Number.isFinite(lng) && !(lat === 0 && lng === 0);
+  }
+
+  function tieneFotos(rest){
+    const total = Number(rest.fotos);
+    const carpeta = String(rest.carpeta_fotos || "").trim();
+    return total > 0 && carpeta !== "";
+  }
+
+  function crearFicha(rest, index){
+    const web = rest.web && String(rest.web).trim() !== ""
+      ? `<a class="web-link" href="${rest.web}" target="_blank" rel="noopener noreferrer">${rest.web}</a>`
+      : "—";
+
+    const direccionMapa = rest.direccion && String(rest.direccion).trim() !== ""
+      ? `<a class="web-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rest.direccion)}" target="_blank" rel="noopener noreferrer">📍 ${textoSeguro(rest.direccion)}</a>`
+      : "—";
+
+    const descripcion = rest.descripcion && String(rest.descripcion).trim() !== ""
+      ? rest.descripcion
+      : "Sin comentario aún.";
+
+    const autor = rest.autor && String(rest.autor).trim() !== ""
+      ? rest.autor
+      : "Cofradía A Mesa Puesta";
+
+    const mostrarBotonFotos = tieneFotos(rest);
+    const nombreJS = escaparJS(rest.nombre || "");
+    const carpetaJS = escaparJS(rest.carpeta_fotos || "");
+    const totalFotos = Number(rest.fotos || 0);
+
+    return `
+      <div class="restaurante">
+        <div class="restaurante-top">
+          <h2>${textoSeguro(rest.nombre)}</h2>
+          <div class="resenas" aria-label="Valoración ${textoSeguro(rest.resenas)} sobre 5">${renderResenas(rest.resenas)}</div>
+        </div>
+
+        <div class="resumen">
+          <p><b>Fecha:</b> ${formatearFecha(rest.fecha)}</p>
+          <p><b>Dirección:</b> ${direccionMapa}</p>
+          <p><b>Teléfono:</b> ${textoSeguro(rest.telefono)}</p>
+          <p><b>Web:</b> ${web}</p>
+        </div>
+
+        <div class="cita-cofrade">
+          <p class="cita-texto">✒ “${descripcion}”</p>
+          <p class="cita-autor">— ${autor}</p>
+        </div>
+
+        <div class="acciones-restaurante">
+          <button class="btn-detalles" onclick="toggleDetalles(${index})" id="btn-${index}" type="button">
+            Ver más
+          </button>
+
+          <button
+            class="btn-fotos"
+            type="button"
+            aria-label="Ver fotos de ${textoSeguro(rest.nombre)}"
+            title="Ver fotos"
+            onclick="abrirGaleriaDesdeDatos('${nombreJS}', '${carpetaJS}', ${totalFotos}, 0)"
+            ${mostrarBotonFotos ? "" : "hidden"}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M9 3 7.17 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 14a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-2.2A2.8 2.8 0 1 0 12 9.2a2.8 2.8 0 0 0 0 5.6z"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="detalles" id="detalles-${index}">
+          <div class="detalle-box">
+            <h3>Organizadores</h3>
+            ${listaAHTML(rest.organizadores)}
+          </div>
+
+          <div class="detalle-box">
+            <h3>Entrantes</h3>
+            ${listaAHTML(rest.entrantes)}
+          </div>
+
+          <div class="detalle-box">
+            <h3>Platos principales</h3>
+            ${listaAHTML(rest.platos_principales)}
+          </div>
+
+          <div class="detalle-box">
+            <h3>Postres</h3>
+            ${listaAHTML(rest.postres)}
+          </div>
+
+          <div class="detalle-box">
+            <h3>Bebidas</h3>
+            ${listaAHTML(rest.bebidas)}
+          </div>
+
+          <div class="detalle-box">
+            <h3>Precio</h3>
+            <p><b>${formatearPrecio(rest.precio)}</b></p>
+          </div>
+
+          <div class="detalle-box">
+            <h3>Asistieron (${Array.isArray(rest.asistieron) ? rest.asistieron.length : 0})</h3>
+            ${listaAHTML(rest.asistieron, true)}
+          </div>
+
+          <div class="detalle-box">
+            <h3>No asistieron (${Array.isArray(rest.no_asistieron) ? rest.no_asistieron.length : 0})</h3>
+            ${listaAHTML(rest.no_asistieron, true)}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function toggleDetalles(index){
+    const detalles = document.getElementById(`detalles-${index}`);
+    const boton = document.getElementById(`btn-${index}`);
+
+    if(detalles.classList.contains("abierto")){
+      detalles.classList.remove("abierto");
+      boton.textContent = "Ver más";
+    } else {
+      detalles.classList.add("abierto");
+      boton.textContent = "Ver menos";
+    }
+  }
+
+  function textoBusqueda(rest){
+    const nombre = (rest.nombre || "").toLowerCase();
+    const direccion = (rest.direccion || "").toLowerCase();
+    const organizadores = Array.isArray(rest.organizadores) ? rest.organizadores.join(" ").toLowerCase() : "";
+    const fechaOriginal = (rest.fecha || "").toLowerCase();
+    const fechaFormateada = formatearFecha(rest.fecha).toLowerCase();
+
+    return `${nombre} ${direccion} ${organizadores} ${fechaOriginal} ${fechaFormateada}`;
+  }
+
+  function fechaValidaISO(fechaStr){
+    if(!fechaStr) return null;
+    const f = new Date(fechaStr);
+    if(isNaN(f)) return null;
+    f.setHours(0,0,0,0);
+    return f;
+  }
+
+  function restauranteDentroDeRango(rest, desde, hasta){
+    if(!rest.fecha) return false;
+
+    const fechaRest = fechaValidaISO(rest.fecha);
+    if(!fechaRest) return false;
+
+    if(desde && fechaRest < desde) return false;
+    if(hasta && fechaRest > hasta) return false;
+
+    return true;
+  }
+
+  function pintarRestaurantes(lista){
+    const contenedor = document.getElementById("lista-restaurantes");
+    const contador = document.getElementById("contador");
+
+    const conMapa = lista.filter(tieneCoordenadasValidas).length;
+    contador.textContent = `Mostrando ${lista.length} restaurante${lista.length === 1 ? "" : "s"} · ${conMapa} con ubicación en el mapa`;
+
+    if(lista.length === 0){
+      contenedor.innerHTML = `<div class="mensaje">No hay restaurantes que coincidan con la búsqueda.</div>`;
+      return;
+    }
+
+    contenedor.innerHTML = [...lista]
+      .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+      .map((rest, index) => crearFicha(rest, index))
+      .join("");
+  }
+
+  function autoFormatearFechaInput(input){
+    let v = input.value.replace(/\D/g, "").slice(0, 8);
+
+    if(v.length > 4){
+      input.value = `${v.slice(0,2)}/${v.slice(2,4)}/${v.slice(4)}`;
+    } else if(v.length > 2){
+      input.value = `${v.slice(0,2)}/${v.slice(2)}`;
+    } else {
+      input.value = v;
+    }
+  }
+
+  function aplicarFiltros(){
+    const q = document.getElementById("buscador").value.trim().toLowerCase();
+    const desde = parseFechaManual(document.getElementById("fecha-desde").value);
+    const hasta = parseFechaManual(document.getElementById("fecha-hasta").value);
+
+    const filtrados = TODOS_LOS_RESTAURANTES.filter(rest => {
+      const coincideTexto = q === "" || textoBusqueda(rest).includes(q);
+      const coincideFecha = (!desde && !hasta) || restauranteDentroDeRango(rest, desde, hasta);
+      return coincideTexto && coincideFecha;
+    });
+
+    pintarRestaurantes(filtrados);
+  }
+
+  function abrirGaleriaDesdeDatos(nombre, carpeta, totalFotos, indiceFoto = 0){
+    const total = Number(totalFotos);
+    const carpetaLimpia = String(carpeta || "").trim();
+
+    if(!carpetaLimpia || total <= 0) return;
+
+    GALERIA_ACTUAL = {
+      nombre: nombre || "Galería",
+      carpeta: carpetaLimpia,
+      total: total,
+      indice: Math.max(0, Math.min(indiceFoto, total - 1))
+    };
+
+    document.getElementById("galeriaModal").classList.add("abierto");
+    document.body.style.overflow = "hidden";
+    renderGaleria();
+  }
+
+  function cerrarGaleria(){
+    document.getElementById("galeriaModal").classList.remove("abierto");
+    document.body.style.overflow = "";
+  }
+
+  function moverGaleria(direccion){
+    if(!GALERIA_ACTUAL.total) return;
+
+    const total = GALERIA_ACTUAL.total;
+    GALERIA_ACTUAL.indice = (GALERIA_ACTUAL.indice + direccion + total) % total;
+    renderGaleria();
+  }
+
+  function irAFoto(indice){
+    GALERIA_ACTUAL.indice = indice;
+    renderGaleria();
+  }
+
+  function obtenerSrcFoto(indice){
+    if(!GALERIA_ACTUAL.carpeta || !GALERIA_ACTUAL.total) return "";
+    return `Fotos/${GALERIA_ACTUAL.carpeta}/${indice + 1}.webp`;
+  }
+
+  function obtenerAltFoto(indice){
+    return `${GALERIA_ACTUAL.nombre} - Foto ${indice + 1}`;
+  }
+
+  function renderGaleria(){
+    const titulo = document.getElementById("galeriaTitulo");
+    const img = document.getElementById("galeriaImagenPrincipal");
+    const info = document.getElementById("galeriaInfo");
+    const miniaturas = document.getElementById("galeriaMiniaturas");
+
+    const srcActual = obtenerSrcFoto(GALERIA_ACTUAL.indice);
+    const altActual = obtenerAltFoto(GALERIA_ACTUAL.indice);
+
+    titulo.textContent = GALERIA_ACTUAL.nombre;
+    img.src = srcActual;
+    img.alt = altActual;
+    info.textContent = `Foto ${GALERIA_ACTUAL.indice + 1} de ${GALERIA_ACTUAL.total}. Pulsa la imagen para verla más grande.`;
+
+    miniaturas.innerHTML = Array.from({ length: GALERIA_ACTUAL.total }, (_, i) => {
+      const src = obtenerSrcFoto(i);
+      const alt = obtenerAltFoto(i);
+
+      return `
+        <button
+          class="miniatura ${i === GALERIA_ACTUAL.indice ? "activa" : ""}"
+          type="button"
+          aria-label="Ver foto ${i + 1}"
+          onclick="irAFoto(${i})"
+        >
+          <img src="${src}" alt="${alt}" loading="lazy">
+        </button>
+      `;
+    }).join("");
+  }
+
+  function abrirVisorFull(){
+    const srcActual = obtenerSrcFoto(GALERIA_ACTUAL.indice);
+    const altActual = obtenerAltFoto(GALERIA_ACTUAL.indice);
+
+    const visor = document.getElementById("visorFull");
+    const img = document.getElementById("visorFullImg");
+
+    img.src = srcActual;
+    img.alt = altActual;
+    visor.classList.add("abierto");
+  }
+
+  function cerrarVisorFull(){
+    document.getElementById("visorFull").classList.remove("abierto");
+  }
+
+  fetch("restaurantes.json?v=" + Date.now(), { cache: "no-store" })
+    .then(res => {
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(data => {
+      TODOS_LOS_RESTAURANTES = Array.isArray(data.restaurantes) ? data.restaurantes : [];
+      pintarRestaurantes(TODOS_LOS_RESTAURANTES);
+
+      document.getElementById("buscador").addEventListener("input", aplicarFiltros);
+
+      document.getElementById("fecha-desde").addEventListener("input", (e) => {
+        autoFormatearFechaInput(e.target);
+        aplicarFiltros();
+      });
+
+      document.getElementById("fecha-hasta").addEventListener("input", (e) => {
+        autoFormatearFechaInput(e.target);
+        aplicarFiltros();
+      });
+
+      document.getElementById("limpiar").addEventListener("click", () => {
+        document.getElementById("buscador").value = "";
+        document.getElementById("fecha-desde").value = "";
+        document.getElementById("fecha-hasta").value = "";
+        pintarRestaurantes(TODOS_LOS_RESTAURANTES);
+      });
+    })
+    .catch(error => {
+      document.getElementById("contador").textContent = "Error al cargar restaurantes";
+      document.getElementById("lista-restaurantes").innerHTML =
+        `<div class="mensaje">❌ Error cargando restaurantes: ${error.message}</div>`;
+    });
+
+  const btnSubir = document.getElementById("btnSubir");
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 300) {
+      btnSubir.classList.add("show");
+    } else {
+      btnSubir.classList.remove("show");
+    }
+  });
+
+  btnSubir.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+
+  document.getElementById("galeriaModal").addEventListener("click", (e) => {
+    if(e.target.id === "galeriaModal"){
+      cerrarGaleria();
+    }
+  });
+
+  document.getElementById("visorFull").addEventListener("click", (e) => {
+    if(e.target.id === "visorFull"){
+      cerrarVisorFull();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    const galeriaAbierta = document.getElementById("galeriaModal").classList.contains("abierto");
+    const visorAbierto = document.getElementById("visorFull").classList.contains("abierto");
+
+    if(e.key === "Escape"){
+      if(visorAbierto){
+        cerrarVisorFull();
+        return;
+      }
+      if(galeriaAbierta){
+        cerrarGaleria();
+      }
+    }
+
+    if(galeriaAbierta && !visorAbierto){
+      if(e.key === "ArrowRight") moverGaleria(1);
+      if(e.key === "ArrowLeft") moverGaleria(-1);
+    }
+  });
+
+  const swipeArea = document.getElementById("galeriaSwipeArea");
+
+  swipeArea.addEventListener("touchstart", (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  swipeArea.addEventListener("touchend", (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    manejarSwipe();
+  }, { passive: true });
+
+  function manejarSwipe(){
+    const umbral = 50;
+    const diferencia = touchEndX - touchStartX;
+
+    if(Math.abs(diferencia) < umbral) return;
+
+    if(diferencia < 0){
+      moverGaleria(1);
+    } else {
+      moverGaleria(-1);
+    }
+  }
+</script>
+
+</body>
+</html>

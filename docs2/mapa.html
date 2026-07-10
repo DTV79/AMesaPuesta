@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#f8f5f0" />
+  <title>Mapa de restaurantes | Cofradía A Mesa Puesta</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin=""
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+  />
+
+  <style>
+    :root{
+      color-scheme: light;
+      --bg:#f8f5f0;
+      --card:#ffffff;
+      --card-soft:#fcfbf8;
+      --ink:#1f1f1f;
+      --ink-soft:#444;
+      --muted:#6b7280;
+      --accent:#8b0000;
+      --accent-dark:#6f0000;
+      --accent-soft:#f6eaea;
+      --accent-line:#e8caca;
+      --border:#e7e2d9;
+      --shadow:0 10px 28px rgba(0,0,0,.08);
+      --shadow-soft:0 6px 18px rgba(0,0,0,.05);
+      --max:1280px;
+    }
+
+    *{ box-sizing:border-box; }
+
+    html, body{
+      margin:0;
+      padding:0;
+      background:var(--bg);
+      color:var(--ink);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      -webkit-text-size-adjust:100%;
+    }
+
+    body{
+      min-height:100vh;
+    }
+
+    a{
+      color:inherit;
+    }
+
+    .page{
+      width:min(var(--max), calc(100% - 20px));
+      margin:0 auto;
+      padding:16px 0 24px;
+    }
+
+    .hero{
+      background:linear-gradient(180deg, #fff, #fcfaf7);
+      border:1px solid var(--border);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:18px;
+      margin-bottom:16px;
+    }
+
+    .hero-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .hero-title{
+      min-width:0;
+      flex:1 1 420px;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:.82rem;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--accent);
+      background:var(--accent-soft);
+      border:1px solid var(--accent-line);
+      border-radius:999px;
+      padding:7px 12px;
+      margin-bottom:10px;
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(1.8rem, 3.8vw, 2.8rem);
+      line-height:1.06;
+      color:var(--accent);
+    }
+
+    .hero-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:center;
+    }
+
+    .btn{
+      appearance:none;
+      border:none;
+      outline:none;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:9px;
+      min-height:44px;
+      padding:0 16px;
+      border-radius:999px;
+      font-weight:800;
+      font-size:.96rem;
+      transition:transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+      white-space:nowrap;
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .btn-primary{
+      background:var(--accent);
+      color:#fff;
+      box-shadow:0 10px 24px rgba(139,0,0,.20);
+    }
+
+    .btn-primary:hover{
+      background:var(--accent-dark);
+    }
+
+    .btn-soft{
+      background:#fff;
+      color:var(--ink);
+      border:1px solid var(--border);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:12px;
+      margin-top:16px;
+    }
+
+    .stat{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:14px 14px 13px;
+      box-shadow:var(--shadow-soft);
+    }
+
+    .stat-label{
+      color:var(--muted);
+      font-size:.86rem;
+      margin-bottom:5px;
+    }
+
+    .stat-value{
+      font-weight:900;
+      font-size:1.28rem;
+      color:var(--ink);
+      line-height:1.1;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:360px minmax(0, 1fr);
+      gap:16px;
+      align-items:start;
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .panel-head{
+      padding:16px 16px 12px;
+      border-bottom:1px solid var(--border);
+      background:linear-gradient(180deg,#fff,#fcfaf7);
+    }
+
+    .panel-title{
+      margin:0;
+      font-size:1.05rem;
+      font-weight:900;
+      color:var(--ink);
+    }
+
+    .panel-subtitle{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:.92rem;
+      line-height:1.45;
+    }
+
+    .filters{
+      display:grid;
+      gap:10px;
+      padding:14px 16px 14px;
+      border-bottom:1px solid var(--border);
+      background:var(--card-soft);
+    }
+
+    .input,
+    .select{
+      width:100%;
+      height:44px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:#fff;
+      color:var(--ink);
+      padding:0 14px;
+      font-size:.95rem;
+      outline:none;
+    }
+
+    .input:focus,
+    .select:focus{
+      border-color:#d2beb4;
+      box-shadow:0 0 0 4px rgba(139,0,0,.06);
+    }
+
+    .results-meta{
+      padding:10px 16px;
+      color:var(--muted);
+      font-size:.9rem;
+      border-bottom:1px solid var(--border);
+      background:#fff;
+    }
+
+    .list{
+      max-height:72vh;
+      overflow:auto;
+      padding:8px;
+    }
+
+    .item{
+      width:100%;
+      text-align:left;
+      border:none;
+      background:#fff;
+      border:1px solid transparent;
+      border-radius:16px;
+      padding:12px;
+      margin:0 0 8px;
+      cursor:pointer;
+      transition:background .15s ease, border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+    .item:hover{
+      background:#fcfaf7;
+      border-color:var(--border);
+      transform:translateY(-1px);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .item.active{
+      background:var(--accent-soft);
+      border-color:var(--accent-line);
+    }
+
+    .item-name{
+      font-weight:900;
+      color:var(--accent);
+      margin-bottom:6px;
+      line-height:1.25;
+    }
+
+    .item-line{
+      color:var(--ink-soft);
+      font-size:.92rem;
+      line-height:1.45;
+      margin:2px 0;
+    }
+
+    .item-muted{
+      color:var(--muted);
+    }
+
+    .empty{
+      padding:18px 16px 22px;
+      color:var(--muted);
+      line-height:1.55;
+    }
+
+    .map-wrap{
+      position:relative;
+    }
+
+    .map-type-bar{
+      display:flex;
+      gap:10px;
+      padding:14px 14px 0;
+      background:linear-gradient(180deg,#fff,#fcfaf7);
+      border-bottom:1px solid var(--border);
+    }
+
+    .map-type-btn{
+      appearance:none;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--ink);
+      min-height:40px;
+      padding:0 14px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:800;
+      font-size:.92rem;
+      box-shadow:var(--shadow-soft);
+      transition:background .15s ease, border-color .15s ease, transform .15s ease;
+    }
+
+    .map-type-btn:hover{
+      background:#fcfaf7;
+      transform:translateY(-1px);
+    }
+
+    .map-type-btn.active{
+      background:var(--accent);
+      color:#fff;
+      border-color:var(--accent);
+      box-shadow:0 10px 24px rgba(139,0,0,.16);
+    }
+
+    #map{
+      width:100%;
+      height:78vh;
+      min-height:520px;
+      background:#ece7df;
+    }
+
+    .map-toolbar{
+      position:absolute;
+      top:64px;
+      right:14px;
+      z-index:700;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .map-btn{
+      appearance:none;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--ink);
+      width:46px;
+      height:46px;
+      border-radius:14px;
+      cursor:pointer;
+      box-shadow:var(--shadow-soft);
+      font-size:1.1rem;
+      font-weight:800;
+    }
+
+    .map-btn:hover{
+      background:#fcfaf7;
+    }
+
+    .loading,
+    .error-box{
+      position:absolute;
+      inset:66px auto auto 16px;
+      z-index:700;
+      max-width:min(420px, calc(100% - 32px));
+      background:rgba(255,255,255,.96);
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      padding:12px 14px;
+      line-height:1.45;
+      font-size:.93rem;
+    }
+
+    .error-box{
+      color:#7a1111;
+      background:#fff7f7;
+      border-color:#f0caca;
+    }
+
+    .leaflet-popup-content{
+      margin:14px 16px;
+      line-height:1.5;
+      font-size:.95rem;
+      min-width:240px;
+    }
+
+    .popup-title{
+      font-weight:900;
+      color:var(--accent);
+      margin-bottom:8px;
+      font-size:1.03rem;
+      line-height:1.3;
+    }
+
+    .popup-line{
+      margin:4px 0;
+      color:var(--ink);
+    }
+
+    .popup-line strong{
+      color:#000;
+    }
+
+    .popup-note{
+      margin-top:8px;
+      color:var(--ink-soft);
+    }
+
+    .popup-link{
+      display:inline-flex;
+      margin-top:10px;
+      text-decoration:none;
+      font-weight:800;
+      color:var(--accent);
+    }
+
+    .leaflet-control-zoom{
+      margin-top:10px !important;
+      margin-left:10px !important;
+    }
+
+    .leaflet-control-zoom a{
+      color:var(--ink) !important;
+    }
+
+    @media (max-width: 1100px){
+      .layout{
+        grid-template-columns:320px minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 900px){
+      .stats{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+      }
+
+      .layout{
+        grid-template-columns:1fr;
+      }
+
+      .layout > .panel:first-child{
+        order:2;
+      }
+
+      .layout > .panel.map-wrap{
+        order:1;
+      }
+
+      .list{
+        max-height:360px;
+      }
+
+      #map{
+        height:62vh;
+        min-height:420px;
+      }
+    }
+
+    @media (max-width: 640px){
+      .page{
+        width:min(var(--max), calc(100% - 14px));
+        padding-top:12px;
+      }
+
+      .hero{
+        padding:14px;
+        border-radius:22px;
+      }
+
+      .hero-actions{
+        width:100%;
+        justify-content:flex-start;
+      }
+
+      .hero-actions .btn{
+        min-width:140px;
+        min-height:44px;
+        font-size:14px;
+      }
+
+      .stats{
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+      }
+
+      .stat{
+        padding:12px;
+      }
+
+      .stat-value{
+        font-size:1.12rem;
+      }
+
+      .panel{
+        border-radius:20px;
+      }
+
+      .panel-head{
+        padding:14px 14px 10px;
+      }
+
+      .filters{
+        padding:12px 14px;
+      }
+
+      .results-meta{
+        padding:10px 14px;
+      }
+
+      .list{
+        padding:7px;
+        max-height:320px;
+      }
+
+      .item{
+        padding:11px;
+        border-radius:14px;
+      }
+
+      .map-type-bar{
+        padding:12px 12px 0;
+        gap:8px;
+      }
+
+      .map-type-btn{
+        flex:1 1 0;
+        min-height:38px;
+        padding:0 10px;
+        font-size:.88rem;
+      }
+
+      #map{
+        height:52vh;
+        min-height:340px;
+      }
+
+      .map-toolbar{
+        top:56px;
+        right:10px;
+      }
+
+      .map-btn{
+        width:42px;
+        height:42px;
+        border-radius:12px;
+      }
+
+      .loading,
+      .error-box{
+        inset:58px auto auto 12px;
+        max-width:calc(100% - 24px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-top">
+        <div class="hero-title">
+          <div class="eyebrow">📍 Restaurantes de la Cofradía</div>
+          <h1>Mapa de restaurantes</h1>
+        </div>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="restaurantes.html">← Volver</a>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Total Restaurantes</div>
+          <div class="stat-value" id="statTotal">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Con coordenadas</div>
+          <div class="stat-value" id="statCoords">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Mostrados</div>
+          <div class="stat-value" id="statFiltrados">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Años disponibles</div>
+          <div class="stat-value" id="statAnos">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside class="panel">
+        <div class="panel-head">
+          <h2 class="panel-title">Listado de restaurantes</h2>
+          <p class="panel-subtitle">
+            Busca por nombre, dirección o descripción. Pulsa en un restaurante para centrarlo en el mapa.
+          </p>
+        </div>
+
+        <div class="filters">
+          <input
+            id="buscador"
+            class="input"
+            type="search"
+            placeholder="Buscar restaurante, dirección, descripción..."
+            autocomplete="off"
+          />
+
+          <select id="filtroAno" class="select">
+            <option value="">Todos los años</option>
+          </select>
+        </div>
+
+        <div class="results-meta" id="resultsMeta">Cargando restaurantes...</div>
+
+        <div class="list" id="listaRestaurantes">
+          <div class="empty">Cargando datos del mapa...</div>
+        </div>
+      </aside>
+
+      <section class="panel map-wrap" id="bloqueMapa">
+        <div class="map-type-bar">
+          <button class="map-type-btn active" id="btnTipoPNOA" type="button">🛰️ PNOA</button>
+          <button class="map-type-btn" id="btnTipoMapa" type="button">🗺️ Mapa</button>
+        </div>
+
+        <div id="loadingBox" class="loading">Cargando mapa y restaurantes...</div>
+        <div id="errorBox" class="error-box" style="display:none;"></div>
+
+        <div class="map-toolbar">
+          <button class="map-btn" id="btnResetView" type="button" title="Ver todos">⌂</button>
+          <button class="map-btn" id="btnMiUbicacion" type="button" title="Mi ubicación">◎</button>
+        </div>
+
+        <div id="map"></div>
+      </section>
+    </section>
+  </main>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    crossorigin=""
+  ></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <script>
+    const map = L.map("map", {
+      zoomControl: true,
+      scrollWheelZoom: true
+    });
+
+    const capaOSM = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    });
+
+    const capaPNOA = L.tileLayer(
+      "https://www.ign.es/wmts/pnoa-ma?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OI.OrthoimageCoverage&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+      {
+        maxZoom: 19,
+        attribution: "© IGN España (PNOA)"
+      }
+    );
+
+    capaPNOA.addTo(map);
+
+    const markerCluster = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      spiderfyOnMaxZoom: true,
+      disableClusteringAtZoom: 15
+    });
+
+    map.addLayer(markerCluster);
+
+    const defaultCenter = [42.4338, -8.6480];
+    const defaultZoom = 9;
+
+    const estado = {
+      originales: [],
+      validos: [],
+      filtrados: [],
+      markers: [],
+      bounds: [],
+      activeId: null,
+      userMarker: null
+    };
+
+    const elLoading = document.getElementById("loadingBox");
+    const elError = document.getElementById("errorBox");
+    const elLista = document.getElementById("listaRestaurantes");
+    const elMeta = document.getElementById("resultsMeta");
+    const elBuscador = document.getElementById("buscador");
+    const elFiltroAno = document.getElementById("filtroAno");
+
+    const statTotal = document.getElementById("statTotal");
+    const statCoords = document.getElementById("statCoords");
+    const statFiltrados = document.getElementById("statFiltrados");
+    const statAnos = document.getElementById("statAnos");
+
+    const btnTipoPNOA = document.getElementById("btnTipoPNOA");
+    const btnTipoMapa = document.getElementById("btnTipoMapa");
+
+    document.getElementById("btnResetView").addEventListener("click", ajustarVistaATodos);
+    document.getElementById("btnMiUbicacion").addEventListener("click", localizarUsuario);
+    elBuscador.addEventListener("input", aplicarFiltros);
+    elFiltroAno.addEventListener("change", aplicarFiltros);
+
+    btnTipoPNOA.addEventListener("click", () => cambiarBase("pnoa"));
+    btnTipoMapa.addEventListener("click", () => cambiarBase("mapa"));
+
+    cargarDatos();
+
+    function cambiarBase(tipo) {
+      if (map.hasLayer(capaOSM)) map.removeLayer(capaOSM);
+      if (map.hasLayer(capaPNOA)) map.removeLayer(capaPNOA);
+
+      if (tipo === "mapa") {
+        capaOSM.addTo(map);
+        btnTipoMapa.classList.add("active");
+        btnTipoPNOA.classList.remove("active");
+      } else {
+        capaPNOA.addTo(map);
+        btnTipoPNOA.classList.add("active");
+        btnTipoMapa.classList.remove("active");
+      }
+    }
+
+    async function cargarDatos() {
+      try {
+        map.setView(defaultCenter, defaultZoom);
+
+        const resp = await fetch("restaurantes.json?v=" + Date.now(), { cache: "no-store" });
+        if (!resp.ok) {
+          throw new Error("No se pudo cargar restaurantes.json");
+        }
+
+        const data = await resp.json();
+        const restaurantes = Array.isArray(data?.restaurantes) ? data.restaurantes : [];
+
+        estado.originales = restaurantes;
+        estado.validos = restaurantes
+          .map(normalizarRestaurante)
+          .filter(r => r.tieneCoords);
+
+        actualizarEstadisticasBase();
+        poblarFiltroAnos();
+        aplicarFiltros();
+
+        ocultarLoading();
+      } catch (err) {
+        console.error(err);
+        ocultarLoading();
+        mostrarError("No se han podido cargar los restaurantes. Revisa que el archivo restaurantes.json esté en la misma carpeta que mapa.html y que el JSON sea válido.");
+        elLista.innerHTML = '<div class="empty">No se ha podido cargar el listado.</div>';
+        elMeta.textContent = "Error al cargar restaurantes.";
+        map.setView(defaultCenter, defaultZoom);
+      }
+    }
+
+    function normalizarRestaurante(r, index) {
+      const lat = parseCoordenada(r.latitud);
+      const lng = parseCoordenada(r.longitud);
+      const fecha = typeof r.fecha === "string" ? r.fecha.trim() : "";
+      const ano = extraerAno(fecha);
+
+      return {
+        uid: `rest-${index}`,
+        id: r.id ?? index + 1,
+        nombre: limpiarTexto(r.nombre),
+        direccion: limpiarTexto(r.direccion),
+        telefono: limpiarTexto(r.telefono),
+        web: limpiarTexto(r.web),
+        fecha,
+        ano,
+        resenas: limpiarTexto(r.resenas),
+        descripcion: limpiarTexto(r.descripcion),
+        precio: limpiarTexto(r.precio),
+        autor: limpiarTexto(r.autor),
+        latitud: lat,
+        longitud: lng,
+        tieneCoords: Number.isFinite(lat) && Number.isFinite(lng)
+      };
+    }
+
+    function limpiarTexto(valor) {
+      return String(valor ?? "").trim();
+    }
+
+    function parseCoordenada(valor) {
+      if (valor === null || valor === undefined || valor === "") return NaN;
+      const txt = String(valor).trim().replace(",", ".");
+      const num = Number(txt);
+      return Number.isFinite(num) ? num : NaN;
+    }
+
+    function extraerAno(fechaISO) {
+      if (!fechaISO) return "";
+      const m = /^(\d{4})-\d{2}-\d{2}$/.exec(fechaISO);
+      return m ? m[1] : "";
+    }
+
+    function actualizarEstadisticasBase() {
+      const anos = [...new Set(estado.validos.map(r => r.ano).filter(Boolean))].sort((a, b) => b.localeCompare(a));
+      statTotal.textContent = formatearNumero(estado.originales.length);
+      statCoords.textContent = formatearNumero(estado.validos.length);
+      statAnos.textContent = formatearNumero(anos.length);
+    }
+
+    function poblarFiltroAnos() {
+      const anos = [...new Set(estado.validos.map(r => r.ano).filter(Boolean))].sort((a, b) => b.localeCompare(a));
+      elFiltroAno.innerHTML = '<option value="">Todos los años</option>';
+
+      anos.forEach(ano => {
+        const option = document.createElement("option");
+        option.value = ano;
+        option.textContent = ano;
+        elFiltroAno.appendChild(option);
+      });
+    }
+
+    function aplicarFiltros() {
+      const texto = elBuscador.value.trim().toLowerCase();
+      const ano = elFiltroAno.value;
+
+      estado.filtrados = estado.validos.filter(r => {
+        const coincideAno = !ano || r.ano === ano;
+        const bloqueTexto = [
+          r.nombre,
+          r.direccion,
+          r.descripcion,
+          r.resenas,
+          r.precio,
+          r.autor
+        ].join(" ").toLowerCase();
+
+        const coincideTexto = !texto || bloqueTexto.includes(texto);
+        return coincideAno && coincideTexto;
+      });
+
+      pintarMapa();
+      pintarLista();
+      actualizarMetaResultados();
+      statFiltrados.textContent = formatearNumero(estado.filtrados.length);
+    }
+
+    function pintarMapa() {
+      markerCluster.clearLayers();
+      estado.markers = [];
+      estado.bounds = [];
+      estado.activeId = null;
+
+      if (!estado.filtrados.length) {
+        map.setView(defaultCenter, defaultZoom);
+        return;
+      }
+
+      estado.filtrados.forEach(r => {
+        const marker = L.marker([r.latitud, r.longitud]);
+
+        marker.bindPopup(crearPopupHTML(r), {
+          maxWidth: 320
+        });
+
+        marker.on("click", () => {
+          estado.activeId = r.uid;
+          resaltarActivoEnLista();
+        });
+
+        markerCluster.addLayer(marker);
+        estado.markers.push({ uid: r.uid, marker, data: r });
+        estado.bounds.push([r.latitud, r.longitud]);
+      });
+
+      ajustarVistaATodos(false);
+    }
+
+    function pintarLista() {
+      if (!estado.filtrados.length) {
+        elLista.innerHTML = '<div class="empty">No hay restaurantes que coincidan con los filtros actuales.</div>';
+        return;
+      }
+
+      const html = [...estado.filtrados]
+        .sort((a, b) => {
+          const fa = a.fecha ? new Date(a.fecha).getTime() : 0;
+          const fb = b.fecha ? new Date(b.fecha).getTime() : 0;
+          return fb - fa;
+        })
+        .map(r => {
+          return `
+            <button class="item" type="button" data-id="${escAttr(r.uid)}">
+              <div class="item-name">${escHtml(r.nombre || "Restaurante sin nombre")}</div>
+              <div class="item-line">${escHtml(formateaFecha(r.fecha) || "Fecha no disponible")}</div>
+              <div class="item-line">${escHtml(r.direccion || "Dirección no disponible")}</div>
+              ${r.precio ? `<div class="item-line item-muted">Precio: ${escHtml(r.precio)}</div>` : ""}
+            </button>
+          `;
+        }).join("");
+
+      elLista.innerHTML = html;
+
+      elLista.querySelectorAll(".item").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const uid = btn.getAttribute("data-id");
+          irARestaurante(uid);
+        });
+      });
+
+      resaltarActivoEnLista();
+    }
+
+    function actualizarMetaResultados() {
+      const total = estado.validos.length;
+      const visibles = estado.filtrados.length;
+
+      if (!total) {
+        elMeta.textContent = "No hay restaurantes con coordenadas válidas.";
+        return;
+      }
+
+      elMeta.textContent = `Mostrando ${visibles} de ${total} restaurantes con coordenadas válidas.`;
+    }
+
+    function ajustarVistaATodos(animar = true) {
+      if (!estado.bounds.length) {
+        map.setView(defaultCenter, defaultZoom);
+        return;
+      }
+
+      map.fitBounds(estado.bounds, {
+        padding: [40, 40],
+        animate: animar
+      });
+    }
+
+    function irARestaurante(uid) {
+      const encontrado = estado.markers.find(m => m.uid === uid);
+      if (!encontrado) return;
+
+      estado.activeId = encontrado.uid;
+      resaltarActivoEnLista();
+
+      const bloqueMapa = document.getElementById("bloqueMapa");
+      const esMovil = window.innerWidth <= 900;
+
+      if (esMovil && bloqueMapa) {
+        bloqueMapa.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+        setTimeout(() => {
+          map.invalidateSize();
+
+          map.setView([encontrado.data.latitud, encontrado.data.longitud], 16, {
+            animate: true
+          });
+
+          setTimeout(() => {
+            encontrado.marker.openPopup();
+          }, 220);
+        }, 500);
+      } else {
+        map.setView([encontrado.data.latitud, encontrado.data.longitud], 16, {
+          animate: true
+        });
+
+        setTimeout(() => {
+          encontrado.marker.openPopup();
+        }, 180);
+      }
+    }
+
+    function resaltarActivoEnLista() {
+      elLista.querySelectorAll(".item").forEach(el => {
+        const activo = el.getAttribute("data-id") === estado.activeId;
+        el.classList.toggle("active", activo);
+
+        if (activo) {
+          el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }
+      });
+    }
+
+    function localizarUsuario() {
+      if (!navigator.geolocation) {
+        alert("Tu navegador no permite obtener la ubicación.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+
+          if (estado.userMarker) {
+            map.removeLayer(estado.userMarker);
+          }
+
+          estado.userMarker = L.circleMarker([lat, lng], {
+            radius: 8,
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.25
+          }).addTo(map).bindPopup("Tu ubicación aproximada");
+
+          map.setView([lat, lng], 14, { animate: true });
+          estado.userMarker.openPopup();
+        },
+        err => {
+          let mensaje = "No se ha podido obtener tu ubicación.";
+
+          if (err.code === 1) {
+            mensaje = "Has bloqueado el permiso de ubicación para esta web.";
+          } else if (err.code === 2) {
+            mensaje = "No se pudo determinar tu ubicación. Revisa si la ubicación del móvil está activada.";
+          } else if (err.code === 3) {
+            mensaje = "La ubicación tardó demasiado en responder.";
+          }
+
+          alert(mensaje);
+          console.error("Error geolocalización:", err);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        }
+      );
+    }
+
+    function crearPopupHTML(r) {
+      const tieneWeb = !!r.web;
+      const webNormalizada = normalizarURL(r.web);
+
+      return `
+        <div class="popup-title">${escHtml(r.nombre || "Restaurante")}</div>
+        <div class="popup-line"><strong>Fecha:</strong> ${escHtml(formateaFecha(r.fecha) || "No disponible")}</div>
+        <div class="popup-line"><strong>Dirección:</strong> ${escHtml(r.direccion || "No disponible")}</div>
+        ${r.precio ? `<div class="popup-line"><strong>Precio:</strong> ${escHtml(r.precio)}</div>` : ""}
+        ${r.telefono ? `<div class="popup-line"><strong>Teléfono:</strong> ${escHtml(r.telefono)}</div>` : ""}
+        ${r.descripcion ? `<div class="popup-note">${escHtml(r.descripcion)}</div>` : ""}
+        ${
+          tieneWeb && webNormalizada
+            ? `<a class="popup-link" href="${escAttr(webNormalizada)}" target="_blank" rel="noopener noreferrer">Abrir web</a>`
+            : ""
+        }
+      `;
+    }
+
+    function normalizarURL(url) {
+      const txt = String(url || "").trim();
+      if (!txt) return "";
+      if (/^https?:\/\//i.test(txt)) return txt;
+      return "https://" + txt;
+    }
+
+    function formateaFecha(fechaISO) {
+      if (!fechaISO) return "";
+      const d = new Date(fechaISO);
+      if (Number.isNaN(d.getTime())) return fechaISO;
+
+      return d.toLocaleDateString("es-ES", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
+    }
+
+    function formatearNumero(valor) {
+      return Number(valor || 0).toLocaleString("es-ES");
+    }
+
+    function ocultarLoading() {
+      elLoading.style.display = "none";
+    }
+
+    function mostrarError(msg) {
+      elError.style.display = "block";
+      elError.textContent = msg;
+    }
+
+    function escHtml(valor) {
+      return String(valor ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function escAttr(valor) {
+      return escHtml(valor);
+    }
+  </script>
+</body>
+</html>

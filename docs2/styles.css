@@ -1,0 +1,284 @@
+:root{
+  color-scheme: light;
+  --bg:#ffffff;
+  --text:#111;
+  --muted:#333;
+}
+
+/* ===== BASE ===== */
+
+html{
+  background:var(--bg) !important;
+  -webkit-text-size-adjust:100%;
+}
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+body{
+  margin:0;
+  background:var(--bg) !important;
+  font-family:Georgia, "Times New Roman", serif;
+  color:var(--text) !important;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  min-height:100dvh;
+}
+
+img, svg{
+  max-width:100%;
+  height:auto;
+  display:block;
+}
+
+input, select, textarea, button{
+  font:inherit;
+  color:inherit;
+}
+
+/* ===== HERO (INDEX) ===== */
+
+.hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding-top:60px;
+  text-align:center;
+}
+
+.logo-wrap{
+  position:relative;
+  width:min(380px, 92vw);
+  aspect-ratio:1/1;
+  display:grid;
+  place-items:center;
+}
+
+.arc{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+
+.arc-text{
+  fill:var(--text);
+  font-weight:700;
+  letter-spacing:2px;
+  font-size:26px;
+}
+
+.logo{
+  width:78%;
+  height:auto;
+}
+
+.slogan{
+  margin-top:6px;
+  font-size:15px;
+  font-weight:800;
+  text-align:center;
+  letter-spacing:1px;
+  color:#3a1f0f;
+}
+
+.menu-principal{
+  margin-top:40px;
+  text-align:center;
+}
+
+.boton-menu{
+  display:inline-block;
+  padding:15px 30px;
+  margin:10px;
+  background-color:#8b0000;
+  color:white;
+  text-decoration:none;
+  font-size:18px;
+  border-radius:8px;
+  transition:0.3s;
+}
+
+.boton-menu:hover{
+  background-color:#a52a2a;
+  transform:scale(1.05);
+}
+
+/* ===== TABLAS / BADGES ===== */
+
+.cell-indent{
+  padding-left:10px;
+}
+
+.badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:12px;
+  white-space:nowrap;
+  border:1px solid transparent;
+}
+
+.badge-fundador{
+  background:#efe6c8;
+  color:#7a5a00;
+  border-color:#d8c27a;
+}
+
+.badge-cofrade{
+  background:#f3e8ff;
+  color:#6b21a8;
+  border-color:#d8b4fe;
+}
+
+.badge-baja{
+  background:#fee2e2;
+  color:#b91c1c;
+  border-color:#fecaca;
+}
+
+.badge-default{
+  background:rgba(139,0,0,.06);
+  color:#8b0000;
+  border-color:rgba(139,0,0,.25);
+}
+
+.categoria-cell{
+  text-align:center;
+}
+
+.categoria-cell .badge{
+  display:inline-block;
+}
+
+.fecha-alta{
+  font-size:12px;
+  font-style:italic;
+  color:var(--muted);
+  margin-top:4px;
+  text-align:center;
+}
+
+/* ===== CABECERA COMÚN ===== */
+
+.page-header{
+  background:#8b0000;
+  color:white;
+  padding:30px;
+  text-align:center;
+}
+
+.page-header h1{
+  margin:0;
+  font-size:28px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+}
+
+.page-container{
+  width:min(1100px,92vw);
+  margin:20px auto;
+}
+
+.page-back{
+  display:inline-block;
+  background:#8b0000;
+  color:white;
+  padding:8px 16px;
+  border-radius:6px;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.page-back:hover{
+  opacity:.9;
+}
+
+/* ===== AVISO HOME ===== */
+
+.aviso-home{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:999;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  max-width:360px;
+  padding:14px 16px;
+  border-radius:16px;
+  background:linear-gradient(135deg, #8b0000, #670000);
+  color:#fff;
+  box-shadow:0 16px 40px rgba(0,0,0,.22);
+  border:1px solid rgba(255,255,255,.14);
+}
+
+.aviso-home[hidden]{
+  display:none !important;
+}
+
+.aviso-home-icono{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:rgba(255,255,255,.12);
+}
+
+.aviso-home-texto{
+  flex:1;
+  min-width:0;
+}
+
+.aviso-home-texto strong{
+  display:block;
+  font-size:.97rem;
+  margin-bottom:2px;
+}
+
+.aviso-home-texto span{
+  font-size:.88rem;
+  color:rgba(255,255,255,.9);
+  line-height:1.35;
+}
+
+.aviso-home-link{
+  color:#fff;
+  font-weight:700;
+  text-decoration:underline;
+  white-space:nowrap;
+}
+
+@media (max-width:640px){
+  .aviso-home{
+    left:12px;
+    right:12px;
+    bottom:12px;
+    max-width:none;
+  }
+}
+
+/* ===== BLOQUEO MODO OSCURO ANDROID ===== */
+
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme: light;
+  }
+
+  html,
+  body{
+    background:var(--bg) !important;
+    color:var(--text) !important;
+  }
+}
+ 

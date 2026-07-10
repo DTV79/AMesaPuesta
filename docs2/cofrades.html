@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#f8f5f0" />
+  <title>Cofrades</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    :root{
+      color-scheme: light;
+
+      --bg:#f8f5f0;
+      --card:#ffffff;
+      --ink:#1f1f1f;
+      --muted:#6b7280;
+      --accent:#8b0000;
+      --accent-soft:#f7e8e8;
+      --border:#e5e7eb;
+      --shadow: 0 8px 24px rgba(0,0,0,.08);
+      --radius: 16px;
+    }
+
+    html{
+      background:var(--bg) !important;
+      -webkit-text-size-adjust:100%;
+    }
+
+    body{
+      margin:0;
+      background:var(--bg) !important;
+      color:var(--ink) !important;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      min-height:100vh;
+      min-height:100dvh;
+    }
+
+    img, svg{
+      max-width:100%;
+      height:auto;
+      display:block;
+    }
+
+    input, select, textarea, button{
+      font:inherit;
+      color:inherit;
+    }
+
+    /* CABECERA IGUAL QUE RESTAURANTES */
+    .page-header{
+      background:#8b0000;
+      color:white;
+      padding:30px;
+      text-align:center;
+    }
+
+    .page-header h1{
+      margin:0;
+      font-size:28px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:10px;
+    }
+
+    .page-container{
+      width:min(1100px,92vw);
+      margin:20px auto 0;
+    }
+
+    .page-back{
+      display:inline-block;
+      background:#8b0000;
+      color:white;
+      padding:8px 16px;
+      border-radius:6px;
+      text-decoration:none;
+      font-weight:600;
+      font-size:14px;
+    }
+
+    .page-back:hover{
+      opacity:.9;
+    }
+
+    .wrap{
+      width:min(1100px, 92vw);
+      margin: 24px auto 40px;
+    }
+
+    .hero{
+      background: linear-gradient(135deg, #fff, #fff5f5);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 8px 14px 12px 14px;
+      margin-bottom: 4px;
+    }
+
+    /* ====== PANEL FINANCIERO ====== */
+    .stats{
+      margin-top: 10px;
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+    }
+
+    .stat{
+      background: linear-gradient(180deg, #fff 0%, #fcfbfb 100%);
+      border:1px solid var(--border);
+      border-top: 4px solid var(--accent);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 12px 10px;
+      text-align:center;
+      min-width:0;
+    }
+
+    .stat .k{
+      color:var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing:.08em;
+      line-height:1.2;
+    }
+
+    .stat .v{
+      margin-top:8px;
+      font-size: 22px;
+      font-weight: 800;
+      line-height:1.1;
+      white-space:nowrap;
+    }
+
+    @media (max-width: 700px){
+      .stats{
+        gap:6px;
+      }
+
+      .stat{
+        padding: 10px 6px;
+        border-radius: 12px;
+      }
+
+      .stat .k{
+        font-size: 9px;
+        letter-spacing:.04em;
+      }
+
+      .stat .v{
+        font-size: 15px;
+      }
+    }
+
+    /* ====== CONTROLS ====== */
+    .controls{
+      margin-top: 16px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:space-between;
+    }
+
+    .search{
+      flex: 1 1 320px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .search input{
+      border:none;
+      outline:none;
+      width:100%;
+      font-size: 14px;
+      background:transparent;
+    }
+
+    .pill{
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+      display:flex;
+      gap:10px;
+      align-items:center;
+      color:var(--muted);
+      font-size: 13px;
+    }
+
+    .pill select{
+      border:none;
+      outline:none;
+      background:transparent;
+      font-size: 13px;
+      color:var(--ink);
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    .tableHint{
+      margin-top: 10px;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-style: italic;
+      color: var(--muted);
+    }
+
+    .tableCard{
+      margin-top: 14px;
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    table{
+      width:100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      table-layout: fixed;
+    }
+
+    thead th{
+      text-align:left;
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      border-bottom:1px solid var(--border);
+      padding: 14px 16px;
+      color:#111827;
+      white-space:nowrap;
+    }
+
+    tbody td{
+      padding: 12px 16px;
+      padding-left: 20px;
+      border-bottom:1px solid var(--border);
+      vertical-align:middle;
+      text-align:left;
+    }
+
+    tbody tr:hover{
+      background: #fff7f7;
+    }
+
+    .num{
+      font-variant-numeric: tabular-nums;
+      text-align:center;
+      white-space:nowrap;
+    }
+
+    .muted{
+      color: var(--muted);
+    }
+
+    .footerNote{
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align:right;
+      padding-right: 4px;
+    }
+
+    .badge{
+      display:inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight:700;
+      font-size:12px;
+      white-space:nowrap;
+      border:1px solid transparent;
+    }
+
+    .badge-fundador{
+      background:#efe6c8;
+      color:#7a5a00;
+      border-color:#d8c27a;
+    }
+
+    .badge-cofrade{
+      background:#f3e8ff;
+      color:#6b21a8;
+      border-color:#d8b4fe;
+    }
+
+    .badge-baja{
+      background:#fee2e2;
+      color:#b91c1c;
+      border-color:#fecaca;
+    }
+
+    .badge-default{
+      background:rgba(139,0,0,.06);
+      color:var(--accent);
+      border-color:rgba(139,0,0,.25);
+    }
+
+    .categoria-cell{
+      text-align:center;
+    }
+
+    .fecha-alta{
+      font-size:12px;
+      font-style:italic;
+      color:var(--muted);
+      margin-top:4px;
+      text-align:center;
+    }
+
+    /* Por defecto en vertical: Miembro + Categoría */
+    .h-only{
+      display:none;
+    }
+
+    /* En horizontal: mostrar columnas extra */
+    @media (orientation: landscape){
+      .h-only{
+        display:table-cell;
+      }
+    }
+
+    /* BOTÓN SUBIR ARRIBA */
+    #btnSubir{
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      width: 52px;
+      height: 52px;
+      border: none;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8b0000, #b30000);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 24px rgba(139,0,0,.28);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px) scale(.95);
+      transition: opacity .25s ease, transform .25s ease, visibility .25s ease, background .2s ease;
+      z-index: 9999;
+    }
+
+    #btnSubir.show{
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    #btnSubir:hover{
+      background: linear-gradient(135deg, #760000, #990000);
+    }
+
+    #btnSubir:active{
+      transform: scale(.96);
+    }
+
+    #btnSubir svg{
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    @media (max-width: 700px){
+      #btnSubir{
+        right: 16px;
+        bottom: 16px;
+        width: 48px;
+        height: 48px;
+      }
+
+      #btnSubir svg{
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    @media (prefers-color-scheme: dark){
+      :root{
+        color-scheme: light;
+      }
+
+      html,
+      body{
+        background:var(--bg) !important;
+        color:var(--ink) !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="page-header">
+    <h1>
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="white" viewBox="0 0 24 24">
+        <path d="M16 11c1.66 0 3-1.79 3-4s-1.34-4-3-4-3 1.79-3 4 1.34 4 3 4zm-8 0c1.66 0 3-1.79 3-4S9.66 3 8 3 5 4.79 5 7s1.34 4 3 4zm0 2c-2.67 0-8 1.34-8 4v3h10v-3c0-1.02.39-1.97 1.02-2.78C10.21 13.44 8.94 13 8 13zm8 0c-.94 0-2.21.44-3.02 1.22C13.61 15.03 14 15.98 14 17v3h10v-3c0-2.66-5.33-4-8-4z"/>
+      </svg>
+      Cofrades
+    </h1>
+  </header>
+
+  <div class="page-container">
+    <a href="index.html" class="page-back">← Volver</a>
+  </div>
+
+  <div class="wrap">
+    <div class="hero">
+
+      <div class="stats">
+        <div class="stat">
+          <div class="k">Miembros activos</div>
+          <div class="v" id="s_total_miembros">—</div>
+        </div>
+        <div class="stat">
+          <div class="k">Total cuotas</div>
+          <div class="v" id="s_cuotas">—</div>
+        </div>
+        <div class="stat">
+          <div class="k">Total gastos</div>
+          <div class="v" id="s_pagos">—</div>
+        </div>
+        <div class="stat">
+          <div class="k">Remanente actual</div>
+          <div class="v" id="s_remanente">—</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="search">
+          🔎
+          <input id="q" type="search" placeholder="Buscar por nombre o categoría…" />
+        </div>
+
+        <div class="pill">
+          Ordenar:
+          <select id="sort">
+            <option value="miembro_asc">Nombre (A→Z)</option>
+            <option value="miembro_desc">Nombre (Z→A)</option>
+            <option value="categoria_asc">Categoría (A→Z)</option>
+          </select>
+        </div>
+
+        <div class="pill">
+          Ver:
+          <select id="filter">
+            <option value="todos">Todos</option>
+            <option value="activos" selected>Solo activos</option>
+            <option value="baja">Solo "Baja"</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="tableHint">(Para ver todos los datos gira el móvil)</div>
+
+      <div class="tableCard">
+        <table>
+          <thead>
+            <tr>
+              <th>Miembro</th>
+              <th style="text-align:center;">Categoría</th>
+              <th class="num h-only">Pagos comidas</th>
+              <th class="num h-only">Asistencias</th>
+              <th class="num h-only">Cuotas al día</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr>
+              <td class="muted" colspan="5" style="padding:18px 16px;">Cargando…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footerNote" id="foot"></div>
+    </div>
+  </div>
+
+  <button id="btnSubir" title="Subir arriba" aria-label="Subir arriba">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 5l-7 7 1.41 1.41L11 8.83V20h2V8.83l4.59 4.58L19 12z"/>
+    </svg>
+  </button>
+
+<script>
+  const fmt = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 });
+
+  let ALL = [];
+
+  function isBaja(c){
+    const cat = (c.categoria || '').toLowerCase();
+    return cat.includes('baja');
+  }
+
+  function formatearFecha(fecha){
+    if(!fecha) return "";
+
+    const f = new Date(fecha);
+    if(isNaN(f)) return fecha;
+
+    const dia = String(f.getDate()).padStart(2,"0");
+    const mes = String(f.getMonth()+1).padStart(2,"0");
+    const año = f.getFullYear();
+
+    return `${dia}/${mes}/${año}`;
+  }
+
+  function formatearEuros(valor){
+    const n = Number(valor ?? 0);
+    return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " €";
+  }
+
+  function apply(){
+    const q = (document.getElementById('q').value || '').toLowerCase().trim();
+    const sort = document.getElementById('sort').value;
+    const filter = document.getElementById('filter').value;
+
+    let rows = ALL.slice();
+
+    if (filter === 'activos') rows = rows.filter(c => !isBaja(c));
+    if (filter === 'baja') rows = rows.filter(c => isBaja(c));
+
+    if (q){
+      rows = rows.filter(c =>
+        (c.miembro || '').toLowerCase().includes(q) ||
+        (c.categoria || '').toLowerCase().includes(q)
+      );
+    }
+
+    const by = {
+      miembro_asc:  (a,b) => (a.miembro || '').localeCompare(b.miembro || '', 'es'),
+      miembro_desc: (a,b) => (b.miembro || '').localeCompare(a.miembro || '', 'es'),
+      categoria_asc:(a,b) => (a.categoria || '').localeCompare(b.categoria || '', 'es')
+    };
+
+    rows.sort(by[sort] || by.miembro_asc);
+
+    const tbody = document.getElementById('tbody');
+
+    if (!rows.length){
+      tbody.innerHTML = `<tr><td class="muted" colspan="5" style="padding:18px 16px;">Sin resultados.</td></tr>`;
+      document.getElementById('foot').textContent = 'Mostrando 0 cofrades';
+      return;
+    }
+
+    tbody.innerHTML = rows.map(c => {
+      const cuotasTexto = (c.cuotas_al_dia ?? "").toString();
+      const cuotasOk = cuotasTexto.toLowerCase().includes("sí") || cuotasTexto.toLowerCase().includes("si");
+
+      const color = cuotasOk ? "#1f7a1f" : "#b00020";
+      const icono = cuotasOk ? "🟢" : "🔴";
+
+      const categoria = (c.categoria ?? "").toString();
+      const catLower = categoria.toLowerCase();
+
+      let badgeClass = "badge-default";
+      if (catLower.includes("fundador")) {
+        badgeClass = "badge-fundador";
+      } else if (catLower.includes("cofrade")) {
+        badgeClass = "badge-cofrade";
+      } else if (catLower.includes("baja")) {
+        badgeClass = "badge-baja";
+      }
+
+      return `
+<tr>
+  <td><strong>${c.miembro ?? ''}</strong></td>
+  <td class="categoria-cell">
+    <span class="badge ${badgeClass}">${categoria}</span>
+    <div class="fecha-alta">Alta: ${formatearFecha(c.fecha_ingreso)}</div>
+  </td>
+  <td class="num h-only">${fmt.format(Number(c.pagos_comidas ?? 0))}</td>
+  <td class="num h-only">${fmt.format(Number(c.comidas_asistidas ?? 0))}</td>
+  <td class="num h-only" style="color:${color};font-weight:700">${icono} ${cuotasTexto}</td>
+</tr>
+      `;
+    }).join('');
+
+    document.getElementById('foot').textContent =
+      `Mostrando ${rows.length} de ${ALL.length} cofrades`;
+  }
+
+  fetch('cofrades.json?v=' + Date.now(), { cache: 'no-store' })
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(data => {
+      ALL = Array.isArray(data.cofrades) ? data.cofrades : [];
+
+      const resumen = data.resumen || {};
+      const activos = ALL.filter(c => !isBaja(c)).length;
+
+      document.getElementById('s_total_miembros').textContent = activos;
+      document.getElementById('s_cuotas').textContent = formatearEuros(resumen.total_cuotas);
+      document.getElementById('s_pagos').textContent = formatearEuros(resumen.total_gastos);
+      document.getElementById('s_remanente').textContent = formatearEuros(resumen.total_remanente);
+
+      apply();
+
+      document.getElementById('q').addEventListener('input', apply);
+      document.getElementById('sort').addEventListener('change', apply);
+      document.getElementById('filter').addEventListener('change', apply);
+    })
+    .catch(err => {
+      document.getElementById('tbody').innerHTML =
+        `<tr><td class="muted" colspan="5" style="padding:18px 16px;">❌ Error cargando datos: ${err.message}</td></tr>`;
+    });
+
+  const btnSubir = document.getElementById('btnSubir');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      btnSubir.classList.add('show');
+    } else {
+      btnSubir.classList.remove('show');
+    }
+  });
+
+  btnSubir.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+</script>
+
+</body>
+</html>
