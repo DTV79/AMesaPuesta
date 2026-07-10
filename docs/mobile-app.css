@@ -1,0 +1,208 @@
+:root{
+  --app-wine:#8b0000;
+  --app-wine-dark:#650000;
+  --app-cream:#f7f2ea;
+  --app-card:#ffffff;
+  --app-ink:#211b18;
+  --app-muted:#73665f;
+  --app-border:#eadfd5;
+  --app-shadow:0 10px 28px rgba(67,36,24,.10);
+  --app-nav-height:72px;
+}
+
+.mobile-bottom-nav{display:none}
+
+@media (max-width:760px){
+  html{scroll-padding-top:72px}
+  body{
+    background:linear-gradient(180deg,#fff 0,#f8f3ed 220px,var(--app-cream) 100%)!important;
+    padding-bottom:calc(var(--app-nav-height) + env(safe-area-inset-bottom) + 14px)!important;
+    color:var(--app-ink)!important;
+  }
+
+  /* Cabeceras comunes */
+  .page-header{
+    position:sticky!important;
+    top:0;
+    z-index:900;
+    min-height:58px;
+    padding:calc(10px + env(safe-area-inset-top)) 58px 10px!important;
+    display:flex!important;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,var(--app-wine),var(--app-wine-dark))!important;
+    box-shadow:0 6px 18px rgba(62,0,0,.18);
+  }
+  .page-header h1{font-size:20px!important;line-height:1.15!important;gap:8px!important}
+  .page-header h1 svg{width:22px!important;height:22px!important}
+
+  .page-container,.container,.wrap{
+    width:auto!important;
+    max-width:none!important;
+    margin-left:12px!important;
+    margin-right:12px!important;
+  }
+  .page-container{margin-top:12px!important;margin-bottom:8px!important}
+  .page-back,.volver{
+    min-height:42px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    border-radius:12px!important;
+    padding:9px 14px!important;
+    box-shadow:0 5px 14px rgba(80,0,0,.12)!important;
+  }
+
+  input,select,button,a{touch-action:manipulation}
+  input,select,textarea{font-size:16px!important}
+
+  /* Navegación inferior */
+  .mobile-bottom-nav{
+    position:fixed;
+    left:8px;
+    right:8px;
+    bottom:calc(8px + env(safe-area-inset-bottom));
+    z-index:5000;
+    min-height:var(--app-nav-height);
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    align-items:stretch;
+    background:rgba(255,255,255,.96);
+    border:1px solid rgba(139,0,0,.13);
+    border-radius:22px;
+    box-shadow:0 12px 38px rgba(45,24,18,.20);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    overflow:hidden;
+  }
+  .mobile-bottom-nav a,
+  .mobile-bottom-nav button{
+    position:relative;
+    border:0;
+    background:transparent;
+    color:#675b55;
+    text-decoration:none;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:3px;
+    padding:8px 2px 7px;
+    font:700 10px/1 system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  .mobile-bottom-nav .nav-icon{font-size:22px;line-height:1}
+  .mobile-bottom-nav a.active{color:var(--app-wine)}
+  .mobile-bottom-nav a.active::before{
+    content:"";
+    position:absolute;
+    top:0;
+    width:28px;
+    height:3px;
+    border-radius:0 0 4px 4px;
+    background:var(--app-wine);
+  }
+
+  .mobile-more-menu{
+    position:fixed;
+    left:12px;
+    right:12px;
+    bottom:calc(var(--app-nav-height) + 18px + env(safe-area-inset-bottom));
+    z-index:4999;
+    display:none;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    padding:14px;
+    border-radius:22px;
+    background:#fff;
+    border:1px solid var(--app-border);
+    box-shadow:0 18px 45px rgba(40,20,15,.24);
+  }
+  .mobile-more-menu.open{display:grid}
+  .mobile-more-menu a{
+    min-height:56px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:15px;
+    background:#faf6f2;
+    color:var(--app-ink);
+    text-decoration:none;
+    font:700 14px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  .mobile-more-menu a.active{background:#f4e4e4;color:var(--app-wine)}
+  .mobile-more-backdrop{
+    display:none;position:fixed;inset:0;z-index:4998;background:rgba(25,13,10,.28)
+  }
+  .mobile-more-backdrop.open{display:block}
+
+  /* Portada */
+  body.home-mobile .page-shell{width:auto!important;margin:0 12px!important;padding-top:max(8px,env(safe-area-inset-top))!important}
+  body.home-mobile .hero{min-height:auto!important;padding:0!important}
+  body.home-mobile .brand-panel{
+    border-radius:26px!important;
+    padding:8px 12px 18px!important;
+    background:rgba(255,255,255,.82)!important;
+    box-shadow:var(--app-shadow)!important;
+  }
+  body.home-mobile .logo-wrap{width:230px!important;max-width:72vw!important;height:215px!important;aspect-ratio:auto!important}
+  body.home-mobile .logo{width:145px!important;margin-top:18px!important}
+  body.home-mobile .arc-text{font-size:24px!important;letter-spacing:1.7px!important}
+  body.home-mobile .slogan{
+    margin:-8px 8px 10px!important;
+    white-space:normal!important;
+    font:700 16px/1.25 Georgia,serif!important;
+  }
+  body.home-mobile .menu-principal{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+    margin-top:8px!important;
+  }
+  body.home-mobile .boton-menu{
+    grid-column:auto!important;
+    min-height:86px!important;
+    margin:0!important;
+    padding:12px 8px!important;
+    border-radius:18px!important;
+    flex-direction:column!important;
+    gap:7px!important;
+    font-size:15px!important;
+    box-shadow:0 8px 18px rgba(85,0,0,.16)!important;
+  }
+  body.home-mobile .boton-menu svg{width:25px!important;height:25px!important;flex-basis:25px!important}
+  body.home-mobile .aviso-home{
+    position:relative!important;
+    left:auto!important;right:auto!important;bottom:auto!important;
+    width:100%!important;max-width:none!important;
+    margin:12px 0 0!important;
+    border-radius:18px!important;
+  }
+
+  /* Tarjetas, filtros y controles */
+  .hero,.filtros,.tableCard,.card,.hero-card,.panel,.box{
+    border-radius:18px!important;
+  }
+  .controls,.filtros{gap:10px!important}
+  .search,.pill,.buscador-wrap,.fecha-box{border-radius:14px!important;box-shadow:none!important}
+  .pill{width:100%;justify-content:space-between}
+  .pill select{max-width:58%}
+  .top-actions{margin-top:12px!important}
+
+  /* Cofrades: indicadores más legibles */
+  .stats{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  .stat{min-height:78px;padding:10px 7px!important}
+  .stat .k{font-size:9px!important}
+  .stat .v{font-size:18px!important}
+  .tableHint{text-align:center;margin:10px 0!important}
+
+  /* Restaurantes */
+  .lista-restaurantes{grid-template-columns:1fr!important;gap:12px!important}
+  .restaurante-card,.restaurant-card,.tarjeta-restaurante{
+    border-radius:18px!important;
+    box-shadow:var(--app-shadow)!important;
+  }
+  .fechas-wrap{grid-template-columns:1fr 1fr!important;gap:8px!important}
+
+  /* Botones flotantes por encima de la navegación */
+  #btnSubir{bottom:calc(var(--app-nav-height) + 24px + env(safe-area-inset-bottom))!important;right:16px!important}
+}
