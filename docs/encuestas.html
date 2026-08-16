@@ -1291,11 +1291,21 @@
     }
 
     function percent(votes, total){
-      const v = safeNumber(votes, 0);
-      const t = safeNumber(total, 0);
-      if(!t) return 0;
-      return Math.round((v / t) * 100);
-    }
+  const v = safeNumber(votes, 0);
+  const t = safeNumber(total, 0);
+  if(!t) return 0;
+  return Math.round((v / t) * 100);
+  }
+
+function pollPercent(votes, poll){
+  const participants = safeNumber(poll.votedEligibleCount, 0);
+
+  if(participants > 0){
+    return percent(votes, participants);
+  }
+
+  return percent(votes, poll.totalVotes);
+}
 
     function parseDateValue(value){
       if(!value) return null;
@@ -1509,9 +1519,8 @@ function renderWinnerBlock(poll){
   const winner = poll.winner;
   if (!winner) return "";
 
-  if (poll.status === "abierta" && poll.type !== "publica") {
-    return "";
-  }
+  // Solo las encuestas públicas muestran el bloque de opción ganadora.
+  if (poll.type !== "publica") return "";
 
   return `
     <div class="winner">
@@ -1524,14 +1533,16 @@ function renderWinnerBlock(poll){
           <path d="M7 6H5a2 2 0 0 0 0 4h2"></path>
         </svg>
       </div>
+
       <div>
         <small>
           ${
             poll.status === "abierta"
               ? (poll.isTie ? "Empate provisional" : "Va ganando")
-              : (poll.isTie ? "Empate final" : "Opción destacada")
+              : (poll.isTie ? "Empate final" : "Opción ganadora")
           }
         </small>
+
         <strong>
           ${
             poll.isTie && poll.winners.length
@@ -1539,11 +1550,12 @@ function renderWinnerBlock(poll){
               : winner.name
           }
         </strong>
+
         <div style="margin-top:4px;color:#6d5a2f;font-weight:700;">
           ${
             poll.isTie && poll.winners.length
               ? `Empate con ${winner.votes} votos`
-              : `${winner.votes} votos · ${percent(winner.votes, poll.totalVotes)}% del total`
+              : `${winner.votes} votos · ${pollPercent(winner.votes, poll)}% de participantes`
           }
         </div>
       </div>
@@ -1612,10 +1624,10 @@ function renderWinnerBlock(poll){
                 <div class="result-row">
                   <div class="result-line">
                     <span class="result-name">${option.name}</span>
-                    <span class="result-meta">${option.votes} votos · ${percent(option.votes, poll.totalVotes)}%</span>
+                    <span class="result-meta">${option.votes} votos · ${pollPercent(option.votes, poll)}%</span>
                   </div>
                   <div class="bar">
-                    <span style="width:${percent(option.votes, poll.totalVotes)}%"></span>
+                    <span style="width:${pollPercent(option.votes, poll)}%"></span>
                   </div>
                 </div>
               `).join("")}
@@ -1687,10 +1699,10 @@ function renderWinnerBlock(poll){
             <div class="result-row">
               <div class="result-line">
                 <span class="result-name">${option.name}</span>
-                <span class="result-meta">${option.votes} votos · ${percent(option.votes, poll.totalVotes)}%</span>
+                <span class="result-meta">${option.votes} votos · ${pollPercent(option.votes, poll)}%</span>
               </div>
               <div class="bar">
-                <span style="width:${percent(option.votes, poll.totalVotes)}%"></span>
+                <span style="width:${pollPercent(option.votes, poll)}%"></span>
               </div>
             </div>
           `).join("")}
