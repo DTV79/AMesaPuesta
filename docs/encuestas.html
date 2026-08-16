@@ -1291,21 +1291,21 @@
     }
 
     function percent(votes, total){
-  const v = safeNumber(votes, 0);
-  const t = safeNumber(total, 0);
-  if(!t) return 0;
-  return Math.round((v / t) * 100);
-  }
+      const v = safeNumber(votes, 0);
+      const t = safeNumber(total, 0);
+      if(!t) return 0;
+      return Math.round((v / t) * 100);
+    }
 
-function pollPercent(votes, poll){
-  const participants = safeNumber(poll.votedEligibleCount, 0);
+    function pollPercent(votes, poll){
+      const participants = safeNumber(poll.votedEligibleCount, 0);
 
-  if(participants > 0){
-    return percent(votes, participants);
-  }
+      if(participants > 0){
+        return percent(votes, participants);
+      }
 
-  return percent(votes, poll.totalVotes);
-}
+      return percent(votes, poll.totalVotes);
+    }
 
     function parseDateValue(value){
       if(!value) return null;
@@ -1407,6 +1407,7 @@ function pollPercent(votes, poll){
         isRecentlyClosed: !!poll?.isRecentlyClosed,
         countdownText: escapeHtml(poll?.countdownText || ""),
         showResults: poll?.showResults !== false,
+        showWinner: poll?.showWinner !== false,
         maxChoices,
         totalVotes,
         votedMembers: safeArray(poll?.votedMembers).map(v => escapeHtml(v)),
@@ -1517,10 +1518,15 @@ function pollPercent(votes, poll){
 
 function renderWinnerBlock(poll){
   const winner = poll.winner;
-  if (!winner) return "";
 
-  // Solo las encuestas públicas muestran el bloque de opción ganadora.
-  if (poll.type !== "publica") return "";
+  if (!winner) return "";
+  if (!poll.showWinner) return "";
+
+  // Mientras está abierta, solo una encuesta pública puede
+  // mostrar quién va ganando.
+  if (poll.status === "abierta" && poll.type !== "publica") {
+    return "";
+  }
 
   return `
     <div class="winner">
