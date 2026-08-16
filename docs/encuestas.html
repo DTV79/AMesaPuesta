@@ -1208,7 +1208,7 @@
         <div class="section-head">
           <div>
             <h2 class="section-title">Cerradas recientemente</h2>
-            <p class="section-subtitle">Resultados recién cerrados, visibles un rato antes de pasar al histórico.</p>
+            <p class="section-subtitle">Resultados de encuestas cerradas durante los últimos 5 días antes de pasar al histórico.</p>
           </div>
         </div>
 
@@ -1930,6 +1930,27 @@ function renderWinnerBlock(poll){
       toggleCard(card);
     }
 
+    function getClosedAtTimestamp(poll){
+      if(!poll?.closedAt) return 0;
+      const d = parseDateValue(poll.closedAt);
+      return d && !Number.isNaN(d.getTime()) ? d.getTime() : 0;
+    }
+
+    function sortClosedNewestFirst(polls){
+      return [...polls].sort((a, b) => {
+        const byClosedAt = getClosedAtTimestamp(b) - getClosedAtTimestamp(a);
+        if(byClosedAt !== 0) return byClosedAt;
+
+        const closeB = parseDateValue(b?.closes);
+        const closeA = parseDateValue(a?.closes);
+        const byCloseDate =
+          (closeB && !Number.isNaN(closeB.getTime()) ? closeB.getTime() : 0) -
+          (closeA && !Number.isNaN(closeA.getTime()) ? closeA.getTime() : 0);
+
+        return byCloseDate;
+      });
+    }
+
     function renderHistory(closedPolls){
       historySummary.textContent = closedPolls.length
         ? `${closedPolls.length} encuesta${closedPolls.length !== 1 ? "s" : ""} cerrada${closedPolls.length !== 1 ? "s" : ""}`
@@ -1968,8 +1989,12 @@ function renderWinnerBlock(poll){
 
     function renderAll(polls){
       const activePolls = polls.filter(p => p.status === "abierta");
-      const recentPolls = polls.filter(p => p.status === "cerrada" && p.isRecentlyClosed);
-      const closedPolls = polls.filter(p => p.status === "cerrada" && !p.isRecentlyClosed);
+      const recentPolls = sortClosedNewestFirst(
+        polls.filter(p => p.status === "cerrada" && p.isRecentlyClosed)
+      );
+      const closedPolls = sortClosedNewestFirst(
+        polls.filter(p => p.status === "cerrada" && !p.isRecentlyClosed)
+      );
 
       if(!activePolls.length){
         activeContainer.innerHTML = `
