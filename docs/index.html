@@ -222,6 +222,39 @@
       box-shadow:0 0 0 3px rgba(255,255,255,.95);
     }
 
+    .badge-encuestas{
+      position:absolute;
+      top:8px;
+      right:10px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:24px;
+      padding:4px 8px;
+      border-radius:999px;
+      background:#fff4d6;
+      color:#7b5200;
+      border:1px solid rgba(255,255,255,.85);
+      box-shadow:0 3px 10px rgba(0,0,0,.14);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      font-size:11px;
+      font-weight:900;
+      line-height:1;
+      letter-spacing:.01em;
+      white-space:nowrap;
+      pointer-events:none;
+    }
+
+    .badge-encuestas[hidden]{
+      display:none !important;
+    }
+
+    .boton-menu--encuestas-activa{
+      box-shadow:
+        0 12px 26px rgba(0,0,0,.10),
+        0 0 0 2px rgba(255,234,184,.95);
+    }
+
     .badge-anuncios.pulse{
       animation:pulseDot 1.8s infinite;
     }
@@ -450,6 +483,14 @@
         height:10px;
       }
 
+      .badge-encuestas{
+        top:6px;
+        right:7px;
+        min-height:20px;
+        padding:3px 6px;
+        font-size:10px;
+      }
+
       .aviso-home{
         margin-top:12px;
         gap:10px;
@@ -596,12 +637,13 @@
             Tablón
           </a>
 
-          <a href="encuestas.html" class="boton-menu boton-menu--encuestas">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm2 4v2h2V7H7zm4 0v2h6V7h-6zM7 11v2h2v-2H7zm4 0v2h6v-2h-6zM7 15v2h2v-2H7zm4 0v2h6v-2h-6z"/>
-  </svg>
-  Encuestas
-</a>
+          <a href="encuestas.html" class="boton-menu boton-menu--encuestas" id="botonEncuestas">
+            <span id="badgeEncuestas" class="badge-encuestas" hidden></span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm2 4v2h2V7H7zm4 0v2h6V7h-6zM7 11v2h2v-2H7zm4 0v2h6v-2h-6zM7 15v2h2v-2H7zm4 0v2h6v-2h-6z"/>
+            </svg>
+            Encuestas
+          </a>
         </div>
       </section>
     </main>
@@ -737,6 +779,56 @@
       }
     })();
   </script>
+
+  <script>
+    (async function () {
+      const API_ENCUESTAS_URL = "https://script.google.com/macros/s/AKfycbzPxPPBYBhzWRJSEm5TRHEJnW2cnxGSauLZnrUZ4UKQPwS8IP5_9I5CJWoD6JfiTQjA/exec?action=list";
+
+      const botonEncuestas = document.getElementById("botonEncuestas");
+      const badgeEncuestas = document.getElementById("badgeEncuestas");
+
+      if (!botonEncuestas || !badgeEncuestas) return;
+
+      try {
+        const res = await fetch(API_ENCUESTAS_URL, {
+          method: "GET",
+          cache: "no-store"
+        });
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+        const polls = Array.isArray(data?.polls) ? data.polls : [];
+
+        const activas = polls.filter(poll =>
+          String(poll?.status || "").toLowerCase().trim() === "abierta"
+        ).length;
+
+        if (activas > 0) {
+          badgeEncuestas.textContent = activas === 1
+            ? "1 activa"
+            : `${activas} activas`;
+
+          badgeEncuestas.hidden = false;
+          botonEncuestas.classList.add("boton-menu--encuestas-activa");
+
+          botonEncuestas.setAttribute(
+            "aria-label",
+            activas === 1
+              ? "Encuestas, 1 encuesta activa"
+              : `Encuestas, ${activas} encuestas activas`
+          );
+        } else {
+          badgeEncuestas.hidden = true;
+          botonEncuestas.classList.remove("boton-menu--encuestas-activa");
+          botonEncuestas.setAttribute("aria-label", "Encuestas");
+        }
+      } catch (error) {
+        console.error("No se pudo consultar el número de encuestas activas:", error);
+      }
+    })();
+  </script>
+
   <script src="mobile-nav.js?v=1"></script>
 </body>
 </html>
