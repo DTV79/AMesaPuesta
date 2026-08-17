@@ -4,8 +4,8 @@
     "total_pagos_comidas": 143,
     "total_comidas_asistidas": 111,
     "total_gastos": 1590,
-    "total_cuotas": 3030,
-    "total_remanente": 1440
+    "total_cuotas": 3130,
+    "total_remanente": 1540
   },
   "cofrades": [
     {
@@ -57,8 +57,8 @@
       "comidas_asistidas": 10,
       "cuotas_al_dia": "No",
       "gastos": 110,
-      "remanente": 90,
-      "cuotas": 200
+      "remanente": 140,
+      "cuotas": 250
     },
     {
       "miembro": "Iñaki",
@@ -109,8 +109,8 @@
       "comidas_asistidas": 8,
       "cuotas_al_dia": "Sí",
       "gastos": 110,
-      "remanente": 90,
-      "cuotas": 200
+      "remanente": 140,
+      "cuotas": 250
     },
     {
       "miembro": "Ovi",
