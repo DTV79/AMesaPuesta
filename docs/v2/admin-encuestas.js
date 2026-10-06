@@ -75,16 +75,16 @@ function lock(value){
   for(const id of ['admin-save','admin-delete','admin-new','admin-login-submit'])$(id).disabled=value;
 }
 function stats(){
-  $('admin-stat-drafts').textContent=polls.filter(p=>p.estado==='borrador').length;
-  $('admin-stat-scheduled').textContent=polls.filter(p=>p.estado==='programada').length;
-  $('admin-stat-open').textContent=polls.filter(p=>p.estado==='abierta').length;
-  $('admin-stat-closed').textContent=polls.filter(p=>['cerrada','archivada'].includes(p.estado)).length;
+  $('admin-stat-drafts').textContent=polls.filter(p=>(p.estado_efectivo||p.estado)==='borrador').length;
+  $('admin-stat-scheduled').textContent=polls.filter(p=>(p.estado_efectivo||p.estado)==='programada').length;
+  $('admin-stat-open').textContent=polls.filter(p=>(p.estado_efectivo||p.estado)==='abierta').length;
+  $('admin-stat-closed').textContent=polls.filter(p=>['cerrada','archivada'].includes(p.estado_efectivo||p.estado)).length;
 }
 function renderList(){
   const root=$('admin-list');root.replaceChildren();
   const query=str($('admin-search').value).toLocaleLowerCase('es'),status=$('admin-filter').value;
   $('admin-list-count').textContent=polls.length+(polls.length===1?' encuesta':' encuestas');
-  const matches=polls.filter(p=>(!status||p.estado===status)&&(!query||p.titulo.toLocaleLowerCase('es').includes(query)));
+  const matches=polls.filter(p=>(!status||(p.estado_efectivo||p.estado)===status)&&(!query||p.titulo.toLocaleLowerCase('es').includes(query)));
   if(!matches.length){
     root.append(el('p','admin-list-empty',polls.length?'No hay resultados para este filtro.':'Aún no hay encuestas. Crea la primera con «+ Nueva».'));
     return;
@@ -93,7 +93,7 @@ function renderList(){
     const button=el('button','admin-list-item'+(p.id===selectedId?' is-selected':''));
     button.type='button';button.setAttribute('aria-pressed',String(p.id===selectedId));
     const meta=el('div','admin-list-item-top');
-    meta.append(el('span','admin-mini-status state-'+p.estado,STATES[p.estado]||p.estado),el('small','',TYPES[p.tipo]));
+    meta.append(el('span','admin-mini-status state-'+(p.estado_efectivo||p.estado),STATES[p.estado_efectivo||p.estado]||p.estado),el('small','',TYPES[p.tipo]));
     button.append(meta,el('strong','',p.titulo),el('span','admin-list-item-meta',(p.participantes||0)+' participantes · '+(p.opciones?.length||0)+' opciones'));
     button.addEventListener('click',()=>selectPoll(p.id));
     root.append(button);
@@ -174,7 +174,8 @@ function renderResults(){
 }
 function refreshEditor(){
   const state=$('admin-state').value,chip=$('admin-editor-status');
-  chip.textContent=STATES[state];chip.className='admin-status-chip state-'+state;
+  const effective=!dirty&&selected()?.estado_efectivo?selected().estado_efectivo:state;
+  chip.textContent=STATES[effective];chip.className='admin-status-chip state-'+effective;
   renderPreview();renderResults();
 }
 function values(){
