@@ -25,7 +25,8 @@ function fecha(iso) {
   const partes = /^(\d{4})-(\d{2})-(\d{2})$/.exec(texto(iso));
   if (!partes) return 'Fecha no disponible';
   const fecha = new Date(Number(partes[1]), Number(partes[2]) - 1, Number(partes[3]), 12);
-  return new Intl.DateTimeFormat('es-ES', {day:'numeric', month:'short', year:'numeric'}).format(fecha);
+  const mes = new Intl.DateTimeFormat('es-ES', {month:'short'}).format(fecha).replace(/\.$/, '');
+  return partes[3] + ' ' + mes + ' ' + partes[1];
 }
 function iniciales(nombre) {
   const partes = texto(nombre).split(/\s+/).filter(Boolean);
