@@ -9,7 +9,10 @@ La propuesta se encuentra en **`docs/v2/`** y no sustituye todavía a la web pub
 - `index.html`: portada editorial con las tres últimas comidas, contadores, enlaces al tablón, encuestas, cofrades, himno y estatutos.
 - `restaurantes.html`: historial gastronómico ordenado por fecha, búsqueda y filtros por año, reseñas, menús, indicaciones en Google Maps y galería de fotos locales reutilizadas de `../Fotos/`.
 - `cofrades.html` y `cofrades.js`: 17 fichas públicas, filtro de activos/fundadores/aprendices/históricos, búsqueda, ordenación y recuentos de asistencias/organizaciones sin información económica.
-- `encuestas.html` y `encuestas.js`: rediseño completo de votaciones públicas, secretas y de participación visible, con selección de hasta N opciones, elegibilidad, resultados, empates, cerradas recientes e histórico. **Reutiliza la API actual de Google Apps Script** para no alterar votos ni resultados. El módulo de administración y la migración de encuestas a Supabase están pendientes.
+- `encuestas.html` y `encuestas.js`: página de votaciones actual, con selección múltiple, elegibilidad, resultados, empates e histórico. **Sigue usando Google Apps Script** para no alterar los votos oficiales.
+- `admin-encuestas.html` y `admin-encuestas.js`: nuevo panel privado con Auth, borradores, edición, calendario, privacidad, resultados y gestión de cuentas vinculadas a los cofrades.
+- `encuestas-supabase.html` y `encuestas-supabase.js`: **página independiente de pruebas** con lectura Supabase, login de votantes y voto seguro por identidad, sin seleccionar nombres. No sustituye a la página oficial.
+- `ADMINISTRACION_ENCUESTAS.md`: activación, seguridad y pruebas del módulo. Backend en `database/07_encuestas_administracion.sql` a `database/10_identidad_votantes_y_opciones.sql`, aplicado en Supabase. Verificador de respaldo en `scripts/verificar_encuestas_google.mjs`.
 - `anuncios.html` y `anuncios.js`: Tablón de anuncios V2 con búsqueda, filtros por categoría y destacados, anuncios urgentes, enlaces seguros, fecha de publicación/evento y contenido expandible. **Continúa leyendo `../anuncios.json` sincronizado desde Google Sheets** hasta implementar administración con Supabase. Respeta visibilidad, publicación programada, fecha de caducidad y vigencia de destacados.
 - `estatutos.html`: versión de lectura con los **6 capítulos y 11 artículos originales**, enlaces al PDF aprobado, índice responsive y sello AMP con cangrejo al fondo. Sin alterar el contenido de los artículos.
 - `styles.css`: diseño responsive con navegación inferior, botones táctiles, foco visible y adaptación a móvil.
@@ -43,5 +46,5 @@ El proyecto Vercel `amesapuesta-docs` está vinculado a `DTV79/AMesaPuesta` con 
 1. Abrir preview en móvil y escritorio y comprobar fotos, búsquedas y filtros.
 2. Revisar y decidir los datos públicos de la ficha Cofrades, especialmente importes.
 3. Adaptar enlaces y todas las páginas antes de cambiar la raíz `docs/index.html`.
-4. Preparar administración de anuncios y encuestas en Supabase; por ahora se mantiene el flujo vigente de Google Sheets/Apps Script para no interrumpir la publicación ni los votos. Verificar la identidad del votante al migrar, especialmente para las encuestas secretas.
+4. La administración de encuestas y la API de voto ya están preparadas en Supabase; falta crear las cuentas Auth reales, migrar con respaldo el histórico Google y validar el cambio de origen. El tablón sigue usando Google Sheets. La página oficial de encuestas continúa en Google Apps Script hasta el corte definitivo.
 5. Auditar accesibilidad y seguridad, y confirmar el paso final a producción.
