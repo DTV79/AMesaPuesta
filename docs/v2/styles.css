@@ -843,3 +843,28 @@ button {cursor:pointer}
   .statutes-chapters .articulo h3 {font-size:14px}
   .statutes-chapters .articulo p,.statutes-chapters .articulo li {font-size:12px}
 }
+
+/* Acción móvil compartida: aparece al desplazarse y queda encima del menú inferior. */
+.scroll-top {display:none}
+@media(max-width:680px) {
+  .scroll-top:not([hidden]) {
+    position:fixed;
+    z-index:995;
+    right:calc(18px + env(safe-area-inset-right));
+    bottom:calc(84px + env(safe-area-inset-bottom));
+    display:grid;
+    place-items:center;
+    width:48px;
+    height:48px;
+    padding:0;
+    border:1px solid #fff9f2;
+    border-radius:50%;
+    background:var(--wine);
+    color:#fff;
+    font:700 27px/1 system-ui,sans-serif;
+    box-shadow:0 7px 22px rgba(70,28,31,.28);
+    cursor:pointer;
+    touch-action:manipulation;
+  }
+  .scroll-top:active {transform:scale(.96)}
+}
