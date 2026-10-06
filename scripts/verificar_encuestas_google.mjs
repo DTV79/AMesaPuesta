@@ -4,6 +4,7 @@
 // No imprime nombres, correos ni elecciones de votantes.
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 export function validateBackup(data) {
   const errors=[],warnings=[];
@@ -74,7 +75,7 @@ export function validateBackup(data) {
   return {ok:errors.length===0,errors,warnings,summary};
 }
 
-if(process.argv[1]&&resolve(process.argv[1])===resolve(new URL(import.meta.url).pathname)){
+if(process.argv[1]&&resolve(process.argv[1])===resolve(fileURLToPath(import.meta.url))){
   const file=process.argv[2];
   if(!file){
     console.error('Uso: node scripts/verificar_encuestas_google.mjs <respaldo-google.json>');
