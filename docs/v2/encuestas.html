@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f8f4ed">
+  <meta name="description" content="Encuestas de la Cofradía A Mesa Puesta: votaciones abiertas, resultados y decisiones tomadas entre todos.">
+  <title>Encuestas · Cofradía A Mesa Puesta</title>
+  <link rel="icon" href="../Fotos/logo-cangrejo.png" type="image/png">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./scroll-top.js" defer></script>
+  <script type="module" src="./encuestas.js"></script>
+</head>
+<body data-page="encuestas">
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand" aria-label="Cofradía A Mesa Puesta, inicio">
+        <span class="brand-mark"><img src="../Fotos/logo-cangrejo.png" alt="" width="38" height="38"></span>
+        <span class="brand-text">A Mesa Puesta<small>La cofradía · Desde 2022</small></span>
+      </a>
+      <nav class="desktop-nav" aria-label="Navegación principal">
+        <a href="index.html">Inicio</a>
+        <a href="restaurantes.html">Nuestras comidas</a>
+        <a href="cofrades.html">Cofrades</a>
+        <a href="anuncios.html">Tablón</a>
+        <a href="encuestas.html" aria-current="page">Encuestas</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" id="contenido">
+    <section class="polls-hero" aria-labelledby="polls-title">
+      <div class="polls-hero-copy">
+        <p class="eyebrow">La voz de la cofradía</p>
+        <h1 id="polls-title">Las decisiones se toman <em>entre todos.</em></h1>
+        <p>Elegimos, opinamos y decidimos lo que viene. Participa en las encuestas abiertas y descubre los resultados de nuestras votaciones.</p>
+        <a class="polls-hero-link" href="#encuestas-abiertas">Ir a las votaciones <span aria-hidden="true">↓</span></a>
+      </div>
+      <aside class="polls-hero-guide" aria-label="Tipos de encuesta">
+        <div class="polls-guide-title"><span aria-hidden="true">🗳️</span><strong>Cada voto cuenta</strong></div>
+        <p>Hay tres formas de participar. La privacidad depende del tipo de encuesta.</p>
+        <div class="polls-guide-row"><span class="polls-guide-icon" aria-hidden="true">👁</span><div><strong>Pública</strong><small>Se ven los votos y quién elige cada opción.</small></div></div>
+        <div class="polls-guide-row"><span class="polls-guide-icon" aria-hidden="true">🔒</span><div><strong>Secreta</strong><small>Resultados al cerrar, sin revelar quién eligió qué.</small></div></div>
+        <div class="polls-guide-row"><span class="polls-guide-icon" aria-hidden="true">✓</span><div><strong>Participación visible</strong><small>Se sabe quién ha votado, pero no su elección.</small></div></div>
+      </aside>
+    </section>
+
+    <section class="polls-stats" aria-label="Resumen de encuestas">
+      <div class="polls-stat"><strong id="polls-count-active">—</strong><span>Abiertas para votar</span></div>
+      <div class="polls-stat"><strong id="polls-count-recent">—</strong><span>Cerradas recientemente</span></div>
+      <div class="polls-stat"><strong id="polls-count-history">—</strong><span>En el histórico</span></div>
+    </section>
+
+    <section class="polls-section" id="encuestas-abiertas" aria-labelledby="polls-active-title">
+      <div class="section-heading polls-section-heading">
+        <div>
+          <p class="eyebrow">Tu opinión importa</p>
+          <h2 class="section-title" id="polls-active-title">Encuestas abiertas</h2>
+          <p>Selecciona una encuesta, elige tus opciones y registra tu voto.</p>
+        </div>
+        <button class="polls-refresh" type="button" id="polls-refresh"><span aria-hidden="true">↻</span> Actualizar</button>
+      </div>
+      <div id="polls-feedback" class="polls-feedback" role="status" aria-live="polite" hidden></div>
+      <div id="polls-active" class="polls-grid" aria-live="polite">
+        <div class="message">Cargando las votaciones…</div>
+      </div>
+    </section>
+
+    <section class="polls-section" id="encuestas-recientes" aria-labelledby="polls-recent-title">
+      <div class="section-heading polls-section-heading">
+        <div>
+          <p class="eyebrow">Acabamos de decidir</p>
+          <h2 class="section-title" id="polls-recent-title">Cerradas recientemente</h2>
+          <p>Los resultados permanecen aquí durante cinco días antes de pasar al histórico.</p>
+        </div>
+      </div>
+      <div id="polls-recent" class="polls-grid">
+        <div class="message">Cargando resultados recientes…</div>
+      </div>
+    </section>
+
+    <section class="polls-section" id="encuestas-historico" aria-labelledby="polls-history-title">
+      <div class="section-heading polls-section-heading">
+        <div>
+          <p class="eyebrow">Las decisiones que tomamos</p>
+          <h2 class="section-title" id="polls-history-title">Histórico de encuestas</h2>
+          <p id="polls-history-summary">Cargando histórico…</p>
+        </div>
+        <button class="polls-history-toggle" type="button" id="polls-history-toggle" aria-controls="polls-history" aria-expanded="false">Mostrar histórico <span aria-hidden="true">⌄</span></button>
+      </div>
+      <div id="polls-history" class="polls-grid" hidden></div>
+    </section>
+
+    <aside class="note-band polls-note">
+      <div>
+        <p class="eyebrow">Decidir también es compartir</p>
+        <h2 class="section-title">Lo importante es participar.</h2>
+        <p>Consulta el tablón para conocer convocatorias y avisos de la cofradía.</p>
+      </div>
+      <a class="button-outline" href="anuncios.html">Ir al tablón <span aria-hidden="true">↗</span></a>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© Cofradía A Mesa Puesta · Desde 2022 · Buenas mesas y mejores recuerdos</span>
+      <a href="estatutos.html">Estatutos</a>
+    </div>
+  </footer>
+  <nav class="mobile-nav" aria-label="Navegación móvil">
+    <a href="index.html"><span aria-hidden="true">⌂</span>Inicio</a>
+    <a href="restaurantes.html"><span aria-hidden="true">🍽</span>Comidas</a>
+    <a href="cofrades.html"><span aria-hidden="true">👥</span>Cofrades</a>
+    <a href="index.html#secciones"><span aria-hidden="true">☰</span>Más</a>
+  </nav>
+</body>
+</html>
