@@ -2,19 +2,19 @@
 
 La propuesta se encuentra en **`docs/v2/`** y no sustituye todavía a la web publicada de GitHub Pages.
 
-**Detalle ampliado (06/10/2026):** se añadió el precio total histórico de cada comida, nombre de quien firmó la reseña cuando consta, lista de organizadores, asistentes, no asistentes e invitados. Se muestran los recuentos y un desplegable accesible con las listas y el menú. Los pagos por cofrade, cuotas y remanentes no se exponen. La lectura pública se realiza mediante `public.listar_comidas_publicas_v2()`, definida en `database/05_api_detalle_comidas.sql`.
+**Detalle definitivo de Restaurantes (06/10/2026):** la ficha muestra los organizadores y el autor de la cita sin repetirlos en el desplegable. Dentro, el menú aparece **primero**, con cada plato en una línea (las barras, punto y coma y saltos separan platos); después asistentes, invitados si los hubo, no asistentes; finalmente, el precio histórico **total** de la comida, en un pie discreto. Los pagos, cuotas y remanentes individuales no se exponen. Usa `public.listar_comidas_publicas_v2()`, definida en `database/05_api_detalle_comidas.sql`.
 
 ## Páginas
 
 - `index.html`: portada editorial con las tres últimas comidas, contadores, enlaces al tablón, encuestas, cofrades, himno y estatutos.
 - `restaurantes.html`: historial gastronómico ordenado por fecha, búsqueda y filtros por año, reseñas, menús, indicaciones en Google Maps y galería de fotos locales reutilizadas de `../Fotos/`.
 - `styles.css`: diseño responsive con navegación inferior, botones táctiles, foco visible y adaptación a móvil.
-- `app.js`: lectura exclusiva de `public.listar_comidas_publicas()` en Supabase.
+- `app.js`: lectura exclusiva de `public.listar_comidas_publicas_v2()` en Supabase.
 - `config.js`: **solo clave publishable** pública, sin credenciales privilegiadas.
 
 ## Datos y privacidad
 
-`database/04_api_restaurantes_publicos.sql` habilita exclusivamente la lectura de 10 comidas celebradas y autorizadas para publicación. No se sirven cofrades, asistencias, organizadores, recaudaciones, cuotas ni cargos del bote.
+`database/04_api_restaurantes_publicos.sql` y `database/05_api_detalle_comidas.sql` habilitan únicamente la lectura de 10 comidas celebradas y publicadas. V2 incluye **nombres históricos de organizadores, asistentes y no asistentes**, citas y precio total que la web anterior ya mostraba. Nunca sirve pagos individuales, cuotas ni cargos del bote.
 
 Los enlaces a las páginas clásicas de Cofrades, Tablón, Encuestas, Himno y Estatutos se mantienen para evitar interrupciones. Las páginas **Cofrades y Restaurantes anteriores** todavía cargan sus JSON públicos; hay que adaptar Cofrades y retirar datos económicos de los JSON antes de poner V2 como página principal.
 
@@ -28,18 +28,8 @@ Los enlaces a las páginas clásicas de Cofrades, Tablón, Encuestas, Himno y Es
 
 ## Previsualización
 
-Vercel ha denegado crear automáticamente un nuevo proyecto con la conexión disponible (HTTP 403, sin permiso `create project`). **No existe todavía una URL Vercel de preview.** No se debe inventar una dirección de prueba ni fusionar este PR para obtenerla.
-
-Cuando se conecte el repositorio a un proyecto de Vercel con permisos adecuados, configurar:
-- Repositorio GitHub: `DTV79/AMesaPuesta`
-- Rama preview: `fase1/supabase-migracion`
-- Root Directory: `docs`
-- Framework: Other
-- Build Command: vacío
-- Output Directory: vacío (servir archivos estáticos)
-
-El enlace será `/v2/` dentro del dominio de esa preview, ya que el `index.html` principal sigue en `docs/index.html`.
-
+El proyecto Vercel `amesapuesta-docs` está vinculado a `DTV79/AMesaPuesta` con raíz `docs`; la rama `fase1/supabase-migracion` publica automáticamente las versiones de prueba. Las URLs de rama están protegidas por Vercel Authentication; para compartir una preview se emite un enlace temporal `?_vercel_share=...` para el despliegue concreto. La URL final de producción no cambia al publicar la rama.
+ 
 ## Pendiente previo a publicación
 
 1. Abrir preview en móvil y escritorio y comprobar fotos, búsquedas y filtros.
