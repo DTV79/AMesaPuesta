@@ -15,7 +15,7 @@
 
   button.addEventListener("click", () => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.scrollTo({ top: 0, behavior: reduceMotion ? "instant" : "smooth" });
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
   });
 
   window.addEventListener("scroll", updateVisibility, { passive: true });
