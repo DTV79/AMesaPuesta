@@ -155,6 +155,10 @@ function renderResults(){
   const root=$('admin-results-content');root.replaceChildren();
   const count=Number(p.participantes)||0;
   root.append(el('p','admin-results-summary',count+(count===1?' cofrade ha votado.':' cofrades han votado.')));
+  if(p.resultados_disponibles===false){
+    root.append(el('p','admin-preview-empty','🔒 Los resultados de esta votación permanecerán ocultos hasta su cierre, también para los administradores.'));
+    return;
+  }
   if(!count){root.append(el('p','admin-preview-empty','Sin votos registrados todavía en Supabase.'));return;}
   for(const o of p.opciones||[]){
     const votes=Number(o.votos)||0,pct=Math.round(100*votes/count);
