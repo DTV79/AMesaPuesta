@@ -1,0 +1,15 @@
+# Archivos locales con datos personales/económicos: no publicar en GitHub
+*.xlsm
+*.xlsx
+*.xls
+**/importacion_privada/
+**/datos_privados/
+**/exportaciones_privadas/
+*.secret.csv
+*.private.csv
+.env
+.env.*
+!.env.example
+*.pgpass
+*.dump
+*.backup
