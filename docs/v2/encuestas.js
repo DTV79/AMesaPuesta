@@ -284,7 +284,7 @@ function renderVoteForm(poll, card) {
   const button = el("button", "polls-vote-submit", "Registrar mi voto →");
   button.type = "button";
   button.disabled = true;
-  const note = el("p", "polls-vote-note", typeExplanation(poll.type));
+  const note = el("p", "polls-vote-note", typeExplanation(poll.type) + " Comprueba tu nombre y las opciones antes de confirmar.");
   const status = el("p", "polls-vote-status");
   status.setAttribute("role", "status");
   status.hidden = true;
@@ -340,6 +340,8 @@ function renderVoteForm(poll, card) {
       cofradeNombre: member.nombre,
       options: [...selected].sort((a, b) => a - b).map(i => poll.options[i].name)
     };
+    const confirmacion = "¿Confirmas el voto de " + member.nombre + " por " + payload.options.join(" / ") + "?\n\nUna vez registrado, no se puede modificar.";
+    if (!window.confirm(confirmacion)) return;
     sending = true;
     button.textContent = "Registrando voto…";
     updateButton();
