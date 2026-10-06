@@ -11,6 +11,7 @@ La propuesta se encuentra en **`docs/v2/`** y no sustituye todavía a la web pub
 - `cofrades.html` y `cofrades.js`: 17 fichas públicas, filtro de activos/fundadores/aprendices/históricos, búsqueda, ordenación y recuentos de asistencias/organizaciones sin información económica.
 - `estatutos.html`: versión de lectura con los **6 capítulos y 11 artículos originales**, enlaces al PDF aprobado, índice responsive y sello AMP con cangrejo al fondo. Sin alterar el contenido de los artículos.
 - `styles.css`: diseño responsive con navegación inferior, botones táctiles, foco visible y adaptación a móvil.
+- `scroll-top.js`: botón móvil `↑` compartido para regresar a la cabecera después de bajar 500 px. Todas las páginas V2 lo cargan con `defer`; debe incluirse también en cada nueva página.
 - `app.js`: lectura exclusiva de `public.listar_comidas_publicas_v2()` en Supabase.
 - `config.js`: **solo clave publishable** pública, sin credenciales privilegiadas.
 - `GUIA_ESTILO.md`: misma cabecera, navegación, paleta, tipografía y componentes en todas las páginas nuevas.
