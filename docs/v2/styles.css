@@ -410,9 +410,9 @@ button {cursor:pointer}
 .members-hero {
   margin-top:27px;
   display:grid;
-  grid-template-columns:minmax(0,1fr) 230px;
+  grid-template-columns:minmax(0,1fr);
   align-items:center;
-  gap:28px;
+  gap:0;
   padding:clamp(25px,4.4vw,57px);
   border:1px solid #e9d9cb;
   border-radius:27px;
@@ -433,25 +433,6 @@ button {cursor:pointer}
   color:#766a60;
   margin:0;
 }
-.members-hero-mark {display:grid;place-items:center;min-height:206px}
-.members-mark-ring {
-  width:194px;
-  height:194px;
-  border:3px solid #b47e6c;
-  outline:1px solid #c9a89a;
-  outline-offset:8px;
-  border-radius:50%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  transform:rotate(-9deg);
-  background:rgba(255,255,255,.38);
-  color:var(--wine);
-  box-shadow:0 12px 35px rgba(74,35,26,.08);
-}
-.members-mark-ring > span {font:700 59px/.95 Georgia,serif;letter-spacing:-.09em}
-.members-mark-ring > small {font-size:11px;letter-spacing:.24em;margin-top:15px;font-weight:800}
 .member-stats {margin-top:13px}
 .members-section {margin-top:53px}
 .members-filters {
@@ -584,10 +565,6 @@ button {cursor:pointer}
 .member-stat strong {font:700 26px/1 Georgia,serif;color:var(--wine)}
 .member-stat span {font-size:11px;line-height:1.35;color:#756a60}
 @media(max-width:950px) {
-  .members-hero {grid-template-columns:minmax(0,1fr) 170px}
-  .members-hero-mark {min-height:175px}
-  .members-mark-ring {width:145px;height:145px}
-  .members-mark-ring > span {font-size:46px}
   .members-filters {grid-template-columns:repeat(2,minmax(0,1fr))}
   .members-filters label:first-child {grid-column:1/-1}
   .members-filters .clear-button {min-width:0}
@@ -603,22 +580,6 @@ button {cursor:pointer}
   }
   .members-hero h1 {font-size:clamp(37px,9vw,53px)}
   .members-hero p:last-child {font-size:13px}
-  .members-hero-mark {
-    display:grid;
-    min-height:auto;
-    justify-content:start;
-    margin-top:22px;
-    padding-left:9px;
-  }
-  .members-mark-ring {
-    width:105px;
-    height:105px;
-    outline-offset:5px;
-    border-width:2px;
-    transform:rotate(-8deg);
-  }
-  .members-mark-ring > span {font-size:34px}
-  .members-mark-ring > small {font-size:7px;letter-spacing:.19em;margin-top:8px}
   body[data-page="cofrades"] .header-cta {display:none}
   .members-section {margin-top:40px}
   .members-filters {padding:13px;gap:9px}
@@ -632,4 +593,255 @@ button {cursor:pointer}
 @media(max-width:380px) {
   .members-filters {grid-template-columns:1fr}
   .members-filters label:first-child {grid-column:auto}
+}
+
+
+
+/* Estatutos V2: capítulos originales, estilo y navegación compartidos */
+.statutes-hero {
+  margin-top:27px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 275px;
+  align-items:center;
+  gap:30px;
+  padding:clamp(25px,4.6vw,56px);
+  border:1px solid #e6d1c3;
+  border-radius:27px;
+  background:linear-gradient(116deg,#fffbf5 5%,#f2e2d7 100%);
+  overflow:hidden;
+}
+.statutes-hero-copy {min-width:0}
+.statutes-hero h1 {
+  font:700 clamp(40px,5.4vw,68px)/1.03 Georgia,"Times New Roman",serif;
+  letter-spacing:-.055em;
+  max-width:710px;
+  margin:15px 0 19px;
+}
+.statutes-hero h1 em {color:var(--wine);font-weight:400}
+.statutes-hero-copy > p:not(.eyebrow) {
+  max-width:620px;
+  margin:0;
+  font-size:15px;
+  line-height:1.72;
+  color:#71625b;
+}
+.statutes-meta {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 20px;
+  margin-top:23px;
+  font-size:12px;
+  color:#78685e;
+}
+.statutes-meta strong {color:#5b3934}
+.statutes-actions {display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.statutes-seal-wrap {display:grid;place-items:center;min-height:270px}
+.statutes-seal {
+  position:relative;
+  display:grid;
+  place-items:center;
+  isolation:isolate;
+  width:234px;
+  height:234px;
+  border:3px double #b17f70;
+  outline:1px solid #cba99a;
+  outline-offset:8px;
+  border-radius:50%;
+  transform:rotate(-8deg);
+  background:rgba(255,255,255,.45);
+  box-shadow:0 13px 30px rgba(84,45,31,.07);
+  overflow:hidden;
+}
+.statutes-seal img {
+  position:absolute;
+  z-index:0;
+  inset:13%;
+  width:74%;
+  height:74%;
+  object-fit:contain;
+  opacity:.23;
+  filter:grayscale(1) sepia(.25);
+}
+.statutes-seal-letters {
+  position:relative;
+  z-index:1;
+  margin-top:-14px;
+  color:var(--wine-dark);
+  font:700 70px/1 Georgia,serif;
+  letter-spacing:-.10em;
+  text-shadow:0 1px 0 rgba(255,255,255,.8);
+}
+.statutes-seal-since {
+  position:absolute;
+  z-index:1;
+  bottom:38px;
+  color:var(--wine-dark);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.18em;
+}
+.statutes-disclaimer {
+  margin:15px 0 0;
+  color:#806f64;
+  font-size:12px;
+  line-height:1.65;
+}
+.statutes-layout {
+  display:grid;
+  grid-template-columns:minmax(215px,265px) minmax(0,1fr);
+  gap:25px;
+  align-items:start;
+  margin-top:38px;
+}
+.statutes-index {
+  position:sticky;
+  top:95px;
+  padding:25px 19px;
+  border:1px solid var(--line);
+  border-radius:19px;
+  background:var(--white);
+}
+.statutes-index h2 {
+  margin:8px 0 19px;
+  font:700 24px/1.2 Georgia,serif;
+}
+.statutes-index-list {
+  display:grid;
+  gap:4px;
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+.statutes-index-list a {
+  display:flex;
+  align-items:baseline;
+  gap:11px;
+  padding:10px 9px;
+  border-radius:9px;
+  color:#62554e;
+  font-size:12px;
+  line-height:1.5;
+  text-decoration:none;
+}
+.statutes-index-list a:hover,.statutes-index-list a:focus-visible {
+  color:var(--wine);
+  background:#f5e8df;
+}
+.statutes-index-list a span {color:var(--wine);font-size:11px;font-weight:900}
+.statutes-index-note {
+  margin:21px 0 0;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.55;
+}
+.statutes-chapters {display:grid;gap:19px;min-width:0}
+.statutes-chapters .capitulo {
+  scroll-margin-top:92px;
+  overflow:hidden;
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:19px;
+}
+.statutes-chapters .capitulo-head {
+  padding:24px 27px 20px;
+  border-bottom:1px solid var(--line);
+  background:#fbf3eb;
+}
+.statutes-chapters .capitulo-head h2 {
+  margin:0;
+  font:700 clamp(23px,3vw,30px)/1.2 Georgia,serif;
+  letter-spacing:-.025em;
+  color:var(--wine-dark);
+}
+.statutes-chapters .capitulo-body {padding:9px 27px 25px}
+.statutes-chapters .articulo {padding:20px 0 0}
+.statutes-chapters .articulo + .articulo {
+  border-top:1px solid var(--line);
+  margin-top:22px;
+}
+.statutes-chapters .articulo h3 {
+  margin:0 0 12px;
+  font-size:15px;
+  line-height:1.45;
+  color:var(--wine);
+}
+.statutes-chapters .articulo p,.statutes-chapters .articulo li {
+  font-size:13px;
+  line-height:1.8;
+  color:#5d514b;
+  overflow-wrap:anywhere;
+}
+.statutes-chapters .articulo p {margin:0 0 12px}
+.statutes-chapters .lista {padding-left:20px;margin:0}
+.statutes-chapters .lista li {padding-left:4px;margin-bottom:9px}
+.statutes-chapters .lista li::marker {color:#ae7e67}
+.statutes-chapters .nota-final {
+  padding:17px 19px;
+  margin-top:25px;
+  border-left:3px solid var(--gold);
+  border-radius:0 10px 10px 0;
+  background:#fbf3e9;
+  font-size:12px;
+  line-height:1.65;
+  color:#5f534c;
+}
+.statutes-mobile-index {display:none}
+@media(max-width:950px) {
+  .statutes-hero {grid-template-columns:minmax(0,1fr) 190px;gap:20px}
+  .statutes-seal-wrap {min-height:210px}
+  .statutes-seal {width:170px;height:170px}
+  .statutes-seal-letters {font-size:53px}
+  .statutes-seal-since {bottom:27px;font-size:8px}
+  .statutes-layout {grid-template-columns:1fr;gap:17px}
+  .statutes-index {display:none}
+  .statutes-mobile-index {
+    display:block;
+    margin-top:24px;
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+  }
+  .statutes-mobile-index summary {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    min-height:49px;
+    padding:13px 18px;
+    font-size:13px;
+    font-weight:800;
+    color:var(--wine);
+    cursor:pointer;
+    list-style:none;
+  }
+  .statutes-mobile-index summary::-webkit-details-marker {display:none}
+  .statutes-mobile-index[open] summary span {transform:rotate(180deg)}
+  .statutes-mobile-index .statutes-index-list {padding:0 10px 13px}
+}
+@media(max-width:680px) {
+  .statutes-hero {
+    grid-template-columns:1fr;
+    gap:12px;
+    margin-top:14px;
+    padding:27px 23px;
+    border-radius:21px;
+  }
+  .statutes-hero h1 {font-size:clamp(39px,9vw,53px)}
+  .statutes-hero-copy > p:not(.eyebrow) {font-size:13px}
+  .statutes-meta {gap:6px 15px;margin-top:19px}
+  .statutes-actions {margin-top:19px}
+  .statutes-actions a {font-size:12px;padding:11px 13px}
+  .statutes-seal-wrap {min-height:158px;justify-content:center;margin-top:9px}
+  .statutes-seal {width:136px;height:136px;outline-offset:5px;border-width:2px}
+  .statutes-seal-letters {font-size:43px;margin-top:-8px}
+  .statutes-seal-since {font-size:7px;bottom:19px}
+  .statutes-layout {margin-top:18px}
+  .statutes-chapters .capitulo-head {padding:19px 17px 16px}
+  .statutes-chapters .capitulo-head h2 {font-size:24px}
+  .statutes-chapters .capitulo-body {padding:5px 17px 20px}
+  .statutes-chapters .articulo h3 {font-size:14px}
+  .statutes-chapters .articulo p,.statutes-chapters .articulo li {font-size:12px}
 }
