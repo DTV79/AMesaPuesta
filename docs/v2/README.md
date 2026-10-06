@@ -8,15 +8,17 @@ La propuesta se encuentra en **`docs/v2/`** y no sustituye todavía a la web pub
 
 - `index.html`: portada editorial con las tres últimas comidas, contadores, enlaces al tablón, encuestas, cofrades, himno y estatutos.
 - `restaurantes.html`: historial gastronómico ordenado por fecha, búsqueda y filtros por año, reseñas, menús, indicaciones en Google Maps y galería de fotos locales reutilizadas de `../Fotos/`.
+- `cofrades.html` y `cofrades.js`: 17 fichas públicas, filtro de activos/fundadores/aprendices/históricos, búsqueda, ordenación y recuentos de asistencias/organizaciones sin información económica.
 - `styles.css`: diseño responsive con navegación inferior, botones táctiles, foco visible y adaptación a móvil.
 - `app.js`: lectura exclusiva de `public.listar_comidas_publicas_v2()` en Supabase.
 - `config.js`: **solo clave publishable** pública, sin credenciales privilegiadas.
+- `GUIA_ESTILO.md`: misma cabecera, navegación, paleta, tipografía y componentes en todas las páginas nuevas.
 
 ## Datos y privacidad
 
-`database/04_api_restaurantes_publicos.sql` y `database/05_api_detalle_comidas.sql` habilitan únicamente la lectura de 10 comidas celebradas y publicadas. V2 incluye **nombres históricos de organizadores, asistentes y no asistentes**, citas y precio total que la web anterior ya mostraba. Nunca sirve pagos individuales, cuotas ni cargos del bote.
+Las API de `database/04_api_restaurantes_publicos.sql`, `05_api_detalle_comidas.sql` y `06_api_cofrades_publicos.sql` sirven únicamente datos públicos de comidas celebradas y cofrades. Cofrades expone nombre, categoría, fecha de ingreso/baja, número de comidas asistidas y organizadas: no contiene cuotas, gastos, remanentes ni importes pagados. El rol `anon` puede ejecutar la función pero **no leer directamente las tablas personales ni financieras**.
 
-Los enlaces a las páginas clásicas de Cofrades, Tablón, Encuestas, Himno y Estatutos se mantienen para evitar interrupciones. Las páginas **Cofrades y Restaurantes anteriores** todavía cargan sus JSON públicos; hay que adaptar Cofrades y retirar datos económicos de los JSON antes de poner V2 como página principal.
+Los enlaces a Tablón, Encuestas, Himno y Estatutos siguen apuntando temporalmente a las páginas clásicas; estas también se adaptarán progresivamente al mismo sistema visual. La web anterior sigue exponiendo `docs/cofrades.json` con datos económicos históricos: **hay que sustituir la ruta y sanear/eliminar el JSON antes de publicar V2 en producción**.
 
 ## Comprobaciones
 
@@ -24,6 +26,8 @@ Los enlaces a las páginas clásicas de Cofrades, Tablón, Encuestas, Himno y Es
 - Estructura HTML y rutas internas comprobadas.
 - Estilos equilibrados y adaptados a móvil; se necesita aún prueba visual real en teléfonos.
 - API: 10 registros con rol `anon`, 0 futuras publicadas; roles públicos sin SELECT en tablas personales ni financieras.
+- Cofrades: 17 registros, 16 activos, 5 fundadores, 111 participaciones históricas; `anon` ejecuta solo la RPC pública, sin acceso a cuotas ni cargos.
+- Identidad uniforme: cabeceras, pies, menús móviles y CSS compartidos por Inicio, Restaurantes y Cofrades.
 - La web pública actual no cambia.
 
 ## Previsualización
