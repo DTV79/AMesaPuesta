@@ -126,8 +126,9 @@ grant execute on function public.listar_encuestas_cofradia() to anon,authenticat
 create or replace function public.mi_identidad_encuestas_cofradia()
 returns jsonb language plpgsql stable security definer set search_path = ''
 as $$
-declare c public.cofrades%rowtype;
-declare votadas jsonb;
+declare
+  c public.cofrades%rowtype;
+  votadas jsonb;
 begin
   if auth.uid() is null then
     raise exception 'Debes iniciar sesión' using errcode='42501';
