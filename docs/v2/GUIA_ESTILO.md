@@ -23,11 +23,19 @@ Decisión del proyecto: **todas las páginas nuevas tendrán una apariencia unif
 | Comidas y Restaurantes | Aprobada por el usuario | `docs/v2/restaurantes.html` |
 | Cofrades | Propuesta lista para prueba | `docs/v2/cofrades.html` |
 | Tablón | Versión V2 responsive con filtros, avisos destacados, categorías y lectura ampliada; mantiene el JSON sincronizado desde Google Sheets hasta disponer de administración | `docs/v2/anuncios.html` + `docs/v2/anuncios.js` |
-| Encuestas | Pendiente de migrar su diseño; sigue Google | `docs/encuestas.html` |
+| Encuestas | Nueva versión V2 responsive: públicas, secretas y participación visible, votos múltiples, resultados, cierre reciente e histórico; conserva API de Google Apps Script hasta crear administración | `docs/v2/encuestas.html` + `docs/v2/encuestas.js` |
 | Estatutos | Nueva versión con sello AMP sobre cangrejo, contenido original íntegro y PDF oficial | `docs/v2/estatutos.html` |
 | Himno | Pendiente de migrar su diseño | Página anterior |
 
-**No se consideran uniformes las páginas anteriores hasta rediseñarlas** con el sistema compartido. Los enlaces a Encuestas/Himno son temporales y seguirán funcionando mientras dure la migración.
+**No se consideran uniformes las páginas anteriores hasta rediseñarlas** con el sistema compartido. El enlace a Himno es temporal y seguirá funcionando mientras dure la migración.
+
+## Encuestas
+
+La página V2 mantiene la API **GET/POST** de `docs/encuestas.html` para conservar el historial, las encuestas en curso y la escritura de votos sin modificar el sistema actual. El POST envía `{pollId, cofrade, cofradeNombre, options}` con `Content-Type: text/plain;charset=utf-8`. No hacer pruebas con votos reales.
+
+**Privacidad y reglas:** pública = resultados y votantes por opción visibles; secreta = ni resultados ni identidad antes de cerrar, y nunca revelar quién votó qué; participación visible = participantes visibles pero elección oculta, resultados solo al cerrar. Respetar `showResults`, `showWinner`, `maxChoices`, `votersMode`, fechas de cierre, recientes de 5 días, empates y participación. La lista de cofrades proviene de la API anterior. La selección de nombre no verifica por sí sola la identidad: la migración futura a Supabase y administración debe contemplar autenticación/autorización antes de aceptar votos, evitando suplantaciones, votos duplicados y exposición de elecciones secretas.
+
+**Administración futura:** crear/editar preguntas y opciones, programar apertura/cierre, definir elegibilidad, tipos de privacidad y visibilidad, consultar resultados y archivar; migrar los datos y votos existentes sin perder integridad. No se ha creado todavía un administrador de encuestas ni una nueva API de votación. El botón «Volver arriba» y toda la navegación son los componentes compartidos.
 
 ## Tablón de anuncios
 
