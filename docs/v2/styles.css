@@ -1112,6 +1112,7 @@ button {cursor:pointer}
 .polls-feedback.error {border-color:#e1b9b4;background:#fff2f0;color:#85303a}
 .polls-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
 .polls-grid[hidden] {display:none}
+.polls-grid > .polls-card:only-child {grid-column:1/-1;width:100%;max-width:880px;margin-inline:auto}
 .polls-card {
   min-width:0;
   border:1px solid var(--line);
@@ -1294,6 +1295,8 @@ button {cursor:pointer}
   .polls-stat span {font-size:10px;line-height:1.4}
   .polls-section {margin-top:41px;scroll-margin-top:76px}
   .polls-section-heading {align-items:flex-start;gap:13px}
+  .polls-section-heading:has(.polls-history-toggle) {flex-direction:column;align-items:stretch}
+  .polls-section-heading:has(.polls-history-toggle) .polls-history-toggle {align-self:flex-start}
   .polls-section-heading .section-title {font-size:32px}
   .polls-section-heading p:last-child {font-size:12px}
   .polls-refresh,.polls-history-toggle {min-height:42px;padding:9px 12px;font-size:11px}
