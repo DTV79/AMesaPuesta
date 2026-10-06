@@ -2,6 +2,8 @@
 
 La propuesta se encuentra en **`docs/v2/`** y no sustituye todavía a la web publicada de GitHub Pages.
 
+**Detalle ampliado (06/10/2026):** se añadió el precio total histórico de cada comida, nombre de quien firmó la reseña cuando consta, lista de organizadores, asistentes, no asistentes e invitados. Se muestran los recuentos y un desplegable accesible con las listas y el menú. Los pagos por cofrade, cuotas y remanentes no se exponen. La lectura pública se realiza mediante `public.listar_comidas_publicas_v2()`, definida en `database/05_api_detalle_comidas.sql`.
+
 ## Páginas
 
 - `index.html`: portada editorial con las tres últimas comidas, contadores, enlaces al tablón, encuestas, cofrades, himno y estatutos.
