@@ -96,10 +96,10 @@ function ficha(persona) {
 function pintarCifras(cofrades) {
   const activos=cofrades.filter(c=>!esHistorico(c));
   const fundadores=activos.filter(esFundador);
-  const asistencias=cofrades.reduce((total,c)=>total+cantidad(c.comidas_asistidas),0);
+  const aprendices=activos.filter(esAprendiz);
   document.getElementById('stat-activos').textContent=String(activos.length);
   document.getElementById('stat-fundadores').textContent=String(fundadores.length);
-  document.getElementById('stat-asistencias').textContent=String(asistencias);
+  document.getElementById('stat-aprendices').textContent=String(aprendices.length);
 }
 function iniciarFiltros(cofrades) {
   const buscar=document.getElementById('buscar-cofrades');
