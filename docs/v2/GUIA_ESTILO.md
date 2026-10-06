@@ -22,12 +22,16 @@ Decisión del proyecto: **todas las páginas nuevas tendrán una apariencia unif
 | Inicio | Propuesta desarrollada | `docs/v2/index.html` |
 | Comidas y Restaurantes | Aprobada por el usuario | `docs/v2/restaurantes.html` |
 | Cofrades | Propuesta lista para prueba | `docs/v2/cofrades.html` |
-| Tablón | Pendiente de migrar su diseño; sigue Google | `docs/anuncios.html` |
+| Tablón | Versión V2 responsive con filtros, avisos destacados, categorías y lectura ampliada; mantiene el JSON sincronizado desde Google Sheets hasta disponer de administración | `docs/v2/anuncios.html` + `docs/v2/anuncios.js` |
 | Encuestas | Pendiente de migrar su diseño; sigue Google | `docs/encuestas.html` |
 | Estatutos | Nueva versión con sello AMP sobre cangrejo, contenido original íntegro y PDF oficial | `docs/v2/estatutos.html` |
 | Himno | Pendiente de migrar su diseño | Página anterior |
 
-**No se consideran uniformes las páginas anteriores hasta rediseñarlas** con el sistema compartido. Los enlaces a Tablón/Encuestas/Himno son temporales y seguirán funcionando mientras dure la migración.
+**No se consideran uniformes las páginas anteriores hasta rediseñarlas** con el sistema compartido. Los enlaces a Encuestas/Himno son temporales y seguirán funcionando mientras dure la migración.
+
+## Tablón de anuncios
+
+La nueva página usa el mismo menú centrado en escritorio, barra inferior en móvil, pie, CSS y botón flotante «Volver arriba» que el resto. Mantiene **sin cambios el origen** `docs/anuncios.json`, generado desde Google Sheets: solo publica anuncios `visible`, cuya `fechaPublicacion` ya ha llegado y cuya `fechaFin` no ha vencido. Destacados activos durante `dias_destacado` desde `fecha`, urgentes primero, búsqueda y filtros. No duplica los destacados en el listado general. No hay administración de anuncios en esta fase; se migrará posteriormente a Supabase y zona privada de gestión, sin interrumpir publicaciones.
 
 ## Cofrades
 
