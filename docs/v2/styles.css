@@ -217,14 +217,9 @@ button {cursor:pointer}
 
 /* Información recuperada de las fichas históricas (V2) */
 .visit-info {
-  display:grid;
-  grid-template-columns:minmax(0,1fr);
-  gap:9px;
-  padding:13px 14px;
-  margin:14px 0 10px;
-  background:#f8f1eb;
-  border:1px solid #efe0d7;
-  border-radius:13px;
+  display:block;
+  padding:7px 0 1px;
+  margin:10px 0 8px;
 }
 .visit-info-item {
   display:flex;
@@ -247,7 +242,7 @@ button {cursor:pointer}
   overflow-wrap:anywhere;
   color:#40332e;
 }
-.visit-info-item:first-child strong {color:var(--wine)}
+.visit-info-item:first-child strong {color:#40332e}
 .visit-quote {
   margin:13px 0;
   padding:11px 14px;
@@ -321,13 +316,16 @@ button {cursor:pointer}
 }
 .empty-names {margin:0;color:var(--muted);font-size:11px}
 .meal-menu {
-  border-top:1px solid var(--line);
-  padding-top:15px;
-  margin-top:13px;
+  padding:17px 18px 18px;
+  margin-top:15px;
+  background:#fcf5eb;
+  border:1px solid #e7d0b9;
+  border-radius:14px;
 }
 .meal-menu h3 {
-  font:700 19px/1.2 Georgia,serif;
-  margin:0 0 15px;
+  font:700 23px/1.2 Georgia,serif;
+  color:#5b2630;
+  margin:0 0 18px;
 }
 .history-details summary {
   display:list-item;
@@ -348,4 +346,61 @@ button {cursor:pointer}
 }
 @media(max-width:380px) {
   .participant-sections {grid-template-columns:1fr}
+}
+
+
+/* Menú destacado: cada plato ocupa una línea */
+.meal-menu .menu-group {margin:15px 0 0}
+.meal-menu .menu-group:first-of-type {margin-top:0}
+.meal-menu .menu-group h4 {
+  margin:0 0 6px;
+  color:#812d33;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.02em;
+}
+.menu-items {
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+.menu-items li {
+  position:relative;
+  padding:6px 0 6px 17px;
+  font-size:13px;
+  line-height:1.5;
+  color:#493a33;
+  overflow-wrap:anywhere;
+}
+.menu-items li + li {border-top:1px solid #eee0cf}
+.menu-items li::before {
+  content:"•";
+  position:absolute;
+  left:2px;
+  top:6px;
+  color:#b47c54;
+}
+.history-details .participant-sections {
+  border-top:1px solid var(--line);
+  padding-top:16px;
+  margin-top:17px;
+  margin-bottom:12px;
+}
+.meal-total {
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:10px 0 0;
+  padding:14px 3px 2px;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
+.meal-total span:last-child {font-weight:700;color:#675c53}
+@media (max-width:680px) {
+  .meal-menu {padding:15px 14px}
+  .meal-menu h3 {font-size:22px}
+  .menu-items li {font-size:13px}
 }
