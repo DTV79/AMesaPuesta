@@ -220,11 +220,62 @@ async function remove(){
   }catch(error){feedback('No se pudo eliminar: '+error.message,true);}
   finally{lock(false);}
 }
+async function loadAccounts(){
+  const rows=await rpc('listar_cuentas_cofrades_admin');
+  if(!Array.isArray(rows))throw new Error('No se pudo cargar la lista de cofrades.');
+  const root=$('admin-accounts-list');root.replaceChildren();
+  const active=rows.filter(c=>c.activo);
+  const linked=active.filter(c=>c.vinculado).length;
+  $('admin-accounts-summary').textContent=linked+' de '+active.length+' cofrades activos con cuenta vinculada';
+  for(const c of rows){
+    const card=el('article','admin-account-card'+(!c.activo?' is-inactive':''));
+    const identity=el('div','admin-account-identity');
+    identity.append(el('strong','',c.nombre),el('small','',c.categoria||'Cofrade'));
+    const controls=el('div','admin-account-controls');
+    if(!c.activo){
+      controls.append(el('span','admin-mini-status','Baja · Sin acceso'));
+    }else if(c.vinculado){
+      controls.append(el('span','admin-mini-status state-abierta','✓ Vinculado'));
+      if(c.correo)controls.append(el('span','admin-account-email',c.correo));
+      const unlink=el('button','admin-outline','Desvincular');
+      unlink.type='button';
+      unlink.addEventListener('click',async()=>{
+        if(busy||!window.confirm('¿Revocar el acceso de '+c.nombre+' a su identidad de votación?'))return;
+        unlink.disabled=true;
+        try{
+          await rpc('desvincular_cuenta_cofrade_admin',{p_cofrade_id:c.id});
+          await loadAccounts();feedback('Cuenta desvinculada correctamente.');
+        }catch(error){feedback('No se pudo desvincular: '+error.message,true);unlink.disabled=false;}
+      });
+      controls.append(unlink);
+    }else{
+      controls.append(el('span','admin-mini-status state-borrador','Pendiente'));
+      const input=el('input','admin-account-input');
+      input.type='email';input.placeholder='Correo confirmado de Supabase';
+      input.autocomplete='off';input.setAttribute('aria-label','Correo para vincular a '+c.nombre);
+      const link=el('button','admin-new-button','Vincular');
+      link.type='button';
+      link.addEventListener('click',async()=>{
+        const email=str(input.value);
+        if(!email||!input.checkValidity()){feedback('Introduce un correo electrónico válido.',true);input.focus();return;}
+        if(busy||!window.confirm('¿Vincular a '+c.nombre+' con la cuenta '+email+'? Comprueba la identidad antes de confirmar.'))return;
+        link.disabled=true;
+        try{
+          await rpc('vincular_cuenta_cofrade_admin',{p_cofrade_id:c.id,p_correo:email});
+          await loadAccounts();feedback('Cuenta de '+c.nombre+' vinculada correctamente.');
+        }catch(error){feedback('No se pudo vincular: '+error.message,true);link.disabled=false;}
+      });
+      controls.append(input,link);
+    }
+    card.append(identity,controls);root.append(card);
+  }
+}
 async function dashboard(){
   const authorized=await rpc('soy_admin_cofradia');
   if(authorized!==true)throw new Error('Esta cuenta no está autorizada como administradora.');
   $('admin-user-label').textContent='Sesión iniciada: '+(session.email||'administrador autorizado');
   view(false);await reload(false);
+  await loadAccounts().catch(error=>feedback('Cuentas: '+error.message,true));
 }
 async function login(event){
   event.preventDefault();if(busy)return;
@@ -251,6 +302,7 @@ $('admin-poll-form').addEventListener('submit',save);
 $('admin-new').addEventListener('click',()=>resetForm());
 $('admin-delete').addEventListener('click',remove);
 $('admin-logout').addEventListener('click',logout);
+$('admin-accounts-refresh').addEventListener('click',()=>loadAccounts().catch(error=>feedback('Cuentas: '+error.message,true)));
 $('admin-search').addEventListener('input',renderList);
 $('admin-filter').addEventListener('change',renderList);
 $('admin-poll-form').addEventListener('input',()=>{dirty=true;refreshEditor();});
