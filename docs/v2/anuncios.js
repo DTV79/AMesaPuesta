@@ -88,14 +88,17 @@ function publicable(a, today) {
   return true;
 }
 
+function diasDestacado(a) {
+  const n = Number.parseInt(a.dias_destacado ?? a["dias destacado"] ?? a["Días Destacado"] ?? "", 10);
+  return Number.isFinite(n) && n > 0 ? n : 15;
+}
+
 function destacadoActivo(a, today) {
   if (!esVerdadero(a.destacado)) return false;
   const inicio = fecha(a.fecha);
   if (!inicio) return false;
-  const n = Number.parseInt(a.dias_destacado ?? a["dias destacado"] ?? "", 10);
-  const dias = Number.isFinite(n) && n > 0 ? n : 15;
   const transcurridos = Math.round((diaUtc(today) - diaUtc(inicio)) / 86400000);
-  return transcurridos >= 0 && transcurridos <= dias;
+  return transcurridos >= 0 && transcurridos <= diasDestacado(a);
 }
 
 function ordenar(lista, today) {
@@ -139,7 +142,10 @@ function crearAnuncio(a, destacado) {
   const chips = crear("div", "board-card-labels");
   const info = tipoInfo(a.tipo);
   chips.append(crear("span", "board-category", info.icono + " " + info.nombre));
-  if (destacado) chips.append(crear("span", "board-featured-tag", "Destacado"));
+  if (destacado) {
+    const dias = diasDestacado(a);
+    chips.append(crear("span", "board-featured-tag", "Destacado durante " + dias + (dias === 1 ? " día" : " días")));
+  }
   heading.append(chips);
   const title = crear("h3", "board-card-title", txt(a.titulo) || "Sin título");
   heading.append(title);
