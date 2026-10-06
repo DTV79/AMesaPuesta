@@ -157,8 +157,15 @@ function prepararGaleria(){
 }
 function grupoMenu(label,value){
   if(!txt(value)||txt(value)==='-')return null;
-  const d=el('div','menu-group');
-  d.append(el('strong','',label),el('p','',value));
+  // Cada plato separado por la barra, punto y coma o salto de línea ocupa
+  // su propia línea, sin dividir nombres que contienen comas.
+  const platos=txt(value).split(/\s*(?:\/|;|\r?\n)\s*/).map(txt).filter(Boolean);
+  if(!platos.length)return null;
+  const d=el('section','menu-group');
+  d.append(el('h4','',label));
+  const lista=el('ul','menu-items');
+  for(const plato of platos)lista.append(el('li','',plato));
+  d.append(lista);
   return d;
 }
 function euro(value){
@@ -202,10 +209,7 @@ function historialCard(m) {
   const ausentes=nombres(m.no_asistentes);
   const invitados=nombres(m.invitados);
   const info=el('div','visit-info');
-  info.append(
-    datoEncabezado('Precio total de la comida',euro(m.precio_total)),
-    datoEncabezado('Organizaron',organizadores.join(' · ')||'Sin registro')
-  );
+  info.append(datoEncabezado('Organizaron',organizadores.join(' · ')||'Sin registro'));
   contenido.append(info);
 
   if(txt(m.comentario)){
@@ -245,20 +249,11 @@ function historialCard(m) {
   contenido.append(actions);
 
   const detalles=el('details','history-details');
-  detalles.append(el('summary','','Ver asistentes, ausentes y menú'));
+  detalles.append(el('summary','','Ver menú, asistentes y precio'));
 
-  const participantes=el('div','participant-sections');
-  participantes.append(
-    apartadoPersonas('Organizadores',organizadores),
-    apartadoPersonas('Asistieron',asistentes),
-    apartadoPersonas('No asistieron',ausentes)
-  );
-  if(invitados.length)participantes.append(apartadoPersonas('Invitados',invitados));
-  detalles.append(participantes);
-
-  const menu=el('div','meal-menu');
-  const tituloMenu=el('h3','','Menú de la comida');
-  menu.append(tituloMenu);
+  // Primero el menú y sus platos: es el protagonista del encuentro.
+  const menu=el('section','meal-menu');
+  menu.append(el('h3','','Menú de la comida'));
   for(const [nombre,valor] of [
     ['Entrantes',m.menu_entrantes],['Platos principales',m.menu_principales],
     ['Postres',m.menu_postres],['Bebidas',m.menu_bebidas]
@@ -267,6 +262,21 @@ function historialCard(m) {
     if(grupo)menu.append(grupo);
   }
   detalles.append(menu);
+
+  // Después quién asistió y quién no. No duplicar organizadores.
+  const participantes=el('div','participant-sections');
+  participantes.append(apartadoPersonas('Asistieron',asistentes));
+  if(invitados.length)participantes.append(apartadoPersonas('Invitados',invitados));
+  participantes.append(apartadoPersonas('No asistieron',ausentes));
+  detalles.append(participantes);
+
+  // El importe histórico queda como dato secundario y final.
+  const precio=el('p','meal-total');
+  precio.append(
+    el('span','','Precio total de la comida'),
+    el('span','',euro(m.precio_total))
+  );
+  detalles.append(precio);
   contenido.append(detalles);
   card.append(cover,contenido);
   return card;
