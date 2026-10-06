@@ -7,8 +7,9 @@ Decisión del proyecto: **todas las páginas nuevas tendrán una apariencia unif
 - **Hoja principal única:** `styles.css`. No incorporar hojas distintas con encabezados, paletas ni tipografías contradictorias.
 - **Colores:** papel `#f8f4ed`; fondo blanco cálido `#fffdf9`; vino principal `#8b252f`; vino oscuro `#531923`; dorado `#d7aa68`; líneas `#e8dcd1`.
 - **Tipografía:** títulos en Georgia, contenido en la tipografía del sistema; jerarquía consistente de `eyebrow`, `section-title` y textos informativos.
-- **Cabecera fija:** mismo logotipo cangrejo, título “A Mesa Puesta”, sección actual identificada, enlaces Inicio / Nuestras comidas / Cofrades / Tablón / Encuestas. El botón de acción mantiene posición y estilo.
+- **Cabecera fija:** mismo logotipo cangrejo, título “A Mesa Puesta”, sección actual identificada y menú de escritorio centrado: Inicio / Nuestras comidas / Cofrades / Tablón / Encuestas. No repetir botones de navegación en la esquina superior.
 - **Navegación móvil fija:** exactamente cuatro accesos y en el mismo orden en todas las páginas: **Inicio → Comidas → Cofrades → Más**. “Más” conduce a las secciones de la portada hasta que haya menú propio.
+- **Volver arriba (obligatorio en todas las páginas V2 presentes y futuras):** incluir `<script src="./scroll-top.js" defer></script>` en el `<head>` de cada HTML, junto a `styles.css`. Al desplazarse 500 px aparece un botón circular `↑` en el lateral derecho del móvil, justo encima del menú inferior. Al pulsarlo vuelve al inicio con desplazamiento suave, salvo preferencia de movimiento reducido. Se oculta automáticamente al regresar arriba y no se muestra en escritorio.
 - **Pie de página:** mismo crédito, mismo acceso a Estatutos.
 - **Componentes:** mismas tarjetas redondeadas, bordes suaves, etiquetas, formularios, botones, textos de carga/error y estados de foco de teclado. Los colores distintivos se aplican solo a información con valor real (p. ej. fundador).
 - **Anchura y responsive:** contenedor máximo 1160 px; rejillas adaptativas, componentes táctiles y desplazamiento de contenido sin tablas horizontales obligatorias.
@@ -36,8 +37,8 @@ El sello decorativo AMP se reserva a Estatutos: usa el cangrejo de fondo con las
 
 ## Procedimiento futuro
 
-1. Reutilizar cabecera, menú móvil, pie y `styles.css`.
+1. Reutilizar cabecera, menú móvil, pie, `styles.css` y el script compartido `scroll-top.js`.
 2. Añadir estilos locales solo dentro del sistema de componentes compartidos.
-3. Comprobar escritorio, móvil, búsqueda y accesibilidad.
+3. Comprobar escritorio, móvil, búsqueda y accesibilidad; verificar en móvil que el botón `↑` aparece tras desplazarse, funciona y no tapa la navegación inferior.
 4. Comparar datos funcionales con la versión anterior y comprobar acceso anónimo permitido.
 5. Probar en la rama `fase1/supabase-migracion` antes de aprobar el cambio de producción.
