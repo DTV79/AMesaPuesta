@@ -603,7 +603,23 @@ button {cursor:pointer}
   }
   .members-hero h1 {font-size:clamp(37px,9vw,53px)}
   .members-hero p:last-child {font-size:13px}
-  .members-hero-mark {display:none}
+  .members-hero-mark {
+    display:grid;
+    min-height:auto;
+    justify-content:start;
+    margin-top:22px;
+    padding-left:9px;
+  }
+  .members-mark-ring {
+    width:105px;
+    height:105px;
+    outline-offset:5px;
+    border-width:2px;
+    transform:rotate(-8deg);
+  }
+  .members-mark-ring > span {font-size:34px}
+  .members-mark-ring > small {font-size:7px;letter-spacing:.19em;margin-top:8px}
+  body[data-page="cofrades"] .header-cta {display:none}
   .members-section {margin-top:40px}
   .members-filters {padding:13px;gap:9px}
   .members-grid {grid-template-columns:1fr;gap:12px}
