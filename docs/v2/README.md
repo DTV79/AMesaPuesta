@@ -9,6 +9,7 @@ La propuesta se encuentra en **`docs/v2/`** y no sustituye todavía a la web pub
 - `index.html`: portada editorial con las tres últimas comidas, contadores, enlaces al tablón, encuestas, cofrades, himno y estatutos.
 - `restaurantes.html`: historial gastronómico ordenado por fecha, búsqueda y filtros por año, reseñas, menús, indicaciones en Google Maps y galería de fotos locales reutilizadas de `../Fotos/`.
 - `cofrades.html` y `cofrades.js`: 17 fichas públicas, filtro de activos/fundadores/aprendices/históricos, búsqueda, ordenación y recuentos de asistencias/organizaciones sin información económica.
+- `estatutos.html`: versión de lectura con los **6 capítulos y 11 artículos originales**, enlaces al PDF aprobado, índice responsive y sello AMP con cangrejo al fondo. Sin alterar el contenido de los artículos.
 - `styles.css`: diseño responsive con navegación inferior, botones táctiles, foco visible y adaptación a móvil.
 - `app.js`: lectura exclusiva de `public.listar_comidas_publicas_v2()` en Supabase.
 - `config.js`: **solo clave publishable** pública, sin credenciales privilegiadas.
@@ -18,7 +19,7 @@ La propuesta se encuentra en **`docs/v2/`** y no sustituye todavía a la web pub
 
 Las API de `database/04_api_restaurantes_publicos.sql`, `05_api_detalle_comidas.sql` y `06_api_cofrades_publicos.sql` sirven únicamente datos públicos de comidas celebradas y cofrades. Cofrades expone nombre, categoría, fecha de ingreso/baja, número de comidas asistidas y organizadas: no contiene cuotas, gastos, remanentes ni importes pagados. El rol `anon` puede ejecutar la función pero **no leer directamente las tablas personales ni financieras**.
 
-Los enlaces a Tablón, Encuestas, Himno y Estatutos siguen apuntando temporalmente a las páginas clásicas; estas también se adaptarán progresivamente al mismo sistema visual. La web anterior sigue exponiendo `docs/cofrades.json` con datos económicos históricos: **hay que sustituir la ruta y sanear/eliminar el JSON antes de publicar V2 en producción**.
+Los enlaces a Tablón, Encuestas e Himno siguen apuntando temporalmente a las páginas clásicas; estas también se adaptarán progresivamente al mismo sistema visual. Estatutos ya usa la V2. La web anterior sigue exponiendo `docs/cofrades.json` con datos económicos históricos: **hay que sustituir la ruta y sanear/eliminar el JSON antes de publicar V2 en producción**.
 
 ## Comprobaciones
 
