@@ -173,6 +173,21 @@
           </section>
         </div>
       </div>
+      <section class="admin-accounts" id="admin-accounts" aria-labelledby="admin-accounts-title">
+        <div class="admin-accounts-heading">
+          <div>
+            <p class="eyebrow">Identidad y seguridad</p>
+            <h2 id="admin-accounts-title" class="section-title">Acceso de los cofrades</h2>
+            <p>Vincula cada cofrade con su propia cuenta confirmada en Supabase Auth. Nadie podrá votar utilizando el nombre de otra persona.</p>
+          </div>
+          <button type="button" id="admin-accounts-refresh" class="admin-outline">↻ Actualizar</button>
+        </div>
+        <div class="admin-accounts-summary" id="admin-accounts-summary" aria-live="polite">Consultando cuentas…</div>
+        <div id="admin-accounts-list" class="admin-accounts-list">
+          <p class="admin-list-empty">Cargando cofrades…</p>
+        </div>
+        <p class="admin-accounts-footnote">Para vincular un cofrade, primero debe existir su cuenta con correo confirmado en <strong>Supabase → Authentication → Users</strong>. Nunca se comparten contraseñas ni se permite seleccionar otro nombre al votar.</p>
+      </section>
     </section>
     <p id="admin-notice" class="admin-toast" role="status" aria-live="polite" hidden></p>
   </main>
