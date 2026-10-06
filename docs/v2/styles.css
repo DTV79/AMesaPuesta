@@ -1487,3 +1487,46 @@ button {cursor:pointer}
   .admin-editor-actions .admin-primary {flex:1}
   .admin-toast {bottom:87px;right:12px;left:12px;max-width:none}
 }
+
+
+/* Gestión de identidad de votantes, dentro de administración V2. */
+.admin-accounts {
+  margin:26px 0 20px;padding:26px;border:1px solid var(--line);
+  border-radius:19px;background:var(--white);
+  box-shadow:0 9px 22px #30180d0a;
+}
+.admin-accounts-heading {
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.admin-accounts-heading .section-title {font-size:clamp(27px,3vw,36px)}
+.admin-accounts-heading p:last-child {max-width:750px;margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.7}
+.admin-accounts-summary {
+  margin:21px 0 14px;padding:12px 16px;border:1px solid #e8d7c5;
+  border-radius:10px;background:#faf3ea;color:var(--wine-dark);font-size:12px;font-weight:800;
+}
+.admin-accounts-list {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.admin-account-card {
+  display:flex;flex-direction:column;gap:13px;padding:16px;
+  border:1px solid #e9dbcf;border-radius:13px;background:#fff;
+}
+.admin-account-card.is-inactive {opacity:.65}
+.admin-account-identity {display:flex;flex-direction:column;gap:4px}
+.admin-account-identity strong {color:#4c3932;font-size:13px;overflow-wrap:anywhere}
+.admin-account-identity small {color:#8c786b;font-size:11px}
+.admin-account-controls {display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.admin-account-controls .admin-outline {min-height:35px;padding:7px 11px;font-size:11px}
+.admin-account-input {
+  min-width:150px;flex:1 1 170px;min-height:38px;padding:8px 10px;
+  border:1px solid #d8c7bb;border-radius:9px;background:#fff;
+  font:500 12px system-ui,sans-serif;
+}
+.admin-account-email {flex:1 1 auto;min-width:0;color:#78675c;font-size:11px;overflow-wrap:anywhere}
+.admin-accounts-footnote {
+  margin:19px 0 0;padding-top:15px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:11px;line-height:1.7;
+}
+@media(max-width:700px){
+  .admin-accounts {padding:20px 16px}
+  .admin-accounts-heading {align-items:flex-start;flex-wrap:wrap}
+  .admin-accounts-list {grid-template-columns:1fr}
+}
