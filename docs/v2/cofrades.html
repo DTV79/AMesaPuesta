@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f8f4ed">
+  <meta name="description" content="Conoce a los cofrades de A Mesa Puesta, desde los fundadores hasta los nuevos compañeros de sobremesa.">
+  <title>Nuestros cofrades · Cofradía A Mesa Puesta</title>
+  <link rel="icon" href="../Fotos/logo-cangrejo.png" type="image/png">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./cofrades.js"></script>
+</head>
+<body data-page="cofrades">
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand" aria-label="Cofradía A Mesa Puesta, inicio">
+        <span class="brand-mark"><img src="../Fotos/logo-cangrejo.png" alt="" width="38" height="38"></span>
+        <span class="brand-text">A Mesa Puesta<small>La cofradía · Desde 2022</small></span>
+      </a>
+      <nav class="desktop-nav" aria-label="Navegación principal">
+        <a href="index.html">Inicio</a>
+        <a href="restaurantes.html">Nuestras comidas</a>
+        <a href="cofrades.html" aria-current="page">Cofrades</a>
+        <a href="../anuncios.html">Tablón</a>
+        <a href="../encuestas.html">Encuestas</a>
+      </nav>
+      <a class="header-cta" href="restaurantes.html">Ver nuestras comidas <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+
+  <main class="container" id="contenido">
+    <section class="members-hero" aria-labelledby="cofrades-titulo">
+      <div>
+        <p class="eyebrow">La gente detrás de cada sobremesa</p>
+        <h1 id="cofrades-titulo">La cofradía son <em>las personas.</em></h1>
+        <p>Los que empezaron, los que se fueron sumando y los que siguen haciendo que cada encuentro merezca la pena. Aquí están nuestros cofrades y su historia alrededor de la mesa.</p>
+      </div>
+      <div class="members-hero-mark" aria-hidden="true">
+        <span class="members-mark-ring"><span>AMP</span><small>EST. 2022</small></span>
+      </div>
+    </section>
+
+    <section class="stats member-stats" aria-label="La cofradía en cifras">
+      <div class="stat"><strong id="stat-activos">—</strong><span>Cofrades activos</span></div>
+      <div class="stat"><strong id="stat-fundadores">—</strong><span>Fundadores</span></div>
+      <div class="stat"><strong id="stat-asistencias">—</strong><span>Participaciones en comidas</span></div>
+    </section>
+
+    <section class="section members-section" aria-labelledby="cofrades-list-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Los nuestros</p>
+          <h2 class="section-title" id="cofrades-list-title">Conoce a los cofrades</h2>
+        </div>
+        <p class="muted">Cofrades fundadores, miembros actuales y quienes ya forman parte de nuestra historia.</p>
+      </div>
+      <div class="members-filters" role="search" aria-label="Buscar y ordenar cofrades">
+        <label for="buscar-cofrades">Buscar cofrade
+          <input id="buscar-cofrades" type="search" placeholder="Nombre o categoría…" autocomplete="off">
+        </label>
+        <label for="filtro-cofrades">Mostrar
+          <select id="filtro-cofrades">
+            <option value="activos">Activos</option>
+            <option value="todos">Todos</option>
+            <option value="fundadores">Fundadores</option>
+            <option value="aprendices">Aprendices</option>
+            <option value="bajas">Históricos</option>
+          </select>
+        </label>
+        <label for="orden-cofrades">Ordenar por
+          <select id="orden-cofrades">
+            <option value="nombre">Nombre (A–Z)</option>
+            <option value="asistencia">Más asistencias</option>
+            <option value="antiguedad">Antigüedad</option>
+            <option value="nombre_desc">Nombre (Z–A)</option>
+          </select>
+        </label>
+        <button id="limpiar-cofrades" class="clear-button" type="button">Limpiar filtros</button>
+      </div>
+      <div class="results-heading" aria-live="polite">
+        <strong id="cofrades-contador">Cargando cofrades…</strong>
+        <span class="year-hint">Datos de participación de las comidas celebradas</span>
+      </div>
+      <div id="cofrades-lista" class="members-grid" aria-label="Listado de cofrades" aria-live="polite">
+        <div class="message">Cargando los cofrades desde la base de datos…</div>
+      </div>
+    </section>
+
+    <aside class="note-band" id="enlaces">
+      <div>
+        <p class="eyebrow">Lo que nos une</p>
+        <h2 class="section-title">La próxima mesa nos espera.</h2>
+        <p>También puedes visitar el historial de comidas, consultar las normas de la cofradía o enterarte de las novedades en el tablón.</p>
+      </div>
+      <a class="button-outline" href="restaurantes.html">Explorar comidas <span aria-hidden="true">↗</span></a>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© Cofradía A Mesa Puesta · Desde 2022 · Buenas mesas y mejores recuerdos</span>
+      <a href="../estatutos.html">Estatutos</a>
+    </div>
+  </footer>
+  <nav class="mobile-nav" aria-label="Navegación móvil">
+    <a href="index.html"><span aria-hidden="true">⌂</span>Inicio</a>
+    <a href="restaurantes.html"><span aria-hidden="true">🍽</span>Comidas</a>
+    <a href="cofrades.html" aria-current="page"><span aria-hidden="true">👥</span>Cofrades</a>
+    <a href="index.html#secciones"><span aria-hidden="true">☰</span>Más</a>
+  </nav>
+</body>
+</html>
