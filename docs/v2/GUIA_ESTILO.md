@@ -23,15 +23,16 @@ Decisión del proyecto: **todas las páginas nuevas tendrán una apariencia unif
 | Cofrades | Propuesta lista para prueba | `docs/v2/cofrades.html` |
 | Tablón | Pendiente de migrar su diseño; sigue Google | `docs/anuncios.html` |
 | Encuestas | Pendiente de migrar su diseño; sigue Google | `docs/encuestas.html` |
-| Himno y Estatutos | Pendientes de migrar su diseño | Páginas anteriores |
+| Estatutos | Nueva versión con sello AMP sobre cangrejo, contenido original íntegro y PDF oficial | `docs/v2/estatutos.html` |
+| Himno | Pendiente de migrar su diseño | Página anterior |
 
-**No se consideran uniformes las páginas anteriores hasta rediseñarlas** con el sistema compartido. Los enlaces a Tablón/Encuestas/Himno/Estatutos son temporales y seguirán funcionando mientras dure la migración.
+**No se consideran uniformes las páginas anteriores hasta rediseñarlas** con el sistema compartido. Los enlaces a Tablón/Encuestas/Himno son temporales y seguirán funcionando mientras dure la migración.
 
 ## Cofrades
 
 Se muestran nombre, categoría, fecha de ingreso, fecha de baja cuando existe, comidas asistidas y comidas organizadas, sin cifras económicas. Los 17 registros pueden consultarse: por defecto se muestran 16 activos, con filtros para fundadores, aprendices y miembros históricos. La función `public.listar_cofrades_publicos()` permite exclusivamente esos datos históricos; `anon` carece de permisos de lectura directa sobre `cofrades`, `pagos_cuotas` y `cargos_bote`.
 
-La web anterior todavía incluye `docs/cofrades.json` con datos económicos. **La V2 no lo carga**, pero su mera existencia en la web anterior significa que hay que retirarlo o sanearlo en el paso final a producción, después de sustituir la página antigua y probar los enlaces.
+El sello decorativo AMP se reserva a Estatutos: usa el cangrejo de fondo con las letras superpuestas. En Cofrades no aparece sello y Restaurantes no tiene botón de volver al inicio en cabecera. La web anterior todavía incluye `docs/cofrades.json` con datos económicos. **La V2 no lo carga**, pero su mera existencia en la web anterior significa que hay que retirarlo o sanearlo en el paso final a producción, después de sustituir la página antigua y probar los enlaces.
 
 ## Procedimiento futuro
 
