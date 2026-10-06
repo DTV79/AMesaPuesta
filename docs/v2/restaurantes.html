@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f8f4ed">
+  <meta name="description" content="Descubre las comidas de la Cofradía A Mesa Puesta: restaurantes, fechas, menús y fotografías de cada encuentro.">
+  <title>Nuestras comidas · Cofradía A Mesa Puesta</title>
+  <link rel="icon" href="../Fotos/logo-cangrejo.png" type="image/png">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body data-page="restaurantes">
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand" aria-label="Cofradía A Mesa Puesta, inicio">
+        <span class="brand-mark"><img src="../Fotos/logo-cangrejo.png" width="38" height="38" alt=""></span>
+        <span class="brand-text">A Mesa Puesta<small>La cofradía · Desde 2022</small></span>
+      </a>
+      <nav class="desktop-nav" aria-label="Navegación principal">
+        <a href="index.html">Inicio</a>
+        <a href="restaurantes.html" aria-current="page">Nuestras comidas</a>
+        <a href="../cofrades.html">Cofrades</a>
+        <a href="../anuncios.html">Tablón</a>
+        <a href="../encuestas.html">Encuestas</a>
+      </nav>
+      <a class="header-cta" href="index.html">← Volver al inicio</a>
+    </div>
+  </header>
+  <main id="contenido" class="container">
+    <header class="page-intro">
+      <p class="eyebrow">Cofradía A Mesa Puesta · El historial</p>
+      <h1>Cada mesa, <em>una historia.</em></h1>
+      <p>Todos nuestros encuentros reunidos en un mismo lugar. Busca un restaurante, revive el menú, descubre las fotos y vuelve a esa sobremesa.</p>
+    </header>
+    <section aria-label="Filtrar historial de comidas">
+      <div class="filter-wrap">
+        <label for="buscar">Buscar restaurante o lugar
+          <input type="search" id="buscar" placeholder="Ej. Siosi, O Grove, Vigo…" autocomplete="off" enterkeyhint="search">
+        </label>
+        <label for="anio">Año
+          <select id="anio"><option value="">Todos</option></select>
+        </label>
+        <button type="button" class="clear-button" id="limpiar">Limpiar filtros</button>
+      </div>
+    </section>
+    <div class="results-heading" aria-live="polite">
+      <strong id="resultado-contador">Cargando historial…</strong>
+      <span class="year-hint">Del más reciente al más antiguo</span>
+    </div>
+    <section class="history-grid" id="historial" aria-label="Comidas celebradas" aria-live="polite">
+      <div class="message">Cargando las comidas publicadas…</div>
+    </section>
+    <aside class="note-band" id="enlaces">
+      <div><p class="eyebrow">La cofradía sigue</p><h2 class="section-title">Y después, ¿dónde comemos?</h2><p>Las próximas citas y novedades se comparten en el tablón, mientras las encuestas siguen conectadas a Google.</p></div>
+      <a class="button-outline" href="../anuncios.html">Ver tablón <span aria-hidden="true">↗</span></a>
+    </aside>
+  </main>
+  <dialog id="gallery" class="gallery" aria-labelledby="gallery-title">
+    <div class="gallery-inner">
+      <header class="gallery-head">
+        <h2 id="gallery-title">Galería</h2>
+        <button class="gallery-close" type="button" id="gallery-close" aria-label="Cerrar galería">×</button>
+      </header>
+      <div class="gallery-stage" id="gallery-stage">
+        <button class="gallery-prev" type="button" id="gallery-prev" aria-label="Foto anterior">‹</button>
+        <img id="gallery-image" src="" alt="Foto de la comida">
+        <button class="gallery-next" type="button" id="gallery-next" aria-label="Foto siguiente">›</button>
+      </div>
+      <div class="gallery-caption" id="gallery-count" aria-live="polite"></div>
+    </div>
+  </dialog>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© Cofradía A Mesa Puesta · Buenas mesas y mejores recuerdos</span>
+      <a href="../estatutos.html">Estatutos</a>
+    </div>
+  </footer>
+  <nav class="mobile-nav" aria-label="Navegación móvil">
+    <a href="index.html"><span aria-hidden="true">⌂</span>Inicio</a>
+    <a href="restaurantes.html" aria-current="page"><span aria-hidden="true">🍽</span>Comidas</a>
+    <a href="../anuncios.html"><span aria-hidden="true">📌</span>Tablón</a>
+    <a href="#enlaces"><span aria-hidden="true">☰</span>Más</a>
+  </nav>
+</body>
+</html>
