@@ -275,9 +275,10 @@ async function loadAccounts(){
     card.append(identity,controls);root.append(card);
   }
 }
-function activationUrl(email){
+function activationUrl(email,token){
   const url=new URL('./admin-alta.html',window.location.href);
   url.searchParams.set('email',email);
+  if(token)url.searchParams.set('token',token);
   return url.href;
 }
 async function copyText(value){
@@ -327,8 +328,13 @@ async function loadManagers(){
     controls.append(el('span','admin-mini-status state-programada','Pendiente'));
     const copy=el('button','admin-outline','Copiar enlace de alta');copy.type='button';
     copy.addEventListener('click',async()=>{
-      try{await copyText(activationUrl(i.email));feedback('Enlace de alta copiado. Puedes enviárselo a '+i.email+'.');}
-      catch{feedback('No se pudo copiar el enlace automáticamente.',true);}
+      copy.disabled=true;
+      try{
+        const renewed=await rpc('renovar_invitacion_admin_cofradia',{p_id:i.id});
+        await copyText(activationUrl(renewed.email,renewed.token));
+        feedback('Nuevo enlace privado copiado. Caduca en 7 días y puedes enviárselo a '+i.email+'.');
+      }catch(error){feedback('No se pudo generar el enlace: '+error.message,true);}
+      finally{copy.disabled=false;}
     });
     const cancel=el('button','admin-outline','Cancelar');cancel.type='button';
     cancel.addEventListener('click',async()=>{
@@ -351,8 +357,12 @@ async function authorizeManager(event){
   try{
     const result=await rpc('autorizar_administrador_cofradia',{p_email:email});
     input.value='';await loadManagers();
-    if(result?.estado==='activado')feedback(email+' ya tenía una cuenta confirmada y ha quedado activado como administrador.');
-    else feedback(email+' autorizado. Copia su enlace de alta para que cree su contraseña.');
+    if(result?.estado==='activado'){
+      feedback(email+' ya tenía una cuenta confirmada y ha quedado activado como administrador.');
+    }else if(result?.token){
+      await copyText(activationUrl(email,result.token));
+      feedback(email+' autorizado. Su enlace privado de alta se ha copiado al portapapeles y caduca en 7 días.');
+    }else feedback(email+' autorizado. Genera su enlace privado desde la lista.');
   }catch(error){feedback('No se pudo autorizar: '+error.message,true);}
   finally{submit.disabled=false;}
 }
