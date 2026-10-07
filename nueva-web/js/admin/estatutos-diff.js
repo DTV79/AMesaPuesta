@@ -1,0 +1,1 @@
+export const normalizar=s=>String(s??'').trim();
