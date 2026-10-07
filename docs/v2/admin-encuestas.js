@@ -99,6 +99,121 @@ function renderList(){
     root.append(button);
   }
 }
+
+const EMOJI_RECENTS_KEY='amp_admin_emoji_recents_v1';
+const EMOJI_GROUPS=[
+  {id:'recientes',icon:'🕘',label:'Recientes',items:[]},
+  {id:'comida',icon:'🍽️',label:'Comida y bebida',items:['🍽️','🍴','🥄','🍷','🍾','🥂','🍺','☕','🥤','🧀','🥖','🥐','🍞','🥩','🍗','🍖','🐟','🦐','🦀','🦞','🐙','🦑','🍚','🥘','🍲','🍝','🍕','🥗','🥔','🍅','🫒','🍎','🍓','🍰','🎂']},
+  {id:'caras',icon:'😀',label:'Caras',items:['😀','😃','😄','😁','😂','😊','😍','🥰','😋','😎','🤩','🤔','🤨','😅','😬','🙄','😮','😢','😭','😡','🥳','🤗','🫡','🤭','🤫','😴']},
+  {id:'gestos',icon:'👍',label:'Gestos y símbolos',items:['👍','👎','👌','👏','🙌','🤝','🙏','💪','✋','👋','🤞','☝️','👉','👈','❤️','💚','💛','💙','🤍','💯','✅','❌','⚠️','❓','❗','⭐','🏆','🎯','💡','🔥']},
+  {id:'eventos',icon:'📅',label:'Fechas y celebración',items:['📅','🗓️','⏰','⌛','📍','🗺️','🚗','🚌','🏠','🏨','🎉','🎊','🎁','🎵','🎶','🎤','📸','🎲','⚽','🏓','🎾','☀️','🌧️','🌙','🌊']},
+  {id:'votacion',icon:'🗳️',label:'Encuestas y comunicación',items:['🗳️','📊','📋','📝','📣','🔔','📌','📍','💬','📢','👀','🔒','🔓','👤','👥','➕','➖','➡️','⬅️','🔝','💶','💰','🧾','ℹ️']}
+];
+let emojiTarget=null,emojiActiveGroup='comida',emojiPicker=null,emojiLastButton=null;
+function emojiRecents(){
+  try{
+    const value=JSON.parse(localStorage.getItem(EMOJI_RECENTS_KEY)||'[]');
+    return Array.isArray(value)?value.filter(x=>typeof x==='string').slice(0,18):[];
+  }catch{return [];}
+}
+function rememberEmoji(value){
+  const next=[value,...emojiRecents().filter(x=>x!==value)].slice(0,18);
+  try{localStorage.setItem(EMOJI_RECENTS_KEY,JSON.stringify(next));}catch{}
+}
+function insertEmoji(value){
+  if(!emojiTarget)return;
+  const target=emojiTarget;
+  const start=Number.isInteger(target.selectionStart)?target.selectionStart:target.value.length;
+  const end=Number.isInteger(target.selectionEnd)?target.selectionEnd:start;
+  const max=Number(target.maxLength);
+  const nextLength=target.value.length-(end-start)+value.length;
+  if(max>0&&nextLength>max){feedback('No cabe otro emoji: este campo ha alcanzado su longitud máxima.',true);return;}
+  target.setRangeText(value,start,end,'end');
+  rememberEmoji(value);
+  target.dispatchEvent(new Event('input',{bubbles:true}));
+  target.focus();
+  renderEmojiPicker(emojiActiveGroup);
+}
+function renderEmojiPicker(groupId){
+  if(!emojiPicker)return;
+  const recent=emojiRecents();
+  if(groupId==='recientes'&&!recent.length)groupId='comida';
+  emojiActiveGroup=groupId;
+  const tabs=emojiPicker.querySelector('.admin-emoji-tabs');
+  const grid=emojiPicker.querySelector('.admin-emoji-grid');
+  const title=emojiPicker.querySelector('.admin-emoji-group-title');
+  tabs.replaceChildren();grid.replaceChildren();
+  for(const group of EMOJI_GROUPS){
+    const items=group.id==='recientes'?recent:group.items;
+    const button=el('button','admin-emoji-tab',group.icon);
+    button.type='button';button.title=group.label;button.setAttribute('aria-label',group.label);
+    button.setAttribute('aria-pressed',String(group.id===groupId));
+    button.disabled=group.id==='recientes'&&!items.length;
+    button.addEventListener('click',()=>renderEmojiPicker(group.id));
+    tabs.append(button);
+  }
+  const current=EMOJI_GROUPS.find(g=>g.id===groupId)||EMOJI_GROUPS[1];
+  const items=current.id==='recientes'?recent:current.items;
+  title.textContent=current.label;
+  for(const value of items){
+    const button=el('button','admin-emoji-item',value);
+    button.type='button';button.title='Insertar '+value;button.setAttribute('aria-label','Insertar '+value);
+    button.addEventListener('click',()=>insertEmoji(value));grid.append(button);
+  }
+}
+function closeEmojiPicker(){
+  if(!emojiPicker)return;
+  emojiPicker.hidden=true;
+  emojiLastButton?.setAttribute('aria-expanded','false');
+  emojiLastButton=null;
+}
+function positionEmojiPicker(button){
+  if(!emojiPicker||matchMedia('(max-width: 700px)').matches)return;
+  const rect=button.getBoundingClientRect(),width=Math.min(360,window.innerWidth-24);
+  const left=Math.max(12,Math.min(window.innerWidth-width-12,rect.right-width));
+  const estimatedHeight=335;
+  const top=rect.bottom+8+estimatedHeight>window.innerHeight
+    ?Math.max(12,rect.top-estimatedHeight-8):rect.bottom+8;
+  emojiPicker.style.left=left+'px';emojiPicker.style.top=top+'px';emojiPicker.style.width=width+'px';
+}
+function openEmojiPicker(target,button){
+  if(emojiPicker&&!emojiPicker.hidden&&emojiTarget===target){closeEmojiPicker();return;}
+  emojiTarget=target;emojiLastButton?.setAttribute('aria-expanded','false');emojiLastButton=button;
+  button.setAttribute('aria-expanded','true');
+  renderEmojiPicker(emojiRecents().length?'recientes':'comida');
+  emojiPicker.hidden=false;positionEmojiPicker(button);
+}
+function installEmojiPicker(){
+  emojiPicker=el('div','admin-emoji-picker');
+  emojiPicker.id='admin-emoji-picker';emojiPicker.hidden=true;emojiPicker.setAttribute('role','dialog');
+  emojiPicker.setAttribute('aria-label','Selector de emojis');
+  const head=el('div','admin-emoji-picker-head');
+  head.append(el('strong','admin-emoji-group-title','Emojis'));
+  const close=el('button','admin-emoji-close','×');close.type='button';close.setAttribute('aria-label','Cerrar selector de emojis');
+  close.addEventListener('click',closeEmojiPicker);head.append(close);
+  emojiPicker.append(head,el('div','admin-emoji-tabs'),el('div','admin-emoji-grid'));
+  document.body.append(emojiPicker);
+
+  for(const id of ['admin-title','admin-description','admin-options']){
+    const target=$(id),wrap=el('span','admin-emoji-field');
+    target.parentNode.insertBefore(wrap,target);wrap.append(target);
+    const button=el('button','admin-emoji-trigger','😀');
+    button.type='button';button.title='Añadir emoji';button.setAttribute('aria-label','Añadir emoji');
+    button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-controls','admin-emoji-picker');
+    button.setAttribute('aria-expanded','false');
+    button.addEventListener('click',()=>openEmojiPicker(target,button));
+    wrap.append(button);
+  }
+  document.addEventListener('pointerdown',event=>{
+    if(emojiPicker.hidden)return;
+    if(emojiPicker.contains(event.target)||event.target.closest?.('.admin-emoji-trigger'))return;
+    closeEmojiPicker();
+  });
+  document.addEventListener('keydown',event=>{if(event.key==='Escape')closeEmojiPicker();});
+  window.addEventListener('resize',()=>{if(!emojiPicker.hidden&&emojiLastButton)positionEmojiPicker(emojiLastButton);});
+  window.addEventListener('scroll',()=>{if(!emojiPicker.hidden&&emojiLastButton&&!matchMedia('(max-width: 700px)').matches)positionEmojiPicker(emojiLastButton);},{passive:true});
+}
+
 function confirmDiscard(){return !dirty||window.confirm('Hay cambios sin guardar. ¿Quieres descartarlos?');}
 function resetForm(force=false){
   if(!force&&!confirmDiscard())return;
@@ -409,6 +524,7 @@ $('admin-poll-form').addEventListener('change',()=>{dirty=true;refreshEditor();}
 window.addEventListener('beforeunload',e=>{
   if(dirty&&!busy&&!$('admin-dashboard').hidden){e.preventDefault();e.returnValue='';}
 });
+installEmojiPicker();
 (async()=>{
   try{session=JSON.parse(sessionStorage.getItem(SESSION)||'null');}catch{session=null;}
   if(!session?.access_token||!session?.refresh_token){view(true);return;}
