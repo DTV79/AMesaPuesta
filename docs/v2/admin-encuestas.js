@@ -224,7 +224,7 @@ function resetForm(force=false){
   $('admin-electors').value='todos';$('admin-state').value='borrador';
   $('admin-show-results').checked=true;$('admin-show-winner').checked=true;
   typeSelect('secreta');$('admin-editor-heading').textContent='Nueva encuesta';
-  $('admin-delete').hidden=true;dirty=false;refreshEditor();renderList();
+  $('admin-delete').hidden=true;$('admin-archive').hidden=true;dirty=false;refreshEditor();renderList();
 }
 function selectPoll(id,force=false){
   if(!force&&!confirmDiscard())return;
@@ -237,7 +237,10 @@ function selectPoll(id,force=false){
   $('admin-state').value=p.estado;$('admin-show-results').checked=p.mostrar_resultados;
   $('admin-show-winner').checked=p.mostrar_ganador;typeSelect(p.tipo);
   $('admin-editor-heading').textContent='Editar encuesta';
-  $('admin-delete').hidden=p.estado!=='borrador'||Number(p.participantes)>0;
+  const hasVotes=Number(p.participantes)>0;
+  $('admin-delete').hidden=hasVotes;
+  $('admin-delete').title=hasVotes?'No se puede eliminar porque ya tiene votos':'Eliminar definitivamente esta encuesta';
+  $('admin-archive').hidden=!hasVotes||p.estado==='archivada';
   dirty=false;refreshEditor();renderList();
 }
 function renderPreview(){
@@ -331,14 +334,22 @@ async function save(event){
 }
 async function remove(){
   const p=selected();
-  if(!p||p.estado!=='borrador'||Number(p.participantes)>0||busy)return;
-  if(!window.confirm('¿Eliminar el borrador «'+p.titulo+'»? Esta acción no se puede deshacer.'))return;
+  if(!p||Number(p.participantes)>0||busy)return;
+  if(!window.confirm('¿Eliminar definitivamente la encuesta «'+p.titulo+'»?\n\nTiene 0 votos. Esta acción no se puede deshacer.'))return;
   lock(true);
   try{
     await rpc('eliminar_encuesta_admin',{p_id:p.id});
-    selectedId=null;dirty=false;await reload(false);feedback('Borrador eliminado.');
+    selectedId=null;dirty=false;await reload(false);feedback('Encuesta eliminada correctamente.');
   }catch(error){feedback('No se pudo eliminar: '+error.message,true);}
   finally{lock(false);}
+}
+function archivePoll(){
+  const p=selected();
+  if(!p||Number(p.participantes)<=0||p.estado==='archivada'||busy)return;
+  if(!window.confirm('¿Archivar «'+p.titulo+'»?\n\nSus votos y resultados se conservarán en el histórico.'))return;
+  $('admin-state').value='archivada';
+  dirty=true;refreshEditor();
+  $('admin-poll-form').requestSubmit();
 }
 async function loadAccounts(){
   const rows=await rpc('listar_cuentas_cofrades_admin');
@@ -513,6 +524,7 @@ $('admin-login-form').addEventListener('submit',login);
 $('admin-poll-form').addEventListener('submit',save);
 $('admin-new').addEventListener('click',()=>resetForm());
 $('admin-delete').addEventListener('click',remove);
+$('admin-archive').addEventListener('click',archivePoll);
 $('admin-logout').addEventListener('click',logout);
 $('admin-accounts-refresh').addEventListener('click',()=>loadAccounts().catch(error=>feedback('Cuentas: '+error.message,true)));
 $('admin-managers-refresh').addEventListener('click',()=>loadManagers().catch(error=>feedback('Administradores: '+error.message,true)));
