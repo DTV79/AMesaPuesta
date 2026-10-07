@@ -1,0 +1,1 @@
+import{cargarEstatutos}from"./estatutos-data.js";import{pintarEstatutos,errorEstatutos}from"./estatutos-view.js";try{pintarEstatutos(await cargarEstatutos())}catch(e){errorEstatutos(e)}
