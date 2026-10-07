@@ -12,7 +12,7 @@ async function guard(){
  return true;
 }
 async function cargar(){
- const {data:rows,error}=await supabase.from("admin_cuotas_cofrades").select("*").eq("ejercicio",2026).order("nombre");
+ const {data:rows,error}=await supabase.from("admin_cuotas_cofrades").select("*").eq("ejercicio",new Date().getFullYear()).order("nombre");
  if(error)throw error; filas=rows||[];
  const total=filas.reduce((s,r)=>s+Number(r.importe_asignado),0),cobrado=filas.reduce((s,r)=>s+Number(r.pagado),0);
  document.querySelectorAll(".kpi")[0].textContent=euro(total);document.querySelectorAll(".kpi")[1].textContent=euro(cobrado);
@@ -45,7 +45,7 @@ async function cargarHistorico(){
  const {data:pagos}=await supabase.from("pagos_cuotas").select("ejercicio,fecha,importe,cofrade_id,cofrades(nombre)").eq("anulado",false).order("fecha",{ascending:false});
  const {data:cuotas}=await supabase.from("cuotas").select("id,ejercicio,concepto,importe,tipo,activa").order("ejercicio",{ascending:false});
  const years=[...new Set([...(pagos||[]).map(x=>x.ejercicio),...(cuotas||[]).map(x=>x.ejercicio)])].sort((a,b)=>b-a),sel=$("#histEjercicio"),prev=Number(sel.value);
- sel.innerHTML=years.map(y=>'<option value="'+y+'">'+y+'</option>').join("");if(years.length)sel.value=years.includes(prev)?prev:(years.includes(2026)?2026:years[0]);
+ sel.innerHTML=years.map(y=>'<option value="'+y+'">'+y+'</option>').join("");if(years.length)sel.value=years.includes(prev)?prev:(years.includes(new Date().getFullYear())?new Date().getFullYear():years[0]);
  async function render(){const y=Number(sel.value),ps=(pagos||[]).filter(x=>x.ejercicio===y),qs=(cuotas||[]).filter(x=>x.ejercicio===y),total=ps.reduce((s,x)=>s+Number(x.importe),0);let asignados=[];if(qs.length){const {data:a}=await supabase.from("admin_cuotas_cofrades").select("*").in("cuota_id",qs.map(q=>q.id));asignados=a||[]}
  const previsto=asignados.reduce((s,x)=>s+Number(x.importe_asignado),0),pend=asignados.reduce((s,x)=>s+Number(x.pendiente),0);
  $("#histResumen").innerHTML='<div class="card"><div class="muted">Cobrado</div><div class="kpi ok">'+euro(total)+'</div></div><div class="card"><div class="muted">Pagos</div><div class="kpi">'+ps.length+'</div></div>'+(qs.length?'<div class="card"><div class="muted">Previsto</div><div class="kpi">'+euro(previsto)+'</div></div><div class="card"><div class="muted">Pendiente</div><div class="kpi bad">'+euro(pend)+'</div></div>':'');
