@@ -1566,3 +1566,35 @@ button {cursor:pointer}
   .polls-auth {grid-template-columns:1fr;padding:20px}
   .polls-auth-form {grid-template-columns:1fr}
 }
+
+
+/* Alta y gestión de administradores. */
+.admin-login-panel .admin-help a,.admin-back-login {color:var(--wine);font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.admin-activation-panel {max-width:620px}
+.admin-activation-feedback {margin:16px 0 0;padding:13px 15px;border-radius:10px;font-size:12px;line-height:1.6}
+.admin-activation-feedback.is-ok {background:#edf7ef;color:#31543b;border:1px solid #cfe3d1}
+.admin-activation-feedback.is-error {background:#fff0ee;color:#9a303a;border:1px solid #efcfca}
+.admin-back-login {display:inline-block;margin-top:17px;font-size:12px}
+.admin-manager-invite {
+  margin:20px 0 14px;padding:17px;border:1px solid #e8d7c5;border-radius:13px;background:#faf6f0;
+}
+.admin-manager-invite>label {display:block;margin-bottom:7px;color:#5d4840;font-size:11px;font-weight:800}
+.admin-manager-invite>div {display:flex;gap:8px}
+.admin-manager-invite input {
+  flex:1;min-width:0;min-height:42px;padding:9px 11px;border:1px solid #d8c7bb;
+  border-radius:9px;background:#fff;font:500 12px system-ui,sans-serif;
+}
+.admin-manager-invite .admin-primary {min-height:42px;white-space:nowrap}
+.admin-manager-invite small {display:block;margin-top:8px;color:#8b776b;font-size:10px;line-height:1.6}
+.admin-managers-list {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.admin-manager-card {
+  display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid #e9dbcf;
+  border-radius:13px;background:#fff;
+}
+.admin-manager-card.is-pending {background:#fffaf2}
+.admin-manager-you {padding:4px 7px;border-radius:999px;background:#f0e7dc;color:#735648;font-size:10px;font-weight:800}
+@media(max-width:700px){
+  .admin-manager-invite>div {flex-direction:column}
+  .admin-managers-list {grid-template-columns:1fr}
+  .admin-manager-invite .admin-primary {width:100%}
+}
