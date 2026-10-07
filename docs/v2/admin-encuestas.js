@@ -275,12 +275,94 @@ async function loadAccounts(){
     card.append(identity,controls);root.append(card);
   }
 }
+function activationUrl(email){
+  const url=new URL('./admin-alta.html',window.location.href);
+  url.searchParams.set('email',email);
+  return url.href;
+}
+async function copyText(value){
+  if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);return;}
+  const area=document.createElement('textarea');area.value=value;document.body.append(area);area.select();
+  document.execCommand('copy');area.remove();
+}
+async function loadManagers(){
+  const data=await rpc('listar_administradores_cofradia');
+  const admins=Array.isArray(data?.administradores)?data.administradores:[];
+  const invites=Array.isArray(data?.invitaciones)?data.invitaciones:[];
+  const active=admins.filter(a=>a.activo);
+  const pending=invites.filter(i=>i.estado==='pendiente');
+  $('admin-managers-summary').textContent=active.length+' administrador'+(active.length===1?' activo':'es activos')+
+    (pending.length?' · '+pending.length+' invitación'+(pending.length===1?' pendiente':'es pendientes'):'');
+  const root=$('admin-managers-list');root.replaceChildren();
+
+  for(const a of active){
+    const card=el('article','admin-manager-card');
+    const identity=el('div','admin-account-identity');
+    identity.append(el('strong','',a.email||'Administrador'),el('small','',a.es_actual?'Tu cuenta':'Administrador activo'));
+    const controls=el('div','admin-account-controls');
+    controls.append(el('span','admin-mini-status state-abierta','✓ Activo'));
+    if(a.es_actual)controls.append(el('span','admin-manager-you','Eres tú'));
+    if(active.length>1){
+      const revoke=el('button','admin-outline','Revocar');
+      revoke.type='button';
+      revoke.addEventListener('click',async()=>{
+        if(!window.confirm('¿Revocar los permisos de administrador de '+a.email+'? La cuenta seguirá existiendo, pero no podrá administrar.'))return;
+        revoke.disabled=true;
+        try{
+          await rpc('revocar_administrador_cofradia',{p_usuario_id:a.usuario_id});
+          await loadManagers();feedback('Permisos de administrador revocados.');
+          if(a.es_actual)logout();
+        }catch(error){feedback('No se pudo revocar: '+error.message,true);revoke.disabled=false;}
+      });
+      controls.append(revoke);
+    }
+    card.append(identity,controls);root.append(card);
+  }
+
+  for(const i of pending){
+    const card=el('article','admin-manager-card is-pending');
+    const identity=el('div','admin-account-identity');
+    identity.append(el('strong','',i.email),el('small','','Esperando a que cree y confirme su cuenta'));
+    const controls=el('div','admin-account-controls');
+    controls.append(el('span','admin-mini-status state-programada','Pendiente'));
+    const copy=el('button','admin-outline','Copiar enlace de alta');copy.type='button';
+    copy.addEventListener('click',async()=>{
+      try{await copyText(activationUrl(i.email));feedback('Enlace de alta copiado. Puedes enviárselo a '+i.email+'.');}
+      catch{feedback('No se pudo copiar el enlace automáticamente.',true);}
+    });
+    const cancel=el('button','admin-outline','Cancelar');cancel.type='button';
+    cancel.addEventListener('click',async()=>{
+      if(!window.confirm('¿Cancelar la autorización pendiente de '+i.email+'?'))return;
+      cancel.disabled=true;
+      try{await rpc('cancelar_invitacion_admin_cofradia',{p_id:i.id});await loadManagers();feedback('Invitación cancelada.');}
+      catch(error){feedback('No se pudo cancelar: '+error.message,true);cancel.disabled=false;}
+    });
+    controls.append(copy,cancel);card.append(identity,controls);root.append(card);
+  }
+  if(!active.length&&!pending.length)root.append(el('p','admin-list-empty','No hay administradores ni invitaciones.'));
+}
+async function authorizeManager(event){
+  event.preventDefault();
+  const input=$('admin-manager-email');
+  const email=str(input.value).toLowerCase();
+  if(!input.checkValidity()){feedback('Introduce un correo electrónico válido.',true);input.focus();return;}
+  if(!window.confirm('¿Autorizar '+email+' como administrador? Esa persona creará su propia contraseña.'))return;
+  const submit=event.currentTarget.querySelector('button[type="submit"]');submit.disabled=true;
+  try{
+    const result=await rpc('autorizar_administrador_cofradia',{p_email:email});
+    input.value='';await loadManagers();
+    if(result?.estado==='activado')feedback(email+' ya tenía una cuenta confirmada y ha quedado activado como administrador.');
+    else feedback(email+' autorizado. Copia su enlace de alta para que cree su contraseña.');
+  }catch(error){feedback('No se pudo autorizar: '+error.message,true);}
+  finally{submit.disabled=false;}
+}
 async function dashboard(){
   const authorized=await rpc('soy_admin_cofradia');
   if(authorized!==true)throw new Error('Esta cuenta no está autorizada como administradora.');
   $('admin-user-label').textContent='Sesión iniciada: '+(session.email||'administrador autorizado');
   view(false);await reload(false);
   await loadAccounts().catch(error=>feedback('Cuentas: '+error.message,true));
+  await loadManagers().catch(error=>feedback('Administradores: '+error.message,true));
 }
 async function login(event){
   event.preventDefault();if(busy)return;
@@ -308,6 +390,8 @@ $('admin-new').addEventListener('click',()=>resetForm());
 $('admin-delete').addEventListener('click',remove);
 $('admin-logout').addEventListener('click',logout);
 $('admin-accounts-refresh').addEventListener('click',()=>loadAccounts().catch(error=>feedback('Cuentas: '+error.message,true)));
+$('admin-managers-refresh').addEventListener('click',()=>loadManagers().catch(error=>feedback('Administradores: '+error.message,true)));
+$('admin-manager-invite-form').addEventListener('submit',authorizeManager);
 $('admin-search').addEventListener('input',renderList);
 $('admin-filter').addEventListener('change',renderList);
 $('admin-poll-form').addEventListener('input',()=>{dirty=true;refreshEditor();});
