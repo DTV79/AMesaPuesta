@@ -57,7 +57,7 @@
         </label>
         <button type="submit" class="admin-primary" id="admin-login-submit">Acceder al panel <span aria-hidden="true">→</span></button>
       </form>
-      <p class="admin-help">El acceso debe estar dado de alta previamente en Supabase. No se permite crear cuentas desde esta pantalla.</p>
+      <p class="admin-help">El correo debe estar autorizado previamente. <a href="admin-alta.html">¿Es tu primera vez? Crea aquí tu contraseña.</a></p>
     </section>
 
     <section id="admin-dashboard" hidden aria-labelledby="admin-dashboard-title">
@@ -187,6 +187,27 @@
           <p class="admin-list-empty">Cargando cofrades…</p>
         </div>
         <p class="admin-accounts-footnote">Para vincular un cofrade, primero debe existir su cuenta con correo confirmado en <strong>Supabase → Authentication → Users</strong>. Nunca se comparten contraseñas ni se permite seleccionar otro nombre al votar.</p>
+      </section>
+      <section class="admin-accounts admin-managers" id="admin-managers" aria-labelledby="admin-managers-title">
+        <div class="admin-accounts-heading">
+          <div>
+            <p class="eyebrow">Permisos de administración</p>
+            <h2 id="admin-managers-title" class="section-title">Administradores</h2>
+            <p>Autoriza un correo para que esa persona cree su propia contraseña. Después de confirmar su correo podrá entrar en esta zona de administración.</p>
+          </div>
+          <button type="button" id="admin-managers-refresh" class="admin-outline">↻ Actualizar</button>
+        </div>
+        <form id="admin-manager-invite-form" class="admin-manager-invite">
+          <label for="admin-manager-email">Correo del nuevo administrador</label>
+          <div>
+            <input id="admin-manager-email" type="email" autocomplete="off" required placeholder="correo@ejemplo.com">
+            <button type="submit" class="admin-primary">Autorizar correo</button>
+          </div>
+          <small>La contraseña no la introduces tú. La persona autorizada la creará en su propia pantalla de activación.</small>
+        </form>
+        <div id="admin-managers-summary" class="admin-accounts-summary" aria-live="polite">Consultando administradores…</div>
+        <div id="admin-managers-list" class="admin-managers-list"><p class="admin-list-empty">Cargando…</p></div>
+        <p class="admin-accounts-footnote">Por seguridad, el sistema nunca permitirá revocar al último administrador activo.</p>
       </section>
     </section>
     <p id="admin-notice" class="admin-toast" role="status" aria-live="polite" hidden></p>
