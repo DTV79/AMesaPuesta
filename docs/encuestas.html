@@ -1242,7 +1242,26 @@
   </button>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzPxPPBYBhzWRJSEm5TRHEJnW2cnxGSauLZnrUZ4UKQPwS8IP5_9I5CJWoD6JfiTQjA/exec";
+    const SUPABASE_URL = "https://wmfcpnihymiiwgpvbngj.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_ij3sYbyMrLI2B34OOYt6JA_Aez1R2cJ";
+    const SUPABASE_HEADERS = {
+      "apikey": SUPABASE_KEY,
+      "Content-Type": "application/json"
+    };
+
+    function pollDisplayName(value){
+      const names = {
+        "Capón":"Diego Capón",
+        "Carlos Runner":"Carlos",
+        "Herva":"Carlos Herva",
+        "Isma Zeus":"Isma",
+        "José Increíble":"José",
+        "Manolo Granja":"Manolo",
+        "Miguel Capón":"Miguel",
+        "Pablo Hermida":"Pablo"
+      };
+      return names[value] || value;
+    }
 
     const activeContainer = document.getElementById("activePolls");
     const recentContainer = document.getElementById("recentPolls");
@@ -1376,9 +1395,10 @@
 
     function normalizeOption(option){
       return {
+        id: escapeHtml(option?.id || ""),
         name: escapeHtml(option?.name || ""),
         votes: safeNumber(option?.votes, 0),
-        voters: safeArray(option?.voters).map(v => escapeHtml(v))
+        voters: safeArray(option?.voters).map(v => escapeHtml(pollDisplayName(v)))
       };
     }
 
@@ -1410,7 +1430,7 @@
         showWinner: poll?.showWinner !== false,
         maxChoices,
         totalVotes,
-        votedMembers: safeArray(poll?.votedMembers).map(v => escapeHtml(v)),
+        votedMembers: safeArray(poll?.votedMembers).map(v => escapeHtml(pollDisplayName(v))),
         eligibleVotersCount: safeNumber(poll?.eligibleVotersCount, 0),
         votedEligibleCount: safeNumber(poll?.votedEligibleCount, 0),
         votersMode: poll?.votersMode === "cofrades" ? "cofrades" : "todos",
@@ -1432,7 +1452,7 @@
     function normalizeCofrade(member){
       return {
         id: escapeHtml(member?.id || ""),
-        nombre: escapeHtml(member?.nombre || member?.id || ""),
+        nombre: escapeHtml(pollDisplayName(member?.nombre || member?.id || "")),
         rango: escapeHtml(member?.rango || "cofrade")
       };
     }
@@ -1762,7 +1782,7 @@ function renderWinnerBlock(poll){
             <div class="options">
               ${poll.options.length
                 ? poll.options.map((option, index) => `
-                  <button class="option-btn" type="button" data-option-index="${index}">
+                  <button class="option-btn" type="button" data-option-index="${index}" data-option-id="${option.id}">
                     <span class="option-name">${option.name}</span>
                     <span class="option-arrow">${maxChoices > 1 ? "✓" : "+"}</span>
                   </button>
@@ -2055,12 +2075,14 @@ function renderWinnerBlock(poll){
       renderLoadingState();
 
       try{
-        const res = await fetch(API_URL, {
-          method: "GET",
+        const res = await fetch(SUPABASE_URL + "/rest/v1/rpc/listar_encuestas_cofradia", {
+          method: "POST",
+          headers: SUPABASE_HEADERS,
+          body: "{}",
           cache: "no-store"
         });
-
         const data = await res.json();
+        if(!res.ok) throw new Error(data?.message || "Error al cargar encuestas");
 
         COFRADES = safeArray(data?.cofrades).map(normalizeCofrade).filter(c => c.id);
         ALL_POLLS = safeArray(data?.polls).map(normalizePoll);
@@ -2071,7 +2093,7 @@ function renderWinnerBlock(poll){
         activeContainer.innerHTML = `
           <article class="card">
             <div class="muted-box">
-              No se pudieron cargar las encuestas. Revisa la conexión con Google Apps Script.
+              No se pudieron cargar las encuestas. Revisa la conexión con Supabase.
             </div>
           </article>
         `;
@@ -2083,21 +2105,21 @@ function renderWinnerBlock(poll){
     }
 
     async function enviarVoto(payload){
-      const res = await fetch(API_URL, {
+      const res = await fetch(SUPABASE_URL + "/rest/v1/rpc/votar_encuesta_publica", {
         method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify(payload)
+        headers: SUPABASE_HEADERS,
+        body: JSON.stringify({
+          p_id: payload.pollId,
+          p_cofrade: payload.cofrade,
+          p_opciones: payload.options
+        })
       });
-
-      const data = await res.json();
-
-      if(!data?.ok){
-        throw new Error(data?.error || "Error al votar");
+      if(!res.ok){
+        let data = {};
+        try{ data = await res.json(); }catch(_){}
+        throw new Error(data?.message || "Error al votar");
       }
-
-      return data;
+      return true;
     }
 
     function handleOptionClick(button){
@@ -2142,9 +2164,7 @@ function renderWinnerBlock(poll){
       const pollId = card.dataset.pollId;
       const cofradeId = select.value;
       const cofradeNombre = select.options[select.selectedIndex]?.textContent?.replace(/\s+—\s+ya votó$/i, '').trim() || cofradeId;
-      const options = selectedButtons.map(btn =>
-        btn.querySelector(".option-name")?.textContent?.trim() || ""
-      ).filter(Boolean);
+      const options = selectedButtons.map(btn => btn.dataset.optionId).filter(Boolean);
 
       try{
         clearCardStatus(card);
