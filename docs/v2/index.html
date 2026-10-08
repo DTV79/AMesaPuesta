@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f8f4ed">
+  <meta name="description" content="Cofradía A Mesa Puesta: encuentros, restaurantes y recuerdos alrededor de la mesa desde 2022.">
+  <title>Cofradía A Mesa Puesta · Nuestra mesa, nuestras historias</title>
+  <link rel="icon" href="../Fotos/logo-cangrejo.png" type="image/png">
+  <link rel="preload" href="../Fotos/logo-cangrejo.png" as="image">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./scroll-top.js" defer></script>
+  <script type="module" src="./app.js"></script>
+</head>
+<body data-page="home">
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand" aria-label="Cofradía A Mesa Puesta, inicio">
+        <span class="brand-mark"><img src="../Fotos/logo-cangrejo.png" alt="" width="38" height="38"></span>
+        <span class="brand-text">A Mesa Puesta<small>La cofradía · Desde 2022</small></span>
+      </a>
+      <nav class="desktop-nav" aria-label="Navegación principal">
+        <a href="index.html" aria-current="page">Inicio</a>
+        <a href="restaurantes.html">Nuestras comidas</a>
+        <a href="cofrades.html">Cofrades</a>
+        <a href="anuncios.html">Tablón</a>
+        <a href="encuestas.html">Encuestas</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenido" class="container">
+    <section class="hero" aria-labelledby="portada-titulo">
+      <div class="hero-copy">
+        <p class="eyebrow light">Cofradía A Mesa Puesta · Galicia</p>
+        <h1 id="portada-titulo">Lo bueno se <em>comparte</em> en la mesa.</h1>
+        <p>Una cofradía de amigos, grandes sobremesas y lugares que merecen repetirse. Guardamos cada encuentro para recordar lo vivido y preparar el siguiente.</p>
+        <div class="hero-actions">
+          <a class="button-primary" href="restaurantes.html">Explorar nuestras comidas <span aria-hidden="true">↗</span></a>
+          <a class="button-ghost" href="anuncios.html">Ir al tablón</a>
+        </div>
+      </div>
+      <div class="hero-photo">
+        <img id="home-foto" hidden alt="" loading="eager">
+        <div class="photo-label"><span id="home-foto-fecha">Nuestro último encuentro</span><strong id="home-foto-titulo">Momentos para recordar</strong></div>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="La cofradía en cifras">
+      <div class="stat"><strong id="home-comidas">—</strong><span>Comidas celebradas</span></div>
+      <div class="stat"><strong id="home-restaurantes">—</strong><span>Restaurantes visitados</span></div>
+      <div class="stat"><strong>2022</strong><span>El año que empezó todo</span></div>
+    </section>
+
+    <section class="section" aria-labelledby="ultimas-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">Nuestro diario gastronómico</p><h2 class="section-title" id="ultimas-title">Las últimas sobremesas</h2></div>
+        <a class="text-link" href="restaurantes.html">Ver todo el historial <span aria-hidden="true">→</span></a>
+      </div>
+      <div id="home-reciente" class="cards" aria-live="polite">
+        <div class="message">Cargando recuerdos de la cofradía…</div>
+      </div>
+    </section>
+
+    <section class="section" id="secciones" aria-labelledby="secciones-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">Todo a mano</p><h2 class="section-title" id="secciones-title">La cofradía, en un vistazo</h2></div>
+      </div>
+      <div class="quick-grid">
+        <a class="quick-item" href="cofrades.html"><span class="quick-icon" aria-hidden="true">👥</span><strong>Los cofrades</strong><small>Quiénes forman parte de esta historia.</small></a>
+        <a class="quick-item" href="anuncios.html"><span class="quick-icon" aria-hidden="true">📌</span><strong>Tablón de anuncios</strong><small>Novedades, convocatorias y avisos de la cofradía.</small></a>
+        <a class="quick-item" href="encuestas.html"><span class="quick-icon" aria-hidden="true">📊</span><strong>Encuestas</strong><small>Decisiones, propuestas y votaciones.</small></a>
+        <a class="quick-item" href="../himno.html"><span class="quick-icon" aria-hidden="true">♫</span><strong>Nuestro himno</strong><small>La banda sonora de una buena sobremesa.</small></a>
+      </div>
+    </section>
+
+    <aside class="note-band">
+      <div><p class="eyebrow">Nuestra esencia</p><h2 class="section-title">Sentarse, brindar, repetir.</h2><p>La mesa cambia. Las historias se quedan. Consulta también las normas de la cofradía y todo lo que nos une.</p></div>
+      <a class="button-outline" href="estatutos.html">Ver estatutos <span aria-hidden="true">↗</span></a>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© Cofradía A Mesa Puesta · Desde 2022 · Buenas mesas y mejores recuerdos</span>
+      <a href="estatutos.html">Estatutos</a>
+    </div>
+  </footer>
+  <nav class="mobile-nav" aria-label="Navegación móvil">
+    <a href="index.html" aria-current="page"><span aria-hidden="true">⌂</span>Inicio</a>
+    <a href="restaurantes.html"><span aria-hidden="true">🍽</span>Comidas</a>
+    <a href="cofrades.html"><span aria-hidden="true">👥</span>Cofrades</a>
+    <a href="index.html#secciones"><span aria-hidden="true">☰</span>Más</a>
+  </nav>
+</body>
+</html>
