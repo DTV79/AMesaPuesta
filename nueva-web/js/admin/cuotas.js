@@ -67,14 +67,15 @@ selector.addEventListener("click",e=>{if(e.target===selector)cerrarSelector();})
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&selector.classList.contains("open"))cerrarSelector();});
 aceptar.addEventListener("click",()=>{if(!selectorElegido)return;const r=selectorPendientes.find(x=>x.cofrade_id+"|"+x.cuota_id===selectorElegido);if(!r)return;cerrarSelector();abrirPago(r.cofrade_id,r.cuota_id);});
 async function cargarHistorico(){
- const {data:pagos}=await supabase.from("pagos_cuotas").select("ejercicio,fecha,importe,cofrade_id,cofrades(nombre)").eq("anulado",false).order("fecha",{ascending:false});
- const {data:cuotas}=await supabase.from("cuotas").select("id,ejercicio,concepto,importe,tipo,activa").order("ejercicio",{ascending:false});
+ const {data:h,error:e}=await supabase.rpc("listar_historico_cuotas_admin");
+ if(e){console.error(e);document.querySelector("#histDetalle").textContent="Error al cargar el histórico: "+e.message;return;}
+ const pagos=h?.pagos||[],cuotas=h?.cuotas||[];
  const years=[...new Set([...(pagos||[]).map(x=>x.ejercicio),...(cuotas||[]).map(x=>x.ejercicio)])].sort((a,b)=>b-a),sel=$("#histEjercicio"),prev=Number(sel.value);
  sel.innerHTML=years.map(y=>'<option value="'+y+'">'+y+'</option>').join("");if(years.length)sel.value=years.includes(prev)?prev:(years.includes(new Date().getFullYear())?new Date().getFullYear():years[0]);
  async function render(){const y=Number(sel.value),ps=(pagos||[]).filter(x=>x.ejercicio===y),qs=(cuotas||[]).filter(x=>x.ejercicio===y),total=ps.reduce((s,x)=>s+Number(x.importe),0);let asignados=[];if(qs.length){const {data:a}=await supabase.rpc("listar_cuotas_cofrades_admin",{p_cuotas:qs.map(q=>q.id)});asignados=a||[]}
  const previsto=asignados.reduce((s,x)=>s+Number(x.importe_asignado),0),pend=asignados.reduce((s,x)=>s+Number(x.pendiente),0);
  $("#histResumen").innerHTML='<div class="card"><div class="muted">Cobrado</div><div class="kpi ok">'+euro(total)+'</div></div><div class="card"><div class="muted">Pagos</div><div class="kpi">'+ps.length+'</div></div>'+(qs.length?'<div class="card"><div class="muted">Previsto</div><div class="kpi">'+euro(previsto)+'</div></div><div class="card"><div class="muted">Pendiente</div><div class="kpi bad">'+euro(pend)+'</div></div>':'');
- $("#histDetalle").innerHTML=(qs.length?'<h3>Cuotas</h3>'+qs.map(q=>'<div class="history-item"><strong>'+q.concepto+'</strong> · '+euro(q.importe)+' · '+q.tipo+'</div>').join(""):"")+'<h3>Pagos registrados</h3>'+(ps.length?ps.map(p=>'<div class="history-item"><strong>'+(p.cofrades?.nombre||"Cofrade")+'</strong> · '+euro(p.importe)+' · '+new Date(p.fecha+"T12:00:00").toLocaleDateString("es-ES")+'</div>').join(""):'<div class="muted">Sin pagos.</div>');
+ $("#histDetalle").innerHTML=(qs.length?'<h3>Cuotas</h3>'+qs.map(q=>'<div class="history-item"><strong>'+q.concepto+'</strong> · '+euro(q.importe)+' · '+q.tipo+'</div>').join(""):"")+'<h3>Pagos registrados</h3>'+(ps.length?ps.map(p=>'<div class="history-item"><strong>'+(p.nombre||"Cofrade")+'</strong> · '+euro(p.importe)+' · '+new Date(p.fecha+"T12:00:00").toLocaleDateString("es-ES")+'</div>').join(""):'<div class="muted">Sin pagos.</div>');
  } sel.onchange=render;if(years.length)await render();
 }
 $("#gestionarCuota").onclick=()=>{const y=new Date().getFullYear()+1;$("#qEjercicio").value=y;$("#qConcepto").value="Cuota anual "+y;$("#qEmision").value=hoy();$("#qVencimiento").value="";$("#qObs").value="";$("#qAsignar").value="todos";$("#qCofrades").style.display="none";$("#qMsg").style.display="none";$("#cuotaDrawer").classList.add("open")};
