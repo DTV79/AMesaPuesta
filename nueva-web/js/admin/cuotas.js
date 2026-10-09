@@ -12,7 +12,7 @@ async function guard(){
  return true;
 }
 async function cargar(){
- const {data:rows,error}=await supabase.from("admin_cuotas_cofrades").select("*").eq("ejercicio",new Date().getFullYear()).order("nombre");
+ const {data:rows,error}=await supabase.rpc("listar_cuotas_cofrades_admin",{p_ejercicio:new Date().getFullYear()});
  if(error)throw error; filas=rows||[];
  const total=filas.reduce((s,r)=>s+Number(r.importe_asignado),0),cobrado=filas.reduce((s,r)=>s+Number(r.pagado),0);
  document.querySelectorAll(".kpi")[0].textContent=euro(total);document.querySelectorAll(".kpi")[1].textContent=euro(cobrado);
@@ -46,7 +46,7 @@ async function cargarHistorico(){
  const {data:cuotas}=await supabase.from("cuotas").select("id,ejercicio,concepto,importe,tipo,activa").order("ejercicio",{ascending:false});
  const years=[...new Set([...(pagos||[]).map(x=>x.ejercicio),...(cuotas||[]).map(x=>x.ejercicio)])].sort((a,b)=>b-a),sel=$("#histEjercicio"),prev=Number(sel.value);
  sel.innerHTML=years.map(y=>'<option value="'+y+'">'+y+'</option>').join("");if(years.length)sel.value=years.includes(prev)?prev:(years.includes(new Date().getFullYear())?new Date().getFullYear():years[0]);
- async function render(){const y=Number(sel.value),ps=(pagos||[]).filter(x=>x.ejercicio===y),qs=(cuotas||[]).filter(x=>x.ejercicio===y),total=ps.reduce((s,x)=>s+Number(x.importe),0);let asignados=[];if(qs.length){const {data:a}=await supabase.from("admin_cuotas_cofrades").select("*").in("cuota_id",qs.map(q=>q.id));asignados=a||[]}
+ async function render(){const y=Number(sel.value),ps=(pagos||[]).filter(x=>x.ejercicio===y),qs=(cuotas||[]).filter(x=>x.ejercicio===y),total=ps.reduce((s,x)=>s+Number(x.importe),0);let asignados=[];if(qs.length){const {data:a}=await supabase.rpc("listar_cuotas_cofrades_admin",{p_cuotas:qs.map(q=>q.id)});asignados=a||[]}
  const previsto=asignados.reduce((s,x)=>s+Number(x.importe_asignado),0),pend=asignados.reduce((s,x)=>s+Number(x.pendiente),0);
  $("#histResumen").innerHTML='<div class="card"><div class="muted">Cobrado</div><div class="kpi ok">'+euro(total)+'</div></div><div class="card"><div class="muted">Pagos</div><div class="kpi">'+ps.length+'</div></div>'+(qs.length?'<div class="card"><div class="muted">Previsto</div><div class="kpi">'+euro(previsto)+'</div></div><div class="card"><div class="muted">Pendiente</div><div class="kpi bad">'+euro(pend)+'</div></div>':'');
  $("#histDetalle").innerHTML=(qs.length?'<h3>Cuotas</h3>'+qs.map(q=>'<div class="history-item"><strong>'+q.concepto+'</strong> · '+euro(q.importe)+' · '+q.tipo+'</div>').join(""):"")+'<h3>Pagos registrados</h3>'+(ps.length?ps.map(p=>'<div class="history-item"><strong>'+(p.cofrades?.nombre||"Cofrade")+'</strong> · '+euro(p.importe)+' · '+new Date(p.fecha+"T12:00:00").toLocaleDateString("es-ES")+'</div>').join(""):'<div class="muted">Sin pagos.</div>');
@@ -56,4 +56,4 @@ $("#gestionarCuota").onclick=()=>{const y=new Date().getFullYear()+1;$("#qEjerci
 $("#cerrarCuota").onclick=()=>$("#cuotaDrawer").classList.remove("open");
 $("#qAsignar").onchange=()=>{$("#qCofrades").style.display=$("#qAsignar").value==="seleccion"?"block":"none";$("#qCofrades").innerHTML=filas.map((r,i)=>'<label style="display:block;padding:6px"><input type="checkbox" class="qSel" value="'+r.cofrade_id+'" '+(i===0?"checked":"")+'> '+r.nombre+'</label>').join("")};
 $("#cuotaForm").onsubmit=async e=>{e.preventDefault();const seleccion=$("#qAsignar").value==="seleccion"?[...document.querySelectorAll(".qSel:checked")].map(x=>x.value):null;if(seleccion&&!seleccion.length)return alert("Selecciona al menos un cofrade.");const {error}=await supabase.rpc("crear_cuota_admin",{p_ejercicio:Number($("#qEjercicio").value),p_concepto:$("#qConcepto").value.trim(),p_tipo:$("#qTipo").value,p_importe:Number($("#qImporte").value),p_emision:$("#qEmision").value,p_vencimiento:$("#qVencimiento").value||null,p_observaciones:$("#qObs").value.trim(),p_cofrades:seleccion});if(error)return alert(error.message);$("#qMsg").textContent="✓ Cuota creada y asignada correctamente.";$("#qMsg").style.display="block";await cargar();setTimeout(()=>$("#cuotaDrawer").classList.remove("open"),600)};
-(async()=>{if(await guard())await cargar()})();
+(async()=>{try{if(await guard())await cargar()}catch(err){console.error("Error cargando cuotas:",err);$("#tbody").textContent="No se pudieron cargar las cuotas: "+(err.message||"Error de consulta");}})();
