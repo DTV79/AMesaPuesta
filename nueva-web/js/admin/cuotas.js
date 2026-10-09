@@ -36,11 +36,34 @@ $("#pagoForm").onsubmit=async e=>{
  const {error}=await supabase.rpc("registrar_pago_cuota_admin",{p_cofrade:$("#cofradeId").value,p_cuota:$("#cuotaId").value,p_importe:importe,p_fecha:$("#fecha").value,p_metodo:$("#metodo").value,p_referencia:$("#referencia").value.trim()});
  if(error)return alert(error.message);$("#okPago").style.display="block";await cargar();setTimeout(()=>$("#drawer").classList.remove("open"),500);
 };
+let selectorPendientes=[],selectorElegido=null;
+const selector=$("#selectorCofrade"),busqueda=$("#buscarCofrade"),lista=$("#listaCofradesPago"),aceptar=$("#aceptarSelector");
+function cerrarSelector(){selector.classList.remove("open");busqueda.value="";selectorElegido=null;}
+function pintarSelector(){
+ const termino=busqueda.value.trim().toLocaleLowerCase("es");
+ const visibles=selectorPendientes.filter(r=>r.nombre.toLocaleLowerCase("es").includes(termino));
+ lista.replaceChildren();
+ if(!visibles.length){const aviso=document.createElement("div");aviso.className="selector-empty";aviso.textContent="No hay cofrades que coincidan con la búsqueda.";lista.append(aviso);}
+ for(const r of visibles){
+  const label=document.createElement("label");label.className="selector-choice";
+  const radio=document.createElement("input");radio.type="radio";radio.name="cofradePago";radio.value=r.cofrade_id+"|"+r.cuota_id;radio.checked=selectorElegido===radio.value;
+  const nombre=document.createElement("span");nombre.textContent=r.nombre;
+  const importe=document.createElement("small");importe.textContent=euro(r.pendiente)+" pendiente";
+  label.append(radio,nombre,importe);lista.append(label);
+  radio.addEventListener("change",()=>{selectorElegido=radio.value;aceptar.disabled=false;});
+ }
+ aceptar.disabled=!visibles.some(r=>r.cofrade_id+"|"+r.cuota_id===selectorElegido);
+}
 document.querySelector(".top .btn").onclick=()=>{
- const pendientes=filas.filter(x=>Number(x.pendiente)>0);if(!pendientes.length)return alert("No hay cuotas pendientes.");
- const nombre=prompt("Escribe parte del nombre del cofrade:");if(!nombre)return;const hits=pendientes.filter(x=>x.nombre.toLowerCase().includes(nombre.trim().toLowerCase()));
- if(hits.length!==1)return alert(hits.length?"Hay varios resultados. Escribe un nombre más concreto.":"No se encontró un cofrade con cuota pendiente.");abrirPago(hits[0].cofrade_id,hits[0].cuota_id);
+ selectorPendientes=filas.filter(r=>Number(r.pendiente)>0);
+ if(!selectorPendientes.length){alert("No hay cuotas pendientes.");return;}
+ selectorElegido=null;busqueda.value="";pintarSelector();selector.classList.add("open");busqueda.focus();
 };
+busqueda.addEventListener("input",pintarSelector);
+$("#cancelarSelector").addEventListener("click",cerrarSelector);
+selector.addEventListener("click",e=>{if(e.target===selector)cerrarSelector();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&selector.classList.contains("open"))cerrarSelector();});
+aceptar.addEventListener("click",()=>{if(!selectorElegido)return;const r=selectorPendientes.find(x=>x.cofrade_id+"|"+x.cuota_id===selectorElegido);if(!r)return;cerrarSelector();abrirPago(r.cofrade_id,r.cuota_id);});
 async function cargarHistorico(){
  const {data:pagos}=await supabase.from("pagos_cuotas").select("ejercicio,fecha,importe,cofrade_id,cofrades(nombre)").eq("anulado",false).order("fecha",{ascending:false});
  const {data:cuotas}=await supabase.from("cuotas").select("id,ejercicio,concepto,importe,tipo,activa").order("ejercicio",{ascending:false});
