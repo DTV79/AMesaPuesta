@@ -19,7 +19,7 @@
     /* Los paneles de edición permanecen bajo la navegación fija. */
     html.amp-modal-locked,body.amp-modal-locked{overflow:hidden!important;overscroll-behavior:none!important}\n    body.amp-modal-locked .amp-header{position:fixed!important;top:0!important}
     body:has(.amp-header) .drawer{top:var(--amp-header-height,72px)!important;bottom:0!important;inset-block-start:var(--amp-header-height,72px)!important;height:auto!important;max-height:calc(100dvh - var(--amp-header-height,72px));z-index:9000!important}
-    body:has(.amp-header) .drawer .sheet{height:100%!important;max-height:100%!important;overflow-y:auto!important;overscroll-behavior:contain}
+    body:has(.amp-header) .drawer .sheet{position:relative!important;height:100%!important;max-height:100%!important;overflow-y:auto!important;overscroll-behavior:contain}
     body:has(.amp-header) .drawer .sheet>.close{position:absolute!important;top:16px!important;right:18px!important;float:none!important;margin:0!important;z-index:5!important;width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;padding:0!important;display:grid!important;place-items:center!important;border:1px solid #e8e0d7!important;border-radius:9px!important;background:#f8f5f0!important;color:#625b54!important;font-size:17px!important;font-weight:500!important;line-height:1!important;box-shadow:none!important;cursor:pointer}
     body:has(.amp-header) .drawer .detalle-panel{max-height:100%;overflow-y:auto}
     body:has(.amp-header) .drawer.open{overflow:hidden}
