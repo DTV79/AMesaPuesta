@@ -17,7 +17,7 @@
     .amp-header{background:#f8f4ed;border-bottom:1px solid #e7dfd4;position:relative;z-index:30;font-family:Georgia,serif}
     .amp-header *{box-sizing:border-box}
     .amp-header-inner{max-width:970px;margin:auto;padding:9px 22px;display:flex;align-items:center;gap:10px;min-height:72px}
-    .amp-identity{display:flex;align-items:center;gap:11px;margin-left:-16px;text-decoration:none;color:#27211f;min-width:0;flex-shrink:0}
+    .amp-identity{display:flex;align-items:center;gap:11px;margin-left:-68px;text-decoration:none;color:#27211f;min-width:0;flex-shrink:0}
     .amp-emblem{height:48px;width:48px;border:1px solid #d7c9bd;border-radius:50%;object-fit:cover;background:white}
     .amp-name{font-weight:700;font-size:21px;line-height:1.1;white-space:nowrap}
     .amp-subtitle{font:700 10px/1.5 Arial,sans-serif;letter-spacing:2px;color:#91212b;margin-top:4px}
