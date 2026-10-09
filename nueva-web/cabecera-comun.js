@@ -14,7 +14,7 @@
   ];
   const style = document.createElement("style");
   style.textContent = `
-    .amp-header{background:#f8f4ed;border-bottom:1px solid #e7dfd4;position:sticky;top:0;z-index:100;font-family:Georgia,serif}
+    .amp-header{background:#f8f4ed;border-bottom:1px solid #e7dfd4;position:fixed;top:0;left:0;right:0;width:100%;z-index:100;font-family:Georgia,serif}
     .amp-header *{box-sizing:border-box}
     /* Los paneles de edición permanecen bajo la navegación fija. */
     body:has(.amp-header) .drawer{top:var(--amp-header-height,72px)!important;bottom:0!important;inset-block-start:var(--amp-header-height,72px)!important;height:auto!important;max-height:calc(100dvh - var(--amp-header-height,72px));z-index:90!important}
@@ -52,7 +52,7 @@
   const current=location.pathname.split("/").pop()||"index.html";
   header.innerHTML='<div class="amp-header-inner"><a class="amp-identity" href="'+(admin?(base==="./"?"index.html":"admin/index.html"):"./index.html")+'"><img class="amp-emblem" src="https://dtv79.github.io/AMesaPuesta/Fotos/logo-cangrejo.png" alt="Escudo A Mesa Puesta"><span><span class="amp-name">A Mesa Puesta</span>'+(admin?'<span class="amp-subtitle" style="display:block">ZONA DE ADMINISTRACIÓN</span>':'')+'</span></a><button type="button" class="amp-menu" aria-label="Abrir menú" aria-expanded="false">☰ Menú</button><nav class="amp-nav" aria-label="Navegación principal">'+links.map(([name,url])=>'<a href="'+url+'"'+(url.split("/").pop()===current?' aria-current="page"':'')+'>'+name+'</a>').join("")+'</nav></div>';
   document.body.prepend(header);
-  const syncHeaderHeight=()=>document.documentElement.style.setProperty("--amp-header-height",Math.ceil(header.getBoundingClientRect().height)+"px");
+  const syncHeaderHeight=()=>{const h=Math.ceil(header.getBoundingClientRect().height);document.documentElement.style.setProperty("--amp-header-height",h+"px");document.body.style.paddingTop=h+"px";};
   syncHeaderHeight();
   if(typeof ResizeObserver!=="undefined")new ResizeObserver(syncHeaderHeight).observe(header);
   window.addEventListener("resize",syncHeaderHeight);
