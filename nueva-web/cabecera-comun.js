@@ -14,10 +14,11 @@
   ];
   const style = document.createElement("style");
   style.textContent = `
-    .amp-header{background:#f8f4ed;border-bottom:1px solid #e7dfd4;position:fixed;top:0;left:0;right:0;width:100%;z-index:100;font-family:Georgia,serif}
+    .amp-header{background:#f8f4ed;border-bottom:1px solid #e7dfd4;position:fixed!important;top:0!important;left:0!important;right:0!important;width:100%!important;z-index:10000!important;transform:none!important;font-family:Georgia,serif}
     .amp-header *{box-sizing:border-box}
     /* Los paneles de edición permanecen bajo la navegación fija. */
-    body:has(.amp-header) .drawer{top:var(--amp-header-height,72px)!important;bottom:0!important;inset-block-start:var(--amp-header-height,72px)!important;height:auto!important;max-height:calc(100dvh - var(--amp-header-height,72px));z-index:90!important}
+    body.amp-modal-locked .amp-header{position:fixed!important;top:0!important}
+    body:has(.amp-header) .drawer{top:var(--amp-header-height,72px)!important;bottom:0!important;inset-block-start:var(--amp-header-height,72px)!important;height:auto!important;max-height:calc(100dvh - var(--amp-header-height,72px));z-index:9000!important}
     body:has(.amp-header) .drawer .sheet{height:100%!important;max-height:100%!important;overflow-y:auto!important;overscroll-behavior:contain}
     body:has(.amp-header) .drawer .sheet>.close{position:sticky!important;top:0!important;z-index:5!important;background:#f0ebe4!important;cursor:pointer}
     body:has(.amp-header) .drawer .detalle-panel{max-height:100%;overflow-y:auto}
@@ -56,6 +57,22 @@
   syncHeaderHeight();
   if(typeof ResizeObserver!=="undefined")new ResizeObserver(syncHeaderHeight).observe(header);
   window.addEventListener("resize",syncHeaderHeight);
+  // Cuando se abre un panel lateral, solo se desplaza su contenido; la página y su cabecera permanecen inmóviles.
+  let savedScroll=0;
+  const updateModalLock=()=>{
+    const active=!!document.querySelector('.drawer.open, .selector-overlay.open');
+    if(active&&!document.body.classList.contains('amp-modal-locked')){
+      savedScroll=window.scrollY;
+      document.body.classList.add('amp-modal-locked');
+      document.body.style.position='fixed';document.body.style.top=(-savedScroll)+'px';
+      document.body.style.left='0';document.body.style.right='0';document.body.style.width='100%';
+    }else if(!active&&document.body.classList.contains('amp-modal-locked')){
+      document.body.classList.remove('amp-modal-locked');
+      document.body.style.position='';document.body.style.top='';document.body.style.left='';document.body.style.right='';document.body.style.width='';
+      window.scrollTo(0,savedScroll);
+    }
+  };
+  new MutationObserver(updateModalLock).observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});
   // Conserva el botón original y su evento de cierre de sesión.
   const logout=document.querySelector(".shell > .top > #salir");
   if (logout) header.querySelector(".amp-header-inner").appendChild(logout);
