@@ -41,8 +41,10 @@ const selector=$("#selectorCofrade"),busqueda=$("#buscarCofrade"),lista=$("#list
 function cerrarSelector(){selector.classList.remove("open");busqueda.value="";selectorElegido=null;}
 function pintarSelector(){
  const termino=busqueda.value.trim().toLocaleLowerCase("es");
- const visibles=selectorPendientes.filter(r=>r.nombre.toLocaleLowerCase("es").includes(termino));
  lista.replaceChildren();
+ if(!termino){lista.style.display="none";aceptar.disabled=true;return;}
+ lista.style.display="block";
+ const visibles=selectorPendientes.filter(r=>r.nombre.toLocaleLowerCase("es").includes(termino));
  if(!visibles.length){const aviso=document.createElement("div");aviso.className="selector-empty";aviso.textContent="No hay cofrades que coincidan con la búsqueda.";lista.append(aviso);}
  for(const r of visibles){
   const label=document.createElement("label");label.className="selector-choice";
@@ -59,7 +61,7 @@ document.querySelector(".top .btn").onclick=()=>{
  if(!selectorPendientes.length){alert("No hay cuotas pendientes.");return;}
  selectorElegido=null;busqueda.value="";pintarSelector();selector.classList.add("open");busqueda.focus();
 };
-busqueda.addEventListener("input",pintarSelector);
+busqueda.addEventListener("input",()=>{selectorElegido=null;pintarSelector();});
 $("#cancelarSelector").addEventListener("click",cerrarSelector);
 selector.addEventListener("click",e=>{if(e.target===selector)cerrarSelector();});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&selector.classList.contains("open"))cerrarSelector();});
