@@ -16,15 +16,15 @@
   style.textContent = `
     .amp-header{background:#f8f4ed;border-bottom:1px solid #e7dfd4;position:relative;z-index:30;font-family:Georgia,serif}
     .amp-header *{box-sizing:border-box}
-    .amp-header-inner{max-width:1480px;margin:auto;padding:9px 18px;display:flex;align-items:center;gap:12px;min-height:72px}
-    .amp-identity{display:flex;align-items:center;gap:11px;text-decoration:none;color:#27211f;min-width:210px;flex-shrink:0}
+    .amp-header-inner{max-width:970px;margin:auto;padding:9px 12px;display:flex;align-items:center;gap:10px;min-height:72px}
+    .amp-identity{display:flex;align-items:center;gap:11px;text-decoration:none;color:#27211f;min-width:205px;flex-shrink:0}
     .amp-emblem{height:48px;width:48px;border:1px solid #d7c9bd;border-radius:50%;object-fit:cover;background:white}
     .amp-name{font-weight:700;font-size:21px;line-height:1.1;white-space:nowrap}
     .amp-subtitle{font:700 10px/1.5 Arial,sans-serif;letter-spacing:2px;color:#91212b;margin-top:4px}
-    .amp-nav{display:flex;gap:clamp(9px,1.2vw,19px);align-items:center;justify-content:flex-start;flex:1;flex-wrap:nowrap}
-    .amp-nav a{font:700 12px Arial,sans-serif;color:#514b47;text-decoration:none;white-space:nowrap}
+    .amp-nav{display:flex;gap:clamp(7px,0.8vw,12px);align-items:center;justify-content:flex-start;flex:0 1 auto;flex-wrap:nowrap}
+    .amp-nav a{font:700 11px Arial,sans-serif;color:#514b47;text-decoration:none;white-space:nowrap}
     .amp-nav a:hover,.amp-nav a[aria-current="page"]{color:#91212b}
-    .amp-header .logout{white-space:nowrap;cursor:pointer;flex-shrink:0}
+    .amp-header .logout{white-space:nowrap;cursor:pointer;flex-shrink:0;margin-left:2px}
     .amp-menu{display:none;border:1px solid #ddd1c5;border-radius:9px;background:#fff;padding:9px;cursor:pointer}
     .amp-header + .shell > .top > div:first-child:has(.brand){display:none}
     .amp-header + .shell > .top{justify-content:flex-end}
