@@ -48,12 +48,40 @@
       .amp-nav.amp-open{display:flex}
       .amp-nav a{padding:12px 8px;border-top:1px solid #e9e0d8}
     }`;
+  style.textContent += `
+    .amp-back-top{position:fixed;right:22px;bottom:24px;z-index:10020;border:0;border-radius:999px;background:#222;color:#fff;width:45px;height:45px;display:none;place-items:center;cursor:pointer;box-shadow:0 4px 16px #0003;font:700 24px Arial,sans-serif}
+    .amp-back-top.visible{display:grid}
+    .amp-back-top:focus-visible{outline:3px solid #a77817;outline-offset:3px}
+    @media(max-width:720px){.amp-back-top{right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px))}}
+  `;
   document.head.appendChild(style);
   const header=document.createElement("header");
   header.className="amp-header";
   const current=location.pathname.split("/").pop()||"index.html";
   header.innerHTML='<div class="amp-header-inner"><a class="amp-identity" href="'+(admin?(base==="./"?"index.html":"admin/index.html"):"./index.html")+'"><img class="amp-emblem" src="https://dtv79.github.io/AMesaPuesta/Fotos/logo-cangrejo.png" alt="Escudo A Mesa Puesta"><span><span class="amp-name">A Mesa Puesta</span>'+(admin?'<span class="amp-subtitle" style="display:block">ZONA DE ADMINISTRACIÓN</span>':'')+'</span></a><button type="button" class="amp-menu" aria-label="Abrir menú" aria-expanded="false">☰ Menú</button><nav class="amp-nav" aria-label="Navegación principal">'+links.map(([name,url])=>'<a href="'+url+'"'+(url.split("/").pop()===current?' aria-current="page"':'')+'>'+name+'</a>').join("")+'</nav></div>';
   document.body.prepend(header);
+  const backTop=document.createElement("button");
+  backTop.type="button";
+  backTop.className="amp-back-top";
+  backTop.textContent="↑";
+  backTop.setAttribute("aria-label","Volver al inicio");
+  backTop.title="Volver al inicio";
+  document.body.appendChild(backTop);
+  const scrollTarget=()=>{
+    const opened=[...document.querySelectorAll(".drawer.open,.sheet,.detalle-panel")].filter(el=>el.getClientRects().length&&el.scrollHeight>el.clientHeight+5);
+    return opened.find(el=>el.scrollTop>0)||opened[0]||document.scrollingElement;
+  };
+  const syncBackTop=()=>{
+    const target=scrollTarget();
+    backTop.classList.toggle("visible",!!target&&target.scrollTop>180);
+  };
+  backTop.addEventListener("click",()=>{
+    const target=scrollTarget();
+    if(target)target.scrollTo({top:0,behavior:"smooth"});
+    if(target===document.scrollingElement)window.scrollTo({top:0,behavior:"smooth"});
+  });
+  document.addEventListener("scroll",syncBackTop,true);
+  window.addEventListener("resize",syncBackTop);
   const syncHeaderHeight=()=>{const h=Math.ceil(header.getBoundingClientRect().height);document.documentElement.style.setProperty("--amp-header-height",h+"px");document.body.style.paddingTop=h+"px";};
   syncHeaderHeight();
   if(typeof ResizeObserver!=="undefined")new ResizeObserver(syncHeaderHeight).observe(header);
