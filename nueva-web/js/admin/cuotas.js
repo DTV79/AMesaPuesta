@@ -1,6 +1,13 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/+esm";
 const supabase=createClient("https://wmfcpnihymiiwgpvbngj.supabase.co","sb_publishable_ij3sYbyMrLI2B34OOYt6JA_Aez1R2cJ");
 let filas=[];
+let filtroCuotas='todos';
+function filtrarCuotas(){const alDia=filas.filter(r=>r.estado==='al_corriente').length;document.querySelectorAll('[data-filtro-cuotas]').forEach(b=>{const tipo=b.dataset.filtroCuotas;b.classList.toggle('activo',tipo===filtroCuotas);b.setAttribute('aria-pressed',String(tipo===filtroCuotas));b.querySelector('.cantidad').textContent=tipo==='todos'?filas.length:tipo==='al_corriente'?alDia:filas.length-alDia;});const visibles=filas.filter(r=>filtroCuotas==='todos'||(filtroCuotas==='al_corriente'?r.estado==='al_corriente':r.estado!=='al_corriente'));pintarFilas(visibles);}
+function pintarFilas(visibles){
+ $("#tbody").innerHTML=visibles.map(r=>'<tr><td class="name">'+r.nombre+'</td><td><span class="pill '+(r.estado==="al_corriente"?"ok":"bad")+'">● '+(r.estado==="al_corriente"?"Al corriente":r.estado==="parcial"?"Parcial":"Pendiente")+'</span></td><td class="desktop">'+euro(r.importe_asignado)+'</td><td class="desktop">'+euro(r.pagado)+'</td><td><strong>'+euro(r.pendiente)+'</strong></td><td class="action" data-c="'+r.cofrade_id+'" data-q="'+r.cuota_id+'">'+(Number(r.pendiente)>0?"Cobrar →":"Ver →")+'</td></tr>').join("");
+ document.querySelectorAll(".action").forEach(x=>x.onclick=()=>abrirPago(x.dataset.c,x.dataset.q));
+
+}
 const $=s=>document.querySelector(s), euro=n=>new Intl.NumberFormat("es-ES",{style:"currency",currency:"EUR"}).format(Number(n||0));
 const hoy=()=>new Date().toISOString().slice(0,10);
 
@@ -17,8 +24,7 @@ async function cargar(){
  const total=filas.reduce((s,r)=>s+Number(r.importe_asignado),0),cobrado=filas.reduce((s,r)=>s+Number(r.pagado),0);
  document.querySelectorAll(".kpi")[0].textContent=euro(total);document.querySelectorAll(".kpi")[1].textContent=euro(cobrado);
  document.querySelectorAll(".kpi")[2].textContent=euro(total-cobrado);document.querySelectorAll(".kpi")[3].textContent=filas.filter(r=>r.estado==="al_corriente").length+" / "+filas.length;
- $("#tbody").innerHTML=filas.map(r=>'<tr><td class="name">'+r.nombre+'</td><td><span class="pill '+(r.estado==="al_corriente"?"ok":"bad")+'">● '+(r.estado==="al_corriente"?"Al corriente":r.estado==="parcial"?"Parcial":"Pendiente")+'</span></td><td class="desktop">'+euro(r.importe_asignado)+'</td><td class="desktop">'+euro(r.pagado)+'</td><td><strong>'+euro(r.pendiente)+'</strong></td><td class="action" data-c="'+r.cofrade_id+'" data-q="'+r.cuota_id+'">'+(Number(r.pendiente)>0?"Cobrar →":"Ver →")+'</td></tr>').join("");
- document.querySelectorAll(".action").forEach(x=>x.onclick=()=>abrirPago(x.dataset.c,x.dataset.q));
+ filtrarCuotas();
  await cargarHistorico();
 }
 async function abrirPago(cofradeId,cuotaId){
@@ -90,4 +96,5 @@ $("#gestionarCuota").onclick=()=>{cuotaEnEdicion=null;$("#cuotaDrawer").querySel
 $("#cerrarCuota").onclick=()=>$("#cuotaDrawer").classList.remove("open");
 $("#qAsignar").onchange=()=>{$("#qCofrades").style.display=$("#qAsignar").value==="seleccion"?"block":"none";$("#qCofrades").innerHTML=filas.map((r,i)=>'<label style="display:block;padding:6px"><input type="checkbox" class="qSel" value="'+r.cofrade_id+'" '+(i===0?"checked":"")+'> '+r.nombre+'</label>').join("")};
 $("#cuotaForm").onsubmit=async e=>{e.preventDefault();const seleccion=$("#qAsignar").value==="seleccion"?[...document.querySelectorAll(".qSel:checked")].map(x=>x.value):null;if(seleccion&&!seleccion.length)return alert("Selecciona al menos un cofrade.");const {error}=await supabase.rpc(cuotaEnEdicion?"editar_cuota_admin":"crear_cuota_admin",{...(cuotaEnEdicion?{p_id:cuotaEnEdicion}:{}),p_ejercicio:Number($("#qEjercicio").value),p_concepto:$("#qConcepto").value.trim(),p_tipo:$("#qTipo").value,p_importe:Number($("#qImporte").value),p_emision:$("#qEmision").value,p_vencimiento:$("#qVencimiento").value||null,p_observaciones:$("#qObs").value.trim(),...(cuotaEnEdicion?{}:{p_cofrades:seleccion})});if(error)return alert(error.message);$("#qMsg").textContent="✓ Cuota guardada correctamente.";$("#qMsg").style.display="block";await cargar();setTimeout(()=>$("#cuotaDrawer").classList.remove("open"),600)};
+document.querySelectorAll("[data-filtro-cuotas]").forEach(b=>b.addEventListener("click",()=>{filtroCuotas=b.dataset.filtroCuotas;filtrarCuotas()}));
 (async()=>{try{if(await guard())await cargar()}catch(err){console.error("Error cargando cuotas:",err);$("#tbody").textContent="No se pudieron cargar las cuotas: "+(err.message||"Error de consulta");}})();
