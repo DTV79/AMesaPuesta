@@ -2,6 +2,7 @@ import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js';
 
 const API = SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rpc/listar_comidas_publicas_v2';
 let comidas = [];
+let valoracionesDisponibles = new Map();
 
 function el(tag, clase = '', texto = null) {
   const node = document.createElement(tag);
@@ -215,6 +216,49 @@ function esProxima(m) {
   const fechaComida = new Date(Number(match[1]), Number(match[2])-1, Number(match[3]));
   return fechaComida >= fechaHoy;
 }
+async function cargarEstadoValoraciones(){
+  const res=await fetch(SUPABASE_URL.replace(/\\/$/,'')+'/rest/v1/rpc/listar_valoraciones_comidas_publicas',{
+    method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json'},body:'{}',cache:'no-store'
+  });
+  if(!res.ok)throw Error('HTTP '+res.status);
+  const data=await res.json();
+  valoracionesDisponibles=new Map((Array.isArray(data)?data:[]).map(v=>[v.codigo,v]));
+}
+function valoracionPublica(m){
+  const estado=valoracionesDisponibles.get(m.codigo);
+  if(!estado)return null;
+  const box=el('section','meal-voting');
+  const heading=el('h3','','⭐ Valoración de la comida');box.append(heading);
+  if(estado.votos>0)box.append(el('p','meal-voting-summary','Nota general: '+Number(estado.media_general).toLocaleString('es-ES')+'/5 · '+estado.votos+' '+(estado.votos===1?'valoración':'valoraciones')));
+  if(!estado.abierta){box.append(el('p','meal-voting-note','Valoración cerrada o fuera del plazo establecido.'));return box;}
+  box.append(el('p','meal-voting-note','Solo pueden votar los cofrades asistentes. Una valoración por persona.'));
+  const btn=el('button','meal-vote-button','⭐ Valorar esta comida');btn.type='button';box.append(btn);
+  const form=el('form','meal-vote-form');form.hidden=true;
+  for(const [key,label] of [['comida','Comida'],['servicio','Servicio'],['ambiente','Ambiente'],['general','Experiencia general']]){
+    const l=el('label','',label);const sel=el('select');sel.name=key;sel.required=true;
+    sel.append(el('option','','Selecciona una puntuación'));sel.firstChild.value='';
+    for(let n=1;n<=5;n++){const opt=el('option','',('★'.repeat(n)+'☆'.repeat(5-n))+' · '+n+'/5');opt.value=String(n);sel.append(opt);}
+    l.append(sel);form.append(l);
+  }
+  const comment=el('label','','Comentario (opcional)');const textarea=el('textarea');textarea.name='comentario';textarea.maxLength=1000;textarea.rows=3;comment.append(textarea);form.append(comment);
+  const submit=el('button','meal-vote-button','Enviar valoración');submit.type='submit';form.append(submit);
+  const msg=el('p','meal-voting-note');msg.setAttribute('role','status');form.append(msg);box.append(form);
+  btn.addEventListener('click',()=>{form.hidden=!form.hidden;});
+  form.addEventListener('submit',async ev=>{
+    ev.preventDefault();submit.disabled=true;msg.textContent='Guardando valoración…';
+    try{
+      const token=localStorage.getItem('sb-'+new URL(SUPABASE_URL).hostname.split('.')[0]+'-auth-token');
+      const session=token?JSON.parse(token):null;
+      if(!session?.access_token)throw Error('Debes iniciar sesión con tu cuenta de cofrade para votar. La identificación por correo está pendiente de activar.');
+      const payload={p_codigo:m.codigo,p_comida:Number(form.elements.comida.value),p_servicio:Number(form.elements.servicio.value),p_ambiente:Number(form.elements.ambiente.value),p_general:Number(form.elements.general.value),p_comentario:form.elements.comentario.value};
+      if([payload.p_comida,payload.p_servicio,payload.p_ambiente,payload.p_general].some(v=>v<1||v>5))throw Error('Selecciona las cuatro puntuaciones.');
+      const res=await fetch(SUPABASE_URL.replace(/\\/$/,'')+'/rest/v1/rpc/votar_valoracion_comida',{method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      const result=await res.json();if(!res.ok)throw Error(result.message||'No se pudo guardar');
+      msg.textContent='¡Valoración registrada! Gracias por participar.';submit.hidden=true;
+    }catch(error){msg.textContent=error.message;}finally{submit.disabled=false;}
+  });
+  return box;
+}
 function historialCard(m) {
   const card=el('article','history-card');
   card.id=m.codigo;
@@ -310,6 +354,7 @@ function historialCard(m) {
   );
   detalles.append(precio);
   contenido.append(detalles);
+  const votar=valoracionPublica(m);if(votar)contenido.append(votar);
   card.append(cover,contenido);
   return card;
 }
@@ -353,6 +398,7 @@ async function iniciar() {
         for(const m of comidas)m.fotos_nuevas=porCodigo.get(m.codigo)||[];
       }else console.warn('No se pudieron consultar las portadas nuevas',res.status);
     }catch(e){console.warn('Fotografías nuevas no disponibles; se mantiene el histórico',e);}
+    if(document.body.dataset.page==='restaurantes'){try{await cargarEstadoValoraciones()}catch(e){console.warn('Valoraciones no disponibles',e);}}
     if(document.body.dataset.page==='home')renderHome();
     else if(document.body.dataset.page==='restaurantes')iniciarRestaurantes();
   }catch(error){
