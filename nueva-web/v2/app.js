@@ -200,11 +200,17 @@ function historialCard(m) {
   const card=el('article','history-card');
   card.id=m.codigo;
   const cover=foto(m,'history-photo');
+  if(esProxima(m)) {
+    card.classList.add('upcoming-meal');
+    const etiqueta=el('div','upcoming-meal-badge');
+    etiqueta.append(el('strong','','📅 Próxima comida'),el('span','',fecha(m.fecha)));
+    card.append(etiqueta);
+  }
   const contenido=el('div','history-content');
   const stars=el('div','rating',estrellas(m.valoracion));
   stars.setAttribute('aria-label','Valoración '+String(m.valoracion||0)+' de 5');
 
-  contenido.append(el('span','history-date',(esProxima(m) ? '📅 Próxima comida · ' : '') + fecha(m.fecha)),el('h2','',m.restaurante),stars);
+  contenido.append(el('span','history-date',fecha(m.fecha)),el('h2','',m.restaurante),stars);
   if(txt(m.direccion)) contenido.append(el('p','address',m.direccion));
 
   const organizadores=nombres(m.organizadores);
