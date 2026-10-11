@@ -1202,7 +1202,10 @@
     body[data-page="encuestas"] .poll-stat span { color:#6e544c; font-size:.79rem; }
     body[data-page="encuestas"] .poll-guide strong { display:block; font-size:.88rem; margin-bottom:7px; color:#382622; }
     body[data-page="encuestas"] .poll-guide span { font-size:.8rem; line-height:1.55; color:#6b534b; }
-    body[data-page="encuestas"] .poll-guide b { color:#8b2730; }
+    body[data-page="encuestas"] .poll-guide-items { display:grid; gap:8px; }
+    body[data-page="encuestas"] .poll-guide-item { border:1px solid #e9d9cd; background:#faf7f3; border-radius:12px; padding:10px 12px; }
+    body[data-page="encuestas"] .poll-guide-item b { display:block; color:#322522; font-size:.88rem; margin-bottom:3px; }
+    body[data-page="encuestas"] .poll-guide-item span { display:block; color:#65514a; font-size:.82rem; line-height:1.45; }
     @media(max-width:700px) {
       body[data-page="encuestas"] .poll-intro,body[data-page="encuestas"] .poll-summary-bar { width:calc(100% - 28px); }
       body[data-page="encuestas"] .poll-intro { padding:28px 22px; }
@@ -1241,7 +1244,14 @@
   </section>
   <div class="poll-summary-bar">
     <div class="poll-stat"><strong id="kpiActive">0</strong><span>Encuestas activas</span></div>
-    <div class="poll-guide"><strong>Tipos de encuestas</strong><span><b>Pública:</b> votos visibles · <b>Secreta:</b> resultado final · <b>Participación:</b> quién ha votado</span></div>
+    <div class="poll-guide">
+      <strong>Tipos de encuestas</strong>
+      <div class="poll-guide-items">
+        <div class="poll-guide-item"><b>Pública</b><span>Se ve quién vota cada opción.</span></div>
+        <div class="poll-guide-item"><b>Secreta</b><span>Solo se muestra el resultado final.</span></div>
+        <div class="poll-guide-item"><b>Participación</b><span>Se ve quién votó, pero no qué eligió.</span></div>
+      </div>
+    </div>
   </div>
 
   <main class="main">
