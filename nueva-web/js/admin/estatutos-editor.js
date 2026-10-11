@@ -34,6 +34,6 @@ toggle.onclick=()=>{const closed=body.hidden;body.hidden=!closed;let j=i+1;while
 if(soloLectura)bloquear(true);
 }
 function add(tipo){insertar(tipo,bloques.length)}
-function bloquear(si){soloLectura=si;document.querySelectorAll("#editor input,#editor textarea,#editor select,#addCap,#addArt,#guardar,#aprobar,.bloque button:not(.chapter-head button)").forEach(x=>x.disabled=si);document.querySelectorAll(".chapter-head button").forEach(x=>{if(x.textContent.includes("Añadir")||x.textContent.includes("Capítulo antes"))x.disabled=si})}
+function bloquear(si){soloLectura=si;document.querySelectorAll("#editor input:not(#pdfArchivo),#editor textarea,#editor select,#addCap,#addArt,#guardar,#aprobar,.bloque button:not(.chapter-head button)").forEach(x=>x.disabled=si);document.querySelectorAll(".chapter-head button").forEach(x=>{if(x.textContent.includes("Añadir")||x.textContent.includes("Capítulo antes"))x.disabled=si})}
 return{set,get,add,bloquear}
 }
