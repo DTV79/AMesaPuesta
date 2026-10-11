@@ -10,7 +10,7 @@
   ].map(([label,href])=>[label,base === "./" ? href : base+href]) : [
     ["Inicio",prefix+"index.html"],["Nuestras comidas",prefix+"restaurantes.html"],
     ["Cofrades",prefix+"cofrades.html"],["Tablón",prefix+"anuncios.html"],
-    ["Encuestas",prefix+"encuestas.html"],["Estatutos",prefix+"estatutos.html"]
+    ["Encuestas",prefix+"encuestas.html"],["Estatutos",prefix+"estatutos.html"],["Mi acceso",prefix+"acceso.html"]
   ];
   const style = document.createElement("style");
   style.textContent = `
@@ -96,6 +96,20 @@
   // Conserva el botón original y su evento de cierre de sesión.
   const logout=document.querySelector(".shell > .top > #salir");
   if (logout) header.querySelector(".amp-header-inner").appendChild(logout);
+  if(!admin){
+    const token=localStorage.getItem("amp_cofrade_token");
+    if(token){
+      fetch("https://wmfcpnihymiiwgpvbngj.supabase.co/functions/v1/acceso-cofrade",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"session",token})})
+      .then(async r=>{const d=await r.json();if(!r.ok||!d.nombre)throw Error("Sesión no válida");
+        const enlace=[...header.querySelectorAll(".amp-nav a")].find(a=>a.getAttribute("href")===prefix+"acceso.html");
+        if(enlace){enlace.textContent="👤 "+d.nombre;enlace.title="Sesión de cofrade activa";}
+        const cerrar=document.createElement("button");cerrar.type="button";cerrar.textContent="Salir";
+        cerrar.style.cssText="border:0;background:#eee8df;padding:8px;border-radius:8px;cursor:pointer";
+        cerrar.onclick=()=>{localStorage.removeItem("amp_cofrade_token");location.href=prefix+"index.html"};
+        header.querySelector(".amp-header-inner").appendChild(cerrar);
+      }).catch(()=>localStorage.removeItem("amp_cofrade_token"));
+    }
+  }
   const button=header.querySelector(".amp-menu"),nav=header.querySelector(".amp-nav");
   button.addEventListener("click",()=>{const open=nav.classList.toggle("amp-open");button.setAttribute("aria-expanded",String(open));});
 })();
