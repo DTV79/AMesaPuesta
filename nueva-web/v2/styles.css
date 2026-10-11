@@ -1032,3 +1032,6 @@ button {cursor:pointer}
 /* Acceso independiente a la zona privada */
 @media(max-width:950px){.admin-access{margin-left:auto;padding:9px 11px;font-size:11px}}
 @media(max-width:390px){.admin-access{padding:8px}.admin-access span{font-size:10px}}
+
+/* Cabecera v2: mantener navegación, acceso personal y Admin en una sola fila */
+@media(min-width:1101px){.header-inner{display:flex;gap:clamp(8px,1vw,18px);flex-wrap:nowrap}.header-inner .brand{flex:0 0 auto}.header-inner .desktop-nav{flex:1 1 auto;min-width:0;justify-content:center;gap:0}.header-inner .desktop-nav a{padding-inline:clamp(5px,.7vw,12px);white-space:nowrap;font-size:clamp(11px,.8vw,13px)}.header-inner .cofrade-access{flex:0 0 auto}.header-inner .admin-access{flex:0 0 auto;margin-left:0;justify-self:auto;padding:9px 10px}}
