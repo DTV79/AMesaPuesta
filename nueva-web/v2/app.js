@@ -24,7 +24,7 @@ function fotosDisponibles(m) {
     && Number(m.numero_fotos)>0 && Number(m.numero_fotos)<=500;
 }
 function origenFoto(m, index) {
-  return '../Fotos/' + encodeURIComponent(m.carpeta_fotos) + '/' + (index+1) + '.webp';
+  return 'https://amesapuesta-docs-q9d5gu6j1-diegotroncoso79-8571.vercel.app/Fotos/' + encodeURIComponent(m.carpeta_fotos) + '/' + (index+1) + '.webp';
 }
 function foto(m, clase) {
   const box = el('div',clase);
