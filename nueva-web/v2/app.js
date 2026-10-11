@@ -234,7 +234,7 @@ function valoracionPublica(m){
   box.append(el('p','meal-voting-note','Solo pueden votar los cofrades asistentes. Una valoración por persona.'));
   const btn=el('button','meal-vote-button','⭐ Valorar esta comida');btn.type='button';box.append(btn);
   const form=el('form','meal-vote-form');form.hidden=true;
-  for(const [key,label] of [['comida','Comida'],['servicio','Servicio'],['ambiente','Ambiente'],['general','Experiencia general']]){
+  for(const [key,label] of [['comida','Comida'],['servicio','Servicio'],['ambiente','Local y ambiente'],['general','Experiencia general']]){
     const l=el('label','',label);const sel=el('select');sel.name=key;sel.required=true;
     sel.append(el('option','','Selecciona una puntuación'));sel.firstChild.value='';
     for(let n=1;n<=5;n++){const opt=el('option','',('★'.repeat(n)+'☆'.repeat(5-n))+' · '+n+'/5');opt.value=String(n);sel.append(opt);}
