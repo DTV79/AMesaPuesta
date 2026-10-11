@@ -1172,7 +1172,43 @@
       body[data-page="encuestas"] .grid.active { grid-template-columns:1fr; }
       body[data-page="encuestas"] .hero-side-card { padding:16px; }
     }
-  </style>
+  
+    /* Cabecera editorial equivalente a Cofrades y Tablón; sin estilos heredados de hero. */
+    body[data-page="encuestas"] .poll-intro,
+    body[data-page="encuestas"] .poll-summary-bar {
+      width:min(800px,calc(100% - 32px)); margin-left:auto; margin-right:auto;
+    }
+    body[data-page="encuestas"] .poll-intro {
+      margin-top:20px; padding:36px 38px 38px; border-radius:18px;
+      background:linear-gradient(115deg,#fffaf5,#f1e0d7);
+      border:1px solid #e8d3c5; color:#241c1a;
+    }
+    body[data-page="encuestas"] .poll-intro-label {
+      color:#92232d; font-size:.7rem; letter-spacing:.13em; font-weight:800; margin-bottom:12px;
+    }
+    body[data-page="encuestas"] .poll-intro h1 {
+      margin:0 0 14px; max-width:640px; color:#261c1a;
+      font-family:Georgia,"Times New Roman",serif; font-size:clamp(2.1rem,4vw,3.15rem);
+      line-height:1.09; letter-spacing:-.045em; font-weight:700;
+    }
+    body[data-page="encuestas"] .poll-intro h1 em { color:#932630; font-weight:400; }
+    body[data-page="encuestas"] .poll-intro p { margin:0; color:#72554c; font-size:.92rem; line-height:1.65; max-width:600px; }
+    body[data-page="encuestas"] .poll-summary-bar { display:grid; grid-template-columns:190px minmax(0,1fr); gap:10px; margin-top:12px; }
+    body[data-page="encuestas"] .poll-stat,
+    body[data-page="encuestas"] .poll-guide {
+      border:1px solid #e9d9cd; border-radius:13px; background:#fffdfb; padding:14px 16px;
+    }
+    body[data-page="encuestas"] .poll-stat strong { display:block; font:700 1.9rem Georgia,serif; color:#2a1d1a; line-height:1.1; }
+    body[data-page="encuestas"] .poll-stat span { color:#6e544c; font-size:.79rem; }
+    body[data-page="encuestas"] .poll-guide strong { display:block; font-size:.88rem; margin-bottom:7px; color:#382622; }
+    body[data-page="encuestas"] .poll-guide span { font-size:.8rem; line-height:1.55; color:#6b534b; }
+    body[data-page="encuestas"] .poll-guide b { color:#8b2730; }
+    @media(max-width:700px) {
+      body[data-page="encuestas"] .poll-intro,body[data-page="encuestas"] .poll-summary-bar { width:calc(100% - 28px); }
+      body[data-page="encuestas"] .poll-intro { padding:28px 22px; }
+      body[data-page="encuestas"] .poll-summary-bar { grid-template-columns:1fr; }
+    }
+</style>
   <link rel="stylesheet" href="./styles.css">
   <link rel="icon" href="https://raw.githubusercontent.com/DTV79/AMesaPuesta/53b6073bb0bab12113dc6a1ba52bc687ac39b9bc/docs/Fotos/logo-cangrejo.png" type="image/png">
 </head>
@@ -1196,64 +1232,17 @@
     </div>
   </header>
 
-  <section class="hero">
-    <div class="wrap">
-      <div class="hero-card">
-        <div class="hero-grid">
-          <div class="hero-copy">
-            <div class="hero-badge">Panel de votaciones</div>
-            <h1>Las decisiones se toman entre todos.</h1>
-            <p>
-              Consulta encuestas activas, revisa resultados y organiza las decisiones gastronómicas
-              de la Cofradía, todo claro, fácil y desde el móvil.
-            </p>
-
-            <div class="hero-kpis">
-              <div class="kpi kpi-active">
-                <div class="kpi-label">Encuestas activas</div>
-                <div class="kpi-value" id="kpiActive">0</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="hero-side" aria-hidden="true">
-            <div class="hero-side-card">
-              <div class="hero-side-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
-                  <path d="M7.5 8.5l1.2 1.2 2-2.4"></path>
-                  <path d="M13 8h4"></path>
-                  <path d="M7.5 12.5l1.2 1.2 2-2.4"></path>
-                  <path d="M13 12h4"></path>
-                  <path d="M7.5 16.5l1.2 1.2 2-2.4"></path>
-                  <path d="M13 16h4"></path>
-                </svg>
-              </div>
-
-              <div class="hero-side-title">Tipos de encuestas</div>
-
-              <div class="hero-types">
-                <div class="hero-type-item">
-                  <strong>Pública</strong>
-                  <span>Se ve quién vota cada opción.</span>
-                </div>
-
-                <div class="hero-type-item">
-                  <strong>Secreta</strong>
-                  <span>Solo se muestra el resultado final.</span>
-                </div>
-
-                <div class="hero-type-item">
-                  <strong>Participación</strong>
-                  <span>Se ve quién votó, pero no qué eligió.</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <section class="poll-intro" aria-labelledby="poll-intro-title">
+    <div class="poll-intro-inner">
+      <div class="poll-intro-label">LA VOZ DE LA COFRADÍA</div>
+      <h1 id="poll-intro-title">Las decisiones las <em>tomamos entre todos.</em></h1>
+      <p>Participa en las encuestas, conoce los resultados y decide junto a los demás cofrades.</p>
     </div>
   </section>
+  <div class="poll-summary-bar">
+    <div class="poll-stat"><strong id="kpiActive">0</strong><span>Encuestas activas</span></div>
+    <div class="poll-guide"><strong>Tipos de encuestas</strong><span><b>Pública:</b> votos visibles · <b>Secreta:</b> resultado final · <b>Participación:</b> quién ha votado</span></div>
+  </div>
 
   <main class="main">
     <div class="wrap">
