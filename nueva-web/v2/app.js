@@ -18,26 +18,39 @@ function fecha(iso, corto = false) {
     ? {day:'numeric',month:'short',year:'numeric'}
     : {day:'numeric',month:'long',year:'numeric'}).format(date);
 }
-function fotosDisponibles(m) {
-  return /^[a-zA-Z0-9_-]+$/.test(txt(m.carpeta_fotos))
-    && Number.isInteger(Number(m.numero_fotos))
-    && Number(m.numero_fotos)>0 && Number(m.numero_fotos)<=500;
+const STORAGE_FOTOS = SUPABASE_URL.replace(/\\/$/,'') + '/storage/v1/object/public/comidas/';
+function fotosLegacy(m) {
+  return /^[a-zA-Z0-9_-]+$/.test(txt(m.carpeta_fotos)) && Number.isInteger(Number(m.numero_fotos)) && Number(m.numero_fotos)>0 && Number(m.numero_fotos)<=500;
 }
-function origenFoto(m, index) {
+function origenFotoLegacy(m,index) {
   return 'https://raw.githubusercontent.com/DTV79/AMesaPuesta/53b6073bb0bab12113dc6a1ba52bc687ac39b9bc/docs/Fotos/' + encodeURIComponent(m.carpeta_fotos) + '/' + (index+1) + '.webp';
 }
-function foto(m, clase) {
-  const box = el('div',clase);
-  const fallback = el('span','image-fallback','🍽');
+function urlFotoGuardada(ruta) {
+  if(/^https:\\/\\//i.test(ruta)) return ruta;
+  return STORAGE_FOTOS + String(ruta).split('/').map(encodeURIComponent).join('/');
+}
+function urlsFotos(m) {
+  const nuevas=(Array.isArray(m.fotos_nuevas)?m.fotos_nuevas:[]).filter(f=>f&&f.ruta).map(f=>urlFotoGuardada(f.ruta));
+  const historicas=fotosLegacy(m)?Array.from({length:Number(m.numero_fotos)},(_,i)=>origenFotoLegacy(m,i)):[];
+  return [...new Set([...nuevas,...historicas])];
+}
+function fotosDisponibles(m) { return urlsFotos(m).length>0; }
+function origenFoto(m,index) { return urlsFotos(m)[index] || ''; }
+function foto(m,clase) {
+  const box=el('div',clase);
+  const fallback=el('span','image-fallback','🍽');
   fallback.setAttribute('aria-hidden','true');
   box.append(fallback);
-  if (fotosDisponibles(m)) {
-    const img = el('img');
-    img.src = origenFoto(m,0);
-    img.alt = 'Recuerdo de ' + txt(m.restaurante);
+  const urls=urlsFotos(m);
+  if(urls.length){
+    const img=el('img');
+    let i=0;
+    img.src=urls[0];
+    img.alt='Recuerdo de '+txt(m.restaurante);
     img.loading='lazy';
     img.decoding='async';
-    img.addEventListener('error',()=>img.remove());
+    img.addEventListener('load',()=>{fallback.hidden=true;});
+    img.addEventListener('error',()=>{if(++i<urls.length)img.src=urls[i];else img.remove();});
     box.append(img);
   }
   return box;
@@ -122,7 +135,7 @@ function refrescarGaleria() {
   img.alt=galeria.restaurante+' · Foto '+String(indice+1);
   document.getElementById('gallery-title').textContent=galeria.restaurante;
   document.getElementById('gallery-count').textContent=
-    'Foto '+String(indice+1)+' de '+String(galeria.numero_fotos);
+    'Foto '+String(indice+1)+' de '+String(urlsFotos(galeria).length);
 }
 function abrirGaleria(m,boton) {
   if(!fotosDisponibles(m)) return;
@@ -132,7 +145,7 @@ function abrirGaleria(m,boton) {
 }
 function moverFoto(paso) {
   if(!galeria)return;
-  indice=(indice+paso+Number(galeria.numero_fotos))%Number(galeria.numero_fotos);
+  indice=(indice+paso+urlsFotos(galeria).length)%urlsFotos(galeria).length;
   refrescarGaleria();
 }
 function prepararGaleria(){
@@ -330,6 +343,16 @@ function iniciarRestaurantes(){
 async function iniciar() {
   try {
     comidas=await consultarHistorial();
+    try {
+      const res=await fetch(SUPABASE_URL.replace(/\\/$/,'')+'/rest/v1/rpc/listar_fotos_comidas_publicas_v2',{
+        method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json'},body:'{}',cache:'no-store'
+      });
+      if(res.ok){
+        const rows=await res.json();
+        const porCodigo=new Map(rows.map(r=>[r.codigo,r.fotos]));
+        for(const m of comidas)m.fotos_nuevas=porCodigo.get(m.codigo)||[];
+      }else console.warn('No se pudieron consultar las portadas nuevas',res.status);
+    }catch(e){console.warn('Fotografías nuevas no disponibles; se mantiene el histórico',e);}
     if(document.body.dataset.page==='home')renderHome();
     else if(document.body.dataset.page==='restaurantes')iniciarRestaurantes();
   }catch(error){
