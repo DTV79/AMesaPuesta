@@ -18,7 +18,7 @@ function fecha(iso, corto = false) {
     ? {day:'numeric',month:'short',year:'numeric'}
     : {day:'numeric',month:'long',year:'numeric'}).format(date);
 }
-const STORAGE_FOTOS = SUPABASE_URL.replace(/\\/$/,'') + '/storage/v1/object/public/comidas/';
+const STORAGE_FOTOS = SUPABASE_URL.replace(/\/$/,'') + '/storage/v1/object/public/comidas/';
 function fotosLegacy(m) {
   return /^[a-zA-Z0-9_-]+$/.test(txt(m.carpeta_fotos)) && Number.isInteger(Number(m.numero_fotos)) && Number(m.numero_fotos)>0 && Number(m.numero_fotos)<=500;
 }
@@ -26,7 +26,7 @@ function origenFotoLegacy(m,index) {
   return 'https://raw.githubusercontent.com/DTV79/AMesaPuesta/53b6073bb0bab12113dc6a1ba52bc687ac39b9bc/docs/Fotos/' + encodeURIComponent(m.carpeta_fotos) + '/' + (index+1) + '.webp';
 }
 function urlFotoGuardada(ruta) {
-  if(/^https:\\/\\//i.test(ruta)) return ruta;
+  if(String(ruta).startsWith('https://')) return ruta;
   return STORAGE_FOTOS + String(ruta).split('/').map(encodeURIComponent).join('/');
 }
 function urlsFotos(m) {
@@ -344,7 +344,7 @@ async function iniciar() {
   try {
     comidas=await consultarHistorial();
     try {
-      const res=await fetch(SUPABASE_URL.replace(/\\/$/,'')+'/rest/v1/rpc/listar_fotos_comidas_publicas_v2',{
+      const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/rpc/listar_fotos_comidas_publicas_v2',{
         method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json'},body:'{}',cache:'no-store'
       });
       if(res.ok){
