@@ -1108,21 +1108,70 @@
       }
     }
   
-    /* Integración visual en la web pública v2. Se conserva la lógica de votación original. */
-    body { background:#f8f4ed; color:#251d1a; }
-    .site-header { background:rgba(248,244,237,.96); border-bottom:1px solid #e8d9cc; }
-    .site-header .brand { min-width:0; }
-    .hero { padding-top:26px; }
-    .hero-card { background:linear-gradient(125deg,#fffaf5,#f1e1d8); box-shadow:none; border-color:#e9d3c6; }
-    .hero h1 { font-family:Georgia,serif; font-size:clamp(2.2rem,4.4vw,3.6rem); letter-spacing:-.035em; }
-    .hero-badge { background:transparent; border:0; box-shadow:none; border-radius:0; max-width:none; margin:0 0 12px; padding:0; justify-content:flex-start; text-transform:uppercase; letter-spacing:.13em; font-size:.76rem; }
-    .hero-side-card,.kpi { box-shadow:none; }
-    .section-title { font-family:Georgia,serif; font-size:clamp(1.5rem,2.5vw,2rem); }
-    .poll-card { box-shadow:none; }
-    #btnSubir { background:#202020; border-radius:50%; }
-    #btnSubir:hover { background:#333; }
-    .footer-space { min-height:55px; }
-    @media (max-width:700px) { .hero-card{padding:24px 18px;} .hero-grid{grid-template-columns:1fr;} }
+    /* Encuestas: misma composición y paleta que las demás páginas v2. */
+    body[data-page="encuestas"] { background:#f8f5ef; color:#241c1a; }
+    body[data-page="encuestas"] .hero { padding:20px 0 0; }
+    body[data-page="encuestas"] .hero .wrap,
+    body[data-page="encuestas"] .main .wrap { width:min(800px,calc(100% - 32px)); max-width:800px; }
+    body[data-page="encuestas"] .hero-card {
+      background:linear-gradient(115deg,#fffaf5 0%,#f1e0d7 100%);
+      border:1px solid #e8cfc0; border-radius:18px;
+      padding:36px 38px; box-shadow:none; overflow:visible;
+    }
+    body[data-page="encuestas"] .hero-grid { grid-template-columns:1fr; gap:24px; }
+    body[data-page="encuestas"] .hero-copy { display:block; }
+    body[data-page="encuestas"] .hero-badge {
+      display:block; width:auto; max-width:none; margin:0 0 12px;
+      padding:0; border:0; border-radius:0; background:none; box-shadow:none;
+      color:#8f202b; font-size:.72rem; font-weight:800;
+      text-transform:uppercase; letter-spacing:.13em; text-align:left;
+    }
+    body[data-page="encuestas"] .hero h1 {
+      color:#261c1a; font-family:Georgia, "Times New Roman",serif;
+      font-size:clamp(2.15rem,4vw,3.25rem); line-height:1.1;
+      letter-spacing:-.045em; font-weight:700; max-width:680px; margin:0 0 16px;
+    }
+    body[data-page="encuestas"] .hero p { color:#6b5048; font-size:.96rem; line-height:1.65; max-width:650px; }
+    body[data-page="encuestas"] .hero-kpis { display:flex; margin-top:22px; }
+    body[data-page="encuestas"] .kpi.kpi-active {
+      min-width:155px; max-width:none; padding:12px 16px; border-radius:12px;
+      background:#fffaf6; box-shadow:none; border:1px solid #e8d6ca;
+    }
+    body[data-page="encuestas"] .kpi.kpi-active .kpi-label,
+    body[data-page="encuestas"] .kpi.kpi-active .kpi-value { color:#432d29; text-align:left; }
+    body[data-page="encuestas"] .hero-side { display:block; }
+    body[data-page="encuestas"] .hero-side-card {
+      display:block; min-height:0; background:rgba(255,255,255,.58);
+      padding:20px 22px; border:1px solid #e7d4c7; border-radius:14px; box-shadow:none;
+    }
+    body[data-page="encuestas"] .hero-side-icon { display:none; }
+    body[data-page="encuestas"] .hero-side-title {
+      display:block; color:#35211e; font-family:Georgia,serif;
+      font-size:1.3rem; font-weight:700; margin-bottom:14px;
+    }
+    body[data-page="encuestas"] .hero-types { grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    body[data-page="encuestas"] .hero-type-item { background:#fffaf6; border:1px solid #e9d9cc; border-radius:10px; padding:12px; }
+    body[data-page="encuestas"] .hero-type-item strong { color:#7f2830; font-size:.89rem; }
+    body[data-page="encuestas"] .hero-type-item span { color:#604b44; font-size:.82rem; }
+    body[data-page="encuestas"] .main { padding-top:10px; }
+    body[data-page="encuestas"] .section { margin-top:28px; }
+    body[data-page="encuestas"] .section-title {
+      color:#271d1a; font-family:Georgia,serif; font-size:clamp(1.5rem,2.7vw,2rem); font-weight:700;
+    }
+    body[data-page="encuestas"] .section-subtitle { color:#765e55; font-size:.87rem; }
+    body[data-page="encuestas"] .card { border-radius:14px; box-shadow:none; border-color:#eadbd0; }
+    body[data-page="encuestas"] .poll-title { font-family:Georgia,serif; }
+    body[data-page="encuestas"] .grid.active { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    body[data-page="encuestas"] #btnSubir { background:#282626; border-radius:50%; }
+    body[data-page="encuestas"] #btnSubir:hover { background:#45403d; }
+    @media(max-width:700px) {
+      body[data-page="encuestas"] .hero .wrap,
+      body[data-page="encuestas"] .main .wrap { width:calc(100% - 28px); }
+      body[data-page="encuestas"] .hero-card { padding:26px 20px; }
+      body[data-page="encuestas"] .hero-types { grid-template-columns:1fr; }
+      body[data-page="encuestas"] .grid.active { grid-template-columns:1fr; }
+      body[data-page="encuestas"] .hero-side-card { padding:16px; }
+    }
   </style>
   <link rel="stylesheet" href="./styles.css">
   <link rel="icon" href="https://raw.githubusercontent.com/DTV79/AMesaPuesta/53b6073bb0bab12113dc6a1ba52bc687ac39b9bc/docs/Fotos/logo-cangrejo.png" type="image/png">
