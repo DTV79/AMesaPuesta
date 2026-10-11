@@ -846,8 +846,7 @@ button {cursor:pointer}
 
 /* Acción móvil compartida: aparece al desplazarse y queda encima del menú inferior. */
 .scroll-top {display:none}
-@media(max-width:680px) {
-  .scroll-top:not([hidden]) {
+.scroll-top:not([hidden]) {
     position:fixed;
     z-index:995;
     right:calc(18px + env(safe-area-inset-right));
@@ -867,7 +866,6 @@ button {cursor:pointer}
     touch-action:manipulation;
   }
   .scroll-top:active {transform:scale(.96)}
-}
 
 
 /* Tablón de anuncios V2 — componentes de la identidad compartida */
