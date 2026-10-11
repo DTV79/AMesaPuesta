@@ -194,7 +194,13 @@ function datoEncabezado(label,valor){
   return div;
 }
 function esProxima(m) {
-  return /^\\d{4}-\\d{2}-\\d{2}$/.test(txt(m.fecha)) && m.fecha >= new Date().toLocaleDateString('en-CA');
+  const valor = txt(m.fecha);
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(valor);
+  if (!match) return false;
+  const hoy = new Date();
+  const fechaHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+  const fechaComida = new Date(Number(match[1]), Number(match[2])-1, Number(match[3]));
+  return fechaComida >= fechaHoy;
 }
 function historialCard(m) {
   const card=el('article','history-card');
