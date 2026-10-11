@@ -24,7 +24,7 @@ function fotosDisponibles(m) {
     && Number(m.numero_fotos)>0 && Number(m.numero_fotos)<=500;
 }
 function origenFoto(m, index) {
-  return 'https://amesapuesta-docs-q9d5gu6j1-diegotroncoso79-8571.vercel.app/Fotos/' + encodeURIComponent(m.carpeta_fotos) + '/' + (index+1) + '.webp';
+  return 'https://raw.githubusercontent.com/DTV79/AMesaPuesta/53b6073bb0bab12113dc6a1ba52bc687ac39b9bc/docs/Fotos/' + encodeURIComponent(m.carpeta_fotos) + '/' + (index+1) + '.webp';
 }
 function foto(m, clase) {
   const box = el('div',clase);
