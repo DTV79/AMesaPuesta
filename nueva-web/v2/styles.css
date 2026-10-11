@@ -1026,3 +1026,6 @@ button {cursor:pointer}
 .quick-grid .quick-item:nth-child(3){background:#e9f4e8;border-color:#d3e6d1}
 .quick-grid .quick-item:nth-child(4){background:#fff0df;border-color:#f1dfc7}
 .quick-grid .quick-item .quick-icon{background:rgba(255,255,255,.6)}
+
+/* El icono del plato solo aparece cuando no hay imagen disponible. */
+.image-fallback[hidden]{display:none!important}
