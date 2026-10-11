@@ -26,7 +26,7 @@ if(bloques[i].tipo!=="capitulo")return;
 const head=document.createElement("div");head.className="chapter-head";
 const toggle=document.createElement("button");toggle.type="button";toggle.className="btn soft";toggle.textContent="▾ "+(bloques[i].titulo||"Capítulo");
 const add=document.createElement("button");add.type="button";add.className="btn soft";add.textContent="+ Añadir artículo";add.disabled=soloLectura;
-head.append(toggle,add);el.prepend(head);
+const addChapter=document.createElement("button");addChapter.type="button";addChapter.className="btn soft";addChapter.textContent="+ Capítulo antes";addChapter.disabled=soloLectura;addChapter.onclick=()=>insertar("capitulo",i);head.append(toggle,add,addChapter);el.prepend(head);
 const body=document.createElement("div");body.className="chapter-body";while(head.nextSibling)body.appendChild(head.nextSibling);el.appendChild(body);
 add.onclick=()=>{let j=i+1;while(j<bloques.length&&bloques[j].tipo!=="capitulo")j++;insertar("articulo",j)};
 toggle.onclick=()=>{const closed=body.hidden;body.hidden=!closed;let j=i+1;while(j<bloques.length&&bloques[j].tipo!=="capitulo"){els[j].hidden=!closed;j++}toggle.textContent=(closed?"▾ ":"▸ ")+(el.querySelector(".bTitulo")?.value||"Capítulo")};
@@ -34,6 +34,6 @@ toggle.onclick=()=>{const closed=body.hidden;body.hidden=!closed;let j=i+1;while
 if(soloLectura)bloquear(true);
 }
 function add(tipo){insertar(tipo,bloques.length)}
-function bloquear(si){soloLectura=si;document.querySelectorAll("#editor input,#editor textarea,#editor select,#addCap,#addArt,#guardar,#aprobar,.bloque button:not(.chapter-head button)").forEach(x=>x.disabled=si);document.querySelectorAll(".chapter-head button").forEach(x=>{if(x.textContent.includes("Añadir"))x.disabled=si})}
+function bloquear(si){soloLectura=si;document.querySelectorAll("#editor input,#editor textarea,#editor select,#addCap,#addArt,#guardar,#aprobar,.bloque button:not(.chapter-head button)").forEach(x=>x.disabled=si);document.querySelectorAll(".chapter-head button").forEach(x=>{if(x.textContent.includes("Añadir")||x.textContent.includes("Capítulo antes"))x.disabled=si})}
 return{set,get,add,bloquear}
 }
