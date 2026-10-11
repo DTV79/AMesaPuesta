@@ -230,15 +230,21 @@ function valoracionPublica(m){
   const box=el('section','meal-voting');
   const heading=el('h3','','⭐ Valoración de la comida');box.append(heading);
   if(estado.votos>0)box.append(el('p','meal-voting-summary','Nota general: '+Number(estado.media_general).toLocaleString('es-ES')+'/5 · '+estado.votos+' '+(estado.votos===1?'valoración':'valoraciones')));
-  if(!estado.abierta){box.append(el('p','meal-voting-note','Valoración cerrada o fuera del plazo establecido.'));return box;}
+  if(!estado.abierta)return estado.votos>0?box:null;
   box.append(el('p','meal-voting-note','Solo pueden votar los cofrades asistentes. Una valoración por persona.'));
   const btn=el('button','meal-vote-button','⭐ Valorar esta comida');btn.type='button';box.append(btn);
   const form=el('form','meal-vote-form');form.hidden=true;
   for(const [key,label] of [['comida','Comida'],['servicio','Servicio'],['ambiente','Local y ambiente'],['general','Experiencia general']]){
-    const l=el('label','',label);const sel=el('select');sel.name=key;sel.required=true;
-    sel.append(el('option','','Selecciona una puntuación'));sel.firstChild.value='';
-    for(let n=1;n<=5;n++){const opt=el('option','',('★'.repeat(n)+'☆'.repeat(5-n))+' · '+n+'/5');opt.value=String(n);sel.append(opt);}
-    l.append(sel);form.append(l);
+    const field=el('div','meal-rating-field');
+    const title=el('span','meal-rating-label',label);field.append(title);
+    const row=el('div','meal-rating-row');
+    const value=el('input');value.type='hidden';value.name=key;value.value='0';row.append(value);
+    const stars=el('span','meal-rating-stars');
+    const hint=el('span','meal-rating-hint','Selecciona una puntuación');
+    const buttons=[];
+    const choose=n=>{value.value=String(n);hint.textContent=n+'/5';buttons.forEach((b,i)=>{b.textContent=i<n?'★':'☆';b.classList.toggle('chosen',i<n);b.setAttribute('aria-pressed',String(i+1===n));});};
+    for(let n=1;n<=5;n++){const b=el('button','meal-rating-star','☆');b.type='button';b.setAttribute('aria-label',label+': '+n+' de 5 estrellas');b.setAttribute('aria-pressed','false');b.onclick=()=>choose(n);buttons.push(b);stars.append(b);}
+    row.append(stars,hint);field.append(row);form.append(field);
   }
   const comment=el('label','','Comentario (opcional)');const textarea=el('textarea');textarea.name='comentario';textarea.maxLength=1000;textarea.rows=3;comment.append(textarea);form.append(comment);
   const submit=el('button','meal-vote-button','Enviar valoración');submit.type='submit';form.append(submit);
