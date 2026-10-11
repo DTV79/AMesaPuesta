@@ -217,7 +217,7 @@ function esProxima(m) {
   return fechaComida >= fechaHoy;
 }
 async function cargarEstadoValoraciones(){
-  const res=await fetch(SUPABASE_URL.replace(/\\/$/,'')+'/rest/v1/rpc/listar_valoraciones_comidas_publicas',{
+  const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/rpc/listar_valoraciones_comidas_publicas',{
     method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json'},body:'{}',cache:'no-store'
   });
   if(!res.ok)throw Error('HTTP '+res.status);
@@ -252,7 +252,7 @@ function valoracionPublica(m){
       if(!session?.access_token)throw Error('Debes iniciar sesión con tu cuenta de cofrade para votar. La identificación por correo está pendiente de activar.');
       const payload={p_codigo:m.codigo,p_comida:Number(form.elements.comida.value),p_servicio:Number(form.elements.servicio.value),p_ambiente:Number(form.elements.ambiente.value),p_general:Number(form.elements.general.value),p_comentario:form.elements.comentario.value};
       if([payload.p_comida,payload.p_servicio,payload.p_ambiente,payload.p_general].some(v=>v<1||v>5))throw Error('Selecciona las cuatro puntuaciones.');
-      const res=await fetch(SUPABASE_URL.replace(/\\/$/,'')+'/rest/v1/rpc/votar_valoracion_comida',{method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/rpc/votar_valoracion_comida',{method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:JSON.stringify(payload)});
       const result=await res.json();if(!res.ok)throw Error(result.message||'No se pudo guardar');
       msg.textContent='¡Valoración registrada! Gracias por participar.';submit.hidden=true;
     }catch(error){msg.textContent=error.message;}finally{submit.disabled=false;}
