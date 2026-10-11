@@ -1,3 +1,4 @@
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "./config.js";
 // Tablón V2: mantiene el mismo origen de anuncios que la web actual.
 // Hasta disponer de la administración, Google Sheets sigue actualizando https://dtv79.github.io/AMesaPuesta/anuncios.json.
 // Solo se muestran avisos visibles, ya publicados y no caducados.
@@ -255,12 +256,12 @@ function configurarCategorias() {
 
 async function cargar() {
   try {
-    const response = await fetch("https://dtv79.github.io/AMesaPuesta/anuncios.json?v=" + Date.now(), {cache: "no-store"});
+    const response = await fetch(SUPABASE_URL + "/rest/v1/rpc/listar_anuncios_publicos_v2", {method: "POST", headers: {apikey: SUPABASE_PUBLISHABLE_KEY, "Content-Type": "application/json"}, body: "{}", cache: "no-store"});
     if (!response.ok) throw new Error("No se pudieron obtener los anuncios (" + response.status + ")");
     const json = await response.json();
-    if (!Array.isArray(json.anuncios)) throw new Error("Formato de anuncios no válido");
+    if (!Array.isArray(json)) throw new Error("Formato de anuncios no válido");
     const today = hoyLocal();
-    publicables = json.anuncios.filter(a => publicable(a, today));
+    publicables = json.filter(a => publicable(a, today));
     configurarCategorias();
     renderizar();
   } catch (err) {
