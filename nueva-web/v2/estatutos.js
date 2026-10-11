@@ -11,7 +11,7 @@ if(!bloques.length){$("estatutos-contenido").textContent="No hay contenido públ
 $("estatutos-meta").innerHTML="<span>Versión <strong>"+esc(v.version||"")+"</strong> · Vigente</span>"+(v.fecha_aprobacion?"<span>Aprobada el <strong>"+date(v.fecha_aprobacion)+"</strong></span>":"");
 $("estatutos-revision").textContent=v.fecha_aprobacion?"Última aprobación: "+date(v.fecha_aprobacion):"";
 const pdf=v.pdf_url||v.pdf_ruta;
-if(pdf&&/^https:\/\//.test(pdf)){$("estatutos-acciones").innerHTML='<a class="button-primary" target="_blank" rel="noopener noreferrer" href="'+esc(pdf)+'" download>Ver / Descargar PDF oficial ↓</a>'}
+if(pdf&&/^https:\/\//.test(pdf)){$("estatutos-acciones").innerHTML='<a class="button-primary" target="_blank" rel="noopener noreferrer" href="'+esc(pdf)+'" download>Ver / Descargar PDF oficial</a>'}
 let chapters=[],current=null;
 for(const b of bloques){if(b.tipo==="capitulo"){current={title:b.titulo||"Capítulo",items:[]};chapters.push(current)}else{if(!current){current={title:"Disposiciones generales",items:[]};chapters.push(current)}current.items.push(b)}}
 const index=chapters.map((c,i)=>'<li><a href="#capitulo-'+(i+1)+'"><span>'+String(i+1).padStart(2,"0")+'</span> '+esc(c.title)+'</a></li>').join("");
