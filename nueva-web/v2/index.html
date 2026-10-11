@@ -12,6 +12,7 @@
   <script src="./scroll-top.js" defer></script>
   <script type="module" src="./app.js"></script>
   <script defer src="./acceso-cofrade.js"></script>
+  <script defer src="./mi-pizarra.js"></script>
 </head>
 <body data-page="home">
   <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -44,10 +45,12 @@
           A mesa puesta… y el vaso lleno desde 2022
         </div>
       </div>
-      <div class="hero-photo">
-        <img id="home-foto" hidden alt="" loading="eager">
-        <div class="photo-label"><span id="home-foto-fecha">Nuestro último encuentro</span><strong id="home-foto-titulo">Momentos para recordar</strong></div>
-      </div>
+      <aside class="mi-pizarra" aria-labelledby="pizarra-titulo">
+        <div class="pizarra-heading"><div><p class="eyebrow light">Tu espacio personal</p><h2 id="pizarra-titulo">📋 Mi Pizarra</h2></div><span id="pizarra-count" class="pizarra-count" hidden></span></div>
+        <p id="pizarra-saludo" class="pizarra-subtitle">Consulta tus asuntos pendientes y las cuentas de la cofradía.</p>
+        <div id="pizarra-avisos" class="pizarra-avisos" aria-live="polite"><p class="pizarra-empty">Identifícate para consultar tus pendientes.</p><a class="pizarra-link" href="../acceso.html">🔑 Acceder como cofrade →</a></div>
+        <div class="pizarra-economia"><h3>💰 Economía de la cofradía</h3><div class="pizarra-numeros"><div><span>Cuotas recaudadas</span><strong id="pizarra-recaudado">—</strong></div><div><span>Gastos</span><strong id="pizarra-gastos">—</strong></div><div><span>Remanente</span><strong id="pizarra-remanente">—</strong></div></div><p class="pizarra-nota" id="pizarra-economia-nota">Los gastos y el remanente estarán disponibles cuando se complete el registro de tesorería.</p></div>
+      </aside>
     </section>
 
     <section class="stats" aria-label="La cofradía en cifras">
