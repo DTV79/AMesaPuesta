@@ -81,7 +81,7 @@ function resumenCard(m) {
   cover.append(el('span','date-tag',fecha(m.fecha,true)));
   const body=el('div','card-body');
   const meta=el('div','card-meta');
-  meta.append(el('span','','Un encuentro para recordar'));
+  meta.append(el('span','',esProxima(m) ? '📅 Próxima comida' : 'Un encuentro para recordar'));
   const rating=el('span','',estrellas(m.valoracion));
   rating.setAttribute('aria-label','Valoración '+String(m.valoracion||0)+' de 5');
   meta.append(rating);
@@ -193,6 +193,9 @@ function datoEncabezado(label,valor){
   div.append(el('span','',label),el('strong','',valor));
   return div;
 }
+function esProxima(m) {
+  return /^\\d{4}-\\d{2}-\\d{2}$/.test(txt(m.fecha)) && m.fecha >= new Date().toLocaleDateString('en-CA');
+}
 function historialCard(m) {
   const card=el('article','history-card');
   card.id=m.codigo;
@@ -201,7 +204,7 @@ function historialCard(m) {
   const stars=el('div','rating',estrellas(m.valoracion));
   stars.setAttribute('aria-label','Valoración '+String(m.valoracion||0)+' de 5');
 
-  contenido.append(el('span','history-date',fecha(m.fecha)),el('h2','',m.restaurante),stars);
+  contenido.append(el('span','history-date',(esProxima(m) ? '📅 Próxima comida · ' : '') + fecha(m.fecha)),el('h2','',m.restaurante),stars);
   if(txt(m.direccion)) contenido.append(el('p','address',m.direccion));
 
   const organizadores=nombres(m.organizadores);
