@@ -111,18 +111,6 @@ function renderHome() {
   document.getElementById('home-comidas').textContent=String(comidas.length);
   document.getElementById('home-restaurantes').textContent=
     String(new Set(comidas.map(x=>txt(x.restaurante))).size);
-  const reciente=comidas[0];
-  if (reciente) {
-    document.getElementById('home-foto-titulo').textContent=reciente.restaurante;
-    document.getElementById('home-foto-fecha').textContent=fecha(reciente.fecha);
-    if(fotosDisponibles(reciente)){
-      const img=document.getElementById('home-foto');
-      img.src=origenFoto(reciente,0);
-      img.alt='Comida de la cofradía en '+reciente.restaurante;
-      img.hidden=false;
-      img.addEventListener('error',()=>{img.hidden=true;});
-    }
-  }
   const destino=document.getElementById('home-reciente');
   if (!comidas.length){mostrarMensaje(destino,'Pronto habrá nuevas comidas para recordar.');return;}
   destino.replaceChildren(...comidas.slice(0,3).map(resumenCard));
