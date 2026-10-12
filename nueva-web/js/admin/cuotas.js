@@ -8,7 +8,7 @@ function pintarFilas(visibles){
  document.querySelectorAll(".action").forEach(x=>x.onclick=()=>abrirPago(x.dataset.c,x.dataset.q));
 
 }
-const $=s=>document.querySelector(s), euro=n=>new Intl.NumberFormat("es-ES",{style:"currency",currency:"EUR"}).format(Number(n||0));
+const $=s=>document.querySelector(s), euro=n=>{const p=(Number(n)||0).toFixed(2).split(".");return p[0].replace(/\B(?=(\d{3})+(?!\d))/g,".")+","+p[1]+" €"};
 const hoy=()=>new Date().toISOString().slice(0,10);
 
 async function guard(){
@@ -18,6 +18,7 @@ async function guard(){
  if(!admin){document.body.innerHTML='<main class="shell"><section class="panel"><h1>Acceso restringido</h1></section></main>';return false}
  return true;
 }
+async function cargarTesoreria(){const errorEl=document.getElementById("tes-error");try{const {data,error}=await supabase.rpc("resumen_tesoreria_admin");if(error)throw error;document.getElementById("tes-recaudado").textContent=euro(data.recaudado);document.getElementById("tes-gastos").textContent=euro(data.gastos);document.getElementById("tes-remanente").textContent=euro(data.remanente);const esc=s=>String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));document.getElementById("tes-cofrades").innerHTML=(data.cofrades||[]).map(x=>"<tr><td>"+esc(x.nombre)+"</td><td><strong>"+euro(x.pagado)+"</strong></td></tr>").join("");const fecha=s=>s?String(s).slice(0,10).split("-").reverse().join("/"):"—";document.getElementById("tes-comidas").innerHTML=(data.comidas||[]).map(x=>"<tr><td>"+fecha(x.fecha)+"</td><td>"+esc(x.restaurante)+"</td><td>"+euro(x.factura_restaurante)+"</td><td>"+euro(x.gastos_adicionales)+"</td><td>"+euro(x.gastos_remanente)+"</td></tr>").join("");document.getElementById("tes-historicos").textContent="Gastos históricos sin desglose por comida: "+euro(data.gastos_historicos_sin_desglose)+" (incluidos en los gastos totales).";errorEl.textContent=""}catch(e){errorEl.textContent="No se pudo cargar el resumen económico: "+e.message}}
 async function cargar(){
  const {data:rows,error}=await supabase.rpc("listar_cuotas_cofrades_admin",{p_ejercicio:new Date().getFullYear()});
  if(error)throw error; filas=rows||[];
@@ -26,6 +27,7 @@ async function cargar(){
  document.querySelectorAll(".kpi")[2].textContent=euro(total-cobrado);document.querySelectorAll(".kpi")[3].textContent=filas.filter(r=>r.estado==="al_corriente").length+" / "+filas.length;
  filtrarCuotas();
  await cargarHistorico();
+ await cargarTesoreria();
 }
 async function abrirPago(cofradeId,cuotaId){
  const r=filas.find(x=>x.cofrade_id===cofradeId&&x.cuota_id===cuotaId);if(!r)return;
