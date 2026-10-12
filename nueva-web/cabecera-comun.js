@@ -33,8 +33,8 @@
     .amp-nav{display:flex;gap:clamp(8px,0.9vw,13px);align-items:center;justify-content:center;flex:1 1 auto;min-width:0;flex-wrap:nowrap}
     .amp-nav a{font:700 11px Arial,sans-serif;color:#514b47;text-decoration:none;white-space:nowrap}
     .amp-nav a:hover{color:#91212b}.amp-nav a[aria-current="page"]{color:#91212b!important;background:#f0e2dd;border-radius:7px;padding:7px 9px;box-shadow:inset 0 -2px #91212b}
-    .amp-header .logout{white-space:nowrap;cursor:pointer;flex-shrink:0;margin-left:auto;background:#8e202b!important;color:#fff!important;border:1px solid #8e202b!important;border-radius:10px!important;padding:11px 15px!important;font:700 12px Arial,sans-serif!important;box-shadow:0 2px 7px #6d17252b;transition:background .15s,transform .15s}
-    .amp-header .logout:hover{background:#681823!important;transform:translateY(-1px)}
+    .amp-header .logout{white-space:nowrap;cursor:pointer;flex-shrink:0;margin-left:auto;background:#eee9e1!important;color:#332b27!important;border:1px solid #e2d8cd!important;border-radius:9px!important;padding:9px 12px!important;font:700 11px Arial,sans-serif!important;box-shadow:none;transition:background .15s}
+    .amp-header .logout:hover{background:#e5dcd1!important}
     .amp-header .logout:focus-visible{outline:3px solid #e7bca6;outline-offset:2px}
     .amp-menu{display:none;border:1px solid #ddd1c5;border-radius:9px;background:#fff;padding:9px;cursor:pointer}
     .amp-header + .shell > .top > div:first-child:has(.brand){display:none}
