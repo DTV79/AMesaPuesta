@@ -32,7 +32,7 @@
     .amp-subtitle{font:700 10px/1.5 Arial,sans-serif;letter-spacing:2px;color:#91212b;margin-top:4px}
     .amp-nav{display:flex;gap:clamp(8px,0.9vw,13px);align-items:center;justify-content:center;flex:1 1 auto;min-width:0;flex-wrap:nowrap}
     .amp-nav a{font:700 11px Arial,sans-serif;color:#514b47;text-decoration:none;white-space:nowrap}
-    .amp-nav a:hover,.amp-nav a[aria-current="page"]{color:#91212b}
+    .amp-nav a:hover{color:#91212b}.amp-nav a[aria-current="page"]{color:#91212b!important;background:#f0e2dd;border-radius:7px;padding:7px 9px;box-shadow:inset 0 -2px #91212b}
     .amp-header .logout{white-space:nowrap;cursor:pointer;flex-shrink:0;margin-left:auto}
     .amp-menu{display:none;border:1px solid #ddd1c5;border-radius:9px;background:#fff;padding:9px;cursor:pointer}
     .amp-header + .shell > .top > div:first-child:has(.brand){display:none}
