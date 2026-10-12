@@ -1991,7 +1991,7 @@ function renderWinnerBlock(poll){
 
       if(voteButton){
         voteButton.dataset.sending = busy ? "true" : "false";
-        voteButton.textContent = busy ? "Enviando..." : "Votar";
+        voteButton.textContent = busy ? "Enviando..." : (MIS_VOTOS[card.dataset.pollId]?.votado ? "Guardar cambio de voto" : "Votar");
       }
 
       if(select) select.disabled = busy;
@@ -2169,7 +2169,7 @@ function renderWinnerBlock(poll){
     }
 
     async function enviarVoto(payload){
-      const res = await fetch(SUPABASE_URL + "/rest/v1/rpc/votar_encuesta_sesion", {
+      const res = await fetch(SUPABASE_URL + (MIS_VOTOS[payload.pollId]?.votado ? "/rest/v1/rpc/modificar_voto_encuesta_sesion" : "/rest/v1/rpc/votar_encuesta_sesion"), {
         method: "POST",
         headers: SUPABASE_HEADERS,
         body: JSON.stringify({
@@ -2243,7 +2243,7 @@ function renderWinnerBlock(poll){
         if (typeof CSS !== "undefined" && typeof CSS.escape === "function") {
           const updatedCard = document.querySelector(`.poll-card[data-poll-id="${CSS.escape(pollId)}"][data-scope="active"]`);
           if(updatedCard){
-            showCardStatus(updatedCard, "Voto registrado correctamente.", "ok");
+            showCardStatus(updatedCard, "Voto guardado. Puedes cambiarlo mientras la encuesta siga abierta.", "ok");
           }
         }
       }catch(error){
