@@ -80,13 +80,20 @@ function tipoInfo(value) {
   return tipos[key] || {nombre: txt(value) || "General", icono: "📌"};
 }
 
+function reciente(a, today) {
+  const publicada = fecha(a.fechaPublicacion || a.fecha);
+  if (!publicada) return false;
+  const dias = Math.round((diaUtc(today) - diaUtc(publicada)) / 86400000);
+  return dias >= 0 && dias <= 90;
+}
+
 function publicable(a, today) {
   if (!a || typeof a !== "object" || !esVerdadero(a.visible)) return false;
   const inicio = fecha(a.fechaPublicacion);
   const fin = fecha(a.fechaFin);
   if (inicio && inicio > today) return false;
   if (fin && fin < today) return false;
-  return true;
+  return reciente(a, today) || destacadoActivo(a, today);
 }
 
 function diasDestacado(a) {
@@ -229,7 +236,7 @@ function renderizar() {
     if (!listSection.hidden) {
       mostrarMensaje(listGrid, filtrando
         ? "No hay anuncios que coincidan con los filtros seleccionados."
-        : "No hay anuncios publicados en este momento.");
+        : "No hay anuncios recientes.");
     } else {
       listGrid.replaceChildren();
     }
