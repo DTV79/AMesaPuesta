@@ -1,19 +1,27 @@
 import{conectarEmojis}from"./emoji-selector.js";
 import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/+esm";const sb=createClient("https://wmfcpnihymiiwgpvbngj.supabase.co","sb_publishable_ij3sYbyMrLI2B34OOYt6JA_Aez1R2cJ");let encuestas=[];const esc=s=>(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));function dt(v){return v?new Date(v).toLocaleString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}):"—"}function inputDT(v){if(!v)return"";const d=new Date(v);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}function opcion(text=""){const d=document.createElement("div");d.className="field";d.innerHTML='<div class="option"><input class="opInput" maxlength="180" value="'+esc(text)+'" required><button type="button" class="emoji">😊</button><button type="button" class="soft quitar">✕</button></div><div class="emojiBox"></div>';opciones.appendChild(d);wireEmoji(d.querySelector(".emoji"),d.querySelector(".opInput"),d.querySelector(".emojiBox"));d.querySelector(".quitar").onclick=()=>{if(document.querySelectorAll(".opInput").length>2)d.remove()}}function wireEmoji(btn,target,box){conectarEmojis(btn,target,box)}wireEmoji(document.querySelector('[data-target="titulo"]'),titulo,document.querySelector('[data-target="titulo"]').closest(".field").querySelector(".emojiBox"));addOpcion.onclick=()=>opcion();async function cargar(){const{data:{session}}=await sb.auth.getSession();if(!session)return document.body.innerHTML="<main class=shell><h1>Debes iniciar sesión.</h1></main>";const{data:admin}=await sb.rpc("soy_admin_cofradia");if(!admin)return document.body.innerHTML="<main class=shell><h1>Acceso restringido.</h1></main>";const{data,error}=await sb.rpc("listar_encuestas_admin");if(error)return alert(error.message);encuestas=data||[];render()}function render(){const grupos=[{titulo:"Abiertas",estados:["abierta"]},{titulo:"Borradores",estados:["borrador"]},{titulo:"Programadas y pausadas",estados:["programada","pausada"]},{titulo:"Cerradas",estados:["cerrada","archivada"]}];const fecha=e=>{const v=e.creada_en||e.creado_en||e.created_at||e.actualizada_en||e.actualizado_en||e.updated_at||e.abre_en||e.cierra_en;const t=v?new Date(v).getTime():0;return Number.isFinite(t)?t:0};const tarjeta=e=>{const total=e.opciones?.reduce((s,o)=>s+Number(o.votos||0),0)||0;const res=e.resultados_disponibles?'<div class="results">'+e.opciones.map(o=>{const p=total?Math.round(o.votos*100/total):0;return '<div><small>'+esc(o.texto)+' · '+o.votos+' votos</small><div class=bar><div class=fill style="width:'+p+'%"></div></div></div>'}).join("")+"</div>":"";return '<article class=card><div class=row><span class="pill '+(["cerrada","archivada"].includes(e.estado_efectivo)?"closed":"")+'">'+esc(e.estado_efectivo)+'</span><span class=muted>'+e.participantes+' participantes</span></div><h3>'+esc(e.titulo)+'</h3><p class=muted>'+esc(e.descripcion||"")+'</p><small>'+esc(e.tipo)+' · '+e.max_opciones+' opción/es · cierre '+dt(e.cierra_en)+'</small>'+res+'<div class=actions><button class="soft detalle" data-id="'+e.id+'">Ver detalle</button><button class="soft gestionar-votos" data-id="'+e.id+'">Gestionar votos</button><button class="soft editar" data-id="'+e.id+'">Editar</button><button class="soft danger borrar" data-id="'+e.id+'">Eliminar</button></div></article>'};lista.innerHTML=grupos.map(g=>{const items=encuestas.filter(e=>g.estados.includes(e.estado_efectivo||e.estado)).sort((a,b)=>fecha(b)-fecha(a));return '<section class="grupo-encuestas"><h2>'+g.titulo+' ('+items.length+')</h2><div class="list">'+(items.length?items.map(tarjeta).join(""):'<div class="muted">No hay encuestas en este apartado.</div>')+'</div></section>'}).join("");document.querySelectorAll(".detalle").forEach(b=>b.onclick=()=>verDetalle(b.dataset.id));document.querySelectorAll(".gestionar-votos").forEach(b=>b.onclick=()=>gestionarVotos(b.dataset.id));document.querySelectorAll(".editar").forEach(b=>b.onclick=()=>abrir(b.dataset.id));document.querySelectorAll(".borrar").forEach(b=>b.onclick=()=>borrar(b.dataset.id))}function confirmarAnulacion(nombre){
  return new Promise(resolve=>{
-  const box=document.querySelector("#detalleContenido");
-  const anterior=box.querySelector("#confirmacionVoto");
-  if(anterior)anterior.remove();
-  const panel=document.createElement("div");
-  panel.id="confirmacionVoto";
-  panel.style.cssText="position:sticky;top:0;z-index:20;background:#fff7f2;border:2px solid #c35a42;border-radius:15px;padding:18px;margin:0 0 16px;box-shadow:0 4px 15px #0002";
-  panel.innerHTML='<h3 style="margin:0 0 8px">⚠️ ¿Anular este voto?</h3><p id="textoConfirmacion" style="line-height:1.5"></p><div style="display:flex;gap:10px;justify-content:flex-end"><button type="button" class="soft" id="cancelarAnulacion">Cancelar</button><button type="button" class="soft danger" id="aceptarAnulacion">Confirmar anulación</button></div>';
-  panel.querySelector("#textoConfirmacion").textContent="Se anulará el voto de "+nombre+". Podrá volver a votar mientras la encuesta siga abierta.";
-  box.prepend(panel);
-  panel.scrollIntoView({block:"nearest",behavior:"instant"});
-  const terminar=valor=>{panel.remove();resolve(valor)};
-  panel.querySelector("#cancelarAnulacion").onclick=()=>terminar(false);
-  panel.querySelector("#aceptarAnulacion").onclick=()=>terminar(true);
+  const modal=document.getElementById("detalleModal");
+  modal.querySelector("#confirmacionVoto")?.remove();
+  const fondo=document.createElement("div");
+  fondo.id="confirmacionVoto";
+  fondo.className="confirmacion-voto-overlay";
+  fondo.innerHTML='<section class="confirmacion-voto-card" role="alertdialog" aria-modal="true" aria-labelledby="confirmacionTitulo" aria-describedby="confirmacionTexto"><div class="confirmacion-voto-icon">⚠️</div><h2 id="confirmacionTitulo">¿Anular este voto?</h2><p id="confirmacionTexto"></p><div class="confirmacion-voto-actions"><button type="button" class="soft" id="cancelarAnulacion">Cancelar</button><button type="button" class="soft danger" id="aceptarAnulacion">Anular voto</button></div></section>';
+  fondo.querySelector("#confirmacionTexto").textContent="Se anulará el voto de "+nombre+". Podrá volver a votar mientras la encuesta siga abierta.";
+  modal.appendChild(fondo);
+  const cancelar=fondo.querySelector("#cancelarAnulacion");
+  const aceptar=fondo.querySelector("#aceptarAnulacion");
+  const tecla=e=>{if(e.key==="Escape"){e.preventDefault();terminar(false)}};
+  const terminar=valor=>{
+   document.removeEventListener("keydown",tecla,true);
+   fondo.remove();
+   resolve(valor);
+  };
+  cancelar.onclick=()=>terminar(false);
+  aceptar.onclick=()=>terminar(true);
+  fondo.onclick=e=>{if(e.target===fondo)terminar(false)};
+  document.addEventListener("keydown",tecla,true);
+  cancelar.focus();
  });
 }
 async function gestionarVotos(id){
