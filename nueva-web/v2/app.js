@@ -221,6 +221,16 @@ function valoracionPublica(m){
   if(!estado.abierta)return estado.votos>0?box:null;
   box.append(el('p','meal-voting-note','Solo pueden votar los cofrades asistentes. Una valoración por persona.'));
   const btn=el('button','meal-vote-button','⭐ Valorar esta comida');btn.type='button';box.append(btn);
+  const tokenActual=localStorage.getItem('amp_cofrade_token');
+  if(tokenActual){
+    btn.hidden=true;
+    fetch(SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/rpc/mi_valoracion_comida_sesion',{
+      method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_token:tokenActual,p_codigo:m.codigo}),cache:'no-store'
+    }).then(async res=>{if(!res.ok)throw Error('Estado no disponible');return res.json()})
+      .then(data=>{if(data.valorada){box.append(el('p','meal-voting-note','✓ Ya has valorado esta comida. ¡Gracias por participar!'));}else btn.hidden=false;})
+      .catch(()=>{btn.hidden=false;});
+  }
   const form=el('form','meal-vote-form');form.hidden=true;
   for(const [key,label] of [['comida','Comida'],['servicio','Servicio'],['ambiente','Local y ambiente'],['general','Experiencia general']]){
     const field=el('div','meal-rating-field');
@@ -247,7 +257,7 @@ function valoracionPublica(m){
       if([payload.comida,payload.servicio,payload.ambiente,payload.general].some(v=>!Number.isInteger(v)||v<1||v>5))throw Error('Selecciona las cuatro puntuaciones.');
       const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/functions/v1/acceso-cofrade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
       const result=await res.json();if(!res.ok||result.error)throw Error(result.error||'No se pudo guardar');
-      msg.textContent='¡Valoración registrada! Gracias por participar.';submit.hidden=true;
+      msg.textContent='¡Valoración registrada! Gracias por participar.';submit.hidden=true;btn.hidden=true;
     }catch(error){msg.textContent=error.message;}finally{submit.disabled=false;}
   });
   return box;
