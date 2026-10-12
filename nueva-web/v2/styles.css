@@ -1079,3 +1079,6 @@ button {cursor:pointer}
 .meal-comments-list{padding:0 14px 12px;max-height:270px;overflow-y:auto}
 .meal-comments-list .meal-comment{padding:10px 0;border-top:1px solid #eee2da;overflow-wrap:anywhere}
 .meal-comments-list .meal-comment p{margin:5px 0 0;white-space:pre-wrap}
+
+/* Tamaño uniforme de estrellas en las fichas de restaurantes */
+.history-card .rating.rating-restaurante{font-size:17px;line-height:1.35;letter-spacing:1px}
