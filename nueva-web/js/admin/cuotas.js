@@ -29,6 +29,27 @@ async function cargar(){
  await cargarHistorico();
  await cargarTesoreria();
 }
+let anulacionPendiente=null;
+function cerrarAnularCobro(){document.getElementById("confirmAnularCobro").classList.remove("open");anulacionPendiente=null;}
+function mostrarAnularCobro(p,cofradeId,cuotaId){
+ anulacionPendiente={p,cofradeId,cuotaId};
+ document.getElementById("anularCobroTexto").textContent="¿Anular el cobro de "+euro(p.importe)+"? El importe volverá a quedar pendiente y se conservará el registro de la anulación.";
+ document.getElementById("anularCobroMotivo").value="";document.getElementById("anularCobroError").textContent="";
+ document.getElementById("aceptarAnularCobro").disabled=false;
+ document.getElementById("confirmAnularCobro").classList.add("open");
+ document.getElementById("anularCobroMotivo").focus();
+}
+document.getElementById("cancelarAnularCobro").onclick=cerrarAnularCobro;
+document.getElementById("aceptarAnularCobro").onclick=async()=>{
+ if(!anulacionPendiente)return;
+ const motivo=document.getElementById("anularCobroMotivo").value.trim();const errorEl=document.getElementById("anularCobroError");
+ if(motivo.length<3){errorEl.textContent="Indica un motivo de al menos 3 caracteres.";return;}
+ const btn=document.getElementById("aceptarAnularCobro");btn.disabled=true;
+ const {p,cofradeId,cuotaId}=anulacionPendiente;
+ const {error}=await supabase.rpc("anular_pago_cuota_admin",{p_pago:p.id,p_motivo:motivo});
+ if(error){errorEl.textContent=error.message;btn.disabled=false;return;}
+ cerrarAnularCobro();document.getElementById("drawer").classList.remove("open");await cargar();await abrirPago(cofradeId,cuotaId);
+};
 async function abrirPago(cofradeId,cuotaId){
  const r=filas.find(x=>x.cofrade_id===cofradeId&&x.cuota_id===cuotaId);if(!r)return;
  $("#cofradeId").value=cofradeId;$("#cuotaId").value=cuotaId;$("#fNombre").textContent=r.nombre;
@@ -42,14 +63,7 @@ async function abrirPago(cofradeId,cuotaId){
  else for(const p of data){
   const item=document.createElement("div");item.className="history-item";
   const info=document.createElement("span");info.textContent=euro(p.importe)+" · "+new Date(p.fecha+"T12:00:00").toLocaleDateString("es-ES")+(p.metodo_pago?" · "+p.metodo_pago:"")+(p.referencia?" · "+p.referencia:"");item.append(info);
-  const btn=document.createElement("button");btn.type="button";btn.className="btn";btn.style.marginLeft="12px";btn.textContent="Anular cobro";btn.addEventListener("click",async()=>{
-   if(!confirm("¿Anular el cobro de "+euro(p.importe)+"? Se devolverá al importe pendiente y quedará registrado en el historial."))return;
-   const motivo=prompt("Motivo de la anulación (obligatorio):");if(motivo===null)return;
-   if(motivo.trim().length<3){alert("Indica un motivo de al menos 3 caracteres.");return;}
-   btn.disabled=true;const {error:err}=await supabase.rpc("anular_pago_cuota_admin",{p_pago:p.id,p_motivo:motivo.trim()});
-   if(err){btn.disabled=false;alert(err.message);return;}
-   $("#drawer").classList.remove("open");await cargar();await abrirPago(cofradeId,cuotaId);
-  });item.append(btn);historial.append(item);
+  const btn=document.createElement("button");btn.type="button";btn.className="btn";btn.style.marginLeft="12px";btn.textContent="Anular cobro";btn.addEventListener("click",()=>mostrarAnularCobro(p,cofradeId,cuotaId));item.append(btn);historial.append(item);
  }
  $("#drawer").classList.add("open");
 }
