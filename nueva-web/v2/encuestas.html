@@ -1573,28 +1573,6 @@
       return localStorage.getItem("amp_cofrade_token") ? `<div class="cofrade-field"><span class="cofrade-label">Tu voto se registrará con tu sesión de cofrade.</span></div>` : `<div class="cofrade-field"><a href="../acceso.html" class="cofrade-label">Inicia sesión como cofrade para votar</a></div>`;
     }
 
-    function renderCofradeSelectAnterior(poll){
-      const eligible = getEligibleCofradesForPoll(poll);
-
-      const options = eligible.length
-        ? eligible.map(c => {
-            const text = c.voted ? `${c.nombre} — ya votó` : c.nombre;
-            const disabled = c.voted ? " disabled" : "";
-            return `<option value="${c.id}"${disabled}>${text}</option>`;
-          }).join("")
-        : `<option value="">No hay cofrades disponibles</option>`;
-
-      return `
-        <div class="cofrade-field">
-          <label class="cofrade-label" for="cofrade-${poll.id}">Quién vota</label>
-          <select class="cofrade-select" id="cofrade-${poll.id}" data-poll-id="${poll.id}">
-            <option value="">Selecciona cofrade</option>
-            ${options}
-          </select>
-        </div>
-      `;
-    }
-
     function renderStatusBadge(poll){
       if (poll.status === "cerrada" && poll.closedByDate) {
         return `<span class="badge cerrada">Cerrada por fecha</span>`;
@@ -1996,7 +1974,6 @@ function renderWinnerBlock(poll){
 
     function refreshVoteButton(card){
       const voteButton = card.querySelector(".vote-btn");
-      const select = card.querySelector(".cofrade-select");
       if(!voteButton) return;
 
       const sending = voteButton.dataset.sending === "true";
