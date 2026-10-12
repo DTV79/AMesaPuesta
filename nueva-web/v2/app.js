@@ -241,13 +241,12 @@ function valoracionPublica(m){
   form.addEventListener('submit',async ev=>{
     ev.preventDefault();submit.disabled=true;msg.textContent='Guardando valoración…';
     try{
-      const token=localStorage.getItem('sb-'+new URL(SUPABASE_URL).hostname.split('.')[0]+'-auth-token');
-      const session=token?JSON.parse(token):null;
-      if(!session?.access_token)throw Error('Debes iniciar sesión con tu cuenta de cofrade para votar. La identificación por correo está pendiente de activar.');
-      const payload={p_codigo:m.codigo,p_comida:Number(form.elements.comida.value),p_servicio:Number(form.elements.servicio.value),p_ambiente:Number(form.elements.ambiente.value),p_general:Number(form.elements.general.value),p_comentario:form.elements.comentario.value};
-      if([payload.p_comida,payload.p_servicio,payload.p_ambiente,payload.p_general].some(v=>v<1||v>5))throw Error('Selecciona las cuatro puntuaciones.');
-      const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/rpc/votar_valoracion_comida',{method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:JSON.stringify(payload)});
-      const result=await res.json();if(!res.ok)throw Error(result.message||'No se pudo guardar');
+      const token=localStorage.getItem('amp_cofrade_token');
+      if(!token)throw Error('Identifícate como cofrade para valorar esta comida.');
+      const payload={action:'valorar_comida',token,codigo:m.codigo,comida:Number(form.elements.comida.value),servicio:Number(form.elements.servicio.value),ambiente:Number(form.elements.ambiente.value),general:Number(form.elements.general.value),comentario:form.elements.comentario.value};
+      if([payload.comida,payload.servicio,payload.ambiente,payload.general].some(v=>!Number.isInteger(v)||v<1||v>5))throw Error('Selecciona las cuatro puntuaciones.');
+      const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/functions/v1/acceso-cofrade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      const result=await res.json();if(!res.ok||result.error)throw Error(result.error||'No se pudo guardar');
       msg.textContent='¡Valoración registrada! Gracias por participar.';submit.hidden=true;
     }catch(error){msg.textContent=error.message;}finally{submit.disabled=false;}
   });
