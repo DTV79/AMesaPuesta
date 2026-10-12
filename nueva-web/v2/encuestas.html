@@ -2203,6 +2203,15 @@ function renderWinnerBlock(poll){
       if(!res.ok){
         let data = {};
         try{ data = await res.json(); }catch(_){}
+        if(!MIS_VOTOS[payload.pollId]?.votado && /ya has votado/i.test(data?.message || "")){
+          const cambio=await fetch(SUPABASE_URL+"/rest/v1/rpc/modificar_voto_encuesta_sesion",{
+            method:"POST",headers:SUPABASE_HEADERS,
+            body:JSON.stringify({p_id:payload.pollId,p_token:localStorage.getItem("amp_cofrade_token"),p_opciones:payload.options})
+          });
+          if(cambio.ok)return true;
+          let fallo={};try{fallo=await cambio.json();}catch(_){}
+          throw new Error(fallo?.message || "No se pudo modificar el voto");
+        }
         throw new Error(data?.message || "Error al votar");
       }
       return true;
