@@ -35,7 +35,22 @@ async function abrirPago(cofradeId,cuotaId){
  $("#fEstado").innerHTML='<div class="card"><div class="muted">Cuota '+r.ejercicio+'</div><div style="margin-top:6px">Asignado: <b>'+euro(r.importe_asignado)+'</b> · Pagado: <b>'+euro(r.pagado)+'</b> · Pendiente: <b>'+euro(r.pendiente)+'</b></div></div>';
  $("#importe").value=Number(r.pendiente)>0?Number(r.pendiente).toFixed(2):"";$("#importe").max=Number(r.pendiente);$("#fecha").value=hoy();$("#metodo").value="";$("#referencia").value="";$("#okPago").style.display="none";
  const {data,error}=await supabase.rpc("pagos_cuota_cofrade_admin",{p_cofrade:cofradeId,p_cuota:cuotaId});
- $("#historial").innerHTML=error||!data?.length?'<div class="muted">Sin pagos registrados.</div>':data.map(p=>'<div class="history-item"><b>'+euro(p.importe)+'</b> · '+new Date(p.fecha+"T12:00:00").toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric"})+(p.metodo_pago?" · "+p.metodo_pago:"")+(p.referencia?'<div class="muted">'+p.referencia+'</div>':"")+'</div>').join("");
+ const esc=s=>String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+ const historial=$("#historial");historial.replaceChildren();
+ if(error){historial.textContent="Error al cargar pagos: "+error.message;}
+ else if(!data?.length){historial.textContent="Sin pagos registrados.";}
+ else for(const p of data){
+  const item=document.createElement("div");item.className="history-item";
+  const info=document.createElement("span");info.textContent=euro(p.importe)+" · "+new Date(p.fecha+"T12:00:00").toLocaleDateString("es-ES")+(p.metodo_pago?" · "+p.metodo_pago:"")+(p.referencia?" · "+p.referencia:"");item.append(info);
+  const btn=document.createElement("button");btn.type="button";btn.className="btn";btn.style.marginLeft="12px";btn.textContent="Anular cobro";btn.addEventListener("click",async()=>{
+   if(!confirm("¿Anular el cobro de "+euro(p.importe)+"? Se devolverá al importe pendiente y quedará registrado en el historial."))return;
+   const motivo=prompt("Motivo de la anulación (obligatorio):");if(motivo===null)return;
+   if(motivo.trim().length<3){alert("Indica un motivo de al menos 3 caracteres.");return;}
+   btn.disabled=true;const {error:err}=await supabase.rpc("anular_pago_cuota_admin",{p_pago:p.id,p_motivo:motivo.trim()});
+   if(err){btn.disabled=false;alert(err.message);return;}
+   $("#drawer").classList.remove("open");await cargar();await abrirPago(cofradeId,cuotaId);
+  });item.append(btn);historial.append(item);
+ }
  $("#drawer").classList.add("open");
 }
 $("#cerrar").onclick=()=>$("#drawer").classList.remove("open");
