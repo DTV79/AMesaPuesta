@@ -332,8 +332,9 @@ function historialCard(m) {
 
   const resumenAsistencia=el('div','visit-attendance-summary');
   resumenAsistencia.append(
-    el('span','attended-count','✓ Asistieron: '+String(asistentes.length+invitados.length)),
-    el('span','absent-count','No asistieron: '+String(ausentes.length))
+    el('span','attended-count','✓ Asistieron: '+String(asistentes.length)),
+    el('span','absent-count','No asistieron: '+String(ausentes.length)),
+    ...(invitados.length?[el('span','guest-count','Invitados: '+String(invitados.length))]:[])
   );
   contenido.append(resumenAsistencia);
 
