@@ -1067,3 +1067,15 @@ button {cursor:pointer}
 .pizarra-numeros>div{align-items:flex-start}
 .pizarra-numeros strong{font-family:Arial,"Segoe UI",sans-serif;font-size:clamp(13px,1.38vw,18px);font-weight:750;line-height:1.25;letter-spacing:-.025em;font-variant-numeric:tabular-nums;white-space:nowrap;overflow-wrap:normal}
 @media(max-width:440px){.pizarra-numeros{gap:4px}.pizarra-numeros>div{padding:9px 5px}.pizarra-numeros strong{font-size:clamp(11px,3.1vw,14px)}}
+
+/* Valoraciones cerradas: estrellas destacadas y comentarios plegables */
+.rating.rating-final{font-size:20px;line-height:1.35;letter-spacing:2px}
+.meal-voting:has(> .meal-comments-toggle):not(:has(.meal-vote-button)){padding:0;border:0;background:transparent;margin-top:10px}
+.meal-comments-toggle{margin-top:10px;border:1px solid #eadbd0;border-radius:12px;background:#fffaf6;overflow:hidden}
+.meal-comments-toggle>summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:700;color:#862c2c;font-size:13px}
+.meal-comments-toggle>summary::-webkit-details-marker{display:none}
+.meal-comments-toggle>summary::after{content:' ▾';float:right}
+.meal-comments-toggle[open]>summary::after{content:' ▴'}
+.meal-comments-list{padding:0 14px 12px;max-height:270px;overflow-y:auto}
+.meal-comments-list .meal-comment{padding:10px 0;border-top:1px solid #eee2da;overflow-wrap:anywhere}
+.meal-comments-list .meal-comment p{margin:5px 0 0;white-space:pre-wrap}
