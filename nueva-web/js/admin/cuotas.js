@@ -23,8 +23,8 @@ async function cargar(){
  const {data:rows,error}=await supabase.rpc("listar_cuotas_cofrades_admin",{p_ejercicio:new Date().getFullYear()});
  if(error)throw error; filas=rows||[];
  const total=filas.reduce((s,r)=>s+Number(r.importe_asignado),0),cobrado=filas.reduce((s,r)=>s+Number(r.pagado),0);
- document.querySelectorAll(".kpi")[0].textContent=euro(total);document.querySelectorAll(".kpi")[1].textContent=euro(cobrado);
- document.querySelectorAll(".kpi")[2].textContent=euro(total-cobrado);document.querySelectorAll(".kpi")[3].textContent=filas.filter(r=>r.estado==="al_corriente").length+" / "+filas.length;
+ $("#cuotas-asignadas").textContent=euro(total);$("#cuotas-cobradas").textContent=euro(cobrado);
+ $("#cuotas-pendientes").textContent=euro(total-cobrado);$("#cuotas-al-dia").textContent=filas.filter(r=>r.estado==="al_corriente").length+" / "+filas.length;
  filtrarCuotas();
  await cargarHistorico();
  await cargarTesoreria();
