@@ -6,10 +6,10 @@ import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95
   const aceptar=document.getElementById("ampConfirmOk");
   const cancelar=document.getElementById("ampConfirmCancel");
   texto.textContent="Se anulará el voto de "+nombre+". Podrá volver a votar mientras la encuesta siga abierta.";
-  modal.classList.add("open");
+  modal.showModal();
   cancelar.focus();
   const terminar=valor=>{
-   modal.classList.remove("open");
+   modal.close();
    aceptar.removeEventListener("click",si);
    cancelar.removeEventListener("click",no);
    modal.removeEventListener("click",fondo);
