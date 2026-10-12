@@ -10,9 +10,8 @@ async function verDetalleValoraciones(id){
  }
  const pintar=(resumen,comentarios)=>{
   dlg.innerHTML='<div style="display:flex;flex-direction:column;max-height:min(85vh,720px);min-height:0">'+
-    '<div style="padding:22px 22px 10px;flex:none">'+resumen+'</div>'+
-    '<div style="padding:0 22px 14px;min-height:0;display:flex;flex-direction:column;flex:1">'+comentarios+'</div>'+
-    '<div style="padding:12px 22px;border-top:1px solid #eee;background:#fff;display:flex;justify-content:flex-end;flex:none"><button type="button" class="btn soft" id="cerrarValoraciones">Cerrar</button></div></div>';
+    '<div style="position:relative;padding:22px 58px 10px 22px;flex:none">'+resumen+'<button type="button" id="cerrarValoraciones" aria-label="Cerrar detalle de valoraciones" title="Cerrar" style="position:absolute;top:14px;right:14px;width:34px;height:34px;border:1px solid #e9ded5;border-radius:50%;background:#faf7f3;color:#493b34;font-size:22px;line-height:1;cursor:pointer;display:grid;place-items:center">×</button></div>'+
+    '<div style="padding:0 22px 16px;min-height:0;display:flex;flex-direction:column;flex:1">'+comentarios+'</div></div>';
   dlg.querySelector('#cerrarValoraciones').onclick=()=>dlg.close();
  };
  pintar('<h3 style="margin:0 0 12px">⭐ Detalle de valoraciones</h3><p>Cargando datos…</p>','');
