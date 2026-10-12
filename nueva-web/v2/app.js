@@ -218,6 +218,24 @@ function valoracionPublica(m){
   const box=el('section','meal-voting');
   const heading=el('h3','','⭐ Valoración de la comida');box.append(heading);
   if(estado.votos>0)box.append(el('p','meal-voting-summary','Nota general: '+Number(estado.media_general).toLocaleString('es-ES')+'/5 · '+estado.votos+' '+(estado.votos===1?'valoración':'valoraciones')));
+  const tokenComentarios=localStorage.getItem('amp_cofrade_token');
+  if(tokenComentarios){
+    const comentarios=el('div','meal-comments');
+    fetch(SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/rpc/comentarios_comida_cofrades',{
+      method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_token:tokenComentarios,p_codigo:m.codigo}),cache:'no-store'
+    }).then(async res=>{if(!res.ok)throw Error('Comentarios no disponibles');return res.json()})
+      .then(items=>{
+        if(!Array.isArray(items)||!items.length)return;
+        comentarios.append(el('h4','','💬 Comentarios de los cofrades'));
+        for(const item of items){
+          const entrada=el('div','meal-comment');
+          entrada.append(el('strong','',item.autor||'Cofrade'),el('p','',item.texto||''));
+          comentarios.append(entrada);
+        }
+        box.append(comentarios);
+      }).catch(e=>console.warn(e));
+  }
   if(!estado.abierta)return estado.votos>0?box:null;
   box.append(el('p','meal-voting-note','Solo pueden votar los cofrades asistentes. Una valoración por persona.'));
   const btn=el('button','meal-vote-button','⭐ Valorar esta comida');btn.type='button';box.append(btn);
@@ -267,8 +285,11 @@ function historialCard(m) {
   card.id=m.codigo;
   const cover=foto(m,'history-photo');
   const contenido=el('div','history-content');
-  const stars=el('div','rating',estrellas(m.valoracion));
-  stars.setAttribute('aria-label','Valoración '+String(m.valoracion||0)+' de 5');
+  const estadoValoracion=valoracionesDisponibles.get(m.codigo);
+  const notaFinal=estadoValoracion&&!estadoValoracion.abierta&&estadoValoracion.votos>0 ? Number(estadoValoracion.media_general) : null;
+  const stars=el('div','rating',notaFinal!==null ? estrellas(Math.max(1,Math.min(5,Math.round(notaFinal)))) : estrellas(m.valoracion));
+  if(notaFinal!==null)stars.title='Media de los cofrades: '+notaFinal.toLocaleString('es-ES')+'/5';
+  stars.setAttribute('aria-label',notaFinal!==null?'Media de los cofrades '+notaFinal+' de 5':'Valoración '+String(m.valoracion||0)+' de 5');
 
   const cabecera=el('div','meal-heading');
   const titulos=el('div','meal-heading-titles');
