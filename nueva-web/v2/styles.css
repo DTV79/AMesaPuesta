@@ -1035,3 +1035,28 @@ button {cursor:pointer}
 
 /* Cabecera v2: mantener navegación, acceso personal y Admin en una sola fila */
 @media(min-width:1101px){.header-inner{display:flex;gap:clamp(8px,1vw,18px);flex-wrap:nowrap}.header-inner .brand{flex:0 0 auto}.header-inner .desktop-nav{flex:1 1 auto;min-width:0;justify-content:center;gap:0}.header-inner .desktop-nav a{padding-inline:clamp(5px,.7vw,12px);white-space:nowrap;font-size:clamp(11px,.8vw,13px)}.header-inner .cofrade-access{flex:0 0 auto}.header-inner .admin-access{flex:0 0 auto;margin-left:0;justify-self:auto;padding:9px 10px}}
+
+/* Mi Pizarra: panel personal en la portada */
+.mi-pizarra{min-width:0;display:flex;flex-direction:column;gap:14px;padding:clamp(22px,3vw,36px);background:linear-gradient(145deg,#38251f,#4b302a);color:#fff}
+.pizarra-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pizarra-heading h2{font:700 clamp(24px,2.5vw,34px)/1.12 Georgia,serif;margin:8px 0 0}
+.pizarra-subtitle{color:#e9d4c8;font-size:12px;line-height:1.5;margin:0}
+.pizarra-count{background:#805247;color:#fff;border-radius:99px;padding:6px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.pizarra-avisos{display:flex;flex-direction:column;gap:9px;max-height:290px;overflow:auto}
+.pizarra-aviso{display:flex;gap:10px;align-items:center;padding:13px 11px;border:1px solid #735047;border-radius:12px;background:#583a32;text-decoration:none;color:#fff}
+.pizarra-aviso:hover{background:#68453c}
+.pizarra-aviso-icon{font-size:21px;flex:none}
+.pizarra-aviso-body{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px}
+.pizarra-aviso-body strong{font-size:12px}
+.pizarra-aviso-body small{font-size:11px;line-height:1.35;color:#e9d4c8}
+.pizarra-aviso-accion{font-size:10px;font-weight:800;color:#f6c99c;white-space:nowrap}
+.pizarra-empty{font-size:13px;line-height:1.5;color:#f2dfd3;margin:6px 0}
+.pizarra-link{font-size:13px;color:#f6c99c;font-weight:800}
+.pizarra-economia{margin-top:auto;border-top:1px solid #735047;padding-top:16px}
+.pizarra-economia h3{font:700 14px Georgia,serif;margin:0 0 11px;color:#f6c99c}
+.pizarra-numeros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.pizarra-numeros>div{min-width:0;background:#583a32;border-radius:10px;padding:10px 7px;display:flex;flex-direction:column;gap:8px}
+.pizarra-numeros span{font-size:10px;color:#ead0c1;line-height:1.3}
+.pizarra-numeros strong{font:700 clamp(14px,1.6vw,20px) Georgia,serif;overflow-wrap:anywhere}
+.pizarra-nota{font-size:10px;color:#d9bbae;line-height:1.4;margin:9px 0 0}
+@media(max-width:760px){.mi-pizarra{min-height:430px}.pizarra-avisos{max-height:none}}
