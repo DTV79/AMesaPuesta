@@ -1570,6 +1570,10 @@
     }
 
     function renderCofradeSelect(poll){
+      return localStorage.getItem("amp_cofrade_token") ? `<div class="cofrade-field"><span class="cofrade-label">Tu voto se registrará con tu sesión de cofrade.</span></div>` : `<div class="cofrade-field"><a href="../acceso.html" class="cofrade-label">Inicia sesión como cofrade para votar</a></div>`;
+    }
+
+    function renderCofradeSelectAnterior(poll){
       const eligible = getEligibleCofradesForPoll(poll);
 
       const options = eligible.length
@@ -1876,7 +1880,7 @@ function renderWinnerBlock(poll){
             ${renderCofradeSelect(poll)}
 
             <div class="poll-actions">
-              <button class="vote-btn" type="button" disabled ${COFRADES.length ? "" : "title='No hay cofrades configurados'"}>Votar</button>
+              <button class="vote-btn" type="button" disabled>Votar</button>
               <div class="vote-note">
                 ${
                   poll.type === "publica"
@@ -1993,11 +1997,11 @@ function renderWinnerBlock(poll){
     function refreshVoteButton(card){
       const voteButton = card.querySelector(".vote-btn");
       const select = card.querySelector(".cofrade-select");
-      if(!voteButton || !select) return;
+      if(!voteButton) return;
 
       const sending = voteButton.dataset.sending === "true";
       const hasOptions = getSelectedButtons(card).length > 0;
-      voteButton.disabled = sending || !hasOptions || !select.value;
+      voteButton.disabled = sending || !hasOptions || !localStorage.getItem("amp_cofrade_token");
     }
 
     function setCardBusy(card, busy){
@@ -2187,12 +2191,12 @@ function renderWinnerBlock(poll){
     }
 
     async function enviarVoto(payload){
-      const res = await fetch(SUPABASE_URL + "/rest/v1/rpc/votar_encuesta_publica", {
+      const res = await fetch(SUPABASE_URL + "/rest/v1/rpc/votar_encuesta_sesion", {
         method: "POST",
         headers: SUPABASE_HEADERS,
         body: JSON.stringify({
           p_id: payload.pollId,
-          p_cofrade: payload.cofrade,
+          p_token: localStorage.getItem("amp_cofrade_token"),
           p_opciones: payload.options
         })
       });
@@ -2237,15 +2241,13 @@ function renderWinnerBlock(poll){
       const card = button.closest(".poll-card");
       if(!card) return;
 
-      const select = card.querySelector(".cofrade-select");
-      if(!select) return;
+      const token = localStorage.getItem("amp_cofrade_token");
+      if(!token){ showCardStatus(card,"Inicia sesión como cofrade para votar.","error"); return; }
 
       const selectedButtons = getSelectedButtons(card);
-      if(!selectedButtons.length || !select.value || button.dataset.sending === "true") return;
+      if(!selectedButtons.length || button.dataset.sending === "true") return;
 
       const pollId = card.dataset.pollId;
-      const cofradeId = select.value;
-      const cofradeNombre = select.options[select.selectedIndex]?.textContent?.replace(/\s+—\s+ya votó$/i, '').trim() || cofradeId;
       const options = selectedButtons.map(btn => btn.dataset.optionId).filter(Boolean);
 
       try{
@@ -2255,8 +2257,6 @@ function renderWinnerBlock(poll){
 
         await enviarVoto({
           pollId,
-          cofrade: cofradeId,
-          cofradeNombre,
           options
         });
 
