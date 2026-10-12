@@ -287,7 +287,7 @@ function historialCard(m) {
   const contenido=el('div','history-content');
   const estadoValoracion=valoracionesDisponibles.get(m.codigo);
   const notaFinal=estadoValoracion&&!estadoValoracion.abierta&&estadoValoracion.votos>0 ? Number(estadoValoracion.media_general) : null;
-  const stars=el('div','rating',notaFinal!==null ? estrellas(Math.max(1,Math.min(5,Math.round(notaFinal)))) : estrellas(m.valoracion));
+  const stars=el('div','rating',estadoValoracion&&!estadoValoracion.abierta ? (notaFinal!==null ? estrellas(Math.max(1,Math.min(5,Math.round(notaFinal)))) : 'Sin valoración') : estrellas(m.valoracion));
   if(notaFinal!==null)stars.title='Media de los cofrades: '+notaFinal.toLocaleString('es-ES')+'/5';
   stars.setAttribute('aria-label',notaFinal!==null?'Media de los cofrades '+notaFinal+' de 5':'Valoración '+String(m.valoracion||0)+' de 5');
 
