@@ -216,6 +216,8 @@ function valoracionPublica(m){
   const estado=valoracionesDisponibles.get(m.codigo);
   if(!estado)return null;
   const box=el('section','meal-voting');
+  // Sin votación abierta, ocultar el contenedor hasta confirmar que hay comentarios.
+  if(!estado.abierta)box.style.display='none';
   if(estado.abierta){
     box.append(el('h3','','⭐ Valoración de la comida'));
     if(estado.votos>0)box.append(el('p','meal-voting-summary','Nota general: '+Number(estado.media_general).toLocaleString('es-ES')+'/5 · '+estado.votos+' '+(estado.votos===1?'valoración':'valoraciones')));
@@ -240,6 +242,7 @@ function valoracionPublica(m){
         }
         comentarios.append(lista);
         box.append(comentarios);
+        if(!estado.abierta)box.style.removeProperty('display');
       }).catch(e=>console.warn(e));
   }
   if(!estado.abierta)return box;
