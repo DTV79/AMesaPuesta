@@ -1060,3 +1060,5 @@ button {cursor:pointer}
 .pizarra-numeros strong{font:700 clamp(14px,1.6vw,20px) Georgia,serif;overflow-wrap:anywhere}
 .pizarra-nota{font-size:10px;color:#d9bbae;line-height:1.4;margin:9px 0 0}
 @media(max-width:760px){.mi-pizarra{min-height:430px}.pizarra-avisos{max-height:none}}
+
+.pizarra-mis-cuotas{display:inline-block;margin-top:13px;padding:8px 0;text-decoration:underline;text-underline-offset:3px}
