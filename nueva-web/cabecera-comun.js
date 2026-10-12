@@ -33,7 +33,9 @@
     .amp-nav{display:flex;gap:clamp(8px,0.9vw,13px);align-items:center;justify-content:center;flex:1 1 auto;min-width:0;flex-wrap:nowrap}
     .amp-nav a{font:700 11px Arial,sans-serif;color:#514b47;text-decoration:none;white-space:nowrap}
     .amp-nav a:hover{color:#91212b}.amp-nav a[aria-current="page"]{color:#91212b!important;background:#f0e2dd;border-radius:7px;padding:7px 9px;box-shadow:inset 0 -2px #91212b}
-    .amp-header .logout{white-space:nowrap;cursor:pointer;flex-shrink:0;margin-left:auto}
+    .amp-header .logout{white-space:nowrap;cursor:pointer;flex-shrink:0;margin-left:auto;background:#8e202b!important;color:#fff!important;border:1px solid #8e202b!important;border-radius:10px!important;padding:11px 15px!important;font:700 12px Arial,sans-serif!important;box-shadow:0 2px 7px #6d17252b;transition:background .15s,transform .15s}
+    .amp-header .logout:hover{background:#681823!important;transform:translateY(-1px)}
+    .amp-header .logout:focus-visible{outline:3px solid #e7bca6;outline-offset:2px}
     .amp-menu{display:none;border:1px solid #ddd1c5;border-radius:9px;background:#fff;padding:9px;cursor:pointer}
     .amp-header + .shell > .top > div:first-child:has(.brand){display:none}
     .amp-header + .shell > .top{justify-content:flex-end}
@@ -95,7 +97,29 @@
   new MutationObserver(updateModalLock).observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});
   // Conserva el botón original y su evento de cierre de sesión.
   const logout=document.querySelector(".shell > .top > #salir");
-  if (logout) header.querySelector(".amp-header-inner").appendChild(logout);
+  if (admin) {
+    const cerrar = logout || document.createElement("button");
+    cerrar.type="button";
+    cerrar.classList.add("logout");
+    cerrar.textContent="🚪 Cerrar sesión";
+    cerrar.setAttribute("aria-label","Cerrar sesión de administración");
+    if (!logout) {
+      cerrar.addEventListener("click",async()=>{
+        cerrar.disabled=true;
+        try {
+          const {createClient}=await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/+esm");
+          const sb=createClient("https://wmfcpnihymiiwgpvbngj.supabase.co","sb_publishable_ij3sYbyMrLI2B34OOYt6JA_Aez1R2cJ");
+          const {error}=await sb.auth.signOut();
+          if(error)throw error;
+          location.href=base==="./"?"index.html":"admin/index.html";
+        } catch(e) {
+          cerrar.disabled=false;
+          alert("No se pudo cerrar la sesión. Inténtalo de nuevo.");
+        }
+      });
+    }
+    header.querySelector(".amp-header-inner").appendChild(cerrar);
+  }
   if(!admin){
     const token=localStorage.getItem("amp_cofrade_token");
     if(token){
