@@ -1050,7 +1050,7 @@ button {cursor:pointer}
 .pizarra-aviso-body strong{font-size:12px}
 .pizarra-aviso-body small{font-size:11px;line-height:1.35;color:#e9d4c8}
 .pizarra-aviso-accion{font-size:10px;font-weight:800;color:#f6c99c;white-space:nowrap}
-.pizarra-empty{font-size:13px;line-height:1.5;color:#f2dfd3;margin:6px 0}
+.pizarra-empty{display:flex;align-items:center;gap:10px;padding:15px 16px;margin:14px 0 0;border:1px solid rgba(186,224,196,.38);border-radius:12px;background:rgba(224,244,226,.10);color:#e8f5df;font-size:15px;font-weight:700;line-height:1.5;box-shadow:inset 3px 0 0 #9bd5a5}.pizarra-empty::before{content:'✓';display:grid;place-items:center;flex:0 0 27px;width:27px;height:27px;border-radius:50%;background:#d7edcf;color:#214a37;font-size:16px;font-weight:900}
 .pizarra-link{font-size:13px;color:#f6c99c;font-weight:800}
 .pizarra-economia{margin-top:auto;border-top:1px solid #587366;padding-top:16px}
 .pizarra-economia h3{font:700 14px Georgia,serif;margin:0 0 11px;color:#f6c99c}
