@@ -1062,3 +1062,8 @@ button {cursor:pointer}
 @media(max-width:760px){.mi-pizarra{min-height:430px}.pizarra-avisos{max-height:none}}
 
 .pizarra-mis-cuotas{display:inline-flex;align-items:center;justify-content:center;margin-top:15px;padding:11px 16px;border:1px solid #e8c79c;border-radius:10px;background:#e8c79c;color:#203b33!important;font-size:15px;font-weight:800;text-decoration:none;transition:background .2s,transform .2s}.pizarra-mis-cuotas:hover{background:#f5d9b4;transform:translateY(-1px)}
+
+/* Cifras de tesorería: tipografía uniforme y alineación tabular */
+.pizarra-numeros>div{align-items:flex-start}
+.pizarra-numeros strong{font-family:Arial,"Segoe UI",sans-serif;font-size:clamp(13px,1.38vw,18px);font-weight:750;line-height:1.25;letter-spacing:-.025em;font-variant-numeric:tabular-nums;white-space:nowrap;overflow-wrap:normal}
+@media(max-width:440px){.pizarra-numeros{gap:4px}.pizarra-numeros>div{padding:9px 5px}.pizarra-numeros strong{font-size:clamp(11px,3.1vw,14px)}}
