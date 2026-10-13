@@ -1,0 +1,121 @@
+name: Copia cifrada Cofradia
+
+# La programación solo funciona si este workflow existe en la rama predeterminada main.
+# En nueva-web queda preparado pero no se ejecuta por calendario.
+# 01:00/02:00 UTC = 03:00 Europe/Madrid según horario verano/invierno.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 1,2 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cofradia-backup
+  cancel-in-progress: false
+
+jobs:
+  respaldo:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Comprobar las 03 en España
+        id: horario
+        shell: bash
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "schedule" && "$(TZ=Europe/Madrid date +%H)" != "03" ]]; then
+            echo "ejecutar=false" >> "$GITHUB_OUTPUT"
+            echo "No son las 03:00 en Europe/Madrid: se omite la ejecución."
+          else
+            echo "ejecutar=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Obtener scripts de nueva-web
+        if: steps.horario.outputs.ejecutar == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: nueva-web
+
+      - name: Instalar rclone
+        if: steps.horario.outputs.ejecutar == 'true'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rclone
+
+      - name: Comprobar secretos necesarios
+        if: steps.horario.outputs.ejecutar == 'true'
+        shell: bash
+        env:
+          PG_PASSWORD: ${{ secrets.COFRADIA_DB_PASSWORD }}
+          SERVICE_KEY: ${{ secrets.COFRADIA_SUPABASE_SERVICE_ROLE }}
+          RCLONE_CONFIG_B64: ${{ secrets.COFRADIA_RCLONE_CONFIG_B64 }}
+        run: |
+          set -euo pipefail
+          for var in PG_PASSWORD SERVICE_KEY RCLONE_CONFIG_B64; do
+            if [ -z "${!var}" ]; then
+              echo "::error::Falta el secreto $var"
+              exit 1
+            fi
+          done
+
+      - name: Respaldar PostgreSQL 17 y Storage
+        if: steps.horario.outputs.ejecutar == 'true'
+        shell: bash
+        env:
+          PGPASSWORD: ${{ secrets.COFRADIA_DB_PASSWORD }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.COFRADIA_SUPABASE_SERVICE_ROLE }}
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p "$RUNNER_TEMP/cofradia"
+          # Usar pg_dump de version 17: el cliente PostgreSQL predeterminado de Ubuntu puede ser anterior.
+          docker run --rm --user "$(id -u):$(id -g)" -e PGPASSWORD \
+            -v "$RUNNER_TEMP/cofradia:/backup" postgres:17 \
+            pg_dump -h aws-0-eu-west-1.pooler.supabase.com -p 5432 \
+            -U postgres.wmfcpnihymiiwgpvbngj -d postgres -Fc \
+            --no-owner --no-acl -f /backup/base.dump
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -v "$RUNNER_TEMP/cofradia:/backup" postgres:17 \
+            pg_restore --list /backup/base.dump >/dev/null
+          test -s "$RUNNER_TEMP/cofradia/base.dump"
+          python3 nueva-web/scripts/backup-storage.py "$RUNNER_TEMP/cofradia/storage"
+          # Comprobar que el total recuperado coincide con el inventario real de Storage.
+          EXPECTED="$(docker run --rm -e PGPASSWORD postgres:17 \
+            psql -h aws-0-eu-west-1.pooler.supabase.com -p 5432 \
+            -U postgres.wmfcpnihymiiwgpvbngj -d postgres -Atc \
+            "select count(*) from storage.objects where bucket_id in ('comidas','estatutos')")"
+          ACTUAL="$(find "$RUNNER_TEMP/cofradia/storage" -type f | wc -l | tr -d ' ')"
+          echo "Objetos Storage esperados: $EXPECTED; descargados: $ACTUAL"
+          test "$EXPECTED" = "$ACTUAL"
+          python3 - <<'PY'
+          import os, json, datetime, pathlib, hashlib
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'cofradia'
+          files = [
+            {'name': str(p.relative_to(root)), 'bytes': p.stat().st_size,
+             'sha256': hashlib.sha256(p.read_bytes()).hexdigest()}
+            for p in root.rglob('*') if p.is_file()
+          ]
+          manifest = {'created_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                      'files': files}
+          (root/'manifest.json').write_text(json.dumps(manifest, indent=2), encoding='utf-8')
+          print('Archivos para copia:', len(files))
+          PY
+
+      - name: Subir cifrado y verificar descarga
+        if: steps.horario.outputs.ejecutar == 'true'
+        shell: bash
+        env:
+          RCLONE_CONFIG_B64: ${{ secrets.COFRADIA_RCLONE_CONFIG_B64 }}
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s' "$RCLONE_CONFIG_B64" | base64 -d > "$RUNNER_TEMP/rclone.conf"
+          unset RCLONE_CONFIG_B64
+          export RCLONE_CONFIG="$RUNNER_TEMP/rclone.conf"
+          FECHA="$(date -u +%Y-%m-%d_%H-%M-%S)"
+          DESTINO="cofradia_cifrado:automaticas/backup_$FECHA"
+          rclone copy "$RUNNER_TEMP/cofradia" "$DESTINO" --stats-one-line
+          rclone check "$RUNNER_TEMP/cofradia" "$DESTINO" --one-way --download
+          echo "RESPALDO_VERIFICADO: backup_$FECHA"
+          python3 nueva-web/scripts/retencion-backups.py
