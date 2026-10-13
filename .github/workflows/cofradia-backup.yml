@@ -1,0 +1,67 @@
+name: Copia cifrada Cofradia (preparacion)
+
+# PREPARADO EN nueva-web. Los cron de GitHub Actions solo se ejecutan en la rama predeterminada.
+# Activar schedule al autorizar el paso a produccion.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  respaldo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Obtener scripts de la rama de pruebas
+        uses: actions/checkout@v4
+        with:
+          ref: nueva-web
+
+      - name: Instalar PostgreSQL y rclone
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client rclone
+
+      - name: Comprobar secretos necesarios
+        env:
+          PG_PASSWORD: ${{ secrets.COFRADIA_DB_PASSWORD }}
+          SERVICE_KEY: ${{ secrets.COFRADIA_SUPABASE_SERVICE_ROLE }}
+          RCLONE_CONFIG_B64: ${{ secrets.COFRADIA_RCLONE_CONFIG_B64 }}
+        run: |
+          for var in PG_PASSWORD SERVICE_KEY RCLONE_CONFIG_B64; do
+            if [ -z "${!var}" ]; then echo "::error::Falta un secreto necesario"; exit 1; fi
+          done
+
+      - name: Crear respaldo local temporal
+        env:
+          PGPASSWORD: ${{ secrets.COFRADIA_DB_PASSWORD }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.COFRADIA_SUPABASE_SERVICE_ROLE }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cofradia"
+          pg_dump -h aws-0-eu-west-1.pooler.supabase.com -p 5432 -U postgres.wmfcpnihymiiwgpvbngj -d postgres -Fc --no-owner --no-acl -f "$RUNNER_TEMP/cofradia/base.dump"
+          pg_restore --list "$RUNNER_TEMP/cofradia/base.dump" >/dev/null
+          python3 nueva-web/scripts/backup-storage.py "$RUNNER_TEMP/cofradia/storage"
+          test -s "$RUNNER_TEMP/cofradia/base.dump"
+          python3 - <<'PY'
+          import os,json,datetime,pathlib
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])/'cofradia'
+          files=[{'name':str(p.relative_to(root)),'bytes':p.stat().st_size} for p in root.rglob('*') if p.is_file()]
+          (root/'manifest.json').write_text(json.dumps({'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'files':files},indent=2),encoding='utf-8')
+          print('Archivos:',len(files),'Bytes:',sum(x['bytes'] for x in files))
+          PY
+
+      - name: Subir cifrado a Google Drive
+        env:
+          RCLONE_CONFIG_B64: ${{ secrets.COFRADIA_RCLONE_CONFIG_B64 }}
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s' "$RCLONE_CONFIG_B64" | base64 -d > "$RUNNER_TEMP/rclone.conf"
+          unset RCLONE_CONFIG_B64
+          export RCLONE_CONFIG="$RUNNER_TEMP/rclone.conf"
+          FECHA="$(date -u +%Y-%m-%d_%H-%M-%S)"
+          rclone copy "$RUNNER_TEMP/cofradia" "cofradia_cifrado/backup_$FECHA" --stats-one-line -P
+          rclone check "$RUNNER_TEMP/cofradia" "cofradia_cifrado/backup_$FECHA" --one-way
+          echo "Copia cifrada subida y comprobada: backup_$FECHA"
