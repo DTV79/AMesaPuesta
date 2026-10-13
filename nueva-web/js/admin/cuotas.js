@@ -1,3 +1,18 @@
+async function cargarBalanceEjercicios(){
+ const body=document.getElementById("balance-ejercicios-body"),errorEl=document.getElementById("balance-ejercicios-error");
+ const {data,error}=await supabase.rpc("balance_ejercicios_tesoreria_admin");
+ if(error){body.innerHTML='<tr><td colspan="5">No se pudo cargar el balance.</td></tr>';errorEl.textContent=error.message;return}
+ errorEl.textContent="";const rows=Array.isArray(data)?data:[];
+ const td=(text,clase="")=>{const el=document.createElement("td");el.textContent=text;if(clase)el.className=clase;return el};
+ body.replaceChildren();
+ for(const x of rows){const tr=document.createElement("tr");tr.append(td(String(x.ejercicio)),td(euro(x.ingresos)),td(euro(x.gastos)),td(euro(x.resultado),Number(x.resultado)<0?"bad":"ok"),td(euro(x.remanente),Number(x.remanente)<0?"bad":"ok"));body.append(tr)}
+ if(!rows.length){const tr=document.createElement("tr");const cell=td("Sin movimientos registrados.");cell.colSpan=5;tr.append(cell);body.append(tr)}
+ const ingresos=rows.reduce((s,x)=>s+Number(x.ingresos||0),0),gastos=rows.reduce((s,x)=>s+Number(x.gastos||0),0);
+ document.getElementById("balance-total-ingresos").textContent=euro(ingresos);
+ document.getElementById("balance-total-gastos").textContent=euro(gastos);
+ document.getElementById("balance-total-resultado").textContent=euro(ingresos-gastos);
+ document.getElementById("balance-total-remanente").textContent=euro(rows.length?rows[0].remanente:0);
+}
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/+esm";
 const supabase=createClient("https://wmfcpnihymiiwgpvbngj.supabase.co","sb_publishable_ij3sYbyMrLI2B34OOYt6JA_Aez1R2cJ");
 let filas=[];
