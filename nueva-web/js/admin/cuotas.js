@@ -43,6 +43,7 @@ async function cargar(){
  filtrarCuotas();
  await cargarHistorico();
  await cargarTesoreria();
+ await cargarBalanceEjercicios();
 }
 let anulacionPendiente=null;
 function cerrarAnularCobro(){document.getElementById("confirmAnularCobro").classList.remove("open");anulacionPendiente=null;}
