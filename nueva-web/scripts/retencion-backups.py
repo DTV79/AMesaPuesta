@@ -30,16 +30,17 @@ if not backups:
 retener = set()
 dias = set()
 for stamp, name in backups:
-    if len(dias) < 7:
+    if len(dias) < 7 and stamp.date() not in dias:
         retener.add(name)
         dias.add(stamp.date())
 
 semanas = set()
+semanas_de_dias_recientes = {stamp.date().isocalendar()[:2] for stamp, name in backups if name in retener}
 for stamp, name in backups:
     if name in retener:
         continue
     semana = stamp.date().isocalendar()[:2]
-    if semana not in semanas and len(semanas) < 4:
+    if semana not in semanas and semana not in semanas_de_dias_recientes and len(semanas) < 4:
         retener.add(name)
         semanas.add(semana)
 
