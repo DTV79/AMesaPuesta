@@ -62,6 +62,6 @@ jobs:
           unset RCLONE_CONFIG_B64
           export RCLONE_CONFIG="$RUNNER_TEMP/rclone.conf"
           FECHA="$(date -u +%Y-%m-%d_%H-%M-%S)"
-          rclone copy "$RUNNER_TEMP/cofradia" "cofradia_cifrado/backup_$FECHA" --stats-one-line -P
-          rclone check "$RUNNER_TEMP/cofradia" "cofradia_cifrado/backup_$FECHA" --one-way
+          rclone copy "$RUNNER_TEMP/cofradia" "cofradia_cifrado:backup_$FECHA" --stats-one-line -P
+          rclone check "$RUNNER_TEMP/cofradia" "cofradia_cifrado:backup_$FECHA" --one-way
           echo "Copia cifrada subida y comprobada: backup_$FECHA"
