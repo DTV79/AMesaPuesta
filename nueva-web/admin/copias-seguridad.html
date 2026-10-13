@@ -9,12 +9,12 @@
 :root{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#f6f4ef;color:#292721}
 *{box-sizing:border-box}
 body{margin:0;background:#f6f4ef}
-main{max-width:1040px;margin:0 auto;padding:24px 20px 64px}
+main{max-width:1010px;margin:0 auto;padding:40px 18px 64px}
 a{color:#872a2b}
 button,a{outline-offset:3px}
-.return{display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;font-weight:700;font-size:13px;text-underline-offset:3px}
+.page-head{display:flex;align-items:center;margin-bottom:20px}.page-head h1{margin:0;font-size:28px;line-height:1.2;letter-spacing:0;font-weight:800}
 .card{background:white;border:1px solid #e9e1d7;border-radius:19px;padding:23px;box-shadow:0 4px 15px rgba(53,43,33,.045)}
-.hero{padding:26px 26px 25px}
+.hero{padding:22px 26px 25px}
 .eyebrow{font-size:11px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase;color:#9a5550;margin:0 0 10px}
 h1{font-size:clamp(26px,3.6vw,34px);line-height:1.1;letter-spacing:-.65px;margin:0 0 10px}
 h2{font-size:19px;letter-spacing:-.3px;margin:0}
@@ -63,7 +63,7 @@ td a{font-weight:800;white-space:nowrap}
 .empty{padding:24px 9px;color:#6f6b65}
 #contenido[hidden]{display:none}
 @media(max-width:720px){
-main{padding:20px 14px 64px}
+main{padding:14px 14px 64px}
 .card{padding:19px;border-radius:15px}
 .hero{padding:22px 19px}
 .grid{grid-template-columns:1fr;gap:12px}
@@ -77,10 +77,9 @@ main{padding:20px 14px 64px}
 </head>
 <body>
 <main id="contenido" hidden>
-<a class="return" href="index.html">← Volver a Administración</a>
+<div class="page-head"><h1 id="titulo"><span aria-hidden="true" style="font-size:.8em;margin-right:.35em">🗄️</span>Copias de seguridad</h1></div>
 <section class="card hero" aria-labelledby="titulo">
 <p class="eyebrow">Protección de datos · Cofradía A Mesa Puesta</p>
-<h1 id="titulo">🗄️ Copias de seguridad</h1>
 <p>Respaldo cifrado de la base de datos, fotografías y documentos de la Cofradía. Gestionado con Supabase, GitHub Actions y Google Drive.</p>
 <div class="status-line">
 <span id="estado" class="pill wait"><span class="dot"></span> Consultando GitHub…</span>
