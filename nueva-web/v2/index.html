@@ -49,7 +49,7 @@
         <div class="pizarra-heading"><div><p class="eyebrow light">Tu espacio personal</p><h2 id="pizarra-titulo">📋 Mi Pizarra</h2></div><span id="pizarra-count" class="pizarra-count" hidden></span></div>
         <p id="pizarra-saludo" class="pizarra-subtitle">Consulta tus asuntos pendientes y las cuentas de la cofradía.</p>
         <div id="pizarra-avisos" class="pizarra-avisos" aria-live="polite"><p class="pizarra-empty">Identifícate para consultar tus pendientes.</p><a class="pizarra-link" href="../acceso.html">🔑 Acceder como cofrade →</a></div>
-        <div class="pizarra-economia"><h3>💰 Economía de la cofradía</h3><div class="pizarra-numeros"><div><span>Cuotas recaudadas</span><strong id="pizarra-recaudado">—</strong></div><div><span>Gastos</span><strong id="pizarra-gastos">—</strong></div><div><span>Remanente</span><strong id="pizarra-remanente">—</strong></div></div><a class="pizarra-link pizarra-mis-cuotas" href="mis-cuotas.html">💳 Ver mis cuotas</a><p class="pizarra-nota" id="pizarra-economia-nota">Los gastos y el remanente estarán disponibles cuando se complete el registro de tesorería.</p></div>
+        <div class="pizarra-economia"><h3>💰 Economía de la cofradía</h3><div class="pizarra-numeros"><div><span>Cuotas recaudadas</span><strong id="pizarra-recaudado">—</strong></div><div><span>Gastos</span><strong id="pizarra-gastos">—</strong></div><div><span>Remanente</span><strong id="pizarra-remanente">—</strong></div></div><button type="button" id="abrir-detalle-bote" class="pizarra-link pizarra-mis-cuotas" style="border:0;cursor:pointer;margin-right:9px">💰 Detalle del bote</button><a class="pizarra-link pizarra-mis-cuotas" href="mis-cuotas.html">💳 Ver mis cuotas</a><p class="pizarra-nota" id="pizarra-economia-nota">Los gastos y el remanente estarán disponibles cuando se complete el registro de tesorería.</p></div>
       </aside>
     </section>
 
@@ -98,5 +98,5 @@
     <a href="cofrades.html"><span aria-hidden="true">👥</span>Cofrades</a>
     <a href="index.html#secciones"><span aria-hidden="true">☰</span>Más</a>
   </nav>
-</body>
+<dialog id="dialog-bote" style="border:0;border-radius:20px;padding:26px;width:min(780px,calc(100% - 32px));max-height:85vh;overflow:auto;box-shadow:0 18px 70px #0006"><div style="display:flex;justify-content:space-between;align-items:center;gap:20px"><h2 style="margin:0;color:#571923">💰 Detalle del bote común</h2><button type="button" id="cerrar-detalle-bote" style="border:0;background:#f4ede6;border-radius:9px;padding:10px;cursor:pointer">✕ Cerrar</button></div><p>Ingresos, gastos y saldo de la cofradía por ejercicio.</p><div id="bote-tabla" style="overflow:auto">Cargando…</div><h3>Gastos del bote por restaurante</h3><div id="bote-movimientos" style="overflow:auto"></div></dialog><script defer src="./detalle-bote.js"></script></body>
 </html>
