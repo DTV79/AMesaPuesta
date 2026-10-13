@@ -1656,6 +1656,9 @@ function renderWinnerBlock(poll){
 
 
     function renderVisibilityBlock(poll){
+      if(poll.type === "publica" && !poll.showResults){
+        return `<div class="visibility-panel"><h4 class="mini-title">Detalle del voto</h4><div class="muted-box">El detalle de los votos está oculto por configuración de esta encuesta.</div></div>`;
+      }
       if(poll.type === "publica"){
         return `
           <div class="visibility-panel">
@@ -1705,6 +1708,9 @@ function renderWinnerBlock(poll){
     }
 
     function renderActiveLiveInfo(poll){
+      if (poll.type === "publica" && !poll.showResults) {
+        return `<div class="visibility-panel"><h4 class="mini-title">Resultados</h4><div class="muted-box">Los resultados y el detalle de los votos están ocultos por configuración de esta encuesta.</div></div>`;
+      }
       if (poll.type === "publica") {
         return `
           <div class="visibility-panel">
