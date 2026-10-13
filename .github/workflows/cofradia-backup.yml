@@ -1,12 +1,12 @@
 name: Copia cifrada Cofradia
 
-# La programación solo funciona si este workflow existe en la rama predeterminada main.
-# En nueva-web queda preparado pero no se ejecuta por calendario.
-# 01:00/02:00 UTC = 03:00 Europe/Madrid según horario verano/invierno.
+# Programación efectiva desde main; checkout de scripts desde nueva-web.
+# GitHub Actions soporta directamente el huso horario de Europa/Madrid.
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 1,2 * * *'
+    - cron: '0 3 * * *'
+      timezone: 'Europe/Madrid'
 
 permissions:
   contents: read
@@ -20,31 +20,17 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - name: Comprobar las 03 en España
-        id: horario
-        shell: bash
-        run: |
-          if [[ "$GITHUB_EVENT_NAME" == "schedule" && "$(TZ=Europe/Madrid date +%H)" != "03" ]]; then
-            echo "ejecutar=false" >> "$GITHUB_OUTPUT"
-            echo "No son las 03:00 en Europe/Madrid: se omite la ejecución."
-          else
-            echo "ejecutar=true" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Obtener scripts de nueva-web
-        if: steps.horario.outputs.ejecutar == 'true'
         uses: actions/checkout@v4
         with:
           ref: nueva-web
 
       - name: Instalar rclone
-        if: steps.horario.outputs.ejecutar == 'true'
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq rclone
 
       - name: Comprobar secretos necesarios
-        if: steps.horario.outputs.ejecutar == 'true'
         shell: bash
         env:
           PG_PASSWORD: ${{ secrets.COFRADIA_DB_PASSWORD }}
@@ -60,7 +46,6 @@ jobs:
           done
 
       - name: Respaldar PostgreSQL 17 y Storage
-        if: steps.horario.outputs.ejecutar == 'true'
         shell: bash
         env:
           PGPASSWORD: ${{ secrets.COFRADIA_DB_PASSWORD }}
@@ -103,7 +88,6 @@ jobs:
           PY
 
       - name: Subir cifrado y verificar descarga
-        if: steps.horario.outputs.ejecutar == 'true'
         shell: bash
         env:
           RCLONE_CONFIG_B64: ${{ secrets.COFRADIA_RCLONE_CONFIG_B64 }}
@@ -114,8 +98,14 @@ jobs:
           unset RCLONE_CONFIG_B64
           export RCLONE_CONFIG="$RUNNER_TEMP/rclone.conf"
           FECHA="$(date -u +%Y-%m-%d_%H-%M-%S)"
-          DESTINO="cofradia_cifrado:automaticas/backup_$FECHA"
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            DESTINO="cofradia_cifrado:manuales/backup_$FECHA"
+          else
+            DESTINO="cofradia_cifrado:automaticas/backup_$FECHA"
+          fi
           rclone copy "$RUNNER_TEMP/cofradia" "$DESTINO" --stats-one-line
           rclone check "$RUNNER_TEMP/cofradia" "$DESTINO" --one-way --download
-          echo "RESPALDO_VERIFICADO: backup_$FECHA"
-          python3 nueva-web/scripts/retencion-backups.py
+          echo "RESPALDO_VERIFICADO: $DESTINO"
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            python3 nueva-web/scripts/retencion-backups.py
+          fi
