@@ -26,11 +26,11 @@ function mostrar(){
   const seleccion=$("historicoAnio").value;
   const lista=registros.filter(x=>seleccion==="todos"||String(x.fecha).startsWith(seleccion));
   const total=lista.reduce((s,x)=>s+Number(x.total||0),0);
-  const n=lista.reduce((s,x)=>s+Number(x.cofrades||0),0);
+  const otros=lista.reduce((s,x)=>s+Number(x.otros||0),0);
   $("historicoTotal").textContent=euros(total);
   $("historicoComidas").textContent=String(lista.length);
-  $("historicoRegistros").textContent=String(n);
-  $("historicoNota").textContent="Importes asignados de comida y aportación al bote, sin duplicar el bote. No indican necesariamente pagos realizados.";
+  $("historicoOtros").textContent=lista.some(x=>x.otros!==null&&x.otros!==undefined)?euros(otros):"Sin registrar";
+  $("historicoNota").textContent="El gasto de comida incluye el bote. «Sin registrar» indica que no consta información de otros gastos; los totales muestran los importes identificados, no necesariamente todos los gastos ni pagos realizados.";
   const caja=$("historicoFilas");
   caja.replaceChildren();
   if(!lista.length){
@@ -47,28 +47,31 @@ function mostrar(){
     const small=document.createElement("small");small.textContent=fecha(comida.fecha);
     nombre.append(strong,small);
     const socios=document.createElement("span");socios.className="hist-num";socios.textContent=String(comida.cofrades);
+    const gasto=document.createElement("span");gasto.className="hist-importe";gasto.textContent=euros(comida.gasto_comida);
+    const otros=document.createElement("span");otros.className="hist-otros";otros.textContent=comida.otros===null||comida.otros===undefined?"Sin registrar":euros(comida.otros);
     const importe=document.createElement("strong");importe.className="hist-importe";importe.textContent=euros(comida.total);
     const ver=document.createElement("span");ver.className="hist-ver";ver.textContent="Ver detalle";
-    suma.append(nombre,socios,importe,ver);detalles.append(suma);
+    suma.append(nombre,socios,gasto,otros,importe,ver);detalles.append(suma);
     const detalle=document.createElement("div");detalle.className="hist-detalle";
     const descripcion=document.createElement("p");descripcion.className="muted";descripcion.textContent="Gasto por cofrade, con su aportación al bote incluida.";
     detalle.append(descripcion);
     const tabla=document.createElement("table");tabla.className="hist-tabla";
     const cabecera=document.createElement("thead");
     const trh=document.createElement("tr");
-    for(const texto of ["Cofrade","Gasto comida + bote"]){const th=document.createElement("th");th.textContent=texto;trh.append(th)}
+    for(const texto of ["Cofrade","Asistió","Gasto comida","Otros gastos","Total"]){const th=document.createElement("th");th.textContent=texto;trh.append(th)}
     cabecera.append(trh);tabla.append(cabecera);
     const tbody=document.createElement("tbody");
     for(const item of comida.detalle||[]){
-      const tr=document.createElement("tr"),td=document.createElement("td"),num=document.createElement("td");
-      td.textContent=item.nombre;num.textContent=euros(item.importe);
-      tr.append(td,num);tbody.append(tr);
+      const tr=document.createElement("tr");
+      const valores=[item.nombre,item.asistio===null||item.asistio===undefined?"Sin registrar":item.asistio?"Sí":"No",euros(item.gasto_comida),item.otros===null||item.otros===undefined?"Sin registrar":euros(item.otros),euros(item.total)];
+      for(const valor of valores){const td=document.createElement("td");td.textContent=valor;tr.append(td)}
+      tbody.append(tr);
     }
     tabla.append(tbody);
     const tfoot=document.createElement("tfoot"),trTotal=document.createElement("tr");
-    const label=document.createElement("th"),cantidad=document.createElement("td");
-    label.textContent="Total de la comida";cantidad.textContent=euros(comida.total);
-    trTotal.append(label,cantidad);tfoot.append(trTotal);tabla.append(tfoot);
+    const label=document.createElement("th");label.colSpan=2;label.textContent="Total de la comida";trTotal.append(label);
+    for(const valor of [euros(comida.gasto_comida),comida.otros===null||comida.otros===undefined?"Sin registrar":euros(comida.otros),euros(comida.total)]){const td=document.createElement("td");td.textContent=valor;trTotal.append(td)}
+    tfoot.append(trTotal);tabla.append(tfoot);
     detalle.append(tabla);detalles.append(detalle);caja.append(detalles);
   }
 }
