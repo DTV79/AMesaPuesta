@@ -26,8 +26,13 @@ function mostrar(){
   const seleccion=$("historicoAnio").value;
   const lista=registros.filter(x=>seleccion==="todos"||String(x.fecha).startsWith(seleccion));
   const total=lista.reduce((s,x)=>s+Number(x.total||0),0);
+  const gastosComidas=lista.reduce((s,x)=>s+Number(x.gasto_comida||0),0);
+  const otrosConocidos=lista.some(x=>x.otros!==null&&x.otros!==undefined);
+  const otrosGastos=lista.reduce((s,x)=>s+Number(x.otros||0),0);
   $("historicoTotal").textContent=euros(total);
   $("historicoComidas").textContent=String(lista.length);
+  $("historicoGastosComidas").textContent=euros(gastosComidas);
+  $("historicoOtrosGastos").textContent=otrosConocidos?euros(otrosGastos):"Sin registrar";
   $("historicoNota").textContent="El gasto de comida incluye el bote. «Sin registrar» indica que no consta información de otros gastos; los totales muestran los importes identificados, no necesariamente todos los gastos ni pagos realizados.";
   const caja=$("historicoFilas");
   caja.replaceChildren();
