@@ -1,7 +1,7 @@
 import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/+esm";
 const sb=createClient("https://wmfcpnihymiiwgpvbngj.supabase.co","sb_publishable_ij3sYbyMrLI2B34OOYt6JA_Aez1R2cJ");
 const $=id=>document.getElementById(id);
-const euros=v=>new Intl.NumberFormat("es-ES",{style:"currency",currency:"EUR"}).format(Number(v)||0);
+const euros=v=>{const [parte,centimos]=(Number(v)||0).toFixed(2).split(".");return parte.replace(/\B(?=(\d{3})+(?!\d))/g,".")+","+centimos+" €"};
 const fecha=v=>v?String(v).slice(0,10).split("-").reverse().join("/"):"—";
 let registros=[],cargados=false;
 const pestañas=[["comidas","tabComidas"],["historico","tabHistorico"]];
@@ -26,10 +26,8 @@ function mostrar(){
   const seleccion=$("historicoAnio").value;
   const lista=registros.filter(x=>seleccion==="todos"||String(x.fecha).startsWith(seleccion));
   const total=lista.reduce((s,x)=>s+Number(x.total||0),0);
-  const otros=lista.reduce((s,x)=>s+Number(x.otros||0),0);
   $("historicoTotal").textContent=euros(total);
   $("historicoComidas").textContent=String(lista.length);
-  $("historicoOtros").textContent=lista.some(x=>x.otros!==null&&x.otros!==undefined)?euros(otros):"Sin registrar";
   $("historicoNota").textContent="El gasto de comida incluye el bote. «Sin registrar» indica que no consta información de otros gastos; los totales muestran los importes identificados, no necesariamente todos los gastos ni pagos realizados.";
   const caja=$("historicoFilas");
   caja.replaceChildren();
