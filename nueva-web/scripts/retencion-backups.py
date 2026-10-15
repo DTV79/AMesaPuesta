@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Conservar 7 días recientes y 4 semanas anteriores de copias AUTOMÁTICAS verificadas.
+"""Conservar las 8 copias AUTOMÁTICAS más recientes (aprox. 4 meses con dos al mes).
 
 Solo elimina directorios que coinciden exactamente con automaticas/backup_AAAA-MM-DD_HH-MM-SS.
 No afecta las copias manuales en la raíz de Google Drive.
@@ -27,25 +27,9 @@ backups.sort(reverse=True)
 if not backups:
     raise SystemExit("Sin copias automáticas verificables; no se elimina nada.")
 
-retener = set()
-dias = set()
-for stamp, name in backups:
-    if len(dias) < 7 and stamp.date() not in dias:
-        retener.add(name)
-        dias.add(stamp.date())
-
-semanas = set()
-semanas_de_dias_recientes = {stamp.date().isocalendar()[:2] for stamp, name in backups if name in retener}
-for stamp, name in backups:
-    if name in retener:
-        continue
-    semana = stamp.date().isocalendar()[:2]
-    if semana not in semanas and semana not in semanas_de_dias_recientes and len(semanas) < 4:
-        retener.add(name)
-        semanas.add(semana)
-
-# Si hay varias copias un mismo día, se conserva la más reciente por día.
-eliminar = [name for _, name in backups if name not in retener]
+# Conservar ocho ejecuciones automáticas; nunca tocar copias manuales.
+retener = {name for _, name in backups[:8]}
+eliminar = [name for _, name in backups[8:]]
 print("Copias automáticas:", len(backups), "| Conservar:", len(retener), "| Eliminar:", len(eliminar))
 for name in eliminar:
     target = REMOTE + "/" + name[:-1]
