@@ -1,11 +1,11 @@
 name: Copia cifrada Cofradia
 
-# Programación efectiva desde main; checkout de scripts desde nueva-web.
+# Programación efectiva desde main; copias automáticas los días 1 y 16 de cada mes; checkout de scripts desde nueva-web.
 # GitHub Actions soporta directamente el huso horario de Europa/Madrid.
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 3 * * *'
+    - cron: '0 3 1,16 * *'
       timezone: 'Europe/Madrid'
 
 permissions:
