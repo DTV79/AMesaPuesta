@@ -59,9 +59,15 @@ async function makePdf(data){
   const PDF=await pdfLibrary();
   const logo=await cargarLogo();
   const doc=new PDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
-  const colors={wine:[92,28,40],wine2:[129,57,66],cream:[250,246,239],sand:[237,226,213],ink:[39,34,32],gray:[103,96,89],gold:[181,138,74],white:[255,255,255],green:[52,108,81],logoBg:[255,253,251],restaurant:[244,238,232],rose:[246,236,239],vanilla:[251,243,232],sage:[237,244,237],bluegray:[237,242,247]};
+  const colors={wine:[92,28,40],wine2:[129,57,66],cream:[250,246,239],sand:[237,226,213],ink:[39,34,32],gray:[103,96,89],gold:[255,211,119],white:[255,255,255],green:[52,108,81],logoBg:[255,253,251],restaurant:[255,240,214],rose:[255,228,236],vanilla:[255,241,192],sage:[218,246,225],bluegray:[220,240,255],mint:[218,248,243],coral:[255,231,207]};
   const L=14,R=196,W=182;
-  const menus=[["ENTRANTES",data.comida.menu_entrantes],["PRINCIPALES",data.comida.menu_principales],["POSTRES",data.comida.menu_postres],["BEBIDAS",data.comida.menu_bebidas]].map(([label,value])=>({label,value:clean(value)||"No especificado"}));
+  const separarPlatos=value=>{
+    const original=String(value??"").trim();
+    if(!original)return ["No especificado"];
+    const parts=original.split(/\r?\n|\s*;\s*|\s*•\s*|\s*·\s*/).map(x=>x.replace(/^[-•·.\s]+/,"").trim()).filter(Boolean);
+    return parts.length?parts:[original];
+  };
+  const menus=[["ENTRANTES",data.comida.menu_entrantes],["PRINCIPALES",data.comida.menu_principales],["POSTRES",data.comida.menu_postres],["BEBIDAS",data.comida.menu_bebidas]].map(([label,value])=>({label,platos:separarPlatos(value)}));
   const transfers=[
     ...(data.estado.movimientos||[]).map(m=>({who:clean(m.de)+"  a  "+clean(m.a),amount:Number(m.importe)})),
     ...(data.estado.bote||[]).map(m=>({who:"Bote común  a  "+clean(m.a),amount:Number(m.importe)})),
@@ -95,50 +101,64 @@ async function makePdf(data){
       return rows.length*lineHeight;
     }
     function section(label){y+=3;text(label,L+2,y+4.7,10,"wine","bold");y+=9}
-    // Cabecera vino oscuro y sello de la cofradía
-    rect(L,y,W,34,"wine",4);
-    if(logo){rect(L+4,y+3,29,28,"logoBg",4);if(visible)try{doc.addImage(logo,"PNG",L+(L+6-L)*scale,13+(y+5-13)*scale,25*scale,24*scale)}catch(e){console.warn("Logo PDF",e)}}
-    const hx=logo?L+37:L+8;
-    text("COFRADÍA A MESA PUESTA",hx,y+10,11,"white","bold");
-    text("RESUMEN DE NUESTRA COMIDA",hx,y+17,8,"white","normal");
-    text(clean(data.restaurante.nombre)||"Restaurante",hx,y+27,15,"white","bold");
-    y+=40;
-    rect(L,y,W,20,"restaurant",3);
-    text(date(data.comida.fecha),L+5,y+7.5,10,"wine","bold");
-    wrapped(clean(data.restaurante.direccion)||"Dirección no registrada",L+5,y+13,122,8,"gray","normal",3.4,2);
-    text("TEL. "+(clean(data.restaurante.telefono)||"—"),R-5,y+7.5,8,"ink","bold",{align:"right"});
+    // Cabecera: marca, nombre del restaurante destacado y fecha en la esquina inferior derecha.
+    rect(L,y,W,37,"wine",4);
+    if(logo){rect(L+4,y+4,28,28,"logoBg",4);if(visible)try{doc.addImage(logo,"PNG",L+6*scale,13+(y+6-13)*scale,24*scale,24*scale)}catch(e){console.warn("Logo PDF",e)}}
+    const hx=logo?L+37:L+7;
+    text("COFRADÍA A MESA PUESTA",hx,y+10,10.5,"white","bold");
+    doc.setFont("helvetica","bold");doc.setFontSize(17*scale);
+    const nombre=clean(data.restaurante.nombre)||"Restaurante";
+    const nombreFilas=doc.splitTextToSize(nombre,(W-(hx-L)-9)*scale).slice(0,2);
+    nombreFilas.forEach((t,i)=>text(t,hx,y+21+i*6.7,17,"gold","bold"));
+    text(date(data.comida.fecha),R-6,y+33.4,8.5,"white","bold",{align:"right"});
+    y+=41;
+    // Datos del establecimiento sin repetir la fecha.
+    section("DATOS DEL RESTAURANTE");
+    rect(L,y,W,19,"restaurant",3);
+    wrapped(clean(data.restaurante.direccion)||"Dirección no registrada",L+5,y+7,124,8.5,"ink","normal",3.8,2);
+    text("TEL. "+(clean(data.restaurante.telefono)||"—"),R-5,y+7,8,"wine","bold",{align:"right"});
     text(String(data.asistentesLista.length)+" ASISTENTES",R-5,y+14,8,"wine","bold",{align:"right"});
-    y+=24;
-    section("NUESTRA GENTE");
-    const org= data.organizadoresLista.join("  ·  ")||"No consta";
-    const who= data.asistentesLista.join("  ·  ")||"No constan asistentes";
-    const peopleWidth=W;
-    doc.setFontSize(8*scale);
-    const orgLines=doc.splitTextToSize(org,(peopleWidth-13)*scale);
-    const whoLines=doc.splitTextToSize(who,(peopleWidth-13)*scale);
-    const boxHeight=11+orgLines.length*3.5+5+whoLines.length*3.5+5;
-    rect(L,y,W,boxHeight,"rose",3);
-    text("ORGANIZARON",L+5,y+6,7.6,"wine","bold");
-    let pos=y+10;
-    pos+=wrapped(org,L+5,pos,peopleWidth-12,8,"ink","normal",3.5);
-    text("ASISTIERON",L+5,pos+3,7.6,"wine","bold");
-    pos+=7;
-    wrapped(who,L+5,pos,peopleWidth-12,8,"ink","normal",3.5);
-    y+=boxHeight+2;
+    y+=23;
+    section("COMENSALES");
+    function listaPersonas(names,yy){
+      const list=names.length?names:["No consta"];
+      doc.setFont("helvetica","normal");doc.setFontSize(8.2*scale);
+      const ancho=(W-18)/2, paso=4.4;
+      // Una persona por celda; dos personas por fila.
+      for(let i=0;i<list.length;i++){
+        const col=i%2,row=Math.floor(i/2);
+        const x=L+5+col*(ancho+4);
+        const t=doc.splitTextToSize("• "+clean(list[i]),ancho*scale)[0]||"•";
+        text(t,x,yy+row*paso,8.2,"ink");
+      }
+      return Math.ceil(list.length/2)*paso;
+    }
+    const orgCount=Math.max(1,data.organizadoresLista.length);
+    const asisCount=Math.max(1,data.asistentesLista.length);
+    const peopleHeight=12+Math.ceil(orgCount/2)*4.4+9+Math.ceil(asisCount/2)*4.4+4;
+    rect(L,y,W,peopleHeight,"mint",3);
+    text("ORGANIZADORES",L+5,y+6,8.3,"wine","bold");
+    let yy=y+11;
+    yy+=listaPersonas(data.organizadoresLista,yy);
+    line(L+5,yy,R-5,"sand");
+    text("ASISTENTES",L+5,yy+5,8.3,"wine","bold");
+    yy+=10;listaPersonas(data.asistentesLista,yy);
+    y+=peopleHeight+3;
     section("EL MENÚ");
     const gap=3,cardWidth=(W-gap)/2,cardHeights=[];
-    for(const menu of menus){
+    function platoAltura(menu){
       doc.setFont("helvetica","normal");doc.setFontSize(8*scale);
-      const n=doc.splitTextToSize(menu.value,(cardWidth-12)*scale).length;
-      cardHeights.push(11+n*3.7+3);
+      return menu.platos.reduce((height,plato)=>height+Math.max(1,doc.splitTextToSize("• "+plato,(cardWidth-12)*scale).length)*3.9+1.3,0);
     }
+    for(const menu of menus)cardHeights.push(11+platoAltura(menu)+3);
     for(let row=0;row<2;row++){
       const height=Math.max(cardHeights[row*2],cardHeights[row*2+1]);
       for(let col=0;col<2;col++){
         const m=menus[row*2+col],x=L+col*(cardWidth+gap);
-        rect(x,y,cardWidth,height,row===0?"vanilla":"rose",2.5);
-        text(m.label,x+5,y+6,8,"wine","bold");
-        wrapped(m.value,x+5,y+11,cardWidth-10,8,"ink","normal",3.7);
+        rect(x,y,cardWidth,height,["vanilla","coral","rose","restaurant"][row*2+col],2.5);
+        text(m.label,x+5,y+6,8.5,"wine","bold");
+        let py=y+12;
+        for(const plato of m.platos)py+=wrapped("• "+plato,x+5,py,cardWidth-10,8,"ink","normal",3.9)+1.3;
       }
       y+=height+gap;
     }
