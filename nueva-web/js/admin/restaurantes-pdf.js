@@ -65,8 +65,8 @@ async function makePdf(data){
   add("total","TOTAL GASTOS",money(data.totalRest+data.totalExtras));
   add("item","Bote común previsto para restaurante",money(data.bote));
   add("section","PAGOS ACORDADOS AL CIERRE");
-  const moves=[...(data.estado.movimientos||[]).map(m=>[m.de+" → "+m.a,m.importe]),
-    ...(data.estado.bote||[]).map(m=>["Bote común → "+m.a,m.importe]),
+  const moves=[...(data.estado.movimientos||[]).map(m=>[m.de+" a "+m.a,m.importe]),
+    ...(data.estado.bote||[]).map(m=>["Bote común a "+m.a,m.importe]),
     ...(data.estado.invitados||[]).map(m=>[m.de+" (invitado) → "+m.a,m.importe])];
   if(!moves.length)add("text","No hay transferencias que realizar.");
   for(const [who,amount] of moves)add("item",who,money(amount));
@@ -115,14 +115,35 @@ function save(blob,name){
   const link=document.createElement("a");link.href=url;link.download=name;document.body.appendChild(link);link.click();link.remove();
   setTimeout(()=>URL.revokeObjectURL(url),30000);
 }
-export async function exportarLiquidacionPdf({sb,id,cofrades,compartir=false}){
+const cache=new Map();
+export function invalidarLiquidacionPdf(id){cache.delete(String(id))}
+export async function prepararLiquidacionPdf({sb,id,cofrades}){
+  const key=String(id);
+  if(cache.has(key))return cache.get(key);
   const data=await loadReport(sb,id,cofrades);
   const blob=await makePdf(data),name=filename(data),file=new File([blob],name,{type:"application/pdf"});
-  if(compartir&&navigator.canShare?.({files:[file]})&&navigator.share){
-    try{await navigator.share({files:[file],title:"Comida "+clean(data.restaurante.nombre)})}
-    catch(e){if(e.name!=="AbortError")throw e}
+  const prepared={blob,name,file,data};
+  cache.set(key,prepared);
+  return prepared;
+}
+export async function exportarLiquidacionPdf({sb,id,cofrades,compartir=false}){
+  // Con el PDF precargado, navigator.share se inicia directamente desde el toque del usuario.
+  const ready=cache.get(String(id));
+  if(ready){
+    if(compartir&&navigator.canShare?.({files:[ready.file]})&&navigator.share){
+      try{await navigator.share({files:[ready.file],title:"Comida "+clean(ready.data.restaurante.nombre)})}
+      catch(e){if(e.name!=="AbortError")throw e}
+      return;
+    }
+    save(ready.blob,ready.name);
+    if(compartir)alert("PDF descargado. Para enviarlo por WhatsApp, adjunta el archivo desde la conversación o el grupo.");
     return;
   }
-  save(blob,name);
-  if(compartir)alert("PDF descargado. Para enviarlo por WhatsApp, adjunta el archivo desde la conversación o el grupo.");
+  await prepararLiquidacionPdf({sb,id,cofrades});
+  if(compartir){
+    alert("El PDF ya está preparado. Pulsa Compartir por WhatsApp de nuevo para elegir el grupo.");
+    return;
+  }
+  const done=cache.get(String(id));
+  save(done.blob,done.name);
 }
