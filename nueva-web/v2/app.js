@@ -11,6 +11,13 @@ function el(tag, clase = '', texto = null) {
   return node;
 }
 function txt(v) { return String(v ?? '').trim(); }
+function direccionVisible(valor) {
+  const original=txt(valor);
+  // Únicamente cambia la presentación si existen calle, código postal, localidad y provincia.
+  const match=/^(.*?),\s*(\d{5})\s+([^,]+),\s*([^,]+)\s*$/.exec(original);
+  return match ? match[1].trim()+'. '+match[2]+' '+match[3].trim()+' ('+match[4].trim()+')' : original;
+}
+
 function fecha(iso, corto = false) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(txt(iso));
   if (!match) return 'Fecha pendiente';
@@ -100,7 +107,7 @@ function resumenCard(m) {
   rating.setAttribute('aria-label','Valoración '+String(m.valoracion||0)+' de 5');
   meta.append(rating);
   body.append(meta,el('h3','',m.restaurante));
-  body.append(el('p','summary',txt(m.comentario)||txt(m.direccion)||'Otra mesa para recordar.'));
+  body.append(el('p','summary',txt(m.comentario)||direccionVisible(m.direccion)||'Otra mesa para recordar.'));
   const link=el('a','card-link','Ver esta comida →');
   link.href='restaurantes.html#'+encodeURIComponent(m.codigo);
   body.append(link);
@@ -313,7 +320,7 @@ function historialCard(m) {
     cabecera.append(etiqueta);
   }
   contenido.append(cabecera,stars);
-  if(txt(m.direccion)) contenido.append(el('p','address',m.direccion));
+  if(txt(m.direccion)) contenido.append(el('p','address',direccionVisible(m.direccion)));
 
   const organizadores=nombres(m.organizadores);
   const asistentes=nombres(m.asistentes);
