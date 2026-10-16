@@ -116,19 +116,29 @@ async function makePdf(data){
     section("DATOS DEL RESTAURANTE");
     const contacto=clean(data.restaurante.persona_contacto);
     const webRest=clean(data.restaurante.web);
-    const altoDatos=webRest?25:19;
-    rect(L,y,W,altoDatos,"restaurant",3);
     const direccion=clean(data.restaurante.direccion);
     const matchDireccion=/^(.*),\s*(\d{5})\s+([^,]+),\s*([^,]+)$/.exec(direccion);
     const direccionLinea1=matchDireccion?matchDireccion[1].trim():direccion||"Dirección no registrada";
     const direccionLinea2=matchDireccion?matchDireccion[2]+" "+matchDireccion[3].trim()+" ("+matchDireccion[4].trim()+")":"";
-    wrapped(direccionLinea1,L+5,y+7,121,8.5,"ink","normal",3.8,2);
-    if(direccionLinea2)wrapped(direccionLinea2,L+5,y+13,121,8.5,"ink","normal",3.8,2);
-    text("TEL. "+(clean(data.restaurante.telefono)||"—"),R-5,y+7,8,"wine","bold",{align:"right"});
-    if(contacto)wrapped("Contacto: "+contacto,L+127,y+13,49,7.1,"ink","normal",3.1,2);
-    if(webRest){
-      wrapped("Web: "+webRest,L+5,y+20,170,7.5,"wine","normal",3.5,1);
-    }
+    // Dos columnas independientes: el contacto empieza siempre bajo el teléfono.
+    const xDatos=L+5,anchoDireccion=111,xTelefono=L+121,anchoTelefono=55;
+    doc.setFont("helvetica","normal");doc.setFontSize(8.5*scale);
+    const filasDireccion1=doc.splitTextToSize(direccionLinea1,anchoDireccion*scale).length;
+    const filasDireccion2=direccionLinea2?doc.splitTextToSize(direccionLinea2,anchoDireccion*scale).length:0;
+    const altoDireccion=Math.max(12,filasDireccion1*3.8+(filasDireccion2?2+filasDireccion2*3.8:0));
+    doc.setFont("helvetica","normal");doc.setFontSize(7.1*scale);
+    const filasContacto=contacto?doc.splitTextToSize("Contacto: "+contacto,anchoTelefono*scale).length:0;
+    const altoContacto=contacto?7+filasContacto*3.4:0;
+    const altoBloque=Math.max(altoDireccion,altoContacto,15);
+    doc.setFont("helvetica","normal");doc.setFontSize(7.5*scale);
+    const filasWeb=webRest?doc.splitTextToSize("Web: "+webRest,170*scale).length:0;
+    const altoDatos=altoBloque+5+(filasWeb?2+filasWeb*3.5:0);
+    rect(L,y,W,altoDatos,"restaurant",3);
+    wrapped(direccionLinea1,xDatos,y+7,anchoDireccion,8.5,"ink","normal",3.8);
+    if(direccionLinea2)wrapped(direccionLinea2,xDatos,y+7+filasDireccion1*3.8+2,anchoDireccion,8.5,"ink","normal",3.8);
+    text("TEL. "+(clean(data.restaurante.telefono)||"—"),xTelefono,y+7,8,"wine","bold");
+    if(contacto)wrapped("Contacto: "+contacto,xTelefono,y+14,anchoTelefono,7.1,"ink","normal",3.4);
+    if(webRest)wrapped("Web: "+webRest,xDatos,y+altoBloque+4,170,7.5,"wine","normal",3.5);
     y+=altoDatos+4;
     section("COMENSALES");
     function listaPersonas(names,yy){
