@@ -114,15 +114,23 @@ async function makePdf(data){
     y+=41;
     // Datos del establecimiento sin repetir la fecha.
     section("DATOS DEL RESTAURANTE");
-    rect(L,y,W,19,"restaurant",3);
+    const contacto=clean(data.restaurante.persona_contacto);
+    const webRest=clean(data.restaurante.web);
+    const altoDatos=webRest?30:(contacto?23:19);
+    rect(L,y,W,altoDatos,"restaurant",3);
     const direccion=clean(data.restaurante.direccion);
     const matchDireccion=/^(.*),\s*(\d{5})\s+([^,]+),\s*([^,]+)$/.exec(direccion);
     const direccionLinea1=matchDireccion?matchDireccion[1].trim():direccion||"Dirección no registrada";
     const direccionLinea2=matchDireccion?matchDireccion[2]+" "+matchDireccion[3].trim()+" ("+matchDireccion[4].trim()+")":"";
-    wrapped(direccionLinea1,L+5,y+7,127,8.5,"ink","normal",3.8,2);
-    if(direccionLinea2)wrapped(direccionLinea2,L+5,y+13,127,8.5,"ink","normal",3.8,2);
-    text("TEL. "+(clean(data.restaurante.telefono)||"—"),R-5,y+10,8,"wine","bold",{align:"right"});
-    y+=23;
+    wrapped(direccionLinea1,L+5,y+7,121,8.5,"ink","normal",3.8,2);
+    if(direccionLinea2)wrapped(direccionLinea2,L+5,y+13,121,8.5,"ink","normal",3.8,2);
+    text("TEL. "+(clean(data.restaurante.telefono)||"—"),R-5,y+7,8,"wine","bold",{align:"right"});
+    if(contacto)wrapped("Contacto: "+contacto,L+127,y+13,49,7.1,"ink","normal",3.1,2);
+    if(webRest){
+      line(L+5,y+21,R-5,"sand");
+      wrapped("Web: "+webRest,L+5,y+26,170,7.5,"wine","normal",3.5,1);
+    }
+    y+=altoDatos+4;
     section("COMENSALES");
     function listaPersonas(names,yy){
       const list=names.length?names:["No consta"];
