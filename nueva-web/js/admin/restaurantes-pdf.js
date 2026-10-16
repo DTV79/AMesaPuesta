@@ -115,9 +115,13 @@ async function makePdf(data){
     // Datos del establecimiento sin repetir la fecha.
     section("DATOS DEL RESTAURANTE");
     rect(L,y,W,19,"restaurant",3);
-    wrapped(clean(data.restaurante.direccion)||"Dirección no registrada",L+5,y+7,124,8.5,"ink","normal",3.8,2);
-    text("TEL. "+(clean(data.restaurante.telefono)||"—"),R-5,y+7,8,"wine","bold",{align:"right"});
-    text(String(data.asistentesLista.length)+" ASISTENTES",R-5,y+14,8,"wine","bold",{align:"right"});
+    const direccion=clean(data.restaurante.direccion);
+    const matchDireccion=/^(.*),\s*(\d{5})\s+([^,]+),\s*([^,]+)$/.exec(direccion);
+    const direccionLinea1=matchDireccion?matchDireccion[1].trim():direccion||"Dirección no registrada";
+    const direccionLinea2=matchDireccion?matchDireccion[2]+" "+matchDireccion[3].trim()+" ("+matchDireccion[4].trim()+")":"";
+    wrapped(direccionLinea1,L+5,y+7,127,8.5,"ink","normal",3.8,2);
+    if(direccionLinea2)wrapped(direccionLinea2,L+5,y+13,127,8.5,"ink","normal",3.8,2);
+    text("TEL. "+(clean(data.restaurante.telefono)||"—"),R-5,y+10,8,"wine","bold",{align:"right"});
     y+=23;
     section("COMENSALES");
     function listaPersonas(names,yy){
@@ -141,7 +145,7 @@ async function makePdf(data){
     let yy=y+11;
     yy+=listaPersonas(data.organizadoresLista,yy);
     line(L+5,yy,R-5,"sand");
-    text("ASISTENTES",L+5,yy+5,8.3,"wine","bold");
+    text("ASISTENTES ("+data.asistentesLista.length+")",L+5,yy+5,8.3,"wine","bold");
     yy+=10;listaPersonas(data.asistentesLista,yy);
     y+=peopleHeight+3;
     section("EL MENÚ");
