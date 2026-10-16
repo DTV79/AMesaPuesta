@@ -5,7 +5,7 @@ function pdfLibrary(){
   if(window.jspdf?.jsPDF)return Promise.resolve(window.jspdf.jsPDF);
   if(!jsPdfPromise)jsPdfPromise=new Promise((resolve,reject)=>{
     const script=document.createElement("script");
-    script.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js";
+    script.src="../js/vendor/jspdf.umd.min.js";
     script.onload=()=>window.jspdf?.jsPDF?resolve(window.jspdf.jsPDF):reject(Error("No se pudo cargar el generador PDF"));
     script.onerror=()=>reject(Error("No se pudo cargar el generador PDF"));
     document.head.appendChild(script);
@@ -136,12 +136,12 @@ export async function exportarLiquidacionPdf({sb,id,cofrades,compartir=false}){
       return;
     }
     save(ready.blob,ready.name);
-    if(compartir)alert("PDF descargado. Para enviarlo por WhatsApp, adjunta el archivo desde la conversación o el grupo.");
+    if(compartir)window.dispatchEvent(new CustomEvent("amp-informe-aviso",{detail:{title:"PDF descargado",message:"Para compartirlo por WhatsApp, adjunta el archivo desde el grupo de la cofradía."}}));
     return;
   }
   await prepararLiquidacionPdf({sb,id,cofrades});
   if(compartir){
-    alert("El PDF ya está preparado. Pulsa Compartir por WhatsApp de nuevo para elegir el grupo.");
+    window.dispatchEvent(new CustomEvent("amp-informe-aviso",{detail:{title:"PDF preparado",message:"Pulsa otra vez «Compartir por WhatsApp» para elegir el grupo de la cofradía."}}));
     return;
   }
   const done=cache.get(String(id));
