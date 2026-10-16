@@ -59,7 +59,7 @@ async function makePdf(data){
   const PDF=await pdfLibrary();
   const logo=await cargarLogo();
   const doc=new PDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
-  const colors={wine:[92,28,40],wine2:[129,57,66],cream:[250,246,239],sand:[237,226,213],ink:[39,34,32],gray:[103,96,89],gold:[181,138,74],white:[255,255,255],green:[52,108,81]};
+  const colors={wine:[92,28,40],wine2:[129,57,66],cream:[250,246,239],sand:[237,226,213],ink:[39,34,32],gray:[103,96,89],gold:[181,138,74],white:[255,255,255],green:[52,108,81],logoBg:[255,253,251],restaurant:[244,238,232],rose:[246,236,239],vanilla:[251,243,232],sage:[237,244,237],bluegray:[237,242,247]};
   const L=14,R=196,W=182;
   const menus=[["ENTRANTES",data.comida.menu_entrantes],["PRINCIPALES",data.comida.menu_principales],["POSTRES",data.comida.menu_postres],["BEBIDAS",data.comida.menu_bebidas]].map(([label,value])=>({label,value:clean(value)||"No especificado"}));
   const transfers=[
@@ -97,13 +97,13 @@ async function makePdf(data){
     function section(label){y+=3;text(label,L+2,y+4.7,10,"wine","bold");y+=9}
     // Cabecera vino oscuro y sello de la cofradía
     rect(L,y,W,34,"wine",4);
-    if(visible&&logo)try{doc.addImage(logo,"PNG", (L+5)*scale+L*(1-scale),13+(y-13+4)*scale,26*scale,26*scale)}catch(e){console.warn("Logo PDF",e)}
+    if(logo){rect(L+4,y+3,29,28,"logoBg",4);if(visible)try{doc.addImage(logo,"PNG",L+(L+6-L)*scale,13+(y+5-13)*scale,25*scale,24*scale)}catch(e){console.warn("Logo PDF",e)}}
     const hx=logo?L+37:L+8;
     text("COFRADÍA A MESA PUESTA",hx,y+10,11,"white","bold");
     text("RESUMEN DE NUESTRA COMIDA",hx,y+17,8,"white","normal");
     text(clean(data.restaurante.nombre)||"Restaurante",hx,y+27,15,"white","bold");
     y+=40;
-    rect(L,y,W,20,"cream",3);
+    rect(L,y,W,20,"restaurant",3);
     text(date(data.comida.fecha),L+5,y+7.5,10,"wine","bold");
     wrapped(clean(data.restaurante.direccion)||"Dirección no registrada",L+5,y+13,122,8,"gray","normal",3.4,2);
     text("TEL. "+(clean(data.restaurante.telefono)||"—"),R-5,y+7.5,8,"ink","bold",{align:"right"});
@@ -117,7 +117,7 @@ async function makePdf(data){
     const orgLines=doc.splitTextToSize(org,(peopleWidth-13)*scale);
     const whoLines=doc.splitTextToSize(who,(peopleWidth-13)*scale);
     const boxHeight=11+orgLines.length*3.5+5+whoLines.length*3.5+5;
-    rect(L,y,W,boxHeight,"cream",3);
+    rect(L,y,W,boxHeight,"rose",3);
     text("ORGANIZARON",L+5,y+6,7.6,"wine","bold");
     let pos=y+10;
     pos+=wrapped(org,L+5,pos,peopleWidth-12,8,"ink","normal",3.5);
@@ -136,7 +136,7 @@ async function makePdf(data){
       const height=Math.max(cardHeights[row*2],cardHeights[row*2+1]);
       for(let col=0;col<2;col++){
         const m=menus[row*2+col],x=L+col*(cardWidth+gap);
-        rect(x,y,cardWidth,height,"cream",2.5);
+        rect(x,y,cardWidth,height,row===0?"vanilla":"rose",2.5);
         text(m.label,x+5,y+6,8,"wine","bold");
         wrapped(m.value,x+5,y+11,cardWidth-10,8,"ink","normal",3.7);
       }
@@ -148,28 +148,34 @@ async function makePdf(data){
     text(money(data.totalRest+data.totalExtras),R-5,y+9.5,13,"white","bold",{align:"right"});
     y+=20;
     function cost(name,amount,note){
-      const nameHeight=wrapped(name,L+3,y+4,127,8.8,"ink","normal",3.7);
-      text(money(amount),R-3,y+4,9.5,"wine","bold",{align:"right"});
-      y+=Math.max(6,nameHeight+1);
-      if(clean(note))y+=wrapped(note,L+3,y,160,7.4,"gray","normal",3.2);
-      line(L+2,y+1,R-2);y+=4;
+      doc.setFont("helvetica","normal");doc.setFontSize(8.8*scale);
+      const titleLines=doc.splitTextToSize(clean(name),127*scale).length;
+      doc.setFontSize(7.4*scale);
+      const noteLines=clean(note)?doc.splitTextToSize(clean(note),160*scale).length:0;
+      const rowHeight=Math.max(7,titleLines*3.7+1)+(noteLines?noteLines*3.2:0)+5;
+      rect(L,y,W,rowHeight,"sage",2);
+      const nameHeight=wrapped(name,L+4,y+5,127,8.8,"ink","normal",3.7);
+      text(money(amount),R-4,y+5,9.5,"wine","bold",{align:"right"});
+      y+=Math.max(7,nameHeight+1);
+      if(noteLines)y+=wrapped(note,L+4,y,160,7.4,"gray","normal",3.2);
+      y+=5;
     }
     cost("Restaurante",data.totalRest,data.pagadoresRest?"Adelantado por: "+data.pagadoresRest:"");
     for(const g of data.gastos)cost(g.concepto,g.importe,"Pagado por: "+g.pagadores);
-    rect(L,y,W,11,"cream",2);
+    rect(L,y,W,11,"sage",2);
     text("Aportación del bote a la comida",L+4,y+7.2,8.7,"ink","bold");
     text(money(data.bote),R-4,y+7.2,9,"wine","bold",{align:"right"});
     y+=14;
     section("PAGOS A REALIZAR");
     if(!transfers.length){
-      rect(L,y,W,11,"cream",2);
+      rect(L,y,W,11,"bluegray",2);
       text("No hay transferencias entre cofrades.",L+5,y+7,8.5,"green","bold");y+=14;
     }else{
       for(const m of transfers){
         doc.setFontSize(8.6*scale);
         const rows=doc.splitTextToSize(m.who,138*scale);
         const height=Math.max(9,rows.length*4+3);
-        rect(L,y,W,height,"cream",2);
+        rect(L,y,W,height,"bluegray",2);
         wrapped(m.who,L+5,y+5,135,8.5,"ink","normal",4);
         text(money(m.amount),R-5,y+5,9.5,"wine","bold",{align:"right"});
         y+=height+2;
