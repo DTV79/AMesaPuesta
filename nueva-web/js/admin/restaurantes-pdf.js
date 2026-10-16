@@ -116,7 +116,7 @@ async function makePdf(data){
     section("DATOS DEL RESTAURANTE");
     const contacto=clean(data.restaurante.persona_contacto);
     const webRest=clean(data.restaurante.web);
-    const altoDatos=webRest?30:(contacto?23:19);
+    const altoDatos=webRest?25:19;
     rect(L,y,W,altoDatos,"restaurant",3);
     const direccion=clean(data.restaurante.direccion);
     const matchDireccion=/^(.*),\s*(\d{5})\s+([^,]+),\s*([^,]+)$/.exec(direccion);
@@ -127,8 +127,7 @@ async function makePdf(data){
     text("TEL. "+(clean(data.restaurante.telefono)||"—"),R-5,y+7,8,"wine","bold",{align:"right"});
     if(contacto)wrapped("Contacto: "+contacto,L+127,y+13,49,7.1,"ink","normal",3.1,2);
     if(webRest){
-      line(L+5,y+21,R-5,"sand");
-      wrapped("Web: "+webRest,L+5,y+26,170,7.5,"wine","normal",3.5,1);
+      wrapped("Web: "+webRest,L+5,y+20,170,7.5,"wine","normal",3.5,1);
     }
     y+=altoDatos+4;
     section("COMENSALES");
