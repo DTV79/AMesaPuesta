@@ -168,17 +168,34 @@ async function makePdf(data){
     text(money(data.totalRest+data.totalExtras),R-5,y+9.5,13,"white","bold",{align:"right"});
     y+=20;
     function cost(name,amount,note){
+      const concepto=clean(name),importe=money(amount),observacion=clean(note);
       doc.setFont("helvetica","normal");doc.setFontSize(8.8*scale);
-      const titleLines=doc.splitTextToSize(clean(name),127*scale).length;
+      const titleLines=doc.splitTextToSize(concepto,127*scale).length;
       doc.setFontSize(7.4*scale);
-      const noteLines=clean(note)?doc.splitTextToSize(clean(note),160*scale).length:0;
-      const rowHeight=Math.max(7,titleLines*3.7+1)+(noteLines?noteLines*3.2:0)+5;
+      const noteLines=observacion?doc.splitTextToSize(observacion,160*scale).length:0;
+      const titleHeight=Math.max(5,titleLines*4);
+      const noteHeight=noteLines?3+noteLines*4.1:0;
+      const rowHeight=10+titleHeight+noteHeight+2;
       rect(L,y,W,rowHeight,"sage",2);
-      const nameHeight=wrapped(name,L+4,y+5,127,8.8,"ink","normal",3.7);
-      text(money(amount),R-4,y+5,9.5,"wine","bold",{align:"right"});
-      y+=Math.max(7,nameHeight+1);
-      if(noteLines)y+=wrapped(note,L+4,y,160,7.4,"gray","normal",3.2);
-      y+=5;
+      const baseline=y+7;
+      wrapped(concepto,L+4,baseline,127,8.8,"ink","normal",4);
+      text(importe,R-4,baseline,9.5,"wine","bold",{align:"right"});
+      // Guía punteada tipo cuenta de restaurante; únicamente cuando cabe en una línea.
+      if(visible&&titleLines===1){
+        doc.setFont("helvetica","normal");doc.setFontSize(8.8*scale);
+        const desde=L+4+doc.getTextWidth(concepto)/scale+3;
+        doc.setFont("helvetica","bold");doc.setFontSize(9.5*scale);
+        const hasta=R-4-doc.getTextWidth(importe)/scale-3;
+        if(hasta-desde>12){
+          doc.setDrawColor(174,190,176);
+          doc.setLineWidth(.24*scale);
+          doc.setLineDashPattern([.55*scale,1.7*scale],0);
+          doc.line(L+(desde-L)*scale,13+(baseline-13+0.7)*scale,L+(hasta-L)*scale,13+(baseline-13+0.7)*scale);
+          doc.setLineDashPattern([],0);
+        }
+      }
+      if(noteLines)wrapped(observacion,L+4,baseline+titleHeight+1,160,7.6,"gray","normal",4.1);
+      y+=rowHeight+2;
     }
     cost("Restaurante",data.totalRest,data.pagadoresRest?"Adelantado por: "+data.pagadoresRest:"");
     for(const g of data.gastos)cost(g.concepto,g.importe,"Pagado por: "+g.pagadores);
