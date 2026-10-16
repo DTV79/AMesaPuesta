@@ -31,7 +31,7 @@ async function revisar(){
     detalle="Faltan: "+plural(faltanComidas,"comida","comidas")+(faltanMeses===null?"":" o "+plural(faltanMeses,"mes","meses"));
    }
   }
-  return '<tr><td><strong>'+clean(m.nombre)+'</strong></td><td>'+clean(actual)+'</td><td>'+n+'</td><td>'+y+' años</td><td><span class="'+clase+'">'+clean(estado)+'</span>'+(detalle?'<small style="display:block;color:#77736b;margin-top:3px">'+clean(detalle)+'</small>':'')+'</td></tr>'
+  return '<tr><td><strong>'+clean(m.nombre)+'</strong></td><td>'+clean(actual)+'</td><td>'+n+'</td><td>'+y+' años</td><td'+(estado==='—'?' style="text-align:center"':'')+'><span class="'+clase+'">'+clean(estado)+'</span>'+(detalle?'<small style="display:block;color:#77736b;margin-top:3px">'+clean(detalle)+'</small>':'')+'</td></tr>'
  }).join("")||'<tr><td colspan="5">Sin miembros</td></tr>'
 }
 $("configForm").onsubmit=async e=>{e.preventDefault();const args={p_comidas_cofrade:Number($("comidasC").value),p_anios_cofrade:Number($("aniosC").value),p_comidas_veterano:Number($("comidasV").value),p_anios_veterano:Number($("aniosV").value)};const r=await sb.rpc("guardar_configuracion_categorias_admin",args);$("mensaje").textContent=r.error?r.error.message:"Requisitos guardados. Se han actualizado automáticamente las categorías que cumplen los requisitos.";if(!r.error)await cargar()};cargar();
