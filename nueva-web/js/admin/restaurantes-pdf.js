@@ -120,14 +120,21 @@ async function makePdf(data){
     const matchDireccion=/^(.*),\s*(\d{5})\s+([^,]+),\s*([^,]+)$/.exec(direccion);
     const direccionLinea1=matchDireccion?matchDireccion[1].trim():direccion||"Dirección no registrada";
     const direccionLinea2=matchDireccion?matchDireccion[2]+" "+matchDireccion[3].trim()+" ("+matchDireccion[4].trim()+")":"";
-    // Dos columnas independientes: el contacto empieza siempre bajo el teléfono.
-    const xDatos=L+5,anchoDireccion=111,xTelefono=L+121,anchoTelefono=55;
+    // La columna derecha se ajusta al nombre del contacto y mantiene ambos textos alineados.
+    const xDatos=L+5,anchoDireccion=111,anchoTelefono=60;
+    const telefonoTexto="TEL. "+(clean(data.restaurante.telefono)||"—");
+    doc.setFont("helvetica","bold");doc.setFontSize(8*scale);
+    const anchoNumero=doc.getTextWidth(telefonoTexto)/scale;
+    doc.setFont("helvetica","normal");doc.setFontSize(7.1*scale);
+    const lineasContacto=contacto?doc.splitTextToSize("Contacto: "+contacto,anchoTelefono*scale):[];
+    const anchoContacto=lineasContacto.length?Math.max(...lineasContacto.map(linea=>doc.getTextWidth(linea)/scale)):0;
+    const xTelefono=Math.max(L+117,R-5-Math.max(anchoNumero,anchoContacto));
     doc.setFont("helvetica","normal");doc.setFontSize(8.5*scale);
     const filasDireccion1=doc.splitTextToSize(direccionLinea1,anchoDireccion*scale).length;
     const filasDireccion2=direccionLinea2?doc.splitTextToSize(direccionLinea2,anchoDireccion*scale).length:0;
     const altoDireccion=Math.max(12,filasDireccion1*3.8+(filasDireccion2?2+filasDireccion2*3.8:0));
     doc.setFont("helvetica","normal");doc.setFontSize(7.1*scale);
-    const filasContacto=contacto?doc.splitTextToSize("Contacto: "+contacto,anchoTelefono*scale).length:0;
+    const filasContacto=lineasContacto.length;
     const altoContacto=contacto?7+filasContacto*3.4:0;
     const altoBloque=Math.max(altoDireccion,altoContacto,15);
     doc.setFont("helvetica","normal");doc.setFontSize(7.5*scale);
@@ -136,7 +143,7 @@ async function makePdf(data){
     rect(L,y,W,altoDatos,"restaurant",3);
     wrapped(direccionLinea1,xDatos,y+7,anchoDireccion,8.5,"ink","normal",3.8);
     if(direccionLinea2)wrapped(direccionLinea2,xDatos,y+7+filasDireccion1*3.8+2,anchoDireccion,8.5,"ink","normal",3.8);
-    text("TEL. "+(clean(data.restaurante.telefono)||"—"),xTelefono,y+7,8,"wine","bold");
+    text(telefonoTexto,xTelefono,y+7,8,"wine","bold");
     if(contacto)wrapped("Contacto: "+contacto,xTelefono,y+14,anchoTelefono,7.1,"ink","normal",3.4);
     if(webRest)wrapped("Web: "+webRest,xDatos,y+altoBloque+4,170,7.5,"wine","normal",3.5);
     y+=altoDatos+4;
