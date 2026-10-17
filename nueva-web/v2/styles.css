@@ -1160,3 +1160,9 @@ button {cursor:pointer}
  #dialog-bote .bote-tabla-responsive tbody td:last-child{border-bottom:0!important;font-weight:800;color:#571923}
  #dialog-bote .bote-tabla-responsive tbody td::before{content:attr(data-label);flex:0 0 43%;text-align:left;font-size:12px;font-weight:700;color:#756b65}
 }
+
+/* Bloquear el fondo y desplazar el propio diálogo también en horizontal/iOS. */
+html.bote-modal-abierto{overflow:hidden;overscroll-behavior:none}
+body.bote-modal-abierto{overflow:hidden}
+#dialog-bote[open]{overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;max-height:calc(100dvh - 24px)!important}
+@media(orientation:landscape) and (max-height:600px){#dialog-bote[open]{height:auto;max-height:calc(100dvh - 16px)!important;padding:14px 18px!important;margin:auto!important}}
