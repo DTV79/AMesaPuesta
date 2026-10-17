@@ -1112,3 +1112,13 @@ button {cursor:pointer}
   .site-header .header-inner.header-con-admin .brand-text{font-size:clamp(11px,3.15vw,15px)}
   .site-header .header-inner.header-con-admin .brand-text small{font-size:clamp(5.5px,1.5vw,8px);letter-spacing:.035em}
 }
+
+/* Ajuste fino: más presencia del logotipo y del nombre, sin segunda fila. */
+@media(max-width:760px){
+ .site-header .header-inner.header-con-admin .brand{gap:7px}
+ .site-header .header-inner.header-con-admin .brand-mark{width:clamp(38px,10vw,43px);height:clamp(38px,10vw,43px);flex-basis:clamp(38px,10vw,43px)}
+ .site-header .header-inner.header-con-admin .brand-mark img{width:34px;height:34px}
+ .site-header .header-inner.header-con-admin .brand-text{font-size:clamp(13px,3.5vw,17px);letter-spacing:-.025em}
+ .site-header .header-inner.header-con-admin .brand-text small{font-size:clamp(6.5px,1.72vw,9px);letter-spacing:.015em}
+ .site-header .header-inner.header-con-admin .cofrade-menu{max-width:23%}
+}
