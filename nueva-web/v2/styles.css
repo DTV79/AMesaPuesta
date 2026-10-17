@@ -1122,3 +1122,12 @@ button {cursor:pointer}
  .site-header .header-inner.header-con-admin .brand-text small{font-size:clamp(6.5px,1.72vw,9px);letter-spacing:.015em}
  .site-header .header-inner.header-con-admin .cofrade-menu{max-width:23%}
 }
+
+/* Acciones de Mi Pizarra: dos botones económicos alineados en móvil. */
+.pizarra-acciones-economia{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;margin-top:15px}
+.pizarra-acciones-economia .pizarra-mis-cuotas{margin:0;min-width:0;text-align:center}
+.pizarra-acciones-economia button.pizarra-mis-cuotas{cursor:pointer}
+@media(max-width:760px){
+ .pizarra-acciones-economia{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .pizarra-acciones-economia .pizarra-mis-cuotas{width:100%;padding:11px 5px;font-size:clamp(10px,2.75vw,13px);line-height:1.2;white-space:normal;min-height:46px}
+}
