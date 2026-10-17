@@ -1175,3 +1175,15 @@ body.bote-modal-abierto{overflow:hidden}
  .history-card .history-details[open]{padding-bottom:18px}
  .scroll-top:not([hidden]){right:calc(16px + env(safe-area-inset-right));bottom:calc(90px + env(safe-area-inset-bottom));width:40px;height:40px;font-size:23px;z-index:991;opacity:.94}
 }
+
+/* Encuestas usa su propio botón para subir: mantenerlo separado del menú móvil. */
+@media(max-width:700px){
+ body[data-page="encuestas"] #btnSubir{
+  position:fixed!important;
+  right:calc(16px + env(safe-area-inset-right))!important;
+  bottom:calc(94px + env(safe-area-inset-bottom))!important;
+  width:40px!important;height:40px!important;
+  z-index:991!important;
+ }
+ body[data-page="encuestas"] #btnSubir svg{width:20px;height:20px}
+}
