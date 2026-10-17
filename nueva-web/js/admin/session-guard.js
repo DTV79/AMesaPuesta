@@ -1,6 +1,12 @@
 /* Sesión de administración: inactividad de 30 minutos y duración limitada a la pestaña/ventana. */
 (() => {
   "use strict";
+  // Todas las pantallas de administración comparten el favicon granate.
+  const favicon = document.createElement("link");
+  favicon.rel = "icon";
+  favicon.type = "image/svg+xml";
+  favicon.href = new URL("./favicon.svg", location.origin + "/admin/").href;
+  document.head.appendChild(favicon);
   const IDLE_MS = 30 * 60 * 1000;
   const SESSION_KEY = "amp_admin_session_started";
   const ACTIVITY_KEY = "amp_admin_last_activity";
