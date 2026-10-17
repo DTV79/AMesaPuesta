@@ -1187,3 +1187,10 @@ body.bote-modal-abierto{overflow:hidden}
  }
  body[data-page="encuestas"] #btnSubir svg{width:20px;height:20px}
 }
+
+/* El acceso Más y la flecha de encuestas usan la identidad granate. */
+#secciones{scroll-margin-top:calc(80px + env(safe-area-inset-top))}
+@media(max-width:700px){
+ body[data-page="encuestas"] #btnSubir,
+ body[data-page="encuestas"] #btnSubir:hover{background:#8b252f!important;color:#fff!important}
+}
