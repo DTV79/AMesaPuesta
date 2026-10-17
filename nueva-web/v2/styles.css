@@ -1082,3 +1082,19 @@ button {cursor:pointer}
 
 /* Tamaño uniforme de estrellas en las fichas de restaurantes */
 .history-card .rating.rating-restaurante{font-size:17px;line-height:1.35;letter-spacing:1px}
+
+/* Cabecera móvil: cofrades en una fila, administradores en dos. */
+.header-inner .admin-access[hidden]{display:none!important}
+@media(max-width:760px){
+  .site-header .header-inner{display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;column-gap:8px;row-gap:5px;padding-block:9px;min-height:0}
+  .site-header .header-inner .brand{flex:1 1 auto;min-width:0;gap:7px}
+  .site-header .header-inner .brand-mark{flex:0 0 39px}
+  .site-header .header-inner .brand-text{min-width:0;font-size:clamp(12px,3.4vw,16px)}
+  .site-header .header-inner .brand-text small{font-size:clamp(6px,1.65vw,9px);letter-spacing:.07em;white-space:nowrap}
+  .site-header .header-inner .cofrade-menu{flex:0 1 auto;min-width:0;max-width:40%;margin-left:auto}
+  .site-header .header-inner .cofrade-menu > button{max-width:100%;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-inline:2px!important;font-size:clamp(10px,2.8vw,12px)!important}
+  .site-header .header-inner.header-con-admin{flex-wrap:wrap}
+  .site-header .header-inner.header-con-admin .brand{flex:0 0 100%}
+  .site-header .header-inner.header-con-admin .cofrade-menu{max-width:65%;margin-left:0}
+  .site-header .header-inner.header-con-admin .admin-access{margin-left:auto}
+}
