@@ -1166,3 +1166,12 @@ html.bote-modal-abierto{overflow:hidden;overscroll-behavior:none}
 body.bote-modal-abierto{overflow:hidden}
 #dialog-bote[open]{overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;max-height:calc(100dvh - 24px)!important}
 @media(orientation:landscape) and (max-height:600px){#dialog-bote[open]{height:auto;max-height:calc(100dvh - 16px)!important;padding:14px 18px!important;margin:auto!important}}
+
+/* Separación clara entre restaurantes y botón subir uniforme en móviles. */
+@media(max-width:680px){
+ .history-grid{gap:26px}
+ .history-card{box-shadow:0 7px 19px rgba(63,35,25,.08);border:1px solid #dfcbbd}
+ .history-card:has(.history-details[open]){border-bottom:3px solid #9a6970}
+ .history-card .history-details[open]{padding-bottom:18px}
+ .scroll-top:not([hidden]){right:calc(16px + env(safe-area-inset-right));bottom:calc(90px + env(safe-area-inset-bottom));width:40px;height:40px;font-size:23px;z-index:991;opacity:.94}
+}
