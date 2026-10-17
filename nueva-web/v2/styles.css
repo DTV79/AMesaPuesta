@@ -1084,6 +1084,8 @@ button {cursor:pointer}
 .history-card .rating.rating-restaurante{font-size:17px;line-height:1.35;letter-spacing:1px}
 
 /* Cabecera móvil: cofrades en una fila, administradores en dos. */
+.site-header .header-inner .admin-access{display:none}
+.site-header .header-inner.header-con-admin .admin-access:not([hidden]){display:inline-flex}
 .header-inner .admin-access[hidden]{display:none!important}
 @media(max-width:760px){
   .site-header .header-inner{display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;column-gap:8px;row-gap:5px;padding-block:9px;min-height:0}
