@@ -1131,3 +1131,12 @@ button {cursor:pointer}
  .pizarra-acciones-economia{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
  .pizarra-acciones-economia .pizarra-mis-cuotas{width:100%;padding:11px 5px;font-size:clamp(10px,2.75vw,13px);line-height:1.2;white-space:normal;min-height:46px}
 }
+
+/* Accesos de portada y barra inferior móvil más ligera. */
+.quick-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:950px){.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){
+ .quick-grid .quick-item:last-child{grid-column:1/-1}
+ .mobile-nav{background:rgba(255,253,249,.82);border-color:rgba(224,209,197,.8);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+ .mobile-nav a[aria-current="page"]{background:rgba(248,234,226,.77)}
+}
