@@ -5,6 +5,7 @@ const guardarEncuesta=document.getElementById("guardarEncuesta");
 function actualizarModoReapertura(){
  const reabrir=estado.value==="reabrir";
  avisoReapertura.hidden=!reabrir;
+ document.getElementById("etiquetaCierre").textContent=reabrir?"Nueva fecha de cierre (obligatoria)":"Cierre (opcional)";
  guardarEncuesta.textContent=reabrir?"Confirmar reapertura":"Guardar encuesta";
  cierra.required=reabrir;
  if(reabrir && (!cierra.value || new Date(cierra.value)<=new Date()))cierra.value=inputDT(new Date(Date.now()+86400000));
