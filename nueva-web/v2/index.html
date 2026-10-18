@@ -100,47 +100,56 @@
     <a href="index.html#secciones"><span aria-hidden="true">☰</span>Más</a>
   </nav>
 <dialog id="dialog-bote" style="border:0;border-radius:20px;padding:26px;width:min(780px,calc(100% - 32px));max-height:85vh;overflow:auto;box-shadow:0 18px 70px #0006"><div class="bote-cabecera" style="display:flex;justify-content:space-between;align-items:center;gap:20px"><h2 style="margin:0;color:#571923">💰 Detalle del bote común</h2><button type="button" id="cerrar-detalle-bote" aria-label="Cerrar" title="Cerrar" style="border:0;background:#f4ede6;border-radius:50%;width:32px;height:32px;display:grid;place-items:center;font-size:20px;cursor:pointer">×</button></div><p>Ingresos, gastos y saldo de la cofradía por ejercicio.</p><div id="bote-tabla" style="overflow:auto">Cargando…</div><h3>🍽️ Gastos del bote por restaurante</h3><div id="bote-movimientos" style="overflow:auto"></div></dialog><script defer src="./detalle-bote.js"></script><script>
-/* Más: posicionar la cabecera Todo a mano incluso después de cargar imágenes y datos. */
+/* Navegación a Todo a mano: ceder siempre ante otra acción del usuario. */
 (() => {
   const destino = document.getElementById('secciones');
   const enlace = document.querySelector('.mobile-nav a[href="index.html#secciones"]');
   if (!destino || !enlace) return;
-  const ir = () => {
-    const cabecera = document.querySelector('.site-header');
-    const margen = (cabecera ? cabecera.getBoundingClientRect().height : 72) + 12;
-    const y = Math.max(0, destino.getBoundingClientRect().top + window.scrollY - margen);
-    window.scrollTo({top:y,behavior:'instant'});
+
+  let generacion = 0;
+  let pendientes = [];
+  const cancelar = () => {
+    ++generacion;
+    pendientes.forEach(clearTimeout);
+    pendientes = [];
   };
-  const estabilizar = () => {
-    ir();
-    // La portada y los restaurantes se rellenan de forma asíncrona.
-    // Corregir su desplazamiento mientras terminan de cambiar de altura.
-    const inicio = performance.now();
-    let ultimoTop = null;
-    let estable = 0;
-    const comprobar = () => {
-      const top = destino.getBoundingClientRect().top;
-      if (ultimoTop !== null && Math.abs(top - ultimoTop) < 1) estable++;
-      else estable = 0;
-      ultimoTop = top;
-      ir();
-      if (performance.now() - inicio < 2200 && estable < 5) requestAnimationFrame(comprobar);
-    };
-    requestAnimationFrame(comprobar);
-    setTimeout(ir, 400);
-    setTimeout(ir, 1200);
-    setTimeout(ir, 2400);
+  const situar = () => {
+    const altoCabecera = document.querySelector('.site-header')?.getBoundingClientRect().height || 72;
+    const y = Math.max(0, destino.getBoundingClientRect().top + window.scrollY - altoCabecera - 12);
+    window.scrollTo({top:y, behavior:'instant'});
   };
+  const irATodoAMano = () => {
+    cancelar();
+    const turno = generacion;
+    situar();
+    // El contenido previo puede cambiar de altura al cargar sus datos.
+    // Las correcciones solo siguen activas si el usuario no realiza otra acción.
+    for (const espera of [120, 350, 750, 1200, 1800]) {
+      pendientes.push(setTimeout(() => {
+        if (turno !== generacion || location.hash !== '#secciones') return;
+        situar();
+      }, espera));
+    }
+  };
+
+  // Si el usuario desliza, toca otra opción o pulsa Volver arriba,
+  // cancelar todos los ajustes pendientes de la navegación a Más.
+  for (const tipo of ['touchstart', 'pointerdown', 'wheel', 'keydown']) {
+    window.addEventListener(tipo, cancelar, {passive:true});
+  }
+  window.addEventListener('amp:cancelar-salto-mas', cancelar);
   enlace.addEventListener('click', event => {
     event.preventDefault();
-    if (location.hash !== '#secciones') history.replaceState(null, '', '#secciones');
-    estabilizar();
+    if (location.hash !== '#secciones') {
+      history.replaceState(history.state, '', location.pathname + location.search + '#secciones');
+    }
+    irATodoAMano();
   });
-  if (location.hash === '#secciones') {
-    if (document.readyState === 'complete') estabilizar();
-    else window.addEventListener('load', estabilizar, {once:true});
-    window.addEventListener('pageshow', estabilizar);
-  }
+
+  window.addEventListener('pageshow', () => {
+    if (location.hash === '#secciones') irATodoAMano();
+    else cancelar();
+  });
 })();
 </script>
 </body>
