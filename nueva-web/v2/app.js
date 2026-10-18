@@ -27,20 +27,13 @@ function fecha(iso, corto = false) {
     : {day:'numeric',month:'long',year:'numeric'}).format(date);
 }
 const STORAGE_FOTOS = SUPABASE_URL.replace(/\/$/,'') + '/storage/v1/object/public/comidas/';
-function fotosLegacy(m) {
-  return /^[a-zA-Z0-9_-]+$/.test(txt(m.carpeta_fotos)) && Number.isInteger(Number(m.numero_fotos)) && Number(m.numero_fotos)>0 && Number(m.numero_fotos)<=500;
-}
-function origenFotoLegacy(m,index) {
-  return 'https://raw.githubusercontent.com/DTV79/AMesaPuesta/53b6073bb0bab12113dc6a1ba52bc687ac39b9bc/docs/Fotos/' + encodeURIComponent(m.carpeta_fotos) + '/' + (index+1) + '.webp';
-}
 function urlFotoGuardada(ruta) {
   if(String(ruta).startsWith('https://')) return ruta;
   return STORAGE_FOTOS + String(ruta).split('/').map(encodeURIComponent).join('/');
 }
 function urlsFotos(m) {
-  const nuevas=(Array.isArray(m.fotos_nuevas)?m.fotos_nuevas:[]).filter(f=>f&&f.ruta).map(f=>urlFotoGuardada(f.ruta));
-  const historicas=fotosLegacy(m)?Array.from({length:Number(m.numero_fotos)},(_,i)=>origenFotoLegacy(m,i)):[];
-  return [...new Set([...nuevas,...historicas])];
+  const guardadas=(Array.isArray(m.fotos_nuevas)?m.fotos_nuevas:[]).filter(f=>f&&f.ruta).map(f=>urlFotoGuardada(f.ruta));
+  return [...new Set(guardadas)];
 }
 function fotosDisponibles(m) { return urlsFotos(m).length>0; }
 function origenFoto(m,index) { return urlsFotos(m)[index] || ''; }
