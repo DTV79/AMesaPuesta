@@ -150,7 +150,7 @@
     if (avisandoFormulario) return;
     avisandoFormulario = true;
     const campo = ev.target;
-    const etiqueta = campo.labels?.[0]?.textContent?.trim().replace(/\\s*[:*]+\\s*$/, "")
+    const etiqueta = campo.labels?.[0]?.textContent?.trim().replace(/\s*[:*]+\s*$/, "")
       || campo.getAttribute("aria-label") || "";
     const sufijo = etiqueta ? " «" + etiqueta + "»" : "";
     const v = campo.validity;
