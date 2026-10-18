@@ -61,7 +61,7 @@
 #fecha{width:100%;max-width:100%;display:block}
 
 /* Fechas compactas y adaptables en pantallas móviles */
-@media(max-width:760px){input[type="date"]:not(#fecha),input[type="datetime-local"]{width:min(100%,260px)!important;max-width:100%;display:block;box-sizing:border-box}#fecha{width:100%!important;max-width:100%;box-sizing:border-box}}
+@media(max-width:760px){input[type="date"],input[type="datetime-local"]{width:100%!important;max-width:100%;min-width:0;display:block;box-sizing:border-box}}
 </style><script defer src="../js/admin/dialogos.js"></script></head><body><main class="shell">
 <div class="top"><div><div class="brand">🍽️ Cofradía A Mesa Puesta</div><div class="muted">Administración</div></div></div>
 <div class="cuotas-heading"><div><h1 class="title"><span aria-hidden="true" style="font-size:.8em;margin-right:.35em">💶</span>Cuotas y cobros</h1><div class="muted">Control de cuotas, pagos y situación de los cofrades.</div></div><div class="cuota-actions"><button class="btn" id="registrarPago">+ Registrar pago</button><button class="btn" id="gestionarCuota">Gestionar cuota</button></div></div>
