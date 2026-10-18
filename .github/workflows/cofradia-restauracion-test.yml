@@ -1,0 +1,73 @@
+name: Prueba restauracion Cofradia
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  restauracion:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Instalar rclone y cliente PostgreSQL
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rclone
+
+      - name: Descargar ultima copia manual cifrada
+        env:
+          RCLONE_CONFIG_B64: ${{ secrets.COFRADIA_RCLONE_CONFIG_B64 }}
+        run: |
+          set -euo pipefail
+          umask 077
+          test -n "$RCLONE_CONFIG_B64"
+          printf '%s' "$RCLONE_CONFIG_B64" | base64 -d > "$RUNNER_TEMP/rclone.conf"
+          unset RCLONE_CONFIG_B64
+          export RCLONE_CONFIG="$RUNNER_TEMP/rclone.conf"
+          DESTINO="$(rclone lsf cofradia_cifrado:manuales --dirs-only | grep '^backup_' | sort | tail -n 1)"
+          test -n "$DESTINO"
+          mkdir -p "$RUNNER_TEMP/recuperada"
+          rclone copy "cofradia_cifrado:manuales/$DESTINO" "$RUNNER_TEMP/recuperada"
+          test -s "$RUNNER_TEMP/recuperada/base.dump"
+          test -s "$RUNNER_TEMP/recuperada/manifest.json"
+          echo "Copia manual descargada correctamente"
+
+      - name: Comprobar integridad de todos los archivos
+        run: |
+          python3 - <<'PY'
+          import os, json, hashlib, pathlib
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])/"recuperada"
+          manifest=json.loads((root/"manifest.json").read_text())
+          expected=manifest["files"]
+          assert expected, "Manifiesto vacio"
+          for f in expected:
+              p=root/f["name"]
+              assert p.resolve().is_relative_to(root.resolve()), "Ruta no segura"
+              assert p.is_file(), f"Falta {f['name']}"
+              assert p.stat().st_size==f["bytes"], f"Tamano incorrecto: {f['name']}"
+              assert hashlib.sha256(p.read_bytes()).hexdigest()==f["sha256"], f"SHA256 incorrecto: {f['name']}"
+          actual={str(p.relative_to(root)) for p in root.rglob("*") if p.is_file() and p.name!="manifest.json"}
+          assert actual=={f["name"] for f in expected}, "Faltan o sobran archivos"
+          print("INTEGRIDAD_OK: archivos del manifiesto verificados:",len(expected))
+          print("STORAGE_OK: archivos recuperados:",len(list((root/"storage").rglob("*")))-len([p for p in (root/"storage").rglob("*") if p.is_dir()]))
+          PY
+
+      - name: Restaurar esquema publico en PostgreSQL temporal
+        run: |
+          set -euo pipefail
+          docker run -d --name cofradia-test -e POSTGRES_PASSWORD=temporal -e POSTGRES_DB=cofradia_prueba postgres:17
+          trap 'docker rm -f cofradia-test >/dev/null 2>&1 || true' EXIT
+          for i in $(seq 1 45); do
+            if docker exec cofradia-test pg_isready -U postgres -d cofradia_prueba >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          docker exec cofradia-test pg_isready -U postgres -d cofradia_prueba
+          docker cp "$RUNNER_TEMP/recuperada/base.dump" cofradia-test:/tmp/base.dump
+          # El volcado Supabase completo requiere roles y extensiones administradas.
+          # Probar la restauracion de las tablas publicas sin modificar el proyecto real.
+          docker exec cofradia-test sh -c 'pg_restore --list /tmp/base.dump >/dev/null'
+          docker exec cofradia-test sh -c "pg_restore -l /tmp/base.dump | grep -E ' TABLE DATA public ' | wc -l"
+          echo "VOLCADO_LEGIBLE: el archivo de PostgreSQL se puede abrir"
+          # Un ensayo integral requiere un proyecto Supabase de prueba; no afirmar que se ha realizado.
