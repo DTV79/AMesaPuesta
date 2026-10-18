@@ -49,6 +49,12 @@
       .amp-nav.amp-open{display:flex}
       .amp-nav a{padding:12px 8px;border-top:1px solid #e9e0d8}
     }`;
+  if(admin) style.textContent += `
+    @media(max-width:700px){
+      .amp-header .amp-menu{display:flex;align-items:center;justify-content:center;text-decoration:none;color:#7e242d;font:700 13px Arial,sans-serif;white-space:nowrap;min-height:39px}
+      .amp-header .amp-nav{display:none!important}
+    }
+  `;
   style.textContent += `
     .amp-back-top{position:fixed;right:22px;bottom:24px;z-index:10020;border:0;border-radius:999px;background:#222;color:#fff;width:45px;height:45px;display:none;place-items:center;cursor:pointer;box-shadow:0 4px 16px #0003;font:700 24px Arial,sans-serif}
     .amp-back-top.visible{display:grid}
@@ -60,6 +66,15 @@
   header.className="amp-header";
   const current=location.pathname.split("/").pop()||"index.html";
   header.innerHTML='<div class="amp-header-inner"><a class="amp-identity" href="'+(admin?(base==="./"?"index.html":"admin/index.html"):"./index.html")+'"><img class="amp-emblem" src="https://dtv79.github.io/AMesaPuesta/Fotos/logo-cangrejo.png" alt="Escudo A Mesa Puesta"><span><span class="amp-name">A Mesa Puesta</span>'+(admin?'<span class="amp-subtitle" style="display:block">ZONA DE ADMINISTRACIÓN</span>':'')+'</span></a><button type="button" class="amp-menu" aria-label="Abrir menú" aria-expanded="false">☰ Menú</button><nav class="amp-nav" aria-label="Navegación principal">'+links.map(([name,url])=>'<a href="'+url+'"'+(url.split("/").pop()===current?' aria-current="page"':'')+'>'+name+'</a>').join("")+'</nav></div>';
+  if(admin){
+    const mobileHome=document.createElement("a");
+    mobileHome.className="amp-menu amp-admin-home";
+    mobileHome.href=base==="./"?"index.html":"admin/index.html";
+    mobileHome.textContent="⌂ Inicio";
+    mobileHome.setAttribute("aria-label","Ir al panel de administración");
+    const toggle=header.querySelector(".amp-menu");
+    toggle.replaceWith(mobileHome);
+  }
   document.body.prepend(header);
   const backTop=document.createElement("button");
   backTop.type="button";
