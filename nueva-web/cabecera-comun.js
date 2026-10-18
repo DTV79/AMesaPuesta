@@ -113,7 +113,8 @@
           location.href=base==="./"?"index.html":"admin/index.html";
         } catch(e) {
           cerrar.disabled=false;
-          alert("No se pudo cerrar la sesión. Inténtalo de nuevo.");
+          if (admin && window.AMPDialog) await window.AMPDialog.alert("No se pudo cerrar la sesión. Inténtalo de nuevo.");
+          else alert("No se pudo cerrar la sesión. Inténtalo de nuevo.");
         }
       });
     }
