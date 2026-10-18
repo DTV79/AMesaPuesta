@@ -54,7 +54,7 @@ jobs:
           print("STORAGE_OK: archivos recuperados:",len(list((root/"storage").rglob("*")))-len([p for p in (root/"storage").rglob("*") if p.is_dir()]))
           PY
 
-      - name: Restaurar esquema publico en PostgreSQL temporal
+      - name: Comprobar legibilidad del volcado PostgreSQL en entorno aislado
         run: |
           set -euo pipefail
           docker run -d --name cofradia-test -e POSTGRES_PASSWORD=temporal -e POSTGRES_DB=cofradia_prueba postgres:17
