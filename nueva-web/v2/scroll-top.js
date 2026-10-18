@@ -14,6 +14,11 @@
   };
 
   button.addEventListener("click", () => {
+    // La flecha tiene prioridad sobre correcciones de navegación a «Más».
+    window.dispatchEvent(new Event("amp:cancelar-salto-mas"));
+    if (window.location.hash === "#secciones") {
+      history.replaceState(history.state, "", location.pathname + location.search);
+    }
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
   });
