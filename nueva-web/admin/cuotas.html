@@ -27,6 +27,18 @@
 #balance-ejercicios-panel tfoot tr,.tesoreria-tabla table:has(#tes-comidas) tfoot tr{display:flex;flex-wrap:wrap;gap:10px}
 #balance-ejercicios-panel tfoot th,.tesoreria-tabla table:has(#tes-comidas) tfoot th{border:0;padding:4px;font-size:12px;white-space:normal;overflow-wrap:anywhere}
 }
+
+/* Ajustes de alineación del resumen y cobros en móvil */
+@media(max-width:760px){
+.tesoreria-cards .card{display:flex;flex-direction:column;min-width:0}
+.tesoreria-cards .card>.muted{min-height:2.7em;line-height:1.35}
+.tesoreria-cards .card>.kpi{margin-top:8px;align-self:flex-start;font-size:clamp(12px,3.2vw,18px);letter-spacing:-.035em;white-space:nowrap}
+.tesoreria-detalles .tesoreria-tabla:has(#tes-cofrades){overflow-x:visible;width:100%}
+.tesoreria-detalles table:has(#tes-cofrades){min-width:0;width:100%;table-layout:fixed}
+.tesoreria-detalles table:has(#tes-cofrades) th:first-child,.tesoreria-detalles table:has(#tes-cofrades) td:first-child{width:60%;overflow-wrap:anywhere}
+.tesoreria-detalles table:has(#tes-cofrades) th:last-child,.tesoreria-detalles table:has(#tes-cofrades) td:last-child{width:40%;text-align:right;white-space:nowrap;font-size:clamp(12px,3.4vw,15px)}
+.tesoreria-detalles table:has(#tes-cofrades) th,.tesoreria-detalles table:has(#tes-cofrades) td{padding:12px 4px}
+}
 </style><script defer src="../js/admin/dialogos.js"></script></head><body><main class="shell">
 <div class="top"><div><div class="brand">🍽️ Cofradía A Mesa Puesta</div><div class="muted">Administración</div></div></div>
 <div class="cuotas-heading"><div><h1 class="title"><span aria-hidden="true" style="font-size:.8em;margin-right:.35em">💶</span>Cuotas y cobros</h1><div class="muted">Control de cuotas, pagos y situación de los cofrades.</div></div><div class="cuota-actions"><button class="btn" id="registrarPago">+ Registrar pago</button><button class="btn" id="gestionarCuota">Gestionar cuota</button></div></div>
