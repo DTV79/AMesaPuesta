@@ -1194,3 +1194,14 @@ body.bote-modal-abierto{overflow:hidden}
  body[data-page="encuestas"] #btnSubir,
  body[data-page="encuestas"] #btnSubir:hover{background:#8b252f!important;color:#fff!important}
 }
+
+/* Estatutos móvil: sello decorativo en marca de agua junto al título. */
+@media(max-width:680px){
+ .statutes-hero{position:relative;display:block;min-height:0;padding:24px 20px 27px}
+ .statutes-hero-copy{position:relative;z-index:2}
+ .statutes-hero h1{position:relative;z-index:2;margin:14px 0 19px;font-size:clamp(38px,9.6vw,51px);max-width:100%}
+ .statutes-seal-wrap{position:absolute;right:15px;top:67px;width:108px;height:108px;min-height:0;pointer-events:none;z-index:1;opacity:.27}
+ .statutes-seal{width:92px;height:92px;outline-offset:3px;border-width:2px;box-shadow:none;background:transparent}
+ .statutes-seal-letters{font-size:28px;margin-top:-6px}
+ .statutes-seal-since{font-size:5px;bottom:14px;letter-spacing:.08em}
+}
