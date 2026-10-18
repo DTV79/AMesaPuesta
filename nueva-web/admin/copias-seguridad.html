@@ -30,10 +30,6 @@ p{color:#625f5a;line-height:1.55;margin:9px 0 0}
 .summary-label{font-size:12px;color:#77716a;font-weight:700}
 .summary-value{display:block;margin-top:6px;font-size:20px;font-weight:900;letter-spacing:-.3px;line-height:1.2}
 .summary-sub{font-size:12px;color:#787169;margin-top:5px;line-height:1.4}
-.notice{border:1px solid #ecd7ad;background:#fffaf0;border-radius:15px;padding:18px 20px;display:flex;gap:12px;margin-top:16px}
-.notice-icon{font-size:23px;flex:none;line-height:1.2}
-.notice strong{font-size:14px;color:#624817}
-.notice p{font-size:13px;color:#705932;line-height:1.48;margin-top:4px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:16px}
 .card-heading{display:flex;justify-content:space-between;align-items:start;gap:8px}
 .small{font-size:13px;color:#77716a}
@@ -70,7 +66,6 @@ main{padding:14px 14px 64px}
 .hero-summary{grid-template-columns:1fr 1fr;row-gap:20px}
 .hero-summary>div:last-child{grid-column:span 2}
 .summary-value{font-size:18px}
-.notice{padding:15px}
 }
 /* Historial legible como tarjetas en móvil; tabla original en escritorio */
 @media(max-width:720px){
@@ -102,7 +97,7 @@ main{padding:14px 14px 64px}
 <p>Respaldo cifrado de la base de datos, fotografías y documentos de la Cofradía. Gestionado con Supabase, GitHub Actions y Google Drive.</p>
 <div class="status-line">
 <span id="estado" class="pill wait"><span class="dot"></span> Consultando GitHub…</span>
-<span class="pill warn">Autorización Google pendiente de revisión</span>
+
 </div>
 <div class="hero-summary" aria-live="polite">
 <div><span class="summary-label">Última ejecución correcta</span><strong class="summary-value" id="ultimaFecha">Consultando…</strong><div class="summary-sub" id="ultimaDetalle">Comprobando el historial de GitHub</div></div>
@@ -110,12 +105,7 @@ main{padding:14px 14px 64px}
 <div><span class="summary-label">Ubicación de las copias</span><strong class="summary-value">Google Drive</strong><div class="summary-sub">Contenido y nombres cifrados con rclone</div></div>
 </div>
 </section>
-<section class="notice" role="note">
-<span class="notice-icon" aria-hidden="true">⚠️</span>
-<div><strong>Revisión pendiente: autorización de Google</strong>
-<p>Las copias ya se han ejecutado correctamente, pero la aplicación OAuth de Google sigue en modo «Prueba». Su autorización puede caducar aproximadamente a los 7 días. El historial permite detectar errores, pero hasta resolverlo no debe considerarse garantizada la continuidad a largo plazo.</p>
-</div>
-</section>
+
 <div class="grid">
 <section class="card" aria-labelledby="automatizadas">
 <div class="card-heading"><h2 id="automatizadas">🔄 Copias automáticas</h2><span class="pill ok">Programadas</span></div>
