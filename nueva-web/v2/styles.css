@@ -1230,3 +1230,31 @@ body.bote-modal-abierto{overflow:hidden}
  .statutes-hero .statutes-seal-wrap{position:absolute;top:55px;right:13px;width:82px;height:82px;opacity:.38;z-index:1;pointer-events:none}
  .statutes-hero .statutes-seal{width:74px;height:74px}
 }
+
+/* Navegación inferior: más cerca del borde y compacta al bajar (solo móvil). */
+@media(max-width:680px){
+ .mobile-nav{
+  bottom:max(4px,calc(env(safe-area-inset-bottom, 0px) - 10px));
+  left:6px;
+  right:6px;
+  min-height:62px;
+  transition:min-height .2s ease,left .2s ease,right .2s ease,border-radius .2s ease;
+ }
+ .mobile-nav a{min-height:46px;transition:font-size .2s ease,gap .2s ease}
+ .mobile-nav a span{transition:font-size .2s ease}
+ .mobile-nav.mobile-nav-compact{
+  min-height:48px;
+  left:18px;
+  right:18px;
+  border-radius:14px;
+ }
+ .mobile-nav.mobile-nav-compact a{
+  gap:2px;
+  font-size:9px;
+  min-height:46px;
+ }
+ .mobile-nav.mobile-nav-compact a span{font-size:18px}
+}
+@media(prefers-reduced-motion:reduce){
+ .mobile-nav,.mobile-nav a,.mobile-nav a span{transition:none!important}
+}
