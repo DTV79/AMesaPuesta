@@ -55,6 +55,14 @@
       .amp-header .amp-nav{display:none!important}
     }
   `;
+  if(admin) style.textContent += `
+    /* En teléfonos el teclado nativo ya permite insertar emojis.
+       Se conserva el selector en tablet y ordenador. */
+    @media (max-width:600px) and (pointer:coarse) {
+      button.emoji-btn, button.emoji[data-target], button[data-target][aria-label*="emoticono" i] {display:none!important}
+      .emoji-picker, .emojiBox, .selector-emoji-completo {display:none!important}
+    }
+  `;
   style.textContent += `
     .amp-back-top{position:fixed;right:22px;bottom:24px;z-index:10020;border:0;border-radius:999px;background:#222;color:#fff;width:45px;height:45px;display:none;place-items:center;cursor:pointer;box-shadow:0 4px 16px #0003;font:700 24px Arial,sans-serif}
     .amp-back-top.visible{display:grid}
