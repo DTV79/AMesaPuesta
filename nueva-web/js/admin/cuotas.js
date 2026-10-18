@@ -87,7 +87,7 @@ $("#cerrar").onclick=()=>$("#drawer").classList.remove("open");
 $("#pagoForm").onsubmit=async e=>{
  e.preventDefault();const importe=Number($("#importe").value);
  const {error}=await supabase.rpc("registrar_pago_cuota_admin",{p_cofrade:$("#cofradeId").value,p_cuota:$("#cuotaId").value,p_importe:importe,p_fecha:$("#fecha").value,p_metodo:$("#metodo").value,p_referencia:$("#referencia").value.trim()});
- if(error)return alert(error.message);$("#okPago").style.display="block";await cargar();setTimeout(()=>$("#drawer").classList.remove("open"),500);
+ if(error)return AMPDialog.alert(error.message);$("#okPago").style.display="block";await cargar();setTimeout(()=>$("#drawer").classList.remove("open"),500);
 };
 let selectorPendientes=[],selectorElegido=null;
 const selector=$("#selectorCofrade"),busqueda=$("#buscarCofrade"),lista=$("#listaCofradesPago"),aceptar=$("#aceptarSelector");
@@ -111,7 +111,7 @@ function pintarSelector(){
 }
 $("#registrarPago").onclick=()=>{
  selectorPendientes=filas.filter(r=>Number(r.pendiente)>0);
- if(!selectorPendientes.length){alert("No hay cuotas pendientes.");return;}
+ if(!selectorPendientes.length){AMPDialog.alert("No hay cuotas pendientes.");return;}
  selectorElegido=null;busqueda.value="";pintarSelector();selector.classList.add("open");busqueda.focus();
 };
 busqueda.addEventListener("input",()=>{selectorElegido=null;pintarSelector();});
@@ -138,10 +138,10 @@ function borrarCuota(q){if(!q)return;cuotaPendienteEliminar=q;$("#confirmCuotaTe
 $("#cancelarEliminarCuota").onclick=cerrarConfirmCuota;
 $("#confirmEliminarCuota").addEventListener("click",e=>{if(e.target.id==="confirmEliminarCuota")cerrarConfirmCuota()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#confirmEliminarCuota").classList.contains("open"))cerrarConfirmCuota()});
-$("#aceptarEliminarCuota").onclick=async()=>{const q=cuotaPendienteEliminar;if(!q)return;const boton=$("#aceptarEliminarCuota");boton.disabled=true;try{const {error}=await supabase.rpc("eliminar_cuota_admin",{p_id:q.id});if(error){alert(error.message);return}cerrarConfirmCuota();await cargar()}finally{boton.disabled=false}};
+$("#aceptarEliminarCuota").onclick=async()=>{const q=cuotaPendienteEliminar;if(!q)return;const boton=$("#aceptarEliminarCuota");boton.disabled=true;try{const {error}=await supabase.rpc("eliminar_cuota_admin",{p_id:q.id});if(error){AMPDialog.alert(error.message);return}cerrarConfirmCuota();await cargar()}finally{boton.disabled=false}};
 $("#gestionarCuota").onclick=()=>{cuotaEnEdicion=null;$("#cuotaDrawer").querySelector("h2").textContent="Nueva cuota";$("#cuotaForm button[type=submit]").textContent="Crear y asignar cuota";$("#qAsignar").closest(".field").style.display="block";const y=new Date().getFullYear()+1;$("#qEjercicio").value=y;$("#qConcepto").value="Cuota anual "+y;$("#qEmision").value=hoy();$("#qVencimiento").value="";$("#qObs").value="";$("#qAsignar").value="todos";$("#qCofrades").style.display="none";$("#qMsg").style.display="none";$("#cuotaDrawer").classList.add("open")};
 $("#cerrarCuota").onclick=()=>$("#cuotaDrawer").classList.remove("open");
 $("#qAsignar").onchange=()=>{$("#qCofrades").style.display=$("#qAsignar").value==="seleccion"?"block":"none";$("#qCofrades").innerHTML=filas.map((r,i)=>'<label style="display:block;padding:6px"><input type="checkbox" class="qSel" value="'+r.cofrade_id+'" '+(i===0?"checked":"")+'> '+r.nombre+'</label>').join("")};
-$("#cuotaForm").onsubmit=async e=>{e.preventDefault();const seleccion=$("#qAsignar").value==="seleccion"?[...document.querySelectorAll(".qSel:checked")].map(x=>x.value):null;if(seleccion&&!seleccion.length)return alert("Selecciona al menos un cofrade.");const {error}=await supabase.rpc(cuotaEnEdicion?"editar_cuota_admin":"crear_cuota_admin",{...(cuotaEnEdicion?{p_id:cuotaEnEdicion}:{}),p_ejercicio:Number($("#qEjercicio").value),p_concepto:$("#qConcepto").value.trim(),p_tipo:$("#qTipo").value,p_importe:Number($("#qImporte").value),p_emision:$("#qEmision").value,p_vencimiento:$("#qVencimiento").value||null,p_observaciones:$("#qObs").value.trim(),...(cuotaEnEdicion?{}:{p_cofrades:seleccion})});if(error)return alert(error.message);$("#qMsg").textContent="✓ Cuota guardada correctamente.";$("#qMsg").style.display="block";await cargar();setTimeout(()=>$("#cuotaDrawer").classList.remove("open"),600)};
+$("#cuotaForm").onsubmit=async e=>{e.preventDefault();const seleccion=$("#qAsignar").value==="seleccion"?[...document.querySelectorAll(".qSel:checked")].map(x=>x.value):null;if(seleccion&&!seleccion.length)return AMPDialog.alert("Selecciona al menos un cofrade.");const {error}=await supabase.rpc(cuotaEnEdicion?"editar_cuota_admin":"crear_cuota_admin",{...(cuotaEnEdicion?{p_id:cuotaEnEdicion}:{}),p_ejercicio:Number($("#qEjercicio").value),p_concepto:$("#qConcepto").value.trim(),p_tipo:$("#qTipo").value,p_importe:Number($("#qImporte").value),p_emision:$("#qEmision").value,p_vencimiento:$("#qVencimiento").value||null,p_observaciones:$("#qObs").value.trim(),...(cuotaEnEdicion?{}:{p_cofrades:seleccion})});if(error)return AMPDialog.alert(error.message);$("#qMsg").textContent="✓ Cuota guardada correctamente.";$("#qMsg").style.display="block";await cargar();setTimeout(()=>$("#cuotaDrawer").classList.remove("open"),600)};
 document.querySelectorAll("[data-filtro-cuotas]").forEach(b=>b.addEventListener("click",()=>{filtroCuotas=b.dataset.filtroCuotas;filtrarCuotas()}));
 (async()=>{try{if(await guard())await cargar()}catch(err){console.error("Error cargando cuotas:",err);$("#tbody").textContent="No se pudieron cargar las cuotas: "+(err.message||"Error de consulta");}})();
