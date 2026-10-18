@@ -45,6 +45,19 @@
 .tesoreria-detalles table:has(#tes-cofrades) th:last-child,.tesoreria-detalles table:has(#tes-cofrades) td:last-child{width:40%;text-align:right;white-space:nowrap;font-size:clamp(12px,3.4vw,15px)}
 .tesoreria-detalles table:has(#tes-cofrades) th,.tesoreria-detalles table:has(#tes-cofrades) td{padding:12px 4px}
 }
+
+/* Estado y acciones legibles en tablas de cuotas móviles */
+@media(max-width:760px){
+.panel table:has(#tbody){table-layout:fixed;width:100%;font-size:clamp(11px,3.1vw,14px)}
+.panel table:has(#tbody) th,.panel table:has(#tbody) td{padding:12px 4px;vertical-align:middle}
+.panel table:has(#tbody) th:nth-child(1){width:26%}
+.panel table:has(#tbody) th:nth-child(2){width:29%}
+.panel table:has(#tbody) th:nth-child(5){width:23%}
+.panel table:has(#tbody) th:nth-child(6){width:22%}
+.panel table:has(#tbody) .pill{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;padding:5px 6px;font-size:clamp(10px,2.65vw,12px)}
+.panel table:has(#tbody) td.action{white-space:nowrap;text-decoration:underline;text-underline-offset:3px;font-size:clamp(11px,3vw,14px)}
+.panel table:has(#tbody) td:nth-child(5) strong{white-space:nowrap}
+}
 </style><script defer src="../js/admin/dialogos.js"></script></head><body><main class="shell">
 <div class="top"><div><div class="brand">🍽️ Cofradía A Mesa Puesta</div><div class="muted">Administración</div></div></div>
 <div class="cuotas-heading"><div><h1 class="title"><span aria-hidden="true" style="font-size:.8em;margin-right:.35em">💶</span>Cuotas y cobros</h1><div class="muted">Control de cuotas, pagos y situación de los cofrades.</div></div><div class="cuota-actions"><button class="btn" id="registrarPago">+ Registrar pago</button><button class="btn" id="gestionarCuota">Gestionar cuota</button></div></div>
