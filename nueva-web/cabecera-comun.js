@@ -70,7 +70,7 @@
     const mobileHome=document.createElement("a");
     mobileHome.className="amp-menu amp-admin-home";
     mobileHome.href=base==="./"?"index.html":"admin/index.html";
-    mobileHome.textContent="⌂ Inicio";
+    mobileHome.textContent="☰ Menú";
     mobileHome.setAttribute("aria-label","Ir al panel de administración");
     const toggle=header.querySelector(".amp-menu");
     toggle.replaceWith(mobileHome);
