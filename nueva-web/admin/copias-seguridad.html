@@ -72,6 +72,25 @@ main{padding:14px 14px 64px}
 .summary-value{font-size:18px}
 .notice{padding:15px}
 }
+/* Historial legible como tarjetas en móvil; tabla original en escritorio */
+@media(max-width:720px){
+.history .table-wrap{overflow:visible;min-width:0}
+.history table,.history tbody{display:block;width:100%;min-width:0}
+.history thead{display:none}
+.history tbody{display:grid;gap:12px}
+.history tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;background:#fff;border:1px solid #e9e1d7;border-radius:13px;padding:15px;min-width:0}
+.history tbody td{display:block;border:0;padding:0;min-width:0;overflow-wrap:anywhere}
+.history tbody td::before{display:block;font-size:11px;font-weight:800;color:#77716a;margin-bottom:5px}
+.history tbody td:nth-child(1){grid-column:1/-1;font-weight:800}
+.history tbody td:nth-child(1)::before{content:"Fecha y hora (España)"}
+.history tbody td:nth-child(2)::before{content:"Tipo"}
+.history tbody td:nth-child(3)::before{content:"Resultado"}
+.history tbody td:nth-child(4){grid-column:1/-1}
+.history tbody td:nth-child(4)::before{content:"Detalle"}
+.history tbody td[colspan]{grid-column:1/-1}
+.history tbody td[colspan]::before{display:none}
+.history tbody td a{display:inline-block;white-space:normal;text-decoration:underline;text-underline-offset:3px}
+}
 @media(max-width:375px){.hero-summary{grid-template-columns:1fr}.hero-summary>div:last-child{grid-column:auto}}
 </style>
 <script defer src="../js/admin/dialogos.js"></script></head>
