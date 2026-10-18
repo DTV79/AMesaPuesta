@@ -70,4 +70,13 @@ jobs:
           docker exec cofradia-test sh -c 'pg_restore --list /tmp/base.dump >/dev/null'
           docker exec cofradia-test sh -c "pg_restore -l /tmp/base.dump | grep -E ' TABLE DATA public ' | wc -l"
           echo "VOLCADO_LEGIBLE: el archivo de PostgreSQL se puede abrir"
+          # Restaurar realmente una tabla con datos en PostgreSQL aislado.
+          # Se elige cofrades porque su estructura no depende de tipos personalizados.
+          docker exec cofradia-test pg_restore -U postgres -d cofradia_prueba --no-owner --no-acl --section=pre-data --table=cofrades /tmp/base.dump
+          docker exec cofradia-test pg_restore -U postgres -d cofradia_prueba --no-owner --no-acl --data-only --table=cofrades /tmp/base.dump
+          RESTAURADOS="$(docker exec cofradia-test psql -U postgres -d cofradia_prueba -Atc 'select count(*) from public.cofrades')"
+          test "$RESTAURADOS" -gt 0
+          echo "RESTAURACION_TABLA_OK: cofrades recuperados: $RESTAURADOS"
+          # No es una restauracion integral de todas las tablas y funciones de Supabase.
+
           # Un ensayo integral requiere un proyecto Supabase de prueba; no afirmar que se ha realizado.
