@@ -64,6 +64,14 @@ jobs:
             sleep 1
           done
           docker exec cofradia-test pg_isready -U postgres -d cofradia_prueba
+          # La inicializacion inicial de postgres:17 hace un reinicio interno;
+          # pg_isready puede responder antes de ese reinicio.
+          sleep 5
+          for i in $(seq 1 30); do
+            if docker exec cofradia-test psql -U postgres -d cofradia_prueba -Atc 'select 1' >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          docker exec cofradia-test psql -U postgres -d cofradia_prueba -Atc 'select 1'
           docker cp "$RUNNER_TEMP/recuperada/base.dump" cofradia-test:/tmp/base.dump
           # El volcado Supabase completo requiere roles y extensiones administradas.
           # Probar la restauracion de las tablas publicas sin modificar el proyecto real.
