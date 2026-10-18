@@ -1205,3 +1205,19 @@ body.bote-modal-abierto{overflow:hidden}
  .statutes-seal-letters{font-size:28px;margin-top:-6px}
  .statutes-seal-since{font-size:5px;bottom:14px;letter-spacing:.08em}
 }
+
+/* Estatutos: título y sello lado a lado, legibles en móvil. */
+@media(max-width:680px){
+ .statutes-hero{display:grid;grid-template-columns:minmax(0,1fr) 84px;gap:0 9px;align-items:center;padding:24px 18px 27px}
+ .statutes-hero-copy{display:contents}
+ .statutes-hero-copy>.eyebrow{grid-column:1/-1;grid-row:1;margin-bottom:8px}
+ .statutes-hero h1{grid-column:1;grid-row:2;min-width:0;max-width:100%;margin:8px 0 17px;font-size:clamp(30px,7.7vw,40px);line-height:1.08;letter-spacing:-.05em}
+ .statutes-hero .statutes-seal-wrap{position:relative;grid-column:2;grid-row:2;top:auto;right:auto;justify-self:center;align-self:center;width:80px;height:80px;min-height:0;opacity:1;z-index:1;pointer-events:none}
+ .statutes-hero .statutes-seal{width:74px;height:74px;border:2px double #aa796b;outline:1px solid #c7a79a;outline-offset:3px;background:rgba(255,255,255,.22);box-shadow:none}
+ .statutes-hero .statutes-seal img{opacity:.72;filter:none}
+ .statutes-hero .statutes-seal-letters{font-size:23px;margin-top:-5px;color:#6a2630}
+ .statutes-hero .statutes-seal-since{bottom:9px;font-size:4.5px;letter-spacing:.06em}
+ .statutes-hero-copy>p:not(.eyebrow){grid-column:1/-1;grid-row:3}
+ .statutes-hero .statutes-meta{grid-column:1/-1;grid-row:4}
+ .statutes-hero .statutes-actions{grid-column:1/-1;grid-row:5}
+}
