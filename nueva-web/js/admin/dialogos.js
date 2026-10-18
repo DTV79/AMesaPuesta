@@ -140,4 +140,28 @@
     prompt: (mensaje, valorInicial = "", opciones = {}) =>
       mostrar({tipo:"prompt", mensaje, opciones:{...opciones, valorInicial}})
   });
+
+  // Validación nativa de formularios (required, formato, límites):
+  // evitar los globos del navegador y mostrar un aviso uniforme.
+  let avisandoFormulario = false;
+  document.addEventListener("invalid", ev => {
+    if (!(ev.target instanceof HTMLElement)) return;
+    ev.preventDefault();
+    if (avisandoFormulario) return;
+    avisandoFormulario = true;
+    const campo = ev.target;
+    const etiqueta = campo.labels?.[0]?.textContent?.trim().replace(/\\s*[:*]+\\s*$/, "")
+      || campo.getAttribute("aria-label") || "";
+    const sufijo = etiqueta ? " «" + etiqueta + "»" : "";
+    const v = campo.validity;
+    const mensaje = v?.valueMissing ? "Completa el campo" + sufijo + " antes de continuar."
+      : v?.typeMismatch ? "Comprueba el formato del campo" + sufijo + "."
+      : v?.rangeUnderflow || v?.rangeOverflow ? "El valor del campo" + sufijo + " está fuera del intervalo permitido."
+      : v?.tooLong || v?.tooShort ? "Comprueba la longitud del campo" + sufijo + "."
+      : "Revisa el valor indicado en el campo" + sufijo + ".";
+    window.AMPDialog.alert(mensaje, {titulo:"Revisa el formulario"}).finally(() => {
+      avisandoFormulario = false;
+      if (campo.isConnected) campo.focus();
+    });
+  }, true);
 })();
