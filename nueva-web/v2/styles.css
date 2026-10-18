@@ -1227,6 +1227,6 @@ body.bote-modal-abierto{overflow:hidden}
  .statutes-hero{display:block;position:relative}
  .statutes-hero-copy{display:block;position:relative;z-index:2}
  .statutes-hero h1{display:block;position:relative;z-index:2;font-size:clamp(40px,10.2vw,54px);line-height:1.03;max-width:100%;margin:15px 0 19px;letter-spacing:-.055em}
- .statutes-hero .statutes-seal-wrap{position:absolute;top:90px;right:13px;width:82px;height:82px;opacity:.43;z-index:1;pointer-events:none}
+ .statutes-hero .statutes-seal-wrap{position:absolute;top:55px;right:13px;width:82px;height:82px;opacity:.38;z-index:1;pointer-events:none}
  .statutes-hero .statutes-seal{width:74px;height:74px}
 }
