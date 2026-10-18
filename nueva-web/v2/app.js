@@ -86,7 +86,7 @@ async function consultarHistorial() {
     if (!res.ok) throw new Error('HTTP '+res.status);
     const list=await res.json();
     if(!Array.isArray(list)) throw new Error('Formato no válido');
-    return list.filter(x=>x&&x.codigo&&x.fecha&&x.restaurante);
+    // El historial público muestra únicamente comidas celebradas.\n    // Las programadas siguen disponibles en Mi Pizarra del cofrade.\n    return list.filter(x=>x&&x.codigo&&x.fecha&&x.restaurante&& !esProxima(x));
   } finally {clearTimeout(timer);}
 }
 function resumenCard(m) {
