@@ -5,7 +5,7 @@
   const favicon = document.createElement("link");
   favicon.rel = "icon";
   favicon.type = "image/svg+xml";
-  favicon.href = new URL("./favicon.svg", location.origin + "/admin/").href;
+  favicon.href = new URL("./favicon.svg", location.href).href;
   document.head.appendChild(favicon);
   const IDLE_MS = 30 * 60 * 1000;
   const SESSION_KEY = "amp_admin_session_started";
