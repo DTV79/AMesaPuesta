@@ -1,6 +1,6 @@
 /* Cabecera estable y actualización por gesto para la web instalada en iOS y Android. */
 (() => {
-  const header = document.querySelector('.site-header') || document.querySelector('.top');
+  const header = document.querySelector('.amp-header') || document.querySelector('.site-header');
   if (!header) return;
   const mobile = matchMedia('(max-width: 760px)');
   const spacer = document.createElement('div');
