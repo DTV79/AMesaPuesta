@@ -19,7 +19,7 @@
       spacer.style.display = 'none';
       return;
     }
-    spacer.style.display = 'block';
+    spacer.style.display = header.classList.contains('amp-header') ? 'none' : 'block';
     spacer.style.height = header.getBoundingClientRect().height + 'px';
     Object.assign(header.style, {position:'fixed',top:'0',left:'0',right:'0',width:'100%',zIndex:'1100'});
   };
