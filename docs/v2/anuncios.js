@@ -1,6 +1,5 @@
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "./config.js";
-// Tablón V2: mantiene el mismo origen de anuncios que la web actual.
-// Hasta disponer de la administración, Google Sheets sigue actualizando https://dtv79.github.io/AMesaPuesta/anuncios.json.
+// Tablón V2: consulta los anuncios públicos directamente desde Supabase.
 // Solo se muestran avisos visibles, ya publicados y no caducados.
 const input = document.getElementById("board-search");
 const typeFilter = document.getElementById("board-type");
