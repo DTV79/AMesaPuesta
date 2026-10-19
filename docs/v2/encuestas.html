@@ -1206,9 +1206,9 @@
     body[data-page="encuestas"] .poll-stat strong {display:block; color:#29201e; font:700 1.9rem Georgia,serif; line-height:1.1;}
     body[data-page="encuestas"] .poll-stat span {font-size:.83rem; color:#756b65;}
     body[data-page="encuestas"] .poll-guide > strong {display:block; font-size:.92rem; color:#29201e; margin-bottom:8px;}
-    body[data-page="encuestas"] .poll-guide-items {display:flex; flex-wrap:wrap; align-items:center; column-gap:16px; row-gap:6px;}
-    body[data-page="encuestas"] .poll-guide-item {display:inline-flex; align-items:baseline; gap:4px; white-space:nowrap; background:none; border:0; padding:0;}
-    body[data-page="encuestas"] .poll-guide-item + .poll-guide-item::before {content:"·"; color:#b19a8c; margin-right:10px;}
+    body[data-page="encuestas"] .poll-guide-items {display:flex; flex-direction:column; align-items:stretch; gap:7px;}
+    body[data-page="encuestas"] .poll-guide-item {display:flex; align-items:baseline; gap:5px; white-space:normal; background:none; border:0; padding:0; font-size:.83rem;}
+    body[data-page="encuestas"] .poll-guide-item::before {content:"•"; color:#8b252f; margin-right:4px; flex-shrink:0;}
     body[data-page="encuestas"] .poll-guide-item b {color:#8b252f; font-size:.83rem;}
     body[data-page="encuestas"] .poll-guide-item span {color:#5e5049; font-size:.83rem; line-height:1.4;}
     body[data-page="encuestas"] .main {padding-top:12px;}
@@ -1226,7 +1226,7 @@
       body[data-page="encuestas"] .poll-intro h1 {font-size:clamp(40px,10vw,54px);}
       body[data-page="encuestas"] .poll-intro p {font-size:13px;}
       body[data-page="encuestas"] .poll-summary-bar {grid-template-columns:1fr;}
-      body[data-page="encuestas"] .poll-guide-item {white-space:normal;}
+      body[data-page="encuestas"] .poll-guide-item {font-size:clamp(11px,2.9vw,13px); gap:4px;}\n      body[data-page="encuestas"] .poll-guide-item b, body[data-page="encuestas"] .poll-guide-item span {font-size:inherit;}
       body[data-page="encuestas"] .grid.active {grid-template-columns:1fr;}
     }
   </style>
@@ -1267,9 +1267,9 @@
     <div class="poll-guide">
       <strong>Tipos de encuestas</strong>
       <div class="poll-guide-items">
-        <div class="poll-guide-item"><b>Pública</b><span>Se ve quién vota cada opción.</span></div>
-        <div class="poll-guide-item"><b>Secreta</b><span>Solo se muestra el resultado final.</span></div>
-        <div class="poll-guide-item"><b>Participación</b><span>Se ve quién votó, pero no qué eligió.</span></div>
+        <div class="poll-guide-item"><b>Pública:</b><span>Se ve quién vota cada opción.</span></div>
+        <div class="poll-guide-item"><b>Secreta:</b><span>Solo se muestra el resultado final.</span></div>
+        <div class="poll-guide-item"><b>Participación:</b><span>Se ve quién votó, no qué eligió.</span></div>
       </div>
     </div>
   </div>
