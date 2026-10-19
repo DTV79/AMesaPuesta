@@ -54,12 +54,12 @@
        distribuir botones sin desbordamiento en móviles estrechos. */
     @media(max-width:700px){
       .amp-header-inner{display:flex;flex-wrap:wrap;justify-content:flex-end;column-gap:8px;row-gap:6px;padding:9px 10px}
-      .amp-header .amp-identity{margin-left:0;flex:1 1 auto;min-width:175px;gap:8px}
+      .amp-header .amp-identity{margin-left:0;flex:1 1 auto;min-width:0;gap:8px}
       .amp-header .amp-emblem{width:40px;height:40px;flex-shrink:0}
       .amp-header .amp-name{font-size:19px}
       .amp-header .amp-subtitle{font-size:10px;letter-spacing:1.5px}
-      .amp-header .amp-admin-home{flex:0 0 auto}
-      .amp-header .logout{margin-left:0!important;font-size:11px!important}
+      .amp-header .amp-admin-home{flex:0 0 auto;padding:9px 8px;font-size:13px}
+      .amp-header .logout{margin-left:0!important;font-size:11px!important;padding:9px 8px!important}
     }
   `;
   if(admin) style.textContent += `
@@ -136,7 +136,7 @@
     const cerrar = logout || document.createElement("button");
     cerrar.type="button";
     cerrar.classList.add("logout");
-    cerrar.textContent="🚪 Cerrar sesión";
+    cerrar.textContent="🚪 Salir";
     cerrar.setAttribute("aria-label","Cerrar sesión de administración");
     if (!logout) {
       cerrar.addEventListener("click",async()=>{
