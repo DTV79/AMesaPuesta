@@ -1,0 +1,18 @@
+{
+  "name": "Cofradía A Mesa Puesta",
+  "short_name": "A Mesa Puesta",
+  "id": "./acceso.html",
+  "start_url": "./acceso.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8f4ed",
+  "theme_color": "#f8f4ed",
+  "icons": [
+    {
+      "src": "./apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
