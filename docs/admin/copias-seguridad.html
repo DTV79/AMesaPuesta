@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="es">
+<head><script src="../js/admin/session-guard.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f6f4ef">
+<title>Copias de seguridad · A Mesa Puesta</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#f6f4ef;color:#292721}
+*{box-sizing:border-box}
+body{margin:0;background:#f6f4ef}
+main{max-width:1010px;margin:0 auto;padding:40px 18px 64px}
+a{color:#872a2b}
+button,a{outline-offset:3px}
+.page-head{display:flex;align-items:center;margin-bottom:20px}.page-head h1{margin:0;font-size:28px;line-height:1.2;letter-spacing:0;font-weight:800}
+.card{background:white;border:1px solid #e9e1d7;border-radius:19px;padding:23px;box-shadow:0 4px 15px rgba(53,43,33,.045)}
+.hero{padding:22px 26px 25px}
+.eyebrow{font-size:11px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase;color:#9a5550;margin:0 0 10px}
+h1{font-size:clamp(26px,3.6vw,34px);line-height:1.1;letter-spacing:-.65px;margin:0 0 10px}
+h2{font-size:19px;letter-spacing:-.3px;margin:0}
+p{color:#625f5a;line-height:1.55;margin:9px 0 0}
+.status-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:19px}
+.pill{border-radius:999px;padding:7px 11px;font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:7px;background:#efece7;color:#6e6255}
+.pill.ok{background:#eaf5ee;color:#256344}
+.pill.warn{background:#fff3df;color:#906111}
+.pill.bad{background:#ffebe9;color:#a0312e}
+.pill.wait{background:#eceff8;color:#435985}
+.dot{width:8px;height:8px;background:currentColor;display:inline-block;border-radius:50%}
+.hero-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:23px;border-top:1px solid #ede7df;padding-top:22px;gap:15px}
+.summary-label{font-size:12px;color:#77716a;font-weight:700}
+.summary-value{display:block;margin-top:6px;font-size:20px;font-weight:900;letter-spacing:-.3px;line-height:1.2}
+.summary-sub{font-size:12px;color:#787169;margin-top:5px;line-height:1.4}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:16px}
+.card-heading{display:flex;justify-content:space-between;align-items:start;gap:8px}
+.small{font-size:13px;color:#77716a}
+.meta{margin:19px 0;display:grid;gap:12px}
+.meta-row{display:flex;align-items:start;justify-content:space-between;gap:10px;border-bottom:1px solid #f0ece6;padding-bottom:11px;font-size:13px}
+.meta-row:last-child{border-bottom:0;padding-bottom:0}
+.meta-row span{color:#74706a}
+.meta-row strong{font-weight:850;text-align:right}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;min-height:43px;border-radius:11px;padding:12px 17px;font:800 13px Inter,system-ui,sans-serif;text-decoration:none;cursor:pointer;border:1px solid transparent}
+.btn-main{background:#8e292a;color:#fff}
+.btn-main:hover{background:#782020}
+.btn-soft{border-color:#e3d9ce;background:#f7f4ef;color:#66594a}
+.btn-soft:hover{background:#efebe4}
+.actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:18px}
+.history{margin-top:16px}
+.history-head{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.history-title{margin-bottom:4px}
+.history-intro{margin-top:0;font-size:13px}
+.table-wrap{overflow-x:auto;margin-top:18px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:12px 10px;border-bottom:1px solid #ded9d0;font-size:11px;font-weight:900;letter-spacing:.25px;color:#77716a}
+td{padding:13px 10px;border-bottom:1px solid #eee9e2;vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td a{font-weight:800;white-space:nowrap}
+.muted{color:#7b756d}
+.footnotes{font-size:12px;color:#857d74;margin:14px 0 0;line-height:1.6}
+.empty{padding:24px 9px;color:#6f6b65}
+#contenido[hidden]{display:none}
+@media(max-width:720px){
+main{padding:14px 14px 64px}
+.card{padding:19px;border-radius:15px}
+.hero{padding:22px 19px}
+.grid{grid-template-columns:1fr;gap:12px}
+.hero-summary{grid-template-columns:1fr 1fr;row-gap:20px}
+.hero-summary>div:last-child{grid-column:span 2}
+.summary-value{font-size:18px}
+}
+/* Historial legible como tarjetas en móvil; tabla original en escritorio */
+@media(max-width:720px){
+.history .table-wrap{overflow:visible;min-width:0}
+.history table,.history tbody{display:block;width:100%;min-width:0}
+.history thead{display:none}
+.history tbody{display:grid;gap:12px}
+.history tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;background:#fff;border:1px solid #e9e1d7;border-radius:13px;padding:15px;min-width:0}
+.history tbody td{display:block;border:0;padding:0;min-width:0;overflow-wrap:anywhere}
+.history tbody td::before{display:block;font-size:11px;font-weight:800;color:#77716a;margin-bottom:5px}
+.history tbody td:nth-child(1){grid-column:1/-1;font-weight:800}
+.history tbody td:nth-child(1)::before{content:"Fecha y hora (España)"}
+.history tbody td:nth-child(2)::before{content:"Tipo"}
+.history tbody td:nth-child(3)::before{content:"Resultado"}
+.history tbody td:nth-child(4){grid-column:1/-1}
+.history tbody td:nth-child(4)::before{content:"Detalle"}
+.history tbody td[colspan]{grid-column:1/-1}
+.history tbody td[colspan]::before{display:none}
+.history tbody td a{display:inline-block;white-space:normal;text-decoration:underline;text-underline-offset:3px}
+}
+@media(max-width:375px){.hero-summary{grid-template-columns:1fr}.hero-summary>div:last-child{grid-column:auto}}
+</style>
+<script defer src="../js/admin/dialogos.js"></script></head>
+<body>
+<main id="contenido" hidden>
+<div class="page-head"><h1 id="titulo"><span aria-hidden="true" style="font-size:.8em;margin-right:.35em">🗄️</span>Copias de seguridad</h1></div>
+<section class="card hero" aria-labelledby="titulo">
+<p class="eyebrow">Protección de datos · Cofradía A Mesa Puesta</p>
+<p>Respaldo cifrado de la base de datos, fotografías y documentos de la Cofradía. Gestionado con Supabase, GitHub Actions y Google Drive.</p>
+<div class="status-line">
+<span id="estado" class="pill wait"><span class="dot"></span> Consultando GitHub…</span>
+
+</div>
+<div class="hero-summary" aria-live="polite">
+<div><span class="summary-label">Última ejecución correcta</span><strong class="summary-value" id="ultimaFecha">Consultando…</strong><div class="summary-sub" id="ultimaDetalle">Comprobando el historial de GitHub</div></div>
+<div><span class="summary-label">Frecuencia de copias</span><strong class="summary-value">Días 1 y 16</strong><div class="summary-sub">Programadas a las 03:00 · últimamente se ejecutan sobre las 07:30 (hora peninsular)</div></div>
+<div><span class="summary-label">Ubicación de las copias</span><strong class="summary-value">Google Drive</strong><div class="summary-sub">Contenido y nombres cifrados con rclone</div></div>
+</div>
+</section>
+
+<div class="grid">
+<section class="card" aria-labelledby="automatizadas">
+<div class="card-heading"><h2 id="automatizadas">🔄 Copias automáticas</h2><span class="pill ok">Programadas</span></div>
+<p class="small">GitHub ejecuta el proceso sin necesidad de mantener un ordenador encendido.</p>
+<div class="meta">
+<div class="meta-row"><span>Frecuencia</span><strong>Días 1 y 16 · sobre las 07:30*</strong></div>
+<div class="meta-row"><span>Incluye</span><strong>PostgreSQL + Storage</strong></div>
+<div class="meta-row"><span>Verificación</span><strong>Comparación tras descargar</strong></div>
+<div class="meta-row"><span>Conservación configurada</span><strong>8 copias automáticas más recientes</strong></div><p class="small" style="margin-top:10px">*Las 07:30 son una hora aproximada observada, no garantizada por GitHub. La programación está fijada a las 03:00.</p>
+</div>
+<div class="actions"><a class="btn btn-soft" target="_blank" rel="noopener noreferrer" href="https://github.com/DTV79/AMesaPuesta/actions/workflows/cofradia-backup.yml">Ver automatización ↗</a></div>
+</section>
+<section class="card" aria-labelledby="manual">
+<div class="card-heading"><h2 id="manual">📦 Copia manual</h2></div>
+<p class="small">Puedes solicitar una copia adicional cuando lo necesites, por ejemplo antes de realizar cambios importantes.</p>
+<div class="meta">
+<div class="meta-row"><span>Método</span><strong>GitHub Actions</strong></div>
+<div class="meta-row"><span>Destino</span><strong>Carpeta cifrada de Drive</strong></div>
+<div class="meta-row"><span>Estado</span><strong>Disponible desde GitHub</strong></div>
+</div>
+<p class="small">Al abrir GitHub, pulsa <strong>Run workflow</strong>, selecciona <strong>main</strong> y confirma. Necesitas iniciar sesión en GitHub.</p>
+<div class="actions"><a class="btn btn-main" target="_blank" rel="noopener noreferrer" href="https://github.com/DTV79/AMesaPuesta/actions/workflows/cofradia-backup.yml">Crear copia desde GitHub ↗</a></div>
+</section>
+</div>
+<section class="card history" aria-labelledby="historial">
+<div class="history-head">
+<div><h2 id="historial" class="history-title">🕒 Historial de ejecuciones</h2><p class="history-intro">Resultados reales obtenidos de GitHub Actions, ordenados del más reciente al más antiguo.</p></div>
+<button type="button" id="actualizar" class="btn btn-soft">↻ Actualizar historial</button>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Fecha y hora (España)</th><th>Tipo</th><th>Resultado</th><th>Detalle</th></tr></thead>
+<tbody id="filas"><tr><td colspan="4" class="empty">Consultando GitHub…</td></tr></tbody>
+</table>
+</div>
+<p id="mensajeHistorial" class="footnotes" aria-live="polite">El historial muestra el resultado del proceso, no el espacio ocupado en Drive. Para consultar o restaurar archivos hay que usar rclone y conservar sus claves de cifrado.</p>
+</section>
+</main>
+<script type="module">
+import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/+esm";
+const sb=createClient("https://wmfcpnihymiiwgpvbngj.supabase.co","sb_publishable_ij3sYbyMrLI2B34OOYt6JA_Aez1R2cJ");
+const API="https://api.github.com/repos/DTV79/AMesaPuesta/actions/workflows/cofradia-backup.yml/runs?per_page=30";
+const $=id=>document.getElementById(id);
+const fechaES=valor=>new Intl.DateTimeFormat("es-ES",{timeZone:"Europe/Madrid",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(new Date(valor));
+function setEstado(tipo,texto){
+ const x=$("estado");
+ x.className="pill "+tipo;
+ x.replaceChildren();
+ const dot=document.createElement("span");dot.className="dot";x.append(dot,document.createTextNode(" "+texto));
+}
+function celda(fila,contenido,clase){
+ const x=document.createElement("td");if(clase)x.className=clase;
+ if(typeof contenido==="string")x.textContent=contenido;else x.append(contenido);
+ fila.append(x);return x;
+}
+function distintivo(conclusion,status){
+ const e=document.createElement("span");e.className="pill";
+ if(status==="queued"||status==="pending"||status==="waiting"){e.classList.add("wait");e.textContent="En cola";}
+ else if(status==="in_progress"||status==="requested"){e.classList.add("wait");e.textContent="En curso";}
+ else if(conclusion==="success"){e.classList.add("ok");e.textContent="Correcta";}
+ else if(conclusion==="cancelled"||conclusion==="skipped"){e.classList.add("warn");e.textContent="Cancelada";}
+ else {e.classList.add("bad");e.textContent="Con errores";}
+ return e;
+}
+function tipoEjecucion(run){
+ if(run.event==="schedule")return "Automática";
+ if(run.event==="workflow_dispatch")return "Manual";
+ return "Prueba";
+}
+async function cargarHistorial(){
+ const b=$("actualizar");b.disabled=true;b.textContent="Actualizando…";
+ try{
+  const respuesta=await fetch(API,{headers:{"Accept":"application/vnd.github+json"},cache:"no-store"});
+  if(!respuesta.ok)throw new Error("GitHub HTTP "+respuesta.status);
+  const datos=await respuesta.json();
+  const lista=(datos.workflow_runs||[]).filter(r=>r.path===".github/workflows/cofradia-backup.yml").slice(0,20);
+  const cuerpo=$("filas");cuerpo.replaceChildren();
+  if(!lista.length){const fila=document.createElement("tr");celda(fila,"GitHub todavía no registra ejecuciones.","empty").colSpan=4;cuerpo.append(fila);}
+  for(const run of lista){
+   const tr=document.createElement("tr");
+   celda(tr,fechaES(run.run_started_at||run.created_at));
+   celda(tr,tipoEjecucion(run));
+   celda(tr,distintivo(run.conclusion,run.status));
+   const a=document.createElement("a");a.href=run.html_url;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Ver ejecución ↗";celda(tr,a);
+   cuerpo.append(tr);
+  }
+  const ultimaBuena=lista.find(r=>r.conclusion==="success");
+  const ultimo=lista[0];
+  $("ultimaFecha").textContent=ultimaBuena?fechaES(ultimaBuena.updated_at||ultimaBuena.created_at):"Sin copias confirmadas";
+  $("ultimaDetalle").textContent=ultimaBuena?(tipoEjecucion(ultimaBuena)+" · ejecución verificada en GitHub"):"Consulta el historial para conocer el motivo";
+  if(!ultimo)setEstado("warn","Sin ejecuciones registradas");
+  else if(ultimo.status!=="completed")setEstado("wait","Copia en curso o pendiente");
+  else if(ultimo.conclusion==="success"){
+   const horas=(Date.now()-Date.parse(ultimo.updated_at||ultimo.created_at))/3600000;
+   if(horas>38)setEstado("warn","Última copia antigua: revisar");
+   else setEstado("ok","Última copia correcta");
+  }else setEstado("bad","La última ejecución requiere revisión");
+  $("mensajeHistorial").textContent="Datos de GitHub Actions. Este historial no muestra el tamaño real de los archivos ni constituye por sí solo una prueba de restauración completa de Supabase.";
+ }catch(error){
+  setEstado("warn","Sin conexión con historial");
+  $("ultimaFecha").textContent="No disponible";
+  $("ultimaDetalle").textContent="Comprueba las ejecuciones en GitHub";
+  $("filas").replaceChildren();
+  const tr=document.createElement("tr");const cell=celda(tr,"No se pudo cargar el historial de GitHub. Puedes abrirlo desde «Ver automatización».","empty");cell.colSpan=4;$("filas").append(tr);
+  $("mensajeHistorial").textContent="No se han podido actualizar los datos: "+error.message+". La copia automática continúa gestionada por GitHub.";
+ }finally{b.disabled=false;b.textContent="↻ Actualizar historial";}
+}
+try{
+ const {data:{session},error:sessionError}=await sb.auth.getSession();
+ if(sessionError||!session){location.replace("index.html");}
+ else{
+  const {data,error}=await sb.rpc("soy_admin_cofradia");
+  if(error||data!==true){document.body.textContent="Acceso restringido a administradores.";}
+  else{
+   $("contenido").hidden=false;
+   const header=document.createElement("script");header.src="../cabecera-comun.js";document.body.append(header);
+   $("actualizar").addEventListener("click",cargarHistorial);
+   await cargarHistorial();
+  }
+ }
+}catch(error){console.error("Copias de seguridad - acceso:",error);document.body.textContent="No se pudo verificar el acceso. Vuelve a Administración e inténtalo de nuevo.";}
+</script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+import{conectarEmojis}from"./emoji-selector.js";
+import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/+esm";const sb=createClient("https://wmfcpnihymiiwgpvbngj.supabase.co","sb_publishable_ij3sYbyMrLI2B34OOYt6JA_Aez1R2cJ");let encuestas=[];const esc=s=>(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));function dt(v){return v?new Date(v).toLocaleString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}):"—"}function inputDT(v){if(!v)return"";const d=new Date(v);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}function opcion(text=""){const d=document.createElement("div");d.className="field";d.innerHTML='<div class="option"><input class="opInput" maxlength="180" value="'+esc(text)+'" required><button type="button" class="emoji">😊</button><button type="button" class="soft quitar">✕</button></div><div class="emojiBox"></div>';opciones.appendChild(d);wireEmoji(d.querySelector(".emoji"),d.querySelector(".opInput"),d.querySelector(".emojiBox"));d.querySelector(".quitar").onclick=()=>{if(document.querySelectorAll(".opInput").length>2)d.remove()}}function wireEmoji(btn,target,box){conectarEmojis(btn,target,box)}wireEmoji(document.querySelector('[data-target="titulo"]'),titulo,document.querySelector('[data-target="titulo"]').closest(".field").querySelector(".emojiBox"));addOpcion.onclick=()=>opcion();async function cargar(){const{data:{session}}=await sb.auth.getSession();if(!session)return document.body.innerHTML="<main class=shell><h1>Debes iniciar sesión.</h1></main>";const{data:admin}=await sb.rpc("soy_admin_cofradia");if(!admin)return document.body.innerHTML="<main class=shell><h1>Acceso restringido.</h1></main>";const{data,error}=await sb.rpc("listar_encuestas_admin");if(error)return AMPDialog.alert(error.message);encuestas=data||[];render()}function render(){const grupos=[{titulo:"Abiertas",estados:["abierta"]},{titulo:"Borradores",estados:["borrador"]},{titulo:"Programadas y pausadas",estados:["programada","pausada"]},{titulo:"Cerradas",estados:["cerrada","archivada"]}];const fecha=e=>{const v=e.creada_en||e.creado_en||e.created_at||e.actualizada_en||e.actualizado_en||e.updated_at||e.abre_en||e.cierra_en;const t=v?new Date(v).getTime():0;return Number.isFinite(t)?t:0};const tarjeta=e=>{const total=e.opciones?.reduce((s,o)=>s+Number(o.votos||0),0)||0;const res=e.resultados_disponibles?'<div class="results">'+e.opciones.map(o=>{const p=total?Math.round(o.votos*100/total):0;return '<div><small>'+esc(o.texto)+' · '+o.votos+' votos</small><div class=bar><div class=fill style="width:'+p+'%"></div></div></div>'}).join("")+"</div>":"";return '<article class=card><div class=row><span class="pill '+(["cerrada","archivada"].includes(e.estado_efectivo)?"closed":"")+'">'+esc(e.estado_efectivo)+'</span><span class=muted>'+e.participantes+' participantes</span></div><h3>'+esc(e.titulo)+'</h3><p class=muted>'+esc(e.descripcion||"")+'</p><small>'+esc(e.tipo)+' · '+e.max_opciones+' opción/es · cierre '+dt(e.cierra_en)+'</small>'+res+'<div class=actions><button class="soft detalle" data-id="'+e.id+'">Ver detalle</button><button class="soft gestionar-votos" data-id="'+e.id+'">Gestionar votos</button><button class="soft editar" data-id="'+e.id+'">Editar</button><button class="soft danger borrar" data-id="'+e.id+'">Eliminar</button></div></article>'};lista.innerHTML=grupos.map(g=>{const items=encuestas.filter(e=>g.estados.includes(e.estado_efectivo||e.estado)).sort((a,b)=>fecha(b)-fecha(a));return '<section class="grupo-encuestas"><h2>'+g.titulo+' ('+items.length+')</h2><div class="list">'+(items.length?items.map(tarjeta).join(""):'<div class="muted">No hay encuestas en este apartado.</div>')+'</div></section>'}).join("");document.querySelectorAll(".detalle").forEach(b=>b.onclick=()=>verDetalle(b.dataset.id));document.querySelectorAll(".gestionar-votos").forEach(b=>b.onclick=()=>gestionarVotos(b.dataset.id));document.querySelectorAll(".editar").forEach(b=>b.onclick=()=>abrir(b.dataset.id));document.querySelectorAll(".borrar").forEach(b=>b.onclick=()=>borrar(b.dataset.id))}const opcionReabrir=document.getElementById("opcionReabrir");
+const avisoReapertura=document.getElementById("avisoReapertura");
+const guardarEncuesta=document.getElementById("guardarEncuesta");
+function actualizarModoReapertura(){
+ const reabrir=estado.value==="reabrir";
+ avisoReapertura.hidden=!reabrir;
+ document.getElementById("etiquetaCierre").textContent=reabrir?"Nueva fecha de cierre (obligatoria)":"Cierre (opcional)";
+ guardarEncuesta.textContent=reabrir?"Confirmar reapertura":"Guardar encuesta";
+ cierra.required=reabrir;
+ if(reabrir && (!cierra.value || new Date(cierra.value)<=new Date()))cierra.value=inputDT(new Date(Date.now()+86400000));
+}
+estado.addEventListener("change",actualizarModoReapertura);
+function confirmarAnulacion(nombre){
+ return new Promise(resolve=>{
+  const modal=document.getElementById("detalleModal");
+  modal.querySelector("#confirmacionVoto")?.remove();
+  const fondo=document.createElement("div");
+  fondo.id="confirmacionVoto";
+  fondo.className="confirmacion-voto-overlay";
+  fondo.innerHTML='<section class="confirmacion-voto-card" role="alertdialog" aria-modal="true" aria-labelledby="confirmacionTitulo" aria-describedby="confirmacionTexto"><div class="confirmacion-voto-icon">⚠️</div><h2 id="confirmacionTitulo">¿Anular este voto?</h2><p id="confirmacionTexto"></p><div class="confirmacion-voto-actions"><button type="button" class="soft" id="cancelarAnulacion">Cancelar</button><button type="button" class="soft danger" id="aceptarAnulacion">Anular voto</button></div></section>';
+  fondo.querySelector("#confirmacionTexto").textContent="Se anulará el voto de "+nombre+". Podrá volver a votar mientras la encuesta siga abierta.";
+  modal.appendChild(fondo);
+  const cancelar=fondo.querySelector("#cancelarAnulacion");
+  const aceptar=fondo.querySelector("#aceptarAnulacion");
+  const tecla=e=>{if(e.key==="Escape"){e.preventDefault();terminar(false)}};
+  const terminar=valor=>{
+   document.removeEventListener("keydown",tecla,true);
+   fondo.remove();
+   resolve(valor);
+  };
+  cancelar.onclick=()=>terminar(false);
+  aceptar.onclick=()=>terminar(true);
+  fondo.onclick=e=>{if(e.target===fondo)terminar(false)};
+  document.addEventListener("keydown",tecla,true);
+  cancelar.focus();
+ });
+}
+async function gestionarVotos(id){
+ const box=document.querySelector("#detalleContenido");
+ box.innerHTML="<h2>Gestionar votos</h2><p>Cargando participantes…</p>";
+ document.querySelector("#detalleModal").classList.add("open");
+ const {data,error}=await sb.rpc("gestion_votos_encuesta_admin",{p_id:id});
+ if(error){box.textContent="No se pudo consultar la participación: "+error.message;return;}
+ const lista=data.participantes||[];
+ box.innerHTML="<h2>Gestionar votos</h2><p><strong>"+esc(data.titulo)+"</strong></p>"+
+ "<p class='muted'>Puedes anular una participación para que el cofrade vuelva a votar. Solo durante la votación abierta. En encuestas secretas no se muestra la opción elegida.</p>"+
+ (lista.length?lista.map(p=>"<div class='row' style='padding:10px 0;border-bottom:1px solid #eee'><span>"+esc(p.nombre)+"</span>"+(data.abierta?"<button type='button' class='soft danger anular-participacion' data-cofrade='"+esc(p.id)+"'>Anular voto</button>":"<span class='muted'>Cerrada</span>")+"</div>").join(""):"<p>No hay participantes.</p>");
+ box.querySelectorAll(".anular-participacion").forEach(b=>b.onclick=async()=>{
+  const persona=lista.find(p=>p.id===b.dataset.cofrade);
+  if(!persona||!(await confirmarAnulacion(persona.nombre)))return;
+  b.disabled=true;
+  const {error:fallo}=await sb.rpc("anular_voto_encuesta_admin",{p_id:id,p_cofrade:persona.id});
+  if(fallo){AMPDialog.alert("No se pudo anular el voto: "+fallo.message);b.disabled=false;return;}
+  await cargar();
+  await gestionarVotos(id);
+ });
+}
+async function verDetalle(id){const box=document.querySelector("#detalleContenido");box.innerHTML="<p>Cargando detalle…</p>";document.querySelector("#detalleModal").classList.add("open");const {data:d,error}=await sb.rpc("detalle_encuesta_admin",{p_id:id});if(error){box.textContent="No se pudo consultar el detalle: "+error.message;return;}const opciones=d.opciones||[],votantes=d.votantes||[],identificados=d.votos_identificados||[],total=opciones.reduce((a,o)=>a+Number(o.votos||0),0);const cifras=opciones.some(o=>o.votos===null)?"<p>Los resultados de esta encuesta se mostrarán cuando finalice, según su configuración de privacidad.</p>":opciones.map(o=>'<div class="resultado-detalle"><div class="row"><span>'+esc(o.texto)+'</span><strong>'+Number(o.votos||0)+' votos ('+(total?Math.round(100*Number(o.votos||0)/total):0)+' %)</strong></div><div class="bar"><div class="fill" style="width:'+(total?100*Number(o.votos||0)/total:0)+'%"></div></div></div>').join("");box.innerHTML='<h2>'+esc(d.titulo)+'</h2><p class="muted">'+(d.finalizada?"Resultados definitivos":"Encuesta en curso")+' · '+esc(d.tipo)+'</p><p><strong>'+Number(d.participantes||0)+' de '+Number(d.elegibles||0)+'</strong> cofrades han participado ('+(d.elegibles?Math.round(100*d.participantes/d.elegibles):0)+' %)</p>'+cifras+(d.tipo==='publica'?'<h3>Participantes identificados ('+votantes.length+')</h3>'+(votantes.length?'<p>'+votantes.map(v=>esc(v.nombre)).join(', ')+'</p>':'<p class="muted">No constan participantes identificados.</p>'):'<p class="muted">Participación anónima: no se muestra quién ha votado.</p>')+(d.tipo==="publica"?'<h3>Votos identificados</h3>'+(identificados.length?'<div>'+identificados.map(v=>'<p>'+esc(v.nombre)+' — '+esc(v.opcion)+'</p>').join("")+'</div>':'<p class="muted">No hay votos individuales identificados.</p>'):'<p class="muted">Los votos individuales no se muestran en esta modalidad.</p>');}
+document.querySelector("#cerrarDetalle").onclick=()=>document.querySelector("#detalleModal").classList.remove("open");
+function abrir(id=null){const e=id?encuestas.find(x=>x.id===id):null;eid.value=e?.id||"";editorTitulo.textContent=e?"Editar encuesta":"Nueva encuesta";titulo.value=e?.titulo||"";descripcion.value=e?.descripcion||"";tipo.value=e?.tipo||"secreta";estado.value=e?.estado||"borrador";max.value=e?.max_opciones||1;electores.value=e?.electores||"todos";abre.value=inputDT(e?.abre_en);cierra.value=inputDT(e?.cierra_en);mostrarEncuesta.checked=e?.mostrar_encuesta??true;mostrarResultados.checked=e?.mostrar_resultados??true;mostrarGanador.checked=e?.mostrar_ganador??true;opciones.innerHTML="";(e?.opciones?.length?e.opciones:["",""]).forEach(x=>opcion(x.texto||x));eliminar.style.display=e?"inline-block":"none";opcionReabrir.hidden=!(e&&["cerrada","archivada"].includes(e.estado_efectivo||e.estado));opcionReabrir.disabled=opcionReabrir.hidden;actualizarModoReapertura();drawer.classList.add("open")}nueva.onclick=()=>abrir();cerrar.onclick=()=>drawer.classList.remove("open");form.onsubmit=async ev=>{ev.preventDefault();if(estado.value==="reabrir"){
+ const e=encuestas.find(x=>x.id===eid.value);
+ if(!e||!["cerrada","archivada"].includes(e.estado_efectivo||e.estado)){AMPDialog.alert("Esta encuesta no está cerrada.");return;}
+ if(!cierra.value||new Date(cierra.value)<=new Date()){AMPDialog.alert("Indica una nueva fecha de cierre futura.");return;}
+ if(!(await AMPDialog.confirm("¿Reabrir esta encuesta hasta la fecha indicada? Se conservarán los votos y las reglas originales.")))return;
+ guardarEncuesta.disabled=true;
+ try{
+ const {error}=await sb.rpc("reabrir_encuesta_admin",{p_id:e.id,p_nuevo_cierre:new Date(cierra.value).toISOString()});
+ if(error){AMPDialog.alert("No se pudo reabrir: "+error.message);return;}
+ drawer.classList.remove("open");await cargar();AMPDialog.alert("Encuesta reabierta correctamente. Se conservaron los votos.");
+ }finally{guardarEncuesta.disabled=false;}
+ return;
+ }
+ const ops=[...document.querySelectorAll(".opInput")].map(x=>x.value.trim()).filter(Boolean);const payload={id:eid.value||undefined,titulo:titulo.value.trim(),descripcion:descripcion.value.trim(),tipo:tipo.value,estado:estado.value,electores:electores.value,max_opciones:Number(max.value),abre_en:abre.value?new Date(abre.value).toISOString():"",cierra_en:cierra.value?new Date(cierra.value).toISOString():"",mostrar_encuesta:mostrarEncuesta.checked,mostrar_resultados:mostrarResultados.checked,mostrar_ganador:mostrarGanador.checked,opciones:ops};const{error}=await sb.rpc("guardar_encuesta_admin",{p_encuesta:payload});if(error)return AMPDialog.alert(error.message);drawer.classList.remove("open");await cargar()};async function borrar(id){if(!(await AMPDialog.confirm("¿Eliminar definitivamente esta encuesta? Esta acción también elimina sus datos asociados.")))return;const{error}=await sb.rpc("eliminar_encuesta_admin",{p_id:id});if(error)return AMPDialog.alert(error.message);drawer.classList.remove("open");await cargar()}eliminar.onclick=()=>borrar(eid.value);cargar();

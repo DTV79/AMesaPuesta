@@ -1,0 +1,1 @@
+import{cargarEstatutos,cargarHistorial}from"./estatutos-data.js";import{pintarEstatutos,errorEstatutos}from"./estatutos-view.js";import{pintarHistorial}from"./estatutos-historial.js";try{const[vigente,historial]=await Promise.all([cargarEstatutos(),cargarHistorial()]);pintarEstatutos(vigente);pintarHistorial(historial)}catch(e){errorEstatutos(e)}
