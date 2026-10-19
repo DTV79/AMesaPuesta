@@ -4,8 +4,8 @@
   // Todas las pantallas de administración comparten el favicon granate.
   const favicon = document.createElement("link");
   favicon.rel = "icon";
-  favicon.type = "image/svg+xml";
-  favicon.href = new URL("./favicon.svg", location.href).href;
+  favicon.type = "image/png";
+  favicon.href = new URL("./admin-icon.png", location.href).href;
   document.head.appendChild(favicon);
   const IDLE_MS = 30 * 60 * 1000;
   const SESSION_KEY = "amp_admin_session_started";
