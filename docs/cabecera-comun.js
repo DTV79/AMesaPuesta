@@ -50,6 +50,19 @@
       .amp-nav a{padding:12px 8px;border-top:1px solid #e9e0d8}
     }`;
   if(admin) style.textContent += `
+    /* Cabecera de administración: mantener el escudo y el tamaño de texto,
+       distribuir botones sin desbordamiento en móviles estrechos. */
+    @media(max-width:700px){
+      .amp-header-inner{display:flex;flex-wrap:wrap;justify-content:flex-end;column-gap:8px;row-gap:6px;padding:9px 10px}
+      .amp-header .amp-identity{margin-left:0;flex:1 1 auto;min-width:175px;gap:8px}
+      .amp-header .amp-emblem{width:40px;height:40px;flex-shrink:0}
+      .amp-header .amp-name{font-size:19px}
+      .amp-header .amp-subtitle{font-size:10px;letter-spacing:1.5px}
+      .amp-header .amp-admin-home{flex:0 0 auto}
+      .amp-header .logout{margin-left:0!important;font-size:11px!important}
+    }
+  `;
+  if(admin) style.textContent += `
     @media(max-width:700px){
       .amp-header .amp-menu{display:flex;align-items:center;justify-content:center;text-decoration:none;color:#7e242d;font:700 13px Arial,sans-serif;white-space:nowrap;min-height:39px}
       .amp-header .amp-nav{display:none!important}
