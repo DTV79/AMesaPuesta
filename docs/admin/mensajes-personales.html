@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6f4ef">
+<link rel="icon" href="./admin-icon.png" type="image/png">
+<link rel="apple-touch-icon" sizes="180x180" href="./admin-icon.png">
+<meta name="apple-mobile-web-app-title" content="A Mesa Puesta Admin">
+<script src="../js/admin/session-guard.js"></script>
+<title>Mensajes personales · Administración A Mesa Puesta</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:#292721;background:#f6f4ef}
+*{box-sizing:border-box}
+body{margin:0;background:#f6f4ef}
+main{max-width:1080px;margin:0 auto;padding:26px 18px 70px}
+a{color:#8e292a}
+.page-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:10px 0 22px;flex-wrap:wrap}
+.page-head h1{font-size:clamp(26px,4vw,33px);margin:0;font-weight:850}
+.subtitle,.muted{color:#746d66}
+.subtitle{margin:8px 0 0}
+.back{display:inline-flex;align-items:center;text-decoration:none;font-weight:800;border:1px solid #e3d9ce;background:#fff;padding:11px 14px;border-radius:11px}
+.card{background:#fff;border:1px solid #e9e1d7;border-radius:18px;padding:23px;box-shadow:0 4px 15px #00000008}
+.card + .card{margin-top:17px}
+h2{font-size:20px;margin:0 0 10px}
+p{line-height:1.55}
+small,.hint{color:#756f67;font-size:13px}
+.field{margin-top:18px}
+.field label,.field-title{display:block;margin-bottom:7px;font-size:13px;font-weight:800}
+.field input,.field textarea,.search{width:100%;border:1px solid #d9d1c8;border-radius:11px;padding:12px 13px;background:#fff;color:#292721;font:inherit}
+.field textarea{resize:vertical;min-height:125px;line-height:1.5}
+.field input:focus,.field textarea:focus,.search:focus{outline:2px solid #b76e71;outline-offset:1px}
+.recipients-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.select-all{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:750;cursor:pointer}
+.select-all input{width:18px;height:18px;accent-color:#8e292a}
+.recipients{border:1px solid #e9e1d7;border-radius:12px;padding:11px;background:#fcfbf9;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 12px;max-height:270px;overflow:auto;margin-top:10px}
+.recipient{display:flex;gap:10px;align-items:center;padding:9px 10px;border-radius:9px;font-size:14px;cursor:pointer}
+.recipient:hover{background:#f3ede5}
+.recipient input{accent-color:#8e292a;width:18px;height:18px;flex:none}
+.selection-info{color:#776f67;font-size:13px;font-weight:650;margin:11px 0 0}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.btn{border:1px solid transparent;border-radius:11px;padding:12px 17px;min-height:43px;font:800 14px Inter,system-ui,sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.btn-primary{color:#fff;background:#8e292a}
+.btn-secondary{color:#66594a;background:#f7f4ef;border-color:#e3d9ce}
+.btn:disabled{opacity:.55;cursor:wait}
+#estadoGuardado{min-height:22px;font-size:14px;font-weight:700;margin:13px 0 0}
+#estadoGuardado.error{color:#a0312e}
+#estadoGuardado.ok{color:#256344}
+.history-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:15px}
+.history-list{display:grid;gap:12px}
+.history-card{border:1px solid #e9e1d7;border-radius:14px;padding:18px;background:#fefdfb}
+.history-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.history-card h3{margin:0;font-size:17px}
+.history-text{white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0}
+.history-recipients{font-size:13px;color:#635c55;overflow-wrap:anywhere;margin:10px 0}
+.history-meta{font-size:12px;color:#756f67;margin:8px 0}
+.history-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.pill{display:inline-block;white-space:nowrap;background:#eaf5ee;color:#256344;font-size:12px;font-weight:800;padding:5px 9px;border-radius:999px}
+.pill.inactive{background:#f1eee8;color:#66594a}
+.pill.expired{background:#fff3df;color:#8f6111}
+[hidden]{display:none!important}
+@media(max-width:650px){main{padding:16px 13px 60px}.card{padding:18px}.recipients{grid-template-columns:1fr;max-height:235px}.page-head{align-items:flex-start}.back{width:100%;justify-content:center}}
+</style>
+<script defer src="../js/admin/dialogos.js"></script>
+</head>
+<body>
+<main id="contenido" hidden>
+<div class="page-head"><div><h1>✉️ Mensajes personales</h1><p class="subtitle">Comunicaciones privadas para uno o varios cofrades.</p></div><a class="back" href="cofrades.html">← Volver a Cofrades</a></div>
+<section class="card" aria-labelledby="tituloFormulario">
+<h2 id="tituloFormulario">Nuevo mensaje</h2>
+<p class="hint">Solo lo verán los destinatarios seleccionados al entrar en Mi Pizarra. No se enviará ningún correo electrónico.</p>
+<form id="formulario">
+<div class="field"><label for="titulo">Título</label><input id="titulo" name="titulo" maxlength="100" required placeholder="Ej.: Organización de la próxima comida"></div>
+<div class="field"><label for="texto">Mensaje</label><textarea id="texto" name="texto" maxlength="3000" rows="5" required placeholder="Escribe el mensaje que recibirán los cofrades seleccionados…"></textarea></div>
+<div class="field"><span class="field-title">Destinatarios</span>
+<div class="recipients-head"><label class="select-all"><input type="checkbox" id="todos"> Seleccionar todos los cofrades activos</label></div>
+<input id="buscarDestinatarios" class="search" type="search" placeholder="Buscar cofrades…" aria-label="Buscar destinatarios">
+<div class="recipients" id="destinatarios" role="group" aria-label="Seleccionar destinatarios"></div>
+<p class="selection-info" id="seleccionadosInfo">Ningún cofrade seleccionado</p>
+</div>
+<div class="field"><label for="caduca">Mostrar hasta (opcional)</label><input type="date" id="caduca" name="caduca"><p class="hint">Sin fecha, el mensaje permanecerá visible hasta que lo retires. Con fecha, se ocultará automáticamente después de ese día.</p></div>
+<div class="actions"><button class="btn btn-primary" id="guardar" type="submit">Enviar mensaje</button><button class="btn btn-secondary" id="cancelarEdicion" type="button" hidden>Cancelar edición</button></div>
+<p role="status" id="estadoGuardado"></p>
+</form>
+</section>
+<section class="card" aria-labelledby="tituloHistorial"><div class="history-head"><h2 id="tituloHistorial">Mensajes enviados</h2><span class="muted" id="totalMensajes"></span></div><div class="history-list" id="historial" aria-live="polite"><p class="muted">Cargando mensajes…</p></div></section>
+</main>
+<script type="module" src="../js/admin/mensajes-personales.js"></script>
+<script src="../cabecera-comun.js"></script>
+<script src="../cabecera-actualizacion.js"></script>
+</body>
+</html>
