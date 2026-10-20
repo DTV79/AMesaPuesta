@@ -28,12 +28,16 @@ small,.hint{color:#756f67;font-size:13px}
 .field{margin-top:18px}
 .field label,.field-title{display:block;margin-bottom:7px;font-size:13px;font-weight:800}
 .field input,.field textarea,.search{width:100%;border:1px solid #d9d1c8;border-radius:11px;padding:12px 13px;background:#fff;color:#292721;font:inherit}
-.field,.deadline-fields,.deadline-item{min-width:0}
 .field input,.field textarea,.search{box-sizing:border-box;max-width:100%;min-width:0}
-.deadline-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+/* Fecha y hora: el borde lo dibuja el contenedor para evitar que los controles nativos de iOS se salgan. */
+.field.deadline{width:100%;max-width:100%;min-width:0}
+.deadline-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;width:100%;max-width:100%;min-width:0}
+.deadline-item{width:100%;max-width:100%;min-width:0}
 .deadline-item label{display:block;margin:0 0 7px;font-size:13px;font-weight:800}
-.deadline-item input{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;font-size:16px;text-align:left}
-.deadline-item input::-webkit-date-and-time-value{text-align:left}
+.deadline-control{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow:hidden;border:1px solid #d9d1c8;border-radius:11px;background:#fff}
+.deadline-control:focus-within{outline:2px solid #b76e71;outline-offset:1px}
+.field .deadline-control input[type="date"],.field .deadline-control input[type="time"]{display:block;width:100%;max-width:100%;min-width:0;min-height:52px;box-sizing:border-box;margin:0;padding:12px 13px;border:0;border-radius:0;outline:0;background:transparent;color:#292721;font-family:inherit;font-size:16px;text-align:left}
+.deadline-control input::-webkit-date-and-time-value{text-align:left}
 @media(max-width:650px){.deadline-fields{grid-template-columns:minmax(0,1fr)}}
 .field textarea{resize:vertical;min-height:125px;line-height:1.5}
 .field input:focus,.field textarea:focus,.search:focus{outline:2px solid #b76e71;outline-offset:1px}
@@ -89,8 +93,8 @@ small,.hint{color:#756f67;font-size:13px}
 <div class="field deadline">
 <span class="field-title">Mostrar hasta (opcional)</span>
 <div class="deadline-fields">
-<div class="deadline-item"><label for="caduca">Fecha</label><input type="date" id="caduca" name="caduca" aria-describedby="caducaAyuda"></div>
-<div class="deadline-item"><label for="caducaHora">Hora</label><input type="time" id="caducaHora" name="caducaHora" step="60" aria-describedby="caducaAyuda"></div>
+<div class="deadline-item"><label for="caduca">Fecha</label><div class="deadline-control"><input type="date" id="caduca" name="caduca" aria-describedby="caducaAyuda"></div></div>
+<div class="deadline-item"><label for="caducaHora">Hora</label><div class="deadline-control"><input type="time" id="caducaHora" name="caducaHora" step="60" aria-describedby="caducaAyuda"></div></div>
 </div>
 <p class="hint" id="caducaAyuda">Sin fecha ni hora, permanecerá visible hasta que lo retires. Al elegir una fecha se propone las 23:59, pero puedes cambiar la hora. El mensaje se oculta al llegar ese momento (hora de Galicia).</p>
 </div>
