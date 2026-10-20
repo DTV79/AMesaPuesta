@@ -13,6 +13,32 @@ function ahoraMadrid(){
 }
 function horaMensaje(m){return m.caduca_en?(m.caduca_hora||"23:59").slice(0,5):"";}
 function aviso(texto,tipo="ok"){$("estadoGuardado").textContent=texto;$("estadoGuardado").className=tipo;}
+let avisoSesionMostrado=false;
+async function avisarSesionCaducada(){
+ if(avisoSesionMostrado)return;
+ avisoSesionMostrado=true;
+ const mensaje="Tu sesión de administración ha caducado o se ha cerrado en otra pestaña. Vuelve a iniciar sesión para gestionar los mensajes.";
+ if(typeof window.AMPDialog?.alert==="function"){
+  await window.AMPDialog.alert(mensaje,{titulo:"Sesión caducada"});
+ }else{
+  aviso(mensaje,"error");
+ }
+ location.replace("index.html");
+}
+async function comprobarSesion(){
+ const {data,error}=await sb.auth.getSession();
+ if(!error&&data?.session?.access_token)return true;
+ await avisarSesionCaducada();
+ return false;
+}
+async function gestionarErrorSesion(error){
+ if(!error||!(error.code==="42501"||error.status===401||/permission denied for function/i.test(error.message||"")))return false;
+ const {data}=await sb.auth.getSession();
+ if(data?.session?.access_token)return false;
+ await avisarSesionCaducada();
+ return true;
+}
+
 function renderDestinatarios(){
  const q=$("buscarDestinatarios").value.trim().toLocaleLowerCase("es");
  const fragment=document.createDocumentFragment();
@@ -71,18 +97,23 @@ function editar(m){
 async function retirarMensaje(m){
  const texto="¿Retirar el mensaje «"+m.titulo+"»? Dejará de aparecer en la pizarra de todos sus destinatarios.";
  if(typeof window.AMPDialog?.confirm!=="function"){aviso("No se pudo abrir la confirmación. Actualiza la página.","error");return;}
+ if(!await comprobarSesion())return;
  const confirmado=await window.AMPDialog.confirm(texto,{titulo:"Retirar mensaje",aceptar:"Retirar"});
- if(!confirmado)return;
+ if(!confirmado||!await comprobarSesion())return;
  const {data,error}=await sb.rpc("retirar_mensaje_personal_admin",{p_id:m.id});
- if(error||data!==true){aviso(error?.message||"No se pudo retirar el mensaje.","error");return;}
+ if(error||data!==true){
+  if(await gestionarErrorSesion(error))return;
+  aviso(error?.message||"No se pudo retirar el mensaje.","error");return;
+ }
  if(editando===m.id)resetFormulario();
  await cargarMensajes();aviso("El mensaje se ha retirado de las pizarras.");
 }
 async function eliminarMensaje(m){
  if(typeof window.AMPDialog?.confirm!=="function"){aviso("No se pudo abrir la confirmación. Actualiza la página.","error");return;}
  const texto="¿Eliminar definitivamente el mensaje «"+m.titulo+"»?\n\nDejará de aparecer en las pizarras de sus destinatarios y también se borrará del historial de Administración. Esta acción no se puede deshacer.";
+ if(!await comprobarSesion())return;
  const confirmado=await window.AMPDialog.confirm(texto,{titulo:"Eliminar mensaje",aceptar:"Eliminar",peligro:true});
- if(!confirmado)return;
+ if(!confirmado||!await comprobarSesion())return;
  try{
   const {data,error}=await sb.rpc("eliminar_mensaje_personal_admin",{p_id:m.id});
   if(error)throw error;
@@ -90,13 +121,22 @@ async function eliminarMensaje(m){
   if(editando===m.id)resetFormulario();
   await cargarMensajes();
   aviso("Mensaje eliminado definitivamente.");
- }catch(err){aviso("No se pudo eliminar el mensaje: "+(err.message||"Error desconocido"),"error");}
+ }catch(err){
+  if(await gestionarErrorSesion(err))return;
+  aviso("No se pudo eliminar el mensaje: "+(err.message||"Error desconocido"),"error");
+ }
 }
 async function cargarMensajes(){
  const {data,error}=await sb.rpc("listar_mensajes_personales_admin");
- if(error)throw error;
+ if(error){
+  if(await gestionarErrorSesion(error))return;
+  throw error;
+ }
  mensajes=Array.isArray(data)?data:[];renderHistorial();
 }
+window.addEventListener("storage",event=>{
+ if(event.key==="sb-wmfcpnihymiiwgpvbngj-auth-token"&&!event.newValue&&$("contenido")&&!$("contenido").hidden)avisarSesionCaducada();
+});
 $("caduca").addEventListener("change",()=>{
  if($("caduca").value){if(!$("caducaHora").value)$("caducaHora").value="23:59";}
  else $("caducaHora").value="";
@@ -111,6 +151,7 @@ $("formulario").addEventListener("submit",async e=>{
  if(!titulo||!texto){aviso("Introduce un título y un mensaje.","error");return;}
  if(Boolean(fecha)!==Boolean(hora)){aviso("Indica una fecha y una hora, o deja ambos campos vacíos.","error");return;}
  if(fecha&&fecha+"T"+hora<=ahoraMadrid()){aviso("La fecha y la hora de caducidad deben ser posteriores a ahora.","error");return;}
+ if(!await comprobarSesion())return;
  const btn=$("guardar");btn.disabled=true;aviso(editando?"Guardando cambios…":"Enviando mensaje…");
  try{
   const {error}=await sb.rpc("guardar_mensaje_personal_con_hora_admin",{p_id:editando,p_titulo:titulo,p_texto:texto,p_destinatarios:Array.from(seleccion),p_caduca_en:fecha,p_caduca_hora:hora});
@@ -118,7 +159,10 @@ $("formulario").addEventListener("submit",async e=>{
   const actualizado=Boolean(editando);
   resetFormulario();await cargarMensajes();
   aviso(actualizado?"Mensaje actualizado correctamente.":"Mensaje enviado. Aparecerá en Mi Pizarra de los destinatarios.");
- }catch(err){aviso(err.message||"No se pudo guardar el mensaje.","error");}
+ }catch(err){
+  if(await gestionarErrorSesion(err))return;
+  aviso(err.message||"No se pudo guardar el mensaje.","error");
+ }
  finally{btn.disabled=false;}
 });
 (async()=>{
