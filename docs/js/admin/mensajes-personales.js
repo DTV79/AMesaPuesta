@@ -4,6 +4,14 @@ const $=id=>document.getElementById(id);
 let miembros=[],mensajes=[],seleccion=new Set(),editando=null;
 const fechaES=iso=>iso?new Date(iso.slice(0,10)+"T12:00:00").toLocaleDateString("es-ES"):"";
 const fechaHoy=()=>new Intl.DateTimeFormat("sv-SE",{timeZone:"Europe/Madrid",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+function ahoraMadrid(){
+ const partes=Object.fromEntries(new Intl.DateTimeFormat("es-ES",{
+  timeZone:"Europe/Madrid",year:"numeric",month:"2-digit",day:"2-digit",
+  hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+ }).formatToParts(new Date()).map(({type,value})=>[type,value]));
+ return partes.year+"-"+partes.month+"-"+partes.day+"T"+partes.hour+":"+partes.minute;
+}
+function horaMensaje(m){return m.caduca_en?(m.caduca_hora||"23:59").slice(0,5):"";}
 function aviso(texto,tipo="ok"){$("estadoGuardado").textContent=texto;$("estadoGuardado").className=tipo;}
 function renderDestinatarios(){
  const q=$("buscarDestinatarios").value.trim().toLocaleLowerCase("es");
@@ -31,13 +39,13 @@ function renderHistorial(){
  for(const m of mensajes){
   const card=elemento("article","history-card");
   const top=elemento("div","history-top");top.append(elemento("h3","",m.titulo));
-  const caducado=m.caduca_en&&m.caduca_en<fechaHoy();
+  const caducado=!!m.caduca_en&&(m.caduca_en+"T"+horaMensaje(m)<=ahoraMadrid());
   const badge=elemento("span","pill"+(!m.activo?" inactive":caducado?" expired":""),!m.activo?"Retirado":caducado?"Caducado":"Publicado");
   top.append(badge);card.append(top);
   card.append(elemento("p","history-text",m.texto));
   const nombres=(m.destinatarios||[]).map(d=>d.nombre).join(", ");
   card.append(elemento("p","history-recipients","Destinatarios: "+(nombres||"Ninguno")));
-  const meta="Creado: "+new Date(m.creado_en).toLocaleDateString("es-ES")+" · "+(m.caduca_en?"Hasta el "+fechaES(m.caduca_en):"Sin caducidad");
+  const meta="Creado: "+new Date(m.creado_en).toLocaleDateString("es-ES")+" · "+(m.caduca_en?"Hasta el "+fechaES(m.caduca_en)+" a las "+horaMensaje(m):"Sin caducidad");
   card.append(elemento("p","history-meta",meta));
   const acciones=elemento("div","history-actions");
   if(m.activo){
@@ -54,7 +62,7 @@ function resetFormulario(){
  editando=null;$("formulario").reset();seleccion.clear();$("tituloFormulario").textContent="Nuevo mensaje";$("guardar").textContent="Enviar mensaje";$("cancelarEdicion").hidden=true;$("buscarDestinatarios").value="";aviso("");renderDestinatarios();
 }
 function editar(m){
- editando=m.id;$("titulo").value=m.titulo;$("texto").value=m.texto;$("caduca").value=m.caduca_en||"";
+ editando=m.id;$("titulo").value=m.titulo;$("texto").value=m.texto;$("caduca").value=m.caduca_en||"";$("caducaHora").value=horaMensaje(m);
  seleccion=new Set((m.destinatarios||[]).map(x=>x.id).filter(id=>miembros.some(c=>c.id===id)));
  $("tituloFormulario").textContent="Editar mensaje personal";$("guardar").textContent="Guardar cambios";$("cancelarEdicion").hidden=false;
  $("buscarDestinatarios").value="";aviso("");renderDestinatarios();
@@ -89,18 +97,23 @@ async function cargarMensajes(){
  if(error)throw error;
  mensajes=Array.isArray(data)?data:[];renderHistorial();
 }
+$("caduca").addEventListener("change",()=>{
+ if($("caduca").value){if(!$("caducaHora").value)$("caducaHora").value="23:59";}
+ else $("caducaHora").value="";
+});
 $("buscarDestinatarios").addEventListener("input",renderDestinatarios);
 $("todos").addEventListener("change",e=>{seleccion=e.target.checked?new Set(miembros.map(m=>m.id)):new Set();renderDestinatarios();});
 $("cancelarEdicion").addEventListener("click",resetFormulario);
 $("formulario").addEventListener("submit",async e=>{
  e.preventDefault();
- const titulo=$("titulo").value.trim(),texto=$("texto").value.trim(),fecha=$("caduca").value||null;
+ const titulo=$("titulo").value.trim(),texto=$("texto").value.trim(),fecha=$("caduca").value||null,hora=$("caducaHora").value||null;
  if(!seleccion.size){aviso("Selecciona al menos un cofrade.","error");return;}
  if(!titulo||!texto){aviso("Introduce un título y un mensaje.","error");return;}
- if(fecha&&fecha<fechaHoy()){aviso("La fecha de caducidad no puede ser anterior a hoy.","error");return;}
+ if(Boolean(fecha)!==Boolean(hora)){aviso("Indica una fecha y una hora, o deja ambos campos vacíos.","error");return;}
+ if(fecha&&fecha+"T"+hora<=ahoraMadrid()){aviso("La fecha y la hora de caducidad deben ser posteriores a ahora.","error");return;}
  const btn=$("guardar");btn.disabled=true;aviso(editando?"Guardando cambios…":"Enviando mensaje…");
  try{
-  const {error}=await sb.rpc("guardar_mensaje_personal_admin",{p_id:editando,p_titulo:titulo,p_texto:texto,p_destinatarios:Array.from(seleccion),p_caduca_en:fecha});
+  const {error}=await sb.rpc("guardar_mensaje_personal_con_hora_admin",{p_id:editando,p_titulo:titulo,p_texto:texto,p_destinatarios:Array.from(seleccion),p_caduca_en:fecha,p_caduca_hora:hora});
   if(error)throw error;
   const actualizado=Boolean(editando);
   resetFormulario();await cargarMensajes();
