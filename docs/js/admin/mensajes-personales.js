@@ -39,12 +39,14 @@ function renderHistorial(){
   card.append(elemento("p","history-recipients","Destinatarios: "+(nombres||"Ninguno")));
   const meta="Creado: "+new Date(m.creado_en).toLocaleDateString("es-ES")+" · "+(m.caduca_en?"Hasta el "+fechaES(m.caduca_en):"Sin caducidad");
   card.append(elemento("p","history-meta",meta));
+  const acciones=elemento("div","history-actions");
   if(m.activo){
-   const acciones=elemento("div","history-actions");
    const edit=elemento("button","btn btn-secondary","Editar");edit.type="button";edit.addEventListener("click",()=>editar(m));
    const retirar=elemento("button","btn btn-secondary","Retirar");retirar.type="button";retirar.addEventListener("click",()=>retirarMensaje(m));
-   acciones.append(edit,retirar);card.append(acciones);
+   acciones.append(edit,retirar);
   }
+  const eliminar=elemento("button","btn btn-danger","Eliminar");eliminar.type="button";eliminar.addEventListener("click",()=>eliminarMensaje(m));
+  acciones.append(eliminar);card.append(acciones);
   cont.append(card);
  }
 }
@@ -60,12 +62,27 @@ function editar(m){
 }
 async function retirarMensaje(m){
  const texto="¿Retirar el mensaje «"+m.titulo+"»? Dejará de aparecer en la pizarra de todos sus destinatarios.";
- const confirmado=window.AMPDialog&&typeof window.AMPDialog.confirm==="function"?await window.AMPDialog.confirm(texto):window.confirm(texto);
+ if(typeof window.AMPDialog?.confirm!=="function"){aviso("No se pudo abrir la confirmación. Actualiza la página.","error");return;}
+ const confirmado=await window.AMPDialog.confirm(texto,{titulo:"Retirar mensaje",aceptar:"Retirar"});
  if(!confirmado)return;
  const {data,error}=await sb.rpc("retirar_mensaje_personal_admin",{p_id:m.id});
  if(error||data!==true){aviso(error?.message||"No se pudo retirar el mensaje.","error");return;}
  if(editando===m.id)resetFormulario();
  await cargarMensajes();aviso("El mensaje se ha retirado de las pizarras.");
+}
+async function eliminarMensaje(m){
+ if(typeof window.AMPDialog?.confirm!=="function"){aviso("No se pudo abrir la confirmación. Actualiza la página.","error");return;}
+ const texto="¿Eliminar definitivamente el mensaje «"+m.titulo+"»?\n\nDejará de aparecer en las pizarras de sus destinatarios y también se borrará del historial de Administración. Esta acción no se puede deshacer.";
+ const confirmado=await window.AMPDialog.confirm(texto,{titulo:"Eliminar mensaje",aceptar:"Eliminar",peligro:true});
+ if(!confirmado)return;
+ try{
+  const {data,error}=await sb.rpc("eliminar_mensaje_personal_admin",{p_id:m.id});
+  if(error)throw error;
+  if(data!==true)throw new Error("El mensaje ya no existe. Actualiza la lista e inténtalo de nuevo.");
+  if(editando===m.id)resetFormulario();
+  await cargarMensajes();
+  aviso("Mensaje eliminado definitivamente.");
+ }catch(err){aviso("No se pudo eliminar el mensaje: "+(err.message||"Error desconocido"),"error");}
 }
 async function cargarMensajes(){
  const {data,error}=await sb.rpc("listar_mensajes_personales_admin");
