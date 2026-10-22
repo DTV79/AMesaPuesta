@@ -85,7 +85,7 @@ async function abrirPago(cofradeId,cuotaId){
   const esAlta=/^(ALTA|INCORPORACION):[a-f0-9-]{36}$/i.test(referencia);
   concepto.textContent=esAlta?"Cuota anual "+r.ejercicio+" · Incorporación":"Cuota anual "+r.ejercicio;
   const meta=document.createElement("div");meta.className="history-meta";
-  meta.textContent=new Date(p.fecha+"T12:00:00").toLocaleDateString("es-ES")+(p.metodo_pago?" · "+p.metodo_pago:"Sin método indicado")+(referencia&&!esAlta?" · "+referencia:"");
+  meta.textContent=new Date(p.fecha+"T12:00:00").toLocaleDateString("es-ES")+(p.metodo_pago?" · "+p.metodo_pago:" · Sin método indicado")+(referencia&&!esAlta?" · "+referencia:"");
   detalle.append(cabecera,concepto,meta);
   const btn=document.createElement("button");btn.type="button";btn.className="btn history-anular";btn.textContent="Anular cobro";btn.addEventListener("click",()=>mostrarAnularCobro(p,cofradeId,cuotaId));
   item.append(detalle,btn);historial.append(item);
