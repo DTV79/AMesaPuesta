@@ -10,7 +10,7 @@ function repartoCobro(importe){
  const modo=destinoCobro();
  const c=modo==="incorporacion"?0:Math.min(importe,cuota);
  const e=modo==="cuota"?0:Math.max(0,importe-c);
- return {cuota:c,entrada:e,esValido:Number.isFinite(importe)&&importe>0&&Math.round(importe*100)===importe*100&&importe<=pendienteDestino()+0.001&&c<=cuota&&e<=entrada};
+ return {cuota:c,entrada:e,esValido:Number.isFinite(importe)&&importe>0&&Math.abs(importe*100-Math.round(importe*100))<0.000001&&importe<=pendienteDestino()+0.001&&c<=cuota&&e<=entrada};
 }
 function actualizarVistaCobro(ponerImporte=false){
  const i=incorporacionActual,panel=document.getElementById("incCobroPanel");
