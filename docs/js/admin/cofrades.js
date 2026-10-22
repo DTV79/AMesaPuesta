@@ -24,7 +24,8 @@ document.getElementById("incCalcular").onclick=async()=>{
  if(!data.calculable)return AMPDialog.alert(data.motivo||"No se puede calcular.");
  document.getElementById("incCuota").value=data.cuota_anual;
  document.getElementById("incAportacion").value=data.aportacion_sugerida;
- actualizarTotalIncorporacion();estado.textContent="Estimación orientativa, revisa los importes reales antes de confirmar. Base: "+data.cofrades_referencia+" cofrades.";
+ actualizarTotalIncorporacion();
+ estado.textContent="Participación por cofrade: "+euro(data.participacion_estimada)+". Cuota anual: "+euro(data.cuota_anual)+". Entrada al bote: "+euro(data.aportacion_sugerida)+". Total: "+euro(data.total_sugerido)+". Referencia: "+data.cofrades_referencia+" cofrades. Se tienen en cuenta "+euro(data.cuotas_pendientes_referencia)+" de cuotas pendientes SOLO para calcular la participación; no se han cobrado ni añadido al remanente real. Revisa los importes antes de confirmar.";
 };
 document.getElementById("incGuardar").onclick=async()=>{
  const cofrade=document.querySelector("#id").value,comida=document.getElementById("incComida").value,cuota=Number(document.getElementById("incCuota").value),aport=Number(document.getElementById("incAportacion").value),miembro=miembros.find(x=>x.id===cofrade);
