@@ -72,14 +72,23 @@ async function abrirPago(cofradeId,cuotaId){
  $("#fEstado").innerHTML='<div class="card"><div class="muted">Cuota '+r.ejercicio+'</div><div style="margin-top:6px">Asignado: <b>'+euro(r.importe_asignado)+'</b> · Pagado: <b>'+euro(r.pagado)+'</b> · Pendiente: <b>'+euro(r.pendiente)+'</b></div></div>';
  $("#importe").value=Number(r.pendiente)>0?Number(r.pendiente).toFixed(2):"";$("#importe").max=Number(r.pendiente);$("#fecha").value=hoy();$("#metodo").value="";$("#referencia").value="";$("#okPago").style.display="none";
  const {data,error}=await supabase.rpc("pagos_cuota_cofrade_admin",{p_cofrade:cofradeId,p_cuota:cuotaId});
- const esc=s=>String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
  const historial=$("#historial");historial.replaceChildren();
  if(error){historial.textContent="Error al cargar pagos: "+error.message;}
  else if(!data?.length){historial.textContent="Sin pagos registrados.";}
  else for(const p of data){
   const item=document.createElement("div");item.className="history-item";
-  const info=document.createElement("span");info.textContent=euro(p.importe)+" · "+new Date(p.fecha+"T12:00:00").toLocaleDateString("es-ES")+(p.metodo_pago?" · "+p.metodo_pago:"")+(p.referencia?" · "+p.referencia:"");item.append(info);
-  const btn=document.createElement("button");btn.type="button";btn.className="btn";btn.style.marginLeft="12px";btn.textContent="Anular cobro";btn.addEventListener("click",()=>mostrarAnularCobro(p,cofradeId,cuotaId));item.append(btn);historial.append(item);
+  const detalle=document.createElement("div");detalle.className="history-info";
+  const cabecera=document.createElement("strong");cabecera.className="history-amount";cabecera.textContent=euro(p.importe);
+  const concepto=document.createElement("div");concepto.className="history-concept";
+  const referencia=String(p.referencia||"").trim();
+  // Las referencias ALTA:/INCORPORACION: son identificadores internos: no se muestran.
+  const esAlta=/^(ALTA|INCORPORACION):[a-f0-9-]{36}$/i.test(referencia);
+  concepto.textContent=esAlta?"Cuota anual "+r.ejercicio+" · Incorporación":"Cuota anual "+r.ejercicio;
+  const meta=document.createElement("div");meta.className="history-meta";
+  meta.textContent=new Date(p.fecha+"T12:00:00").toLocaleDateString("es-ES")+(p.metodo_pago?" · "+p.metodo_pago:"Sin método indicado")+(referencia&&!esAlta?" · "+referencia:"");
+  detalle.append(cabecera,concepto,meta);
+  const btn=document.createElement("button");btn.type="button";btn.className="btn history-anular";btn.textContent="Anular cobro";btn.addEventListener("click",()=>mostrarAnularCobro(p,cofradeId,cuotaId));
+  item.append(detalle,btn);historial.append(item);
  }
  $("#drawer").classList.add("open");
 }
