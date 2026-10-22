@@ -49,7 +49,7 @@ let anulacionPendiente=null;
 function cerrarAnularCobro(){document.getElementById("confirmAnularCobro").classList.remove("open");anulacionPendiente=null;}
 function mostrarAnularCobro(p,cofradeId,cuotaId){
  anulacionPendiente={p,cofradeId,cuotaId};
- document.getElementById("anularCobroTexto").textContent="¿Anular el cobro de "+euro(p.importe)+"? El importe volverá a quedar pendiente y se conservará el registro de la anulación.";
+ document.getElementById("anularCobroTexto").textContent="¿Anular el cobro de "+euro(p.importe)+" correspondiente a "+(p.tipo_pago==="incorporacion"?"la aportación de incorporación":"la cuota anual")+"? El importe volverá a quedar pendiente y se descontará del remanente. Se conservará el registro de la anulación.";
  document.getElementById("anularCobroMotivo").value="";document.getElementById("anularCobroError").textContent="";
  document.getElementById("aceptarAnularCobro").disabled=false;
  document.getElementById("confirmAnularCobro").classList.add("open");
@@ -62,7 +62,7 @@ document.getElementById("aceptarAnularCobro").onclick=async()=>{
  if(motivo.length<3){errorEl.textContent="Indica un motivo de al menos 3 caracteres.";return;}
  const btn=document.getElementById("aceptarAnularCobro");btn.disabled=true;
  const {p,cofradeId,cuotaId}=anulacionPendiente;
- const {error}=await supabase.rpc("anular_pago_cuota_admin",{p_pago:p.id,p_motivo:motivo});
+ const {error}=await supabase.rpc(p.tipo_pago==="incorporacion"?"anular_pago_incorporacion_admin":"anular_pago_cuota_admin",{p_pago:p.id,p_motivo:motivo});
  if(error){errorEl.textContent=error.message;btn.disabled=false;return;}
  cerrarAnularCobro();document.getElementById("drawer").classList.remove("open");await cargar();await abrirPago(cofradeId,cuotaId);
 };
@@ -71,11 +71,21 @@ async function abrirPago(cofradeId,cuotaId){
  $("#cofradeId").value=cofradeId;$("#cuotaId").value=cuotaId;$("#fNombre").textContent=r.nombre;
  $("#fEstado").innerHTML='<div class="card"><div class="muted">Cuota '+r.ejercicio+'</div><div style="margin-top:6px">Asignado: <b>'+euro(r.importe_asignado)+'</b> · Pagado: <b>'+euro(r.pagado)+'</b> · Pendiente: <b>'+euro(r.pendiente)+'</b></div></div>';
  $("#importe").value=Number(r.pendiente)>0?Number(r.pendiente).toFixed(2):"";$("#importe").max=Number(r.pendiente);$("#fecha").value=hoy();$("#metodo").value="";$("#referencia").value="";$("#okPago").style.display="none";
- const {data,error}=await supabase.rpc("pagos_cuota_cofrade_admin",{p_cofrade:cofradeId,p_cuota:cuotaId});
+ const [cuotaResultado,incorporacionResultado]=await Promise.all([
+  supabase.rpc("pagos_cuota_cofrade_admin",{p_cofrade:cofradeId,p_cuota:cuotaId}),
+  supabase.rpc("pagos_incorporacion_cofrade_admin",{p_cofrade:cofradeId})
+ ]);
  const historial=$("#historial");historial.replaceChildren();
+ const error=cuotaResultado.error||incorporacionResultado.error;
+ const cuotas=Array.isArray(cuotaResultado.data)?cuotaResultado.data.map(p=>({...p,tipo_pago:"cuota"})):[];
+ const incorporaciones=Array.isArray(incorporacionResultado.data)?incorporacionResultado.data:[];
+ const pagos=[...cuotas,...incorporaciones].sort((a,b)=>{
+  const ordenFecha=String(b.fecha||"").localeCompare(String(a.fecha||""));
+  return ordenFecha||String(b.id||"").localeCompare(String(a.id||""));
+ });
  if(error){historial.textContent="Error al cargar pagos: "+error.message;}
- else if(!data?.length){historial.textContent="Sin pagos registrados.";}
- else for(const p of data){
+ else if(!pagos.length){historial.textContent="Sin pagos registrados.";}
+ else for(const p of pagos){
   const item=document.createElement("div");item.className="history-item";
   const detalle=document.createElement("div");detalle.className="history-info";
   const cabecera=document.createElement("strong");cabecera.className="history-amount";cabecera.textContent=euro(p.importe);
@@ -83,7 +93,7 @@ async function abrirPago(cofradeId,cuotaId){
   const referencia=String(p.referencia||"").trim();
   // Las referencias ALTA:/INCORPORACION: son identificadores internos: no se muestran.
   const esAlta=/^(ALTA|INCORPORACION):[a-f0-9-]{36}$/i.test(referencia);
-  concepto.textContent=esAlta?"Cuota anual "+r.ejercicio+" · Incorporación":"Cuota anual "+r.ejercicio;
+  concepto.textContent=p.tipo_pago==="incorporacion"?"Aportación de incorporación":esAlta?"Cuota anual "+r.ejercicio+" · Incorporación":"Cuota anual "+r.ejercicio;
   const meta=document.createElement("div");meta.className="history-meta";
   meta.textContent=new Date(p.fecha+"T12:00:00").toLocaleDateString("es-ES")+(p.metodo_pago?" · "+p.metodo_pago:" · Sin método indicado")+(referencia&&!esAlta?" · "+referencia:"");
   detalle.append(cabecera,concepto,meta);
