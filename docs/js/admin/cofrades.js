@@ -35,3 +35,14 @@ document.getElementById("incGuardar").onclick=async()=>{
  await AMPDialog.alert("Importes registrados. Los pagos se confirmarán por separado.");
  await cargarIncorporacion(cofrade);
 };
+
+document.getElementById("incPagoFecha").value=new Date().toLocaleDateString("en-CA");
+document.getElementById("incRegistrarPago").onclick=async()=>{
+ const cofrade=document.querySelector("#id").value,importe=Number(document.getElementById("incPagoImporte").value),fecha=document.getElementById("incPagoFecha").value,metodo=document.getElementById("incPagoMetodo").value;
+ if(!Number.isFinite(importe)||importe<=0||!fecha)return AMPDialog.alert("Introduce el importe recibido y la fecha.");
+ if(!(await AMPDialog.confirm("Registrar un ingreso REAL de "+euro(importe)+" por incorporación al bote común?")))return;
+ const {error}=await sb.rpc("registrar_pago_incorporacion_admin",{p_cofrade_id:cofrade,p_importe:importe,p_fecha:fecha,p_metodo:metodo,p_referencia:null});
+ if(error)return AMPDialog.alert(error.message);
+ document.getElementById("incPagoImporte").value="";
+ await cargarIncorporacion(cofrade);await AMPDialog.alert("Cobro registrado en tesorería.");
+};
