@@ -1,7 +1,7 @@
 {
   "name": "Cofradía A Mesa Puesta",
   "short_name": "A Mesa Puesta",
-  "id": "./acceso.html",
+  "id": "./",
   "start_url": "./acceso.html",
   "scope": "./",
   "display": "standalone",
