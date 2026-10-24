@@ -42,7 +42,7 @@
 .hist-detalle{max-width:100%;overflow-x:auto}
 }
 /* Editor de comidas en móvil: panel desplazable bajo la cabecera fija.
-   La fila de título y cierre queda siempre al alcance, incluso con formularios largos. */
+   El título y la X se desplazan con el formulario y reaparecen al volver arriba. */
 @media (max-width:720px){
   body:has(.amp-header) #editor.drawer.open{
     position:fixed!important;
@@ -62,9 +62,7 @@
     z-index:9500!important;
   }
   body:has(.amp-header) #editor>.row:first-child{
-    position:sticky!important;
-    top:0!important;
-    z-index:5!important;
+    position:static!important;
     display:flex;
     flex-wrap:nowrap;
     align-items:center;
