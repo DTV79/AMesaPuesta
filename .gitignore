@@ -1,0 +1,11 @@
+# Cofradía A Mesa Puesta: datos locales y credenciales (NUNCA publicar)
+*.xlsm
+*.xlsx
+*.csv
+.env
+.env.*
+*.key
+importacion_privada/
+**/informe_conciliacion.json
+**/datos_privados/
+**/backups_privados/
