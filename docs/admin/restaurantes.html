@@ -41,6 +41,49 @@
 .historico-fila .hist-ver{grid-column:1/-1;text-align:right}
 .hist-detalle{max-width:100%;overflow-x:auto}
 }
+/* Editor de comidas en móvil: panel desplazable bajo la cabecera fija.
+   La fila de título y cierre queda siempre al alcance, incluso con formularios largos. */
+@media (max-width:720px){
+  body:has(.amp-header) #editor.drawer.open{
+    position:fixed!important;
+    inset-inline:0!important;
+    top:var(--amp-header-height,72px)!important;
+    bottom:0!important;
+    inset-block-start:var(--amp-header-height,72px)!important;
+    height:auto!important;
+    max-height:none!important;
+    margin:0!important;
+    border-radius:0!important;
+    padding:0 14px calc(26px + env(safe-area-inset-bottom))!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    z-index:9500!important;
+  }
+  body:has(.amp-header) #editor>.row:first-child{
+    position:sticky!important;
+    top:0!important;
+    z-index:5!important;
+    display:flex;
+    flex-wrap:nowrap;
+    align-items:center;
+    padding:14px 0 12px!important;
+    margin:0 0 12px!important;
+    background:#fff;
+    border-bottom:1px solid #ece5dc;
+  }
+  body:has(.amp-header) #editorTitle{min-width:0;flex:1;font-size:clamp(18px,5vw,23px);line-height:1.25}
+  body:has(.amp-header) #editor #cerrar{
+    flex:0 0 42px;
+    width:42px;
+    min-width:42px;
+    height:42px;
+    min-height:42px;
+    font-size:23px;
+    touch-action:manipulation;
+  }
+}
 </style><script defer src="../js/admin/dialogos.js"></script></head><body><main class="shell"><div class="top"><div><h1 class="title"><span aria-hidden="true" style="font-size:.8em;margin-right:.35em">🍴</span>Restaurantes y comidas</h1><div class="muted">Gestiona todo lo que después se mostrará en la web pública.</div></div><button id="nuevo" class="btn primary">+ Nueva comida</button></div><nav class="hist-tabs" role="tablist" aria-label="Apartados de restaurantes y comidas"><button type="button" id="tabComidas" class="active" role="tab" aria-selected="true" aria-controls="lista">Comidas</button><button type="button" id="tabHistorico" role="tab" aria-selected="false" aria-controls="historicoPanel">📊 Histórico de gastos</button></nav><section id="historicoPanel" hidden aria-label="Histórico de gastos por restaurante y comida"><div class="hist-filtros"><h2>Histórico de gastos por comida</h2><label for="historicoAnio">Ejercicio <select id="historicoAnio"><option value="todos">Todos los años</option></select></label></div><div class="hist-kpis"><div class="hist-kpi"><span>Gastos totales</span><strong id="historicoTotal">—</strong></div><div class="hist-kpi"><span>Nº. Comidas</span><strong id="historicoComidas">—</strong></div><div class="hist-kpi"><span>Gastos comidas</span><strong id="historicoGastosComidas">—</strong></div><div class="hist-kpi"><span>Otros gastos</span><strong id="historicoOtrosGastos">—</strong></div></div><p id="historicoEstado" class="muted" role="status"></p><div class="hist-comidas-scroll"><div class="hist-encabezado" aria-hidden="true"><span>Restaurante / Fecha</span><span>Cofrades</span><span>Gasto comida</span><span>Otros gastos</span><span>Total</span><span>Detalle</span></div><div id="historicoFilas"></div></div><p id="historicoNota" class="muted">Importes históricos de comida y bote. No equivalen necesariamente a pagos realizados.</p></section><div id="lista" class="grid"></div><section id="editor" class="drawer panel"><div class="row"><h2 id="editorTitle">Nueva comida</h2><button id="cerrar" class="btn soft" type="button" aria-label="Cerrar sin guardar" title="Cerrar sin guardar">×</button></div><div class="sections">
 <div class="section"><h3>🏠 Restaurante</h3><label>Restaurante</label><select id="restSel"></select><label>Nombre</label><input id="rNombre"><label>Dirección</label><input id="rDireccion" placeholder="Praza Igrexa, 13b"><div class="twocol"><div><label>C.P.</label><input id="rCP" inputmode="numeric" maxlength="5" placeholder="36847"></div><div><label>Lugar</label><input id="rLugar" placeholder="Fornelos de Montes"></div></div><label>Provincia</label><input id="rProvincia" placeholder="Pontevedra"><div class="twocol"><div><label>Teléfono</label><input id="rTelefono"></div><div><label>Persona de contacto (opcional)</label><input id="rContacto" placeholder="Nombre de contacto"></div></div><label>Web</label><input id="rWeb"><div class="twocol"><div><label>Latitud</label><input id="rLat"></div><div><label>Longitud</label><input id="rLon"></div></div></div>
 <div class="section"><h3>🍽️ Comida y menú</h3><div class="twocol"><div><label>Fecha</label><input id="fecha" type="date"></div><div><label>Estado</label><select id="estado"><option value="celebrada">Realizada</option><option value="planificada">Programada</option></select></div></div><label>Entrantes</label><textarea id="entrantes"></textarea><label>Platos principales</label><textarea id="principales"></textarea><label>Postres</label><textarea id="postres"></textarea><label>Bebidas</label><textarea id="bebidas"></textarea></div>
