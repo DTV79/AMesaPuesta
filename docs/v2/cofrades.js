@@ -1,7 +1,7 @@
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js';
 
 // Solo datos previamente públicos: NO se consultan cuotas, cargos ni saldos.
-const API = SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rpc/listar_cofrades_publicos';
+const API = SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rpc/listar_cofrades_publicos_v2';
 
 const crear = (etiqueta, clase = '', valor = null) => {
   const nodo = document.createElement(etiqueta);
@@ -89,7 +89,8 @@ function ficha(persona) {
   const numeritos=crear('div','member-numbers');
   numeritos.append(
     dato('Comidas asistidas',cantidad(persona.comidas_asistidas)),
-    dato('Comidas organizadas',cantidad(persona.comidas_organizadas))
+    dato('Comidas organizadas',cantidad(persona.comidas_organizadas)),
+    dato('Comidas no asistidas',cantidad(persona.comidas_no_asistidas))
   );
   tarjeta.append(cabecera,fechaAlta,numeritos);
   return tarjeta;
