@@ -11,6 +11,13 @@ const featuredGrid = document.getElementById("board-featured-grid");
 const listSection = document.getElementById("board-list-section");
 const listHeading = document.getElementById("board-list-title");
 const listGrid = document.getElementById("board-list");
+const anuncioSeleccionado = new URLSearchParams(window.location.search).get("anuncio");
+const detalleSeccion = document.getElementById("board-detail");
+const detalleContenido = document.getElementById("board-detail-content");
+if (anuncioSeleccionado) {
+  document.body.classList.add("board-detail-mode");
+  detalleSeccion.hidden = false;
+}
 
 let publicables = [];
 
@@ -244,6 +251,21 @@ function renderizar() {
   }
 }
 
+function renderizarDetalle() {
+  const anuncio = publicables.find(a => String(a.id ?? "") === anuncioSeleccionado);
+  if (!anuncio) {
+    mostrarMensaje(detalleContenido, "Este anuncio ya no está disponible. Consulta el Tablón para ver los avisos vigentes.");
+    return;
+  }
+  const tarjeta = crearAnuncio(anuncio, destacadoActivo(anuncio, hoyLocal()));
+  tarjeta.querySelector(".board-card-body")?.classList.remove("is-clamped");
+  tarjeta.querySelector(".board-read-more")?.remove();
+  const acciones = tarjeta.querySelector(".board-card-actions");
+  if (acciones && !acciones.children.length) acciones.remove();
+  detalleContenido.replaceChildren(tarjeta);
+  document.title = (txt(anuncio.titulo) || "Anuncio") + " · A Mesa Puesta";
+}
+
 function configurarCategorias() {
   const uniques = new Map();
   for (const a of publicables) {
@@ -268,9 +290,14 @@ async function cargar() {
     if (!Array.isArray(json)) throw new Error("Formato de anuncios no válido");
     const today = hoyLocal();
     publicables = json.filter(a => publicable(a, today));
-    configurarCategorias();
-    renderizar();
+    if (anuncioSeleccionado) renderizarDetalle();
+    else { configurarCategorias(); renderizar(); }
   } catch (err) {
+    if (anuncioSeleccionado) {
+      mostrarMensaje(detalleContenido, "No se pudo cargar este anuncio. Inténtalo de nuevo más tarde.", true);
+      console.error("Detalle del anuncio:", err);
+      return;
+    }
     countLabel.textContent = "Anuncios no disponibles";
     featuredSection.hidden = true;
     listSection.hidden = false;
