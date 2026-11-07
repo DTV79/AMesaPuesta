@@ -41,7 +41,7 @@ try {
   for(const anuncio of vigentes){
     const titulo=txt(anuncio.titulo)||"Anuncio de la cofradía";
     const contenido=txt(anuncio.texto).replace(/\s+/g," ");
-    add("📣","Tablón · "+titulo,contenido.length>120?contenido.slice(0,117)+"…":contenido||"Nuevo aviso de la cofradía","anuncios.html","Leer anuncio");
+    add("📣",titulo,contenido.length>120?contenido.slice(0,117)+"…":contenido||"Nuevo aviso de la cofradía","anuncios.html","Leer anuncio");
     count++;
   }
 }catch(error){console.warn("No se pudieron cargar los anuncios en Mi Pizarra:",error)}
