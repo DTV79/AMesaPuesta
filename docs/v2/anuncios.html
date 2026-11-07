@@ -9,7 +9,7 @@
   
   <link rel="stylesheet" href="./styles.css">
   <script src="./scroll-top.js" defer></script>
-  <script type="module" src="./anuncios.js"></script>
+  <script type="module" src="./anuncios.js?v=20261107-3"></script>
   <script defer src="./acceso-cofrade.js"></script>
 <style>html:not(.cofrade-verificado) body{visibility:hidden}</style><script defer src="./mobile-nav.js"></script>
 </head>
@@ -35,6 +35,10 @@
   </header>
 
   <main id="contenido" class="container">
+    <section class="board-detail" id="board-detail" aria-label="Detalle del anuncio" hidden>
+      <a class="board-detail-back" href="anuncios.html">← Volver al Tablón</a>
+      <div id="board-detail-content" aria-live="polite"><div class="message">Cargando anuncio…</div></div>
+    </section>
     <header class="page-intro board-intro">
       <p class="eyebrow">La cofradía al día</p>
       <h1>Siempre hay <em>algo que contar.</em></h1>
