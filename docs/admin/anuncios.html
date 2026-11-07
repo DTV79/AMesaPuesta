@@ -4,6 +4,7 @@
 
 /* Selector nativo de fecha y hora, como en Encuestas. */
 .sheet .field{min-width:0;max-width:100%}
+.sheet .field input[type="date"],
 .sheet .field input[type="datetime-local"]{
  display:block;
  width:100%!important;
@@ -17,7 +18,6 @@
 .ayuda{display:block;margin-top:7px;color:#77736b;font-size:12px;line-height:1.45}
 @media(max-width:700px){
  .drawer .sheet{width:100%;max-width:100vw;min-width:0;padding:22px 18px;padding-bottom:calc(28px + env(safe-area-inset-bottom))}
- .sheet #fecha{max-width:100%!important;min-width:0!important}
 }
 </style><script defer src="../js/admin/dialogos.js"></script></head><body><main class="shell"><div class="top"><div><div class="brand">🍽️ A Mesa Puesta</div><div class="muted">Administración · Anuncios</div></div></div><div class="row"><div><h1 class="title"><span aria-hidden="true" style="font-size:.8em;margin-right:.35em">📣</span>Tablón de anuncios</h1><div class="muted">Publica, programa y destaca avisos de la Cofradía.</div></div><button id="nuevo" class="btn">+ Nuevo anuncio</button></div><div id="secciones"></div></main><div id="drawer" class="drawer"><aside class="sheet"><button id="cerrar" class="close">✕</button><div class="muted">Editor</div><h2 id="editorTitulo">Nuevo anuncio</h2><form id="form"><input type="hidden" id="aid"><div class="field"><label>Categoría</label><div class="row"><select id="tipo"><option>General</option><option>Comida</option><option>Reunión</option><option>Tesorería</option><option>Urgente</option><option>Recordatorio</option></select><span id="icono" class="preview">📣</span></div></div><div class="field"><label>Título</label><div class="emoji-field"><input id="titulo" required maxlength="180"><button type="button" class="soft emoji-btn" data-target="titulo" aria-label="Añadir emoticono al título">😊</button></div></div><div class="field"><label>Texto</label><div class="emoji-field"><textarea id="texto" rows="8"></textarea><button type="button" class="soft emoji-btn" data-target="texto" aria-label="Añadir emoticono al texto">😊</button></div></div><div id="emojiPicker" class="emoji-picker" hidden></div><div class="field"><label for="fecha">Fecha del anuncio</label><input id="fecha" type="date"></div>
 <div class="field"><label for="publicacion">Publicar desde</label><input id="publicacion" type="datetime-local" step="60" required><small class="ayuda">Fecha y hora de publicación (España peninsular)</small></div>
