@@ -1258,3 +1258,26 @@ body.bote-modal-abierto{overflow:hidden}
 @media(prefers-reduced-motion:reduce){
  .mobile-nav,.mobile-nav a,.mobile-nav a span{transition:none!important}
 }
+
+/* Pizarra: primera línea de cada aviso, sin tarjetas excesivamente altas. */
+.pizarra-aviso-body small {
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:1;
+  line-clamp:1;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  overflow-wrap:anywhere;
+}
+
+/* El enlace a un anuncio muestra solo la ficha, no la portada ni los filtros del Tablón. */
+body.board-detail-mode .board-intro,
+body.board-detail-mode .board-search,
+body.board-detail-mode .board-featured,
+body.board-detail-mode .board-list-section,
+body.board-detail-mode .board-next {display:none!important}
+.board-detail {margin:clamp(20px,4vw,40px) 0 35px;max-width:850px}
+.board-detail-back {display:inline-flex;align-items:center;margin-bottom:18px;color:var(--wine);font-size:14px;font-weight:800;text-decoration:none}
+.board-detail-back:hover {text-decoration:underline}
+.board-detail .board-card {width:100%}
+.board-detail .board-card-body {white-space:pre-wrap;overflow-wrap:anywhere;display:block;-webkit-line-clamp:unset}
