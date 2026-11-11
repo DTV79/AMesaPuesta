@@ -17,6 +17,30 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const supabase=createClient("https://wmfcpnihymiiwgpvbngj.supabase.co","sb_publishable_ij3sYbyMrLI2B34OOYt6JA_Aez1R2cJ");
 let filas=[];
 let filtroCuotas='todos';
+
+function activarTabCuotas(nombre,enfocar=false){
+ const tabs=[...document.querySelectorAll("[data-tab-cuotas]")];
+ tabs.forEach(tab=>{
+  const activo=tab.dataset.tabCuotas===nombre;
+  tab.classList.toggle("activo",activo);
+  tab.setAttribute("aria-selected",String(activo));
+  tab.tabIndex=activo?0:-1;
+  document.getElementById(tab.getAttribute("aria-controls")).hidden=!activo;
+  if(activo&&enfocar)tab.focus();
+ });
+}
+document.querySelectorAll("[data-tab-cuotas]").forEach(tab=>{
+ tab.addEventListener("click",()=>activarTabCuotas(tab.dataset.tabCuotas));
+ tab.addEventListener("keydown",event=>{
+  const tabs=[...document.querySelectorAll("[data-tab-cuotas]")];
+  const index=tabs.indexOf(tab);
+  const next=event.key==="ArrowRight"?(index+1)%tabs.length:event.key==="ArrowLeft"?(index+tabs.length-1)%tabs.length:event.key==="Home"?0:event.key==="End"?tabs.length-1:-1;
+  if(next<0)return;
+  event.preventDefault();
+  activarTabCuotas(tabs[next].dataset.tabCuotas,true);
+ });
+});
+
 function filtrarCuotas(){const alDia=filas.filter(r=>r.estado==='al_corriente').length;document.querySelectorAll('[data-filtro-cuotas]').forEach(b=>{const tipo=b.dataset.filtroCuotas;b.classList.toggle('activo',tipo===filtroCuotas);b.setAttribute('aria-pressed',String(tipo===filtroCuotas));b.querySelector('.cantidad').textContent=tipo==='todos'?filas.length:tipo==='al_corriente'?alDia:filas.length-alDia;});const visibles=filas.filter(r=>filtroCuotas==='todos'||(filtroCuotas==='al_corriente'?r.estado==='al_corriente':r.estado!=='al_corriente'));pintarFilas(visibles);}
 function pintarFilas(visibles){
  $("#tbody").innerHTML=visibles.map(r=>'<tr><td class="name">'+r.nombre+'</td><td><span class="pill '+(r.estado==="al_corriente"?"ok":"bad")+'">● '+(r.estado==="al_corriente"?"Al corriente":r.estado==="parcial"?"Parcial":"Pendiente")+'</span></td><td class="desktop">'+euro(r.importe_asignado)+'</td><td class="desktop">'+euro(r.pagado)+'</td><td><strong>'+euro(r.pendiente)+'</strong></td><td class="action" data-c="'+r.cofrade_id+'" data-q="'+r.cuota_id+'">'+(Number(r.pendiente)>0?"Cobrar":"Ver")+'</td></tr>').join("");
@@ -36,8 +60,15 @@ async function guard(){
 let ultimoRefrescoOk=0;
 async function cargarTesoreria(){const errorEl=document.getElementById("tes-error");try{const {data,error}=await supabase.rpc("resumen_tesoreria_admin");if(error)throw error;document.getElementById("tes-recaudado").textContent=euro(data.recaudado);document.getElementById("tes-gastos").textContent=euro(data.gastos);document.getElementById("tes-remanente").textContent=euro(data.remanente);const esc=s=>String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));document.getElementById("tes-cofrades").innerHTML=(data.cofrades||[]).map(x=>"<tr><td>"+esc(x.nombre)+"</td><td><strong>"+euro(x.pagado)+"</strong></td></tr>").join("");const fecha=s=>s?String(s).slice(0,10).split("-").reverse().join("/"):"—";document.getElementById("tes-comidas").innerHTML=(data.comidas||[]).map(x=>"<tr><td>"+fecha(x.fecha)+"</td><td>"+esc(x.restaurante)+"</td><td>"+euro(x.factura_restaurante)+"</td><td>"+euro(x.gastos_adicionales)+"</td><td>"+euro(x.bote_comprometido)+"</td><td>"+euro(x.gastos_remanente)+"</td></tr>").join("");const totalCampo=(items,k)=>items.reduce((s,x)=>s+Number(x[k]||0),0);const comidas=data.comidas||[],cofrades=data.cofrades||[];document.getElementById("tes-cofrades-total").textContent=euro(totalCampo(cofrades,"pagado"));document.getElementById("tes-restaurantes-total").textContent=euro(totalCampo(comidas,"factura_restaurante"));document.getElementById("tes-adicionales-total").textContent=euro(totalCampo(comidas,"gastos_adicionales"));document.getElementById("tes-comprometido-total").textContent=euro(totalCampo(comidas,"bote_comprometido"));document.getElementById("tes-remanente-total").textContent=euro(totalCampo(comidas,"gastos_remanente"));errorEl.textContent="";document.getElementById("tes-ultima-actualizacion").textContent="Actualizado a las "+new Date().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});ultimoRefrescoOk=Date.now()}catch(e){errorEl.textContent="No se pudo cargar el resumen económico: "+e.message;document.getElementById("tes-ultima-actualizacion").textContent="Error al actualizar";throw e}}
 async function cargar(){
- const {data:rows,error}=await supabase.rpc("listar_cuotas_cofrades_admin",{p_ejercicio:new Date().getFullYear()});
+ const ejercicioVigente=new Date().getFullYear();
+ document.querySelectorAll("[data-cuota-anio]").forEach(el=>{el.textContent=String(ejercicioVigente)});
+ const {data:rows,error}=await supabase.rpc("listar_cuotas_cofrades_admin",{p_ejercicio:ejercicioVigente});
  if(error)throw error; filas=rows||[];
+ const cofradesConCuota=new Set(filas.map(r=>r.cofrade_id)).size;
+ const importes=[...new Set(filas.map(r=>Number(r.importe_asignado)))];
+ $("#cuotaActualDescripcion").textContent=filas.length
+  ? (importes.length===1?euro(importes[0])+" por cofrade · ":"")+cofradesConCuota+" cofrades con cuota asignada"
+  : "Todavía no hay cuotas asignadas para "+ejercicioVigente+".";
  const total=filas.reduce((s,r)=>s+Number(r.importe_asignado),0),cobrado=filas.reduce((s,r)=>s+Number(r.pagado),0);
  $("#cuotas-asignadas").textContent=euro(total);$("#cuotas-cobradas").textContent=euro(cobrado);
  $("#cuotas-pendientes").textContent=euro(total-cobrado);$("#cuotas-al-dia").textContent=filas.filter(r=>r.estado==="al_corriente").length+" / "+filas.length;
