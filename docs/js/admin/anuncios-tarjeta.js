@@ -103,12 +103,12 @@ export async function crearTarjetaAnuncio(anuncio) {
   ctx.fillText("A Mesa Puesta",229,137);
   ctx.fillStyle="#942d35";
   ctx.font="bold 22px Arial,sans-serif";
-  ctx.fillText("LA COFRADÍA · TABLÓN DE ANUNCIOS",232,176);
+  ctx.fillText(String(anuncio.marca||"LA COFRADÍA · TABLÓN DE ANUNCIOS"),232,176);
   ctx.strokeStyle="#e8dcd0";ctx.lineWidth=3;
   ctx.beginPath();ctx.moveTo(100,223);ctx.lineTo(981,223);ctx.stroke();
 
   // Categoría y título completos.
-  const tipo=NOMBRES[anuncio.tipo]||"📌 "+String(anuncio.tipo||"GENERAL").toUpperCase();
+  const tipo=anuncio.etiqueta||NOMBRES[anuncio.tipo]||"📌 "+String(anuncio.tipo||"GENERAL").toUpperCase();
   ctx.font="bold 25px Arial,sans-serif";
   const chipAncho=Math.min(770,ctx.measureText(tipo).width+49);
   rectRedondeado(ctx,103,258,chipAncho,48,21);
@@ -126,7 +126,7 @@ export async function crearTarjetaAnuncio(anuncio) {
 
   // Publicación, autor y fecha del evento.
   ctx.font="27px Arial,sans-serif";ctx.fillStyle="#73665e";
-  const publicado=fecha?"Publicado: "+fecha+(hora&&hora!=="00:00"?" · "+hora:""):"Anuncio de la Cofradía";
+  const publicado=fecha?"Publicado: "+fecha+(hora&&hora!=="00:00"?" · "+hora:""):(anuncio.fechaMeta||"Anuncio de la Cofradía");
   ctx.fillText(publicado,105,bajoTitulo+28);
   if (autor) {
     ctx.font="25px Arial,sans-serif";
@@ -149,7 +149,7 @@ export async function crearTarjetaAnuncio(anuncio) {
   ctx.font="bold 23px Arial,sans-serif";ctx.fillStyle="#9a3039";
   ctx.fillText("COFRADÍA A MESA PUESTA",104,alto-68);
   ctx.font="23px Arial,sans-serif";ctx.textAlign="right";ctx.fillStyle="#746a62";
-  ctx.fillText("Tablón de anuncios",974,alto-68);ctx.textAlign="left";
+  ctx.fillText(String(anuncio.pie||"Tablón de anuncios"),974,alto-68);ctx.textAlign="left";
 
   return new Promise((resolve,reject)=>{
     canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("No se pudo crear la imagen.")),"image/png");
