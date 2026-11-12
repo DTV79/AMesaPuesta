@@ -99,7 +99,7 @@ function publicable(a, today) {
   const fin = fecha(a.fechaFin);
   if (inicio && inicio > today) return false;
   if (fin && fin < today) return false;
-  return reciente(a, today) || destacadoActivo(a, today);
+  return reciente(a, today) || destacadoActivo(a);
 }
 
 function diasDestacado(a) {
@@ -107,12 +107,33 @@ function diasDestacado(a) {
   return Number.isFinite(n) && n > 0 ? n : 15;
 }
 
-function destacadoActivo(a, today) {
+// Comparar horas civiles de España peninsular (sin depender de la zona horaria del dispositivo).
+function fechaHoraPublicacion(a) {
+  const inicio = fecha(a.fechaPublicacion || a.fecha);
+  if (!inicio) return null;
+  const hora = txt(a.horaPublicacion || "00:00");
+  const m = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(hora);
+  if (!m) return null;
+  const hh = Number(m[1]), mm = Number(m[2]);
+  if (hh > 23 || mm > 59) return null;
+  return Date.UTC(inicio.getFullYear(), inicio.getMonth(), inicio.getDate(), hh, mm);
+}
+
+function ahoraMadrid() {
+  const partes = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Madrid", year: "numeric", month: "2-digit",
+    day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+  }).formatToParts(new Date());
+  const p = Object.fromEntries(partes.map(x => [x.type, x.value]));
+  return Date.UTC(Number(p.year), Number(p.month) - 1, Number(p.day), Number(p.hour), Number(p.minute));
+}
+
+function destacadoActivo(a, instanteActual = ahoraMadrid()) {
   if (!esVerdadero(a.destacado)) return false;
-  const inicio = fecha(a.fecha);
-  if (!inicio) return false;
-  const transcurridos = Math.round((diaUtc(today) - diaUtc(inicio)) / 86400000);
-  return transcurridos >= 0 && transcurridos <= diasDestacado(a);
+  const inicio = fechaHoraPublicacion(a);
+  // Los días destacados empiezan con la publicación, no con la fecha de redacción del anuncio.
+  return inicio !== null && instanteActual >= inicio &&
+    instanteActual < inicio + diasDestacado(a) * 86400000;
 }
 
 function ordenar(lista, today) {
@@ -120,8 +141,8 @@ function ordenar(lista, today) {
     const urgA = tipoCanonico(a.tipo) === "urgente" ? 1 : 0;
     const urgB = tipoCanonico(b.tipo) === "urgente" ? 1 : 0;
     if (urgA !== urgB) return urgB - urgA;
-    const destA = destacadoActivo(a, today) ? 1 : 0;
-    const destB = destacadoActivo(b, today) ? 1 : 0;
+    const destA = destacadoActivo(a) ? 1 : 0;
+    const destB = destacadoActivo(b) ? 1 : 0;
     if (destA !== destB) return destB - destA;
     const ordenA = Number.isFinite(Number(a.orden)) ? Number(a.orden) : 999999;
     const ordenB = Number.isFinite(Number(b.orden)) ? Number(b.orden) : 999999;
@@ -217,7 +238,7 @@ function renderizar() {
   const onlyFeatured = highlightFilter.value === "destacados";
   const filtered = ordenar(publicables.filter(a => {
     if (type && tipoCanonico(a.tipo) !== type) return false;
-    if (onlyFeatured && !destacadoActivo(a, today)) return false;
+    if (onlyFeatured && !destacadoActivo(a)) return false;
     if (query) {
       const hay = normalizar([a.titulo, a.texto, a.autor, a.tipo, tipoInfo(a.tipo).nombre].join(" "));
       if (!hay.includes(query)) return false;
@@ -230,8 +251,8 @@ function renderizar() {
     ? filtered.length + " de " + publicables.length + " anuncios"
     : publicables.length + (publicables.length === 1 ? " anuncio disponible" : " anuncios disponibles");
 
-  const destacados = filtrando ? [] : filtered.filter(a => destacadoActivo(a, today));
-  const normales = filtrando ? filtered : filtered.filter(a => !destacadoActivo(a, today));
+  const destacados = filtrando ? [] : filtered.filter(a => destacadoActivo(a));
+  const normales = filtrando ? filtered : filtered.filter(a => !destacadoActivo(a));
 
   featuredSection.hidden = destacados.length === 0;
   featuredGrid.replaceChildren(...destacados.map(a => crearAnuncio(a, true)));
@@ -247,7 +268,7 @@ function renderizar() {
       listGrid.replaceChildren();
     }
   } else {
-    listGrid.replaceChildren(...normales.map(a => crearAnuncio(a, destacadoActivo(a, today))));
+    listGrid.replaceChildren(...normales.map(a => crearAnuncio(a, destacadoActivo(a))));
   }
 }
 
@@ -257,7 +278,7 @@ function renderizarDetalle() {
     mostrarMensaje(detalleContenido, "Este anuncio ya no está disponible. Consulta el Tablón para ver los avisos vigentes.");
     return;
   }
-  const tarjeta = crearAnuncio(anuncio, destacadoActivo(anuncio, hoyLocal()));
+  const tarjeta = crearAnuncio(anuncio, destacadoActivo(anuncio));
   tarjeta.querySelector(".board-card-body")?.classList.remove("is-clamped");
   tarjeta.querySelector(".board-read-more")?.remove();
   const acciones = tarjeta.querySelector(".board-card-actions");
