@@ -38,6 +38,10 @@
 .tarjeta-botones .cerrar{background:#f5f1ed;color:#5b524e}
 #tarjetaAnuncioEstado{font-size:12px;color:#6b5c54;min-height:0;margin:0}
 @media(max-width:700px){.tarjeta-interior{padding:14px}.tarjeta-interior h2{font-size:19px}.tarjeta-imagen-contenedor img{max-height:53dvh}.actions .compartirTarjeta{flex:1 1 100%}}
+
+.tarjeta-mensaje-label{font-size:12px;font-weight:750;color:#594a42}
+.tarjeta-mensaje{display:block;width:100%;min-height:86px;max-height:22dvh;resize:vertical;border:1px solid #d9cfc3;border-radius:10px;padding:10px;font:13px/1.4 system-ui;overflow:auto;box-sizing:border-box;color:#2b2622}
+@media(max-width:600px){.tarjeta-botones{display:grid;grid-template-columns:1fr 1fr}.tarjeta-botones button{min-width:0;font-size:12px}.tarjeta-botones button:first-child{grid-column:1/-1}.tarjeta-imagen-contenedor img{max-height:37dvh}}
 </style><script defer src="../js/admin/dialogos.js"></script></head><body><main class="shell"><div class="top"><div><div class="brand">🍽️ A Mesa Puesta</div><div class="muted">Administración · Anuncios</div></div></div><div class="row"><div><h1 class="title"><span aria-hidden="true" style="font-size:.8em;margin-right:.35em">📣</span>Tablón de anuncios</h1><div class="muted">Publica, programa y destaca avisos de la Cofradía.</div></div><button id="nuevo" class="btn">+ Nuevo anuncio</button></div><div id="secciones"></div></main><div id="drawer" class="drawer"><aside class="sheet"><button id="cerrar" class="close">✕</button><div class="muted">Editor</div><h2 id="editorTitulo">Nuevo anuncio</h2><form id="form"><input type="hidden" id="aid"><div class="field"><label>Categoría</label><div class="row"><select id="tipo"><option>General</option><option>Comida</option><option>Reunión</option><option>Tesorería</option><option>Urgente</option><option>Recordatorio</option></select><span id="icono" class="preview">📣</span></div></div><div class="field"><label>Título</label><div class="emoji-field"><input id="titulo" required maxlength="180"><button type="button" class="soft emoji-btn" data-target="titulo" aria-label="Añadir emoticono al título">😊</button></div></div><div class="field"><label>Texto</label><div class="emoji-field"><textarea id="texto" rows="8"></textarea><button type="button" class="soft emoji-btn" data-target="texto" aria-label="Añadir emoticono al texto">😊</button></div></div><div id="emojiPicker" class="emoji-picker" hidden></div><div class="field"><label for="fecha">Fecha del anuncio</label><input id="fecha" type="date"></div>
 <div class="field"><label for="publicacion">Publicar desde</label><input id="publicacion" type="datetime-local" step="60" required><small class="ayuda">Fecha y hora de publicación (España peninsular)</small></div>
 <div class="field"><label for="fin">Fecha fin (opcional)</label><input id="fin" type="datetime-local" step="60"><small class="ayuda">El anuncio se oculta al terminar el minuto indicado. Sin fecha fin no caduca.</small></div>
@@ -46,11 +50,14 @@
 <h2 id="tarjetaAnuncioTitulo">Compartir anuncio</h2>
 <p class="subtitulo">Vista previa de la tarjeta. En el iPhone, pulsa «Compartir imagen» y selecciona WhatsApp.</p>
 <div class="tarjeta-imagen-contenedor"><img id="tarjetaAnuncioVista" alt="Vista previa de la tarjeta del anuncio"></div>
+<label for="tarjetaAnuncioMensaje" class="tarjeta-mensaje-label">Mensaje que acompaña a la imagen</label>
+<textarea id="tarjetaAnuncioMensaje" rows="4" spellcheck="true" class="tarjeta-mensaje" aria-label="Mensaje para compartir"></textarea>
 <div class="tarjeta-botones">
-<button class="btn" type="button" id="tarjetaAnuncioCompartir">Compartir imagen</button>
+<button class="btn" type="button" id="tarjetaAnuncioCompartir">Compartir imagen y texto</button>
+<button class="btn guardar" type="button" id="tarjetaAnuncioCopiar">Copiar mensaje</button>
 <button class="btn guardar" type="button" id="tarjetaAnuncioGuardar">Guardar PNG</button>
 <button class="btn cerrar" type="button" id="tarjetaAnuncioCerrar">Cerrar</button>
 </div>
 <p id="tarjetaAnuncioEstado" role="status" aria-live="polite"></p>
 </div>
-</dialog><script type="module" src="../js/admin/anuncios.js?v=20261112-tarjetas"></script><script src="../cabecera-comun.js"></script></body></html>
+</dialog><script type="module" src="../js/admin/anuncios.js?v=20261112-mensaje-link"></script><script src="../cabecera-comun.js"></script></body></html>
