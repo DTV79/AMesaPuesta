@@ -5,7 +5,7 @@ const NOMBRES = {General:"📣 GENERAL",Comida:"🍽️ COMIDA",Reunión:"👥 R
 let vistaActual=null;
 const URL_ACCESO = "https://dtv79.github.io/AMesaPuesta/acceso.html";
 function mensajeAnuncio(a) {
-  return "📣 " + String(a.titulo||"Aviso de la Cofradía").trim() + "\n\nPara consultar las últimas novedades y avisos de la Cofradía, entra en la web con tu usuario:\n" + URL_ACCESO;
+  return "Para consultar las últimas novedades y avisos de la Cofradía, entra en la web con tu usuario:\n" + URL_ACCESO;
 }
 
 function rectRedondeado(ctx,x,y,w,h,r) {
