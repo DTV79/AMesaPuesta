@@ -3,6 +3,10 @@ const LOGO_URL = new URL("../../Fotos/logo-cangrejo.png", import.meta.url).href;
 const ANCHO = 1080;
 const NOMBRES = {General:"📣 GENERAL",Comida:"🍽️ COMIDA",Reunión:"👥 REUNIÓN",Tesorería:"💶 TESORERÍA",Urgente:"🚨 URGENTE",Recordatorio:"⏰ RECORDATORIO"};
 let vistaActual=null;
+const URL_ACCESO = "https://dtv79.github.io/AMesaPuesta/acceso.html";
+function mensajeAnuncio(a) {
+  return "📣 " + String(a.titulo||"Aviso de la Cofradía").trim() + "\n\nPara consultar las últimas novedades y avisos de la Cofradía, entra en la web con tu usuario:\n" + URL_ACCESO;
+}
 
 function rectRedondeado(ctx,x,y,w,h,r) {
   const q=Math.min(r,w/2,h/2);
@@ -168,6 +172,7 @@ export async function abrirTarjetaAnuncio(anuncio) {
   const archivo=new File([blob],nombreArchivo(anuncio.titulo),{type:"image/png"});
   const url=URL.createObjectURL(blob);
   vistaActual={archivo,url};
+  document.getElementById("tarjetaAnuncioMensaje").value=mensajeAnuncio(anuncio);
   document.getElementById("tarjetaAnuncioVista").src=url;
   document.getElementById("tarjetaAnuncioEstado").textContent="";
   dialogo.showModal();
@@ -179,6 +184,8 @@ export function configurarCompartirTarjeta() {
   const guardar=document.getElementById("tarjetaAnuncioGuardar");
   const cerrar=document.getElementById("tarjetaAnuncioCerrar");
   const estado=document.getElementById("tarjetaAnuncioEstado");
+  const mensaje=document.getElementById("tarjetaAnuncioMensaje");
+  const copiar=document.getElementById("tarjetaAnuncioCopiar");
 
   cerrar.addEventListener("click",()=>dialogo.close());
   dialogo.addEventListener("click",event=>{if(event.target===dialogo)dialogo.close();});
@@ -190,17 +197,33 @@ export function configurarCompartirTarjeta() {
 
   compartir.addEventListener("click",()=>{
     const archivo=vistaActual?.archivo;if (!archivo)return;
+    const texto=mensaje.value;
     const puedeCompartir=typeof navigator.share==="function" &&
       (typeof navigator.canShare!=="function"||navigator.canShare({files:[archivo]}));
     if (!puedeCompartir) {
       descargarArchivo(archivo);
-      estado.textContent="Imagen descargada. Puedes enviarla por WhatsApp desde tus archivos.";
+      estado.textContent="Imagen descargada. Copia el mensaje con enlace y pégalo al enviarla por WhatsApp.";
       return;
     }
-    // El archivo ya está preparado: mantener la activación de usuario para Safari/iOS.
-    navigator.share({files:[archivo]})
-      .then(()=>{estado.textContent="";})
-      .catch(error=>{if(error?.name!=="AbortError")estado.textContent="No se pudo compartir. Utiliza Guardar PNG.";});
+    // Ya tenemos el archivo preparado antes del clic para conservar la activación de Safari/iOS.
+    // WhatsApp puede omitir el texto adjunto según la versión: ofrecer también copiar el mensaje.
+    navigator.share({files:[archivo],text:texto})
+      .then(()=>{estado.textContent="Si WhatsApp no incluye el texto, usa «Copiar mensaje» para pegarlo.";})
+      .catch(error=>{if(error?.name!=="AbortError")estado.textContent="No se pudo compartir. Puedes guardar el PNG y copiar el mensaje.";});
+  });
+  copiar.addEventListener("click",async()=>{
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(mensaje.value);
+        estado.textContent="Mensaje con enlace copiado. Puedes pegarlo debajo de la imagen en WhatsApp.";
+      } else {
+        mensaje.focus();mensaje.select();
+        estado.textContent="Selecciona «Copiar» y pega el texto debajo de la imagen en WhatsApp.";
+      }
+    } catch {
+      mensaje.focus();mensaje.select();
+      estado.textContent="Selecciona «Copiar» y pega el texto en WhatsApp.";
+    }
   });
 
   guardar.addEventListener("click",()=>{
