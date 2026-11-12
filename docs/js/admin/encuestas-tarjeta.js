@@ -78,7 +78,7 @@ function datosTarjeta(e,modo) {
       marca:"LA COFRADÍA · ENCUESTAS",etiqueta,
       fechaMeta:cuando,pie:"Encuestas"
     },
-    mensaje:(modo==="resultados"?"📊 Resultados: ":"🗳️ Encuesta: ")+titulo+"\n\n"+tipoMensaje+"\n"+ACCESO,
+    mensaje:tipoMensaje+"\n"+ACCESO,
     nombre:"a-mesa-puesta-"+(modo==="resultados"?"resultados-":"encuesta-")+
       titulo.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()
         .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,45)+".png"
