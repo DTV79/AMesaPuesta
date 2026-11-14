@@ -2171,7 +2171,17 @@ function renderWinnerBlock(poll){
             }catch(error){console.warn("No se pudo consultar el voto propio",error);}
           }));
         }
+        const encuestaEnlace=new URLSearchParams(location.search).get("encuesta");
+        if(encuestaEnlace && ALL_POLLS.some(p=>p.id===encuestaEnlace && p.status==="cerrada")) historyExpanded=true;
         renderAll(ALL_POLLS);
+        if(encuestaEnlace){
+          const tarjeta=Array.from(document.querySelectorAll(".poll-card[data-poll-id]")).find(c=>c.dataset.pollId===encuestaEnlace);
+          if(tarjeta){
+            const boton=tarjeta.querySelector(".poll-toggle");
+            if(boton && boton.getAttribute("aria-expanded")==="false") boton.click();
+            requestAnimationFrame(()=>tarjeta.scrollIntoView({behavior:"smooth",block:"start"}));
+          }
+        }
         activeContainer.querySelectorAll('.poll-card[data-scope="active"]').forEach(card=>{
           const voto=MIS_VOTOS[card.dataset.pollId];
           if(!voto?.votado)return;
