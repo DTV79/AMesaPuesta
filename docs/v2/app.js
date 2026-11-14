@@ -86,9 +86,9 @@ async function consultarHistorial() {
     if (!res.ok) throw new Error('HTTP '+res.status);
     const list=await res.json();
     if(!Array.isArray(list)) throw new Error('Formato no válido');
-    // El historial público muestra únicamente comidas celebradas.
-    // Las programadas siguen disponibles en Mi Pizarra del cofrade.
-    return list.filter(x=>x&&x.codigo&&x.fecha&&x.restaurante&& !esProxima(x));
+    // La consulta pública ya filtra las comidas por «Publicada» en administración.
+    // Una comida publicada debe verse aquí aunque su fecha sea hoy o futura.
+    return list.filter(x=>x&&x.codigo&&x.fecha&&x.restaurante);
   } finally {clearTimeout(timer);}
 }
 function resumenCard(m) {
