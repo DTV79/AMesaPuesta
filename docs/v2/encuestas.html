@@ -1556,7 +1556,7 @@
     function getEligibleCofradesForPoll(poll){
       const base = poll.votersMode !== "cofrades"
         ? COFRADES
-        : COFRADES.filter(c => c.rango === "cofrade" || c.rango === "cofrade fundador");
+        : COFRADES.filter(c => ["cofrade", "cofrade fundador", "cofrade veterano"].includes(c.rango));
 
       if (!shouldMarkVotedMembers(poll)) {
         return base.map(c => ({
