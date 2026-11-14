@@ -219,8 +219,8 @@ function valoracionPublica(m){
   if(!estado)return null;
   const box=el('section','meal-voting');
   // Sin votación abierta, ocultar el contenedor hasta confirmar que hay comentarios.
-  if(!estado.abierta)box.style.display='none';
-  if(estado.abierta){
+  if(!estado.abierta&&!(Number(estado.votos)>0))box.style.display='none';
+  if(estado.abierta||Number(estado.votos)>0){
     box.append(el('h3','','⭐ Valoración de la comida'));
     if(estado.votos>0)box.append(el('p','meal-voting-summary','Nota general: '+Number(estado.media_general).toLocaleString('es-ES')+'/5 · '+estado.votos+' '+(estado.votos===1?'valoración':'valoraciones')));
   }
@@ -287,6 +287,7 @@ function valoracionPublica(m){
       const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/functions/v1/acceso-cofrade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
       const result=await res.json();if(!res.ok||result.error)throw Error(result.error||'No se pudo guardar');
       msg.textContent='¡Valoración registrada! Gracias por participar.';submit.hidden=true;btn.hidden=true;
+      await actualizarValoracionesEnPantalla();
     }catch(error){msg.textContent=error.message;}finally{submit.disabled=false;}
   });
   return box;
@@ -297,7 +298,7 @@ function historialCard(m) {
   const cover=foto(m,'history-photo');
   const contenido=el('div','history-content');
   const estadoValoracion=valoracionesDisponibles.get(m.codigo);
-  const notaFinal=estadoValoracion&&!estadoValoracion.abierta&&estadoValoracion.votos>0 ? Number(estadoValoracion.media_general) : null;
+  const notaFinal=estadoValoracion&&Number(estadoValoracion.votos)>0&&Number.isFinite(Number(estadoValoracion.media_general)) ? Number(estadoValoracion.media_general) : null;
   // La valoración histórica se conserva hasta que existan votos nuevos de cofrades.
   const estrellasMostrar=notaFinal!==null ? estrellas(Math.max(1,Math.min(5,Math.round(notaFinal)))) : estrellas(m.valoracion);
   const stars=el('div','rating rating-restaurante',estrellasMostrar);
@@ -397,6 +398,22 @@ function historialCard(m) {
   return card;
 }
 
+async function actualizarValoracionesEnPantalla(){
+  if(document.body.dataset.page!=='restaurantes'||document.hidden)return;
+  try{
+    const anterior=JSON.stringify([...valoracionesDisponibles]);
+    await cargarEstadoValoraciones();
+    if(JSON.stringify([...valoracionesDisponibles])===anterior)return;
+    for(const comida of comidas){
+      const actual=document.getElementById(comida.codigo);
+      if(!actual)continue;
+      const abiertos=[...actual.querySelectorAll('details')].map(n=>n.open);
+      const nuevo=historialCard(comida);
+      [...nuevo.querySelectorAll('details')].forEach((n,i)=>{n.open=!!abiertos[i]});
+      actual.replaceWith(nuevo);
+    }
+  }catch(e){console.warn('No se pudieron actualizar las valoraciones',e)}
+}
 function iniciarRestaurantes(){
   prepararGaleria();
   const buscar=document.getElementById('buscar'),anio=document.getElementById('anio'),
@@ -418,6 +435,8 @@ function iniciarRestaurantes(){
   anio.addEventListener('change',pintar);
   limpiar.addEventListener('click',()=>{buscar.value='';anio.value='';pintar();buscar.focus();});
   pintar();
+  setInterval(actualizarValoracionesEnPantalla,15000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)actualizarValoracionesEnPantalla()});
   const codigo=decodeURIComponent(location.hash.slice(1));
   if(/^RES-\d{4}$/.test(codigo)){
     document.getElementById(codigo)?.scrollIntoView({block:'start'});
