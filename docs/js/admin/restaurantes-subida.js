@@ -65,7 +65,7 @@ async function prepararFoto(file) {
 }
 
 async function subirArchivo(sb,path,foto) {
-  const {data:{session},error:sessionError}=await sb.auth.getSession();
+  const {data:{session},error:sessionError}=await conLimite(sb.auth.getSession(),15000,"No se pudo verificar la sesión. Comprueba la conexión o vuelve a iniciar sesión.");
   if(sessionError||!session?.access_token)throw Error("La sesión ha caducado. Vuelve a entrar en Administración.");
   const control=new AbortController();
   const timer=setTimeout(()=>control.abort(),90000);
