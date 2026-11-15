@@ -296,7 +296,7 @@ function renderizar() {
   featuredSection.hidden = destacados.length === 0;
   featuredGrid.replaceChildren(...destacados.map(a => crearAnuncio(a,true)));
 
-  listSection.hidden = !normales.length && !filtrando && (destacados.length>0 || anteriores.length>0);
+  listSection.hidden = !normales.length && (destacados.length>0 || anteriores.length>0);
   listHeading.textContent = filtrando ? "Avisos vigentes" : "Últimos anuncios";
   if (!normales.length) {
     if (!listSection.hidden) mostrarMensaje(listGrid, filtrando
