@@ -3,6 +3,10 @@ export function crearEditor({$,esc}){
 let bloques=[],soloLectura=false;
 const roman=n=>{let out="";for(const [v,t] of [[1000,"M"],[900,"CM"],[500,"D"],[400,"CD"],[100,"C"],[90,"XC"],[50,"L"],[40,"XL"],[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]])while(n>=v){out+=t;n-=v}return out};
 const nuevo=tipo=>({tipo,clave:crypto.randomUUID(),titulo:tipo==="capitulo"?"Nuevo capítulo":"Nuevo artículo",contenido:""});
+const numeroDeArticulo=titulo=>{const m=/^(?:Art[ií]culo|Art\.)\s*(\d+)\b/i.exec(String(titulo||"").trim());return m?Number(m[1]):null};
+const etiquetaApartado=n=>n?"+ Añadir apartado "+n+".x":"+ Añadir apartado";
+const ayudaApartado=n=>n?"Escribe el título en su propia línea, por ejemplo: «"+n+".1. Título del apartado». Se conservará como un único artículo.":"Este bloque no tiene número de artículo: utiliza títulos como «Apartado 1. Título del apartado».";
+
 function renumerar(){
 let cap=0,art=0;
 for(const b of bloques){
@@ -16,7 +20,7 @@ function get(){sync();return bloques.map((x,i)=>({...x,orden:i+1,padre_id:undefi
 function insertar(tipo,indice){sync();bloques.splice(indice,0,nuevo(tipo));renumerar();render()}
 function mover(i,d){sync();const j=i+d;if(j<0||j>=bloques.length)return;[bloques[i],bloques[j]]=[bloques[j],bloques[i]];renumerar();render()}
 function render(){
-$("bloques").innerHTML=bloques.map((b,i)=>{const esArt4=b.tipo==="articulo"&&(b.clave==="articulo-4"||/^Art[ií]culo\s+4\b/i.test(b.titulo||""));return '<div class="card bloque" data-i="'+i+'"><div class="row"><select class="bTipo" style="max-width:150px"><option value="capitulo" '+(b.tipo==="capitulo"?"selected":"")+'>Capítulo</option><option value="articulo" '+(b.tipo==="articulo"?"selected":"")+'>Artículo</option><option value="disposicion" '+(b.tipo==="disposicion"?"selected":"")+'>Disposición</option><option value="nota" '+(b.tipo==="nota"?"selected":"")+'>Nota</option></select><div><button class="btn soft up" type="button">↑</button><button class="btn soft down" type="button">↓</button><button class="btn danger del" type="button">Eliminar</button></div></div><label>Título</label><input class="bTitulo" value="'+esc(b.titulo||"")+'"><label>Contenido</label><textarea class="bContenido'+(esArt4?" contenido-art4":"")+'">'+esc(b.contenido||"")+'</textarea>'+(esArt4?'<div class="estatutos-apartados-ayuda"><button type="button" class="btn soft insertar-apartado">+ Añadir apartado 4.x</button><span>Escribe cada título como «4.1. Celebración de las comidas» en una línea propia. Se conservará como un único artículo 4.</span></div><details class="estatutos-preview"><summary>Vista previa del artículo 4</summary><div class="estatutos-preview-body"></div></details>':'')+'</div>'}).join("");
+$("bloques").innerHTML=bloques.map((b,i)=>{const esArticulo=b.tipo==="articulo",numeroArt=numeroDeArticulo(b.titulo);return '<div class="card bloque" data-i="'+i+'"><div class="row"><select class="bTipo" style="max-width:150px"><option value="capitulo" '+(b.tipo==="capitulo"?"selected":"")+'>Capítulo</option><option value="articulo" '+(b.tipo==="articulo"?"selected":"")+'>Artículo</option><option value="disposicion" '+(b.tipo==="disposicion"?"selected":"")+'>Disposición</option><option value="nota" '+(b.tipo==="nota"?"selected":"")+'>Nota</option></select><div><button class="btn soft up" type="button">↑</button><button class="btn soft down" type="button">↓</button><button class="btn danger del" type="button">Eliminar</button></div></div><label>Título</label><input class="bTitulo" value="'+esc(b.titulo||"")+'"><label>Contenido</label><textarea class="bContenido'+(esArticulo?" contenido-con-apartados":"")+'">'+esc(b.contenido||"")+'</textarea>'+(esArticulo?'<div class="estatutos-apartados-ayuda"><button type="button" class="btn soft insertar-apartado">'+esc(etiquetaApartado(numeroArt))+'</button><span class="apartado-ayuda">'+esc(ayudaApartado(numeroArt))+'</span></div><details class="estatutos-preview"><summary>Vista previa de este artículo</summary><div class="estatutos-preview-body"></div></details>':'')+'</div>'}).join("");
 const els=[...document.querySelectorAll(".bloque")];
 els.forEach((el,i)=>{
 el.querySelector(".del").onclick=()=>{sync();bloques.splice(i,1);renumerar();render()};
@@ -27,14 +31,24 @@ const area=el.querySelector(".bContenido"),vista=el.querySelector(".estatutos-pr
 if(vista){
   const actualizar=()=>{vista.innerHTML=formatearContenidoEstatutos(area.value)};
   area.addEventListener("input",actualizar);actualizar();
-  const boton=el.querySelector(".insertar-apartado");
+  const boton=el.querySelector(".insertar-apartado"),titulo=el.querySelector(".bTitulo");
+  const getNumero=()=>numeroDeArticulo(titulo.value);
+  titulo.addEventListener("input",()=>{
+    const n=getNumero();
+    boton.textContent=etiquetaApartado(n);
+    el.querySelector(".apartado-ayuda").textContent=ayudaApartado(n);
+  });
   boton.onclick=()=>{
     if(soloLectura)return;
-    const numeros=[...area.value.matchAll(/^4\.(\d+)\.\s+.+$/gm)].map(x=>Number(x[1]));
+    const n=getNumero();
+    const patron=n?new RegExp("^\\s*"+n+"\\.(\\d+)\\.\\s+.+$","gm"):/^\s*Apartado\s+(\d+)\.\s+.+$/gim;
+    const numeros=[...area.value.matchAll(patron)].map(x=>Number(x[1]));
     const siguiente=Math.max(0,...numeros)+1;
-    const prefijo=area.value.trim()?"\n\n":"";
-    area.value+=prefijo+"4."+siguiente+". Título del apartado\n";
-    area.focus();area.setSelectionRange(area.value.length-"Título del apartado\n".length,area.value.length-1);
+    const tituloNuevo=n?n+"."+siguiente+". Título del apartado":"Apartado "+siguiente+". Título del apartado";
+    area.value=area.value.replace(/\s+$/,"")+(area.value.trim()?"\n\n":"")+tituloNuevo+"\n";
+    area.focus();
+    const comienzo=area.value.lastIndexOf("Título del apartado");
+    area.setSelectionRange(comienzo,comienzo+"Título del apartado".length);
     actualizar();
   };
 }
