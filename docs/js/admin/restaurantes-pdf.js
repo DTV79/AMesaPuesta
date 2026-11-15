@@ -12,7 +12,8 @@ function pdfLibrary(){
   }).catch(e=>{jsPdfPromise=null;throw e});
   return jsPdfPromise;
 }
-// de-DE conserva coma decimal y punto de miles también para 1.000–9.999.\nconst money=n=>Number(n||0).toLocaleString("de-DE",{useGrouping:true,minimumFractionDigits:2,maximumFractionDigits:2})+" €";
+// de-DE conserva coma decimal y punto de miles también para 1.000–9.999.
+const money=n=>Number(n||0).toLocaleString("de-DE",{useGrouping:true,minimumFractionDigits:2,maximumFractionDigits:2})+" €";
 const clean=s=>String(s??"").replace(/\s+/g," ").trim();
 const date=s=>/^\d{4}-\d{2}-\d{2}/.test(s||"")?s.slice(8,10)+"/"+s.slice(5,7)+"/"+s.slice(0,4):"Sin fecha";
 const safeName=s=>clean(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9 _-]/g,"").replace(/\s+/g," ").trim()||"Restaurante";
