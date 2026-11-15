@@ -194,22 +194,55 @@ async function makePdf(data){
     yy+=10;listaPersonas(data.asistentesLista,yy);
     y+=peopleHeight+3;
     section("EL MENÚ",28);
-    const gap=3,cardWidth=(W-gap)/2,cardHeights=[];
-    function platoAltura(menu){
+    const gap=3,cardWidth=(W-gap)/2;
+    // Preparar todas las líneas antes de dibujar: un menú largo puede continuar
+    // en otra hoja sin cortar platos, descartar texto ni reducir la letra.
+    const menuLines=menus.map(m=>{
       doc.setFont("helvetica","normal");doc.setFontSize(8*scale);
-      return menu.platos.reduce((height,plato)=>height+Math.max(1,doc.splitTextToSize("• "+plato,(cardWidth-12)*scale).length)*3.9+1.3,0);
-    }
-    for(const menu of menus)cardHeights.push(11+platoAltura(menu)+3);
+      return m.platos.flatMap(plato=>{
+        const filas=doc.splitTextToSize("• "+plato,(cardWidth-10)*scale);
+        return filas.map((contenido,i)=>({
+          contenido,alto:3.9+(i===filas.length-1?1.3:0)
+        }));
+      });
+    });
     for(let row=0;row<2;row++){
-      const height=Math.max(cardHeights[row*2],cardHeights[row*2+1]);
-      for(let col=0;col<2;col++){
-        const m=menus[row*2+col],x=L+col*(cardWidth+gap);
-        rect(x,y,cardWidth,height,["vanilla","coral","rose","restaurant"][row*2+col],2.5);
-        text(m.label,x+5,y+6,8.5,"wine","bold");
-        let py=y+12;
-        for(const plato of m.platos)py+=wrapped("• "+plato,x+5,py,cardWidth-10,8,"ink","normal",3.9)+1.3;
+      const cursor=[0,0];
+      let primera=true;
+      while(cursor.some((indice,col)=>indice<menuLines[row*2+col].length)){
+        if(paginate&&visible&&y+24>279)nextPage();
+        const disponible=paginate&&visible?Math.max(0,279-y-16):Infinity;
+        const trozos=[[],[]],consumo=[0,0];
+        for(let col=0;col<2;col++){
+          const filas=menuLines[row*2+col];
+          while(cursor[col]<filas.length&&consumo[col]+filas[cursor[col]].alto<=disponible){
+            const linea=filas[cursor[col]++];
+            trozos[col].push(linea);
+            consumo[col]+=linea.alto;
+          }
+        }
+        // El encabezado compacto de una hoja deja sitio suficiente para al
+        // menos una línea; aun así evitamos un ciclo infinito si eso cambia.
+        if(paginate&&visible&&trozos.every(t=>!t.length)){
+          nextPage();
+          continue;
+        }
+        const height=Math.max(17,15+Math.max(...consumo));
+        for(let col=0;col<2;col++){
+          if(!trozos[col].length&&!primera)continue;
+          const m=menus[row*2+col],x=L+col*(cardWidth+gap);
+          rect(x,y,cardWidth,height,["vanilla","coral","rose","restaurant"][row*2+col],2.5);
+          text(m.label+(primera?"":" (cont.)"),x+5,y+6,8.5,"wine","bold");
+          let py=y+12;
+          for(const linea of trozos[col]){
+            text(linea.contenido,x+5,py,8,"ink");
+            py+=linea.alto;
+          }
+        }
+        y+=height+gap;
+        primera=false;
+        if(paginate&&visible&&cursor.some((indice,col)=>indice<menuLines[row*2+col].length))nextPage();
       }
-      y+=height+gap;
     }
     section("RESUMEN ECONÓMICO",20);
     rect(L,y,W,15,"wine",3);
