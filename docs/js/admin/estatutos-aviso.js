@@ -13,6 +13,7 @@ export function prepararAvisoEstatutos({sb,$,guardar,versiones,abrir,obtenerActu
   const confirmar=$("confirmarPublicacionEstatutos");
   const cancelar=$("cancelarPublicacionEstatutos");
   let aprobadoEnEstaOperacion=false;
+  let modoSoloAviso=false;
   let procesando=false;
 
   const horaMadrid=()=>{
@@ -54,7 +55,7 @@ export function prepararAvisoEstatutos({sb,$,guardar,versiones,abrir,obtenerActu
   const cerrar=async()=>{
     if(procesando)return;
     const id=obtenerActual().id;
-    if(aprobadoEnEstaOperacion && id){
+    if(aprobadoEnEstaOperacion && !modoSoloAviso && id){
       await refrescar(id,"✓ Estatutos aprobados. Comprueba en el Tablón si se llegó a publicar el aviso.");
     }else{
       modal.classList.remove("open");
@@ -94,21 +95,28 @@ export function prepararAvisoEstatutos({sb,$,guardar,versiones,abrir,obtenerActu
     return true;
   }
 
-  function abrirOpciones(){
+  function abrirOpciones(soloAviso=false){
     const {detalle}=obtenerActual();
-    if(detalle?.version?.estado!=="borrador")return;
-    aprobadoEnEstaOperacion=false;
+    if(soloAviso ? detalle?.version?.estado!=="vigente" : detalle?.version?.estado!=="borrador")return;
+    modoSoloAviso=soloAviso;
+    aprobadoEnEstaOperacion=soloAviso;
+    $("tituloModalAvisoEstatutos").textContent=soloAviso?"Anunciar versión vigente":"Aprobar nueva versión";
+    $("textoModalAvisoEstatutos").textContent=soloAviso
+      ?"Esta versión ya está aprobada y publicada. Puedes comunicar los cambios sin volver a aprobarla."
+      :"Los Estatutos se publicarán al confirmar. Opcionalmente, puedes informar del cambio a los cofrades.";
+    $("filaCheckboxAvisoEstatutos").hidden=soloAviso;
     activar.checked=true;
     dias.value="7";
     texto.value=$("descripcionCambios").value.trim()||
       "Se han aprobado modificaciones en los Estatutos de la Cofradía. Consulta la versión vigente para conocerlas.";
-    confirmar.textContent="Aprobar y publicar";
+    confirmar.textContent=soloAviso?"Publicar aviso":"Aprobar y publicar";
     cancelar.textContent="Cancelar";
     mensaje.textContent="";
     actualizarVista();
     modal.classList.add("open");
   }
-  $("aprobar").onclick=abrirOpciones;
+  $("aprobar").onclick=()=>abrirOpciones(false);
+  $("avisarVersionVigente").onclick=()=>abrirOpciones(true);
 
   confirmar.addEventListener("click",async()=>{
     if(procesando)return;
@@ -140,8 +148,8 @@ export function prepararAvisoEstatutos({sb,$,guardar,versiones,abrir,obtenerActu
         try{
           const creado=await crearAnuncio(detalle.version.version,n,resumen);
           await refrescar(id,creado
-            ?"✓ Estatutos aprobados y aviso publicado en Mi Pizarra y el Tablón."
-            :"✓ Estatutos aprobados. Ya existía un aviso de esta versión en el Tablón.");
+            ?(modoSoloAviso?"✓ Aviso publicado en Mi Pizarra y el Tablón.":"✓ Estatutos aprobados y aviso publicado en Mi Pizarra y el Tablón.")
+            :(modoSoloAviso?"✓ Ya existe un aviso de esta versión en el Tablón.":"✓ Estatutos aprobados. Ya existía un aviso de esta versión en el Tablón."));
         }catch(err){
           // La aprobación no se revierte ni se repite si el aviso falla.
           mensaje.textContent="Los Estatutos ya están aprobados, pero no se pudo publicar el aviso: "+
