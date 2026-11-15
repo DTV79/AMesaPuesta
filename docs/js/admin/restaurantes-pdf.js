@@ -117,8 +117,14 @@ async function makePdf(data){
       text(date(data.comida.fecha),R-5,y+9.2,8,"white","bold",{align:"right"});
       y+=26;
     }
-    function ensureRoom(height){
-      if(paginate&&visible&&y+height>limitePagina)nextPage();
+    function ensureRoom(height,continuacion=""){
+      if(paginate&&visible&&y+height>limitePagina){
+        nextPage();
+        if(continuacion){
+          text(continuacion,L+2,y+5,9,"wine","bold");
+          y+=11;
+        }
+      }
     }
     function section(label,firstBlock=15){
       ensureRoom(12+firstBlock);
@@ -260,7 +266,7 @@ async function makePdf(data){
       const titleHeight=Math.max(5,titleLines*4);
       const noteHeight=noteLines?3+noteLines*4.1:0;
       const rowHeight=10+titleHeight+noteHeight+2;
-      ensureRoom(rowHeight+2);
+      ensureRoom(rowHeight+2,"RESUMEN ECONÓMICO · CONTINUACIÓN");
       rect(L,y,W,rowHeight,"sage",2);
       const baseline=y+7;
       wrapped(concepto,L+4,baseline,127,8.8,"ink","normal",4);
@@ -298,7 +304,7 @@ async function makePdf(data){
         doc.setFontSize(8.6*scale);
         const rows=doc.splitTextToSize(m.who,138*scale);
         const height=Math.max(9,rows.length*4+3);
-        ensureRoom(height+2);
+        ensureRoom(height+2,"PAGOS A REALIZAR · CONTINUACIÓN");
         rect(L,y,W,height,"bluegray",2);
         wrapped(m.who,L+5,y+5,135,8.5,"ink","normal",4);
         text(money(m.amount),R-5,y+5,9.5,"wine","bold",{align:"right"});
