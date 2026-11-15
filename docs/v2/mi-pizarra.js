@@ -75,8 +75,9 @@ try {
   }).sort((a,b)=>Number(destacados(b))-Number(destacados(a))||(fecha(b.fechaPublicacion||b.fecha)?.getTime()||0)-(fecha(a.fechaPublicacion||a.fecha)?.getTime()||0));
   for(const anuncio of vigentes){
     const titulo=txt(anuncio.titulo)||"Anuncio de la cofradía";
-    const destino=anuncio.id?"anuncios.html?anuncio="+encodeURIComponent(String(anuncio.id)):"anuncios.html";
-    add("📣",titulo,txt(anuncio.texto),destino,"Leer anuncio");
+    const esEstatutos=normal(titulo).startsWith("estatutos actualizados")&&String(anuncio.enlace||"").includes("/AMesaPuesta/v2/estatutos.html");
+    const destino=esEstatutos?"estatutos.html":(anuncio.id?"anuncios.html?anuncio="+encodeURIComponent(String(anuncio.id)):"anuncios.html");
+    add(esEstatutos?"📜":"📣",titulo,txt(anuncio.texto),destino,esEstatutos?"Consultar Estatutos":"Leer anuncio");
     count++;
   }
 }catch(error){console.warn("No se pudieron cargar los anuncios en Mi Pizarra:",error)}
