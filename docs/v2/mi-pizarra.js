@@ -7,17 +7,19 @@ try {
   });
   if(!respuesta.ok)throw Error("HTTP "+respuesta.status);
   const datos=await respuesta.json();
-  const ahora=Date.now(),sieteDias=7*24*60*60*1000;
+  const ahora=Date.now();
   for(const encuesta of (Array.isArray(datos?.polls)?datos.polls:[])){
     if(encuesta.status!=="cerrada")continue;
     // No anunciar resultados ocultos por administración.
     if(encuesta.showResults===false)continue;
+    const dias=Number(encuesta.pizarraDays??7);
+    if(!Number.isInteger(dias)||dias<=0)continue;
     const cierre=encuesta.closedAt||encuesta.closes;
     if(!cierre)continue;
     const fechaCierre=new Date(cierre);
     if(!Number.isFinite(fechaCierre.getTime()))continue;
     const antiguedad=ahora-fechaCierre.getTime();
-    if(antiguedad<0||antiguedad>=sieteDias)continue;
+    if(antiguedad<0||antiguedad>=dias*24*60*60*1000)continue;
     const titulo=String(encuesta.title||"Encuesta sin título");
     const total=Number(encuesta.totalVotes)||0;
     const ganadores=Array.isArray(encuesta.winners)?encuesta.winners:[];
