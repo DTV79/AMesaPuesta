@@ -67,7 +67,78 @@ async function gestionarVotos(id){
 }
 async function verDetalle(id){const box=document.querySelector("#detalleContenido");box.innerHTML="<p>Cargando detalle…</p>";document.querySelector("#detalleModal").classList.add("open");const {data:d,error}=await sb.rpc("detalle_encuesta_admin",{p_id:id});if(error){box.textContent="No se pudo consultar el detalle: "+error.message;return;}const opciones=d.opciones||[],votantes=d.votantes||[],identificados=d.votos_identificados||[],total=opciones.reduce((a,o)=>a+Number(o.votos||0),0);const cifras=opciones.some(o=>o.votos===null)?"<p>Los resultados de esta encuesta se mostrarán cuando finalice, según su configuración de privacidad.</p>":opciones.map(o=>'<div class="resultado-detalle"><div class="row"><span>'+esc(o.texto)+'</span><strong>'+Number(o.votos||0)+' votos ('+(total?Math.round(100*Number(o.votos||0)/total):0)+' %)</strong></div><div class="bar"><div class="fill" style="width:'+(total?100*Number(o.votos||0)/total:0)+'%"></div></div></div>').join("");box.innerHTML='<h2>'+esc(d.titulo)+'</h2><p class="muted">'+(d.finalizada?"Resultados definitivos":"Encuesta en curso")+' · '+esc(d.tipo)+'</p><p><strong>'+Number(d.participantes||0)+' de '+Number(d.elegibles||0)+'</strong> cofrades han participado ('+(d.elegibles?Math.round(100*d.participantes/d.elegibles):0)+' %)</p>'+cifras+(d.tipo==='publica'?'<h3>Participantes identificados ('+votantes.length+')</h3>'+(votantes.length?'<p>'+votantes.map(v=>esc(v.nombre)).join(', ')+'</p>':'<p class="muted">No constan participantes identificados.</p>'):'<p class="muted">Participación anónima: no se muestra quién ha votado.</p>')+(d.tipo==="publica"?'<h3>Votos identificados</h3>'+(identificados.length?'<div>'+identificados.map(v=>'<div class="voto-identificado"><div class="voto-identificado-texto"><strong>'+esc(v.nombre)+'</strong><span>'+esc(v.opcion)+'</span></div>'+(v.registrada_en?'<time class="voto-identificado-fecha" datetime="'+esc(v.registrada_en)+'">'+new Date(v.registrada_en).toLocaleString('es-ES',{timeZone:'Europe/Madrid',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})+'</time>':'')+'</div>').join("")+'</div>':'<p class="muted">No hay votos individuales identificados.</p>'):'<p class="muted">Los votos individuales no se muestran en esta modalidad.</p>');}
 document.querySelector("#cerrarDetalle").onclick=()=>document.querySelector("#detalleModal").classList.remove("open");
-function abrir(id=null){const e=id?encuestas.find(x=>x.id===id):null;eid.value=e?.id||"";editorTitulo.textContent=e?"Editar encuesta":"Nueva encuesta";titulo.value=e?.titulo||"";descripcion.value=e?.descripcion||"";tipo.value=e?.tipo||"secreta";estado.value=e?.estado||"borrador";max.value=e?.max_opciones||1;electores.value=e?.electores||"todos";abre.value=inputDT(e?.abre_en);cierra.value=inputDT(e?.cierra_en);mostrarEncuesta.checked=e?.mostrar_encuesta??true;mostrarResultados.checked=e?.mostrar_resultados??true;mostrarGanador.checked=e?.mostrar_ganador??true;document.getElementById('diasResultadosPizarra').value=String(e?.dias_resultados_pizarra??7);opciones.innerHTML="";(e?.opciones?.length?e.opciones:["",""]).forEach(x=>opcion(x.texto||x));eliminar.style.display=e?"inline-block":"none";opcionReabrir.hidden=!(e&&["cerrada","archivada"].includes(e.estado_efectivo||e.estado));opcionReabrir.disabled=opcionReabrir.hidden;actualizarModoReapertura();drawer.classList.add("open")}nueva.onclick=()=>abrir();cerrar.onclick=()=>drawer.classList.remove("open");form.onsubmit=async ev=>{ev.preventDefault();if(estado.value==="reabrir"){
+
+const btnPublicarResultados=document.getElementById("publicarResultadosAhora");
+const btnRetirarResultados=document.getElementById("retirarResultadosPizarra");
+const btnResultadosAutomaticos=document.getElementById("restablecerResultadosAutomaticos");
+const estadoResultados=document.getElementById("estadoControlResultadosPizarra");
+let cambiandoPublicacion=false;
+
+function mostrarControlResultados(e){
+  const modo=e?.pizarra_modo_publicacion||"automatica";
+  const cerrada=!!e&&["cerrada","archivada"].includes(e.estado_efectivo||e.estado);
+  const guardadaVisible=!!e&&e.mostrar_resultados!==false&&e.mostrar_encuesta!==false;
+  const formularioVisible=mostrarResultados.checked&&mostrarEncuesta.checked;
+  const permisoPublicar=cerrada&&guardadaVisible&&formularioVisible;
+  const n=e?.dias_resultados_pizarra??7;
+  if(!e)estadoResultados.textContent="Primero crea y guarda la encuesta. Las opciones manuales estarán disponibles al cerrarse.";
+  else if(modo==="publicada")estadoResultados.textContent="Publicación manual activa: los resultados aparecen en Mi Pizarra hasta que decidas retirarlos.";
+  else if(modo==="oculta")estadoResultados.textContent="Publicación manual desactivada: los resultados no aparecen en Mi Pizarra, aunque el plazo automático siga vigente.";
+  else if(n===0)estadoResultados.textContent="Modo automático: No publicar. Puedes usar «Publicar ahora» al cerrar la encuesta.";
+  else estadoResultados.textContent="Modo automático: los resultados aparecen durante "+n+(n===1?" día":" días")+" desde el cierre de la encuesta.";
+  if(e&&!cerrada)estadoResultados.textContent+=" Solo puedes publicar resultados cuando la encuesta esté cerrada.";
+  else if(cerrada&&!guardadaVisible)estadoResultados.textContent+=" Activa «Mostrar encuesta» y «Mostrar resultados», y guarda los cambios antes de publicar.";
+  btnPublicarResultados.disabled=cambiandoPublicacion||!permisoPublicar||modo==="publicada";
+  btnRetirarResultados.disabled=cambiandoPublicacion||!e||modo==="oculta";
+  btnResultadosAutomaticos.disabled=cambiandoPublicacion||!e||modo==="automatica";
+  document.getElementById("diasResultadosPizarra").title=modo==="automatica"
+    ?"Duración de publicación automática desde el cierre"
+    :"Se usará solo al volver a la programación automática";
+}
+for(const element of [mostrarResultados,mostrarEncuesta]){
+  element.addEventListener("change",()=>{
+    const e=encuestas.find(x=>String(x.id)===String(eid.value));
+    mostrarControlResultados(e);
+  });
+}
+async function cambiarPublicacionResultados(modo){
+  if(cambiandoPublicacion)return;
+  const id=eid.value;
+  const e=encuestas.find(x=>String(x.id)===String(id));
+  if(!e)return AMPDialog.alert("Guarda primero la encuesta.");
+  if(modo==="publicada"){
+    if(!["cerrada","archivada"].includes(e.estado_efectivo||e.estado))
+      return AMPDialog.alert("Solo puedes publicar los resultados de una encuesta cerrada.");
+    if(!e.mostrar_resultados||!e.mostrar_encuesta)
+      return AMPDialog.alert("Guarda primero la encuesta con «Mostrar encuesta» y «Mostrar resultados» activados.");
+    if(!(await AMPDialog.confirm("¿Publicar ahora los resultados de esta encuesta en Mi Pizarra? Permanecerán visibles hasta que decidas retirarlos.")))return;
+  }else if(modo==="oculta"){
+    if(!(await AMPDialog.confirm("¿Retirar ahora estos resultados de Mi Pizarra? La encuesta y sus votos no se modificarán.")))return;
+  }
+  cambiandoPublicacion=true;
+  mostrarControlResultados(e);
+  try {
+    const {error}=await sb.rpc("configurar_publicacion_resultados_pizarra_admin",{p_id:id,p_modo:modo});
+    if(error)throw error;
+    await cargar();
+    abrir(id);
+    estadoResultados.textContent=modo==="publicada"
+      ?"✓ Resultados publicados ahora en Mi Pizarra. Permanecerán hasta que los retires."
+      :modo==="oculta"
+        ?"✓ Resultados retirados de Mi Pizarra."
+        :"✓ Restaurada la publicación automática desde el cierre de la encuesta.";
+  }catch(err){
+    await AMPDialog.alert("No se pudo cambiar la publicación: "+(err?.message||"Error desconocido"));
+  }finally{
+    cambiandoPublicacion=false;
+    mostrarControlResultados(encuestas.find(x=>String(x.id)===String(id)));
+  }
+}
+btnPublicarResultados.onclick=()=>cambiarPublicacionResultados("publicada");
+btnRetirarResultados.onclick=()=>cambiarPublicacionResultados("oculta");
+btnResultadosAutomaticos.onclick=()=>cambiarPublicacionResultados("automatica");
+
+function abrir(id=null){const e=id?encuestas.find(x=>x.id===id):null;eid.value=e?.id||"";editorTitulo.textContent=e?"Editar encuesta":"Nueva encuesta";titulo.value=e?.titulo||"";descripcion.value=e?.descripcion||"";tipo.value=e?.tipo||"secreta";estado.value=e?.estado||"borrador";max.value=e?.max_opciones||1;electores.value=e?.electores||"todos";abre.value=inputDT(e?.abre_en);cierra.value=inputDT(e?.cierra_en);mostrarEncuesta.checked=e?.mostrar_encuesta??true;mostrarResultados.checked=e?.mostrar_resultados??true;mostrarGanador.checked=e?.mostrar_ganador??true;document.getElementById('diasResultadosPizarra').value=String(e?.dias_resultados_pizarra??7);opciones.innerHTML="";(e?.opciones?.length?e.opciones:["",""]).forEach(x=>opcion(x.texto||x));eliminar.style.display=e?"inline-block":"none";opcionReabrir.hidden=!(e&&["cerrada","archivada"].includes(e.estado_efectivo||e.estado));opcionReabrir.disabled=opcionReabrir.hidden;actualizarModoReapertura();mostrarControlResultados(e);drawer.classList.add("open")}nueva.onclick=()=>abrir();cerrar.onclick=()=>drawer.classList.remove("open");form.onsubmit=async ev=>{ev.preventDefault();if(estado.value==="reabrir"){
  const e=encuestas.find(x=>x.id===eid.value);
  if(!e||!["cerrada","archivada"].includes(e.estado_efectivo||e.estado)){AMPDialog.alert("Esta encuesta no está cerrada.");return;}
  if(!cierra.value||new Date(cierra.value)<=new Date()){AMPDialog.alert("Indica una nueva fecha de cierre futura.");return;}
