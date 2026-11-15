@@ -12,7 +12,7 @@ function pdfLibrary(){
   }).catch(e=>{jsPdfPromise=null;throw e});
   return jsPdfPromise;
 }
-const money=n=>Number(n||0).toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
+// de-DE conserva coma decimal y punto de miles también para 1.000–9.999.\nconst money=n=>Number(n||0).toLocaleString("de-DE",{useGrouping:true,minimumFractionDigits:2,maximumFractionDigits:2})+" €";
 const clean=s=>String(s??"").replace(/\s+/g," ").trim();
 const date=s=>/^\d{4}-\d{2}-\d{2}/.test(s||"")?s.slice(8,10)+"/"+s.slice(5,7)+"/"+s.slice(0,4):"Sin fecha";
 const safeName=s=>clean(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9 _-]/g,"").replace(/\s+/g," ").trim()||"Restaurante";
@@ -304,7 +304,9 @@ async function makePdf(data){
       for(const nota of notas)yNota+=wrapped(nota,L+4,yNota,160,7.6,"gray","normal",4.1)+1.2;
       y+=rowHeight+2;
     }
-    cost("Restaurante",data.totalRest,data.pagadoresRest?"Adelantado por: "+data.pagadoresRest:"");
+    cost("Restaurante",data.totalRest,
+      data.pagadoresRest?"Adelantado por: "+data.pagadoresRest:"",
+      "Repartido entre: "+(data.asistentesLista.join(", ")||"No constan asistentes"));
     for(const g of data.gastos){
       const adelanto=g.pagadores==="Bote común"?"Pagado con el bote común":"Pagado por: "+g.pagadores;
       const reparto=g.participantes.startsWith("Bote común")
