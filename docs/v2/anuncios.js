@@ -1,6 +1,6 @@
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "./config.js";
-// Tablón V2: consulta los anuncios públicos directamente desde Supabase.
-// Solo se muestran avisos visibles, ya publicados y no caducados.
+// Tablón V2: los anuncios vigentes y el histórico se consultan por separado
+// del RPC de la Pizarra; únicamente se recuperan avisos visibles y ya publicados.
 const input = document.getElementById("board-search");
 const typeFilter = document.getElementById("board-type");
 const highlightFilter = document.getElementById("board-highlight");
@@ -11,6 +11,8 @@ const featuredGrid = document.getElementById("board-featured-grid");
 const listSection = document.getElementById("board-list-section");
 const listHeading = document.getElementById("board-list-title");
 const listGrid = document.getElementById("board-list");
+const historySection = document.getElementById("board-history-section");
+const historyGrid = document.getElementById("board-history");
 const anuncioSeleccionado = new URLSearchParams(window.location.search).get("anuncio");
 const detalleSeccion = document.getElementById("board-detail");
 const detalleContenido = document.getElementById("board-detail-content");
@@ -102,6 +104,29 @@ function publicable(a, today) {
   return reciente(a, today) || destacadoActivo(a);
 }
 
+function fechaHoraFin(a) {
+  const fin = fecha(a.fechaFin);
+  if (!fin) return null;
+  const hora = txt(a.horaFin || "23:59");
+  const m = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(hora);
+  if (!m || +m[1] > 23 || +m[2] > 59) return null;
+  return Date.UTC(fin.getFullYear(), fin.getMonth(), fin.getDate(), +m[1], +m[2]);
+}
+
+function disponibleParaTablon(a, instante = ahoraMadrid()) {
+  if (!a || !esVerdadero(a.visible)) return false;
+  const inicio = fechaHoraPublicacion(a);
+  return inicio === null || inicio <= instante;
+}
+
+// La caducidad y la antigüedad dejan el aviso en el histórico del Tablón;
+// nunca lo reactivan en Mi Pizarra, que mantiene su consulta independiente.
+function esVigenteEnTablon(a, today, instante = ahoraMadrid()) {
+  if (!publicable(a, today) || !disponibleParaTablon(a, instante)) return false;
+  const fin = fechaHoraFin(a);
+  return fin === null || instante < fin + 60000;
+}
+
 function diasDestacado(a) {
   const n = Number.parseInt(a.dias_destacado ?? a["dias destacado"] ?? a["Días Destacado"] ?? "", 10);
   return Number.isFinite(n) && n > 0 ? n : 15;
@@ -174,8 +199,8 @@ function avisoDeEstatutos(a) {
     txt(a.enlace).includes("/AMesaPuesta/v2/estatutos.html");
 }
 
-function crearAnuncio(a, destacado) {
-  const article = crear("article", "board-card" + (destacado ? " board-card-featured" : ""));
+function crearAnuncio(a, destacado, historico = false) {
+  const article = crear("article", "board-card" + (destacado ? " board-card-featured" : "") + (historico ? " board-card-historical" : ""));
   if (tipoCanonico(a.tipo) === "urgente") article.classList.add("board-card-urgent");
 
   const heading = crear("div", "board-card-head");
@@ -186,6 +211,7 @@ function crearAnuncio(a, destacado) {
     const dias = diasDestacado(a);
     chips.append(crear("span", "board-featured-tag", "Destacado durante " + dias + (dias === 1 ? " día" : " días")));
   }
+  if (historico) chips.append(crear("span", "board-historical-tag", "Anuncio anterior"));
   heading.append(chips);
   const title = crear("h3", "board-card-title", txt(a.titulo) || "Sin título");
   heading.append(title);
@@ -194,6 +220,7 @@ function crearAnuncio(a, destacado) {
   const pub = fechaTexto(a.fechaPublicacion || a.fecha);
   const evento = fechaTexto(a.fechaEvento);
   if (pub) meta.append(crear("span", "", "Publicado: " + pub));
+  if (historico && a.fechaFin) meta.append(crear("span", "", "Finalizó: " + fechaTexto(a.fechaFin)));
   if (evento) meta.append(crear("span", "", "Fecha del evento: " + evento));
   if (txt(a.autor)) meta.append(crear("span", "", "Por " + txt(a.autor)));
   if (meta.childNodes.length) heading.append(meta);
@@ -238,52 +265,58 @@ function mostrarMensaje(target, message, error = false) {
 
 function renderizar() {
   const today = hoyLocal();
+  const instante = ahoraMadrid();
   const query = normalizar(input.value);
   const type = typeFilter.value;
   const onlyFeatured = highlightFilter.value === "destacados";
-  const filtered = ordenar(publicables.filter(a => {
+
+  const filtered = publicables.filter(a => {
+    const actual = esVigenteEnTablon(a, today, instante);
     if (type && tipoCanonico(a.tipo) !== type) return false;
-    if (onlyFeatured && !destacadoActivo(a)) return false;
+    if (onlyFeatured && !(actual && destacadoActivo(a, instante))) return false;
     if (query) {
       const hay = normalizar([a.titulo, a.texto, a.autor, a.tipo, tipoInfo(a.tipo).nombre].join(" "));
       if (!hay.includes(query)) return false;
     }
     return true;
-  }), today);
-
+  });
+  const actuales = ordenar(filtered.filter(a => esVigenteEnTablon(a, today, instante)),today);
+  const anteriores = filtered.filter(a => !esVigenteEnTablon(a, today, instante))
+    .sort((a,b) => (fechaHoraPublicacion(b) || 0) - (fechaHoraPublicacion(a) || 0));
   const filtrando = Boolean(query || type || onlyFeatured);
+  const todosActuales = publicables.filter(a => esVigenteEnTablon(a,today,instante)).length;
+  const todosAnteriores = publicables.length - todosActuales;
   countLabel.textContent = filtrando
     ? filtered.length + " de " + publicables.length + " anuncios"
-    : publicables.length + (publicables.length === 1 ? " anuncio disponible" : " anuncios disponibles");
+    : todosActuales + " vigentes · " + todosAnteriores + " anteriores";
 
-  const destacados = filtrando ? [] : filtered.filter(a => destacadoActivo(a));
-  const normales = filtrando ? filtered : filtered.filter(a => !destacadoActivo(a));
+  const destacados = filtrando ? [] : actuales.filter(a => destacadoActivo(a, instante));
+  const normales = filtrando ? actuales : actuales.filter(a => !destacadoActivo(a, instante));
 
   featuredSection.hidden = destacados.length === 0;
-  featuredGrid.replaceChildren(...destacados.map(a => crearAnuncio(a, true)));
-  listSection.hidden = normales.length === 0 && destacados.length > 0 && !filtrando;
-  listHeading.textContent = filtrando ? "Resultados" : "Últimos anuncios";
+  featuredGrid.replaceChildren(...destacados.map(a => crearAnuncio(a,true)));
 
+  listSection.hidden = !normales.length && !filtrando && (destacados.length>0 || anteriores.length>0);
+  listHeading.textContent = filtrando ? "Avisos vigentes" : "Últimos anuncios";
   if (!normales.length) {
-    if (!listSection.hidden) {
-      mostrarMensaje(listGrid, filtrando
-        ? "No hay anuncios que coincidan con los filtros seleccionados."
-        : "No hay anuncios recientes.");
-    } else {
-      listGrid.replaceChildren();
-    }
+    if (!listSection.hidden) mostrarMensaje(listGrid, filtrando
+      ? "No hay anuncios vigentes que coincidan con los filtros."
+      : "No hay anuncios vigentes ahora mismo.");
+    else listGrid.replaceChildren();
   } else {
-    listGrid.replaceChildren(...normales.map(a => crearAnuncio(a, destacadoActivo(a))));
+    listGrid.replaceChildren(...normales.map(a => crearAnuncio(a, destacadoActivo(a, instante))));
   }
+  historySection.hidden = anteriores.length === 0;
+  historyGrid.replaceChildren(...anteriores.map(a => crearAnuncio(a,false,true)));
 }
-
 function renderizarDetalle() {
   const anuncio = publicables.find(a => String(a.id ?? "") === anuncioSeleccionado);
   if (!anuncio) {
-    mostrarMensaje(detalleContenido, "Este anuncio ya no está disponible. Consulta el Tablón para ver los avisos vigentes.");
+    mostrarMensaje(detalleContenido, "Este anuncio no está disponible. Consulta el Tablón para ver los avisos publicados.");
     return;
   }
-  const tarjeta = crearAnuncio(anuncio, destacadoActivo(anuncio));
+  const vigente = esVigenteEnTablon(anuncio, hoyLocal());
+  const tarjeta = crearAnuncio(anuncio, vigente && destacadoActivo(anuncio), !vigente);
   tarjeta.querySelector(".board-card-body")?.classList.remove("is-clamped");
   tarjeta.querySelector(".board-read-more")?.remove();
   const acciones = tarjeta.querySelector(".board-card-actions");
@@ -310,12 +343,12 @@ function configurarCategorias() {
 
 async function cargar() {
   try {
-    const response = await fetch(SUPABASE_URL + "/rest/v1/rpc/listar_anuncios_publicos_v2", {method: "POST", headers: {apikey: SUPABASE_PUBLISHABLE_KEY, "Content-Type": "application/json"}, body: "{}", cache: "no-store"});
+    const response = await fetch(SUPABASE_URL + "/rest/v1/rpc/listar_anuncios_tablon_v2", {method: "POST", headers: {apikey: SUPABASE_PUBLISHABLE_KEY, "Content-Type": "application/json"}, body: "{}", cache: "no-store"});
     if (!response.ok) throw new Error("No se pudieron obtener los anuncios (" + response.status + ")");
     const json = await response.json();
     if (!Array.isArray(json)) throw new Error("Formato de anuncios no válido");
-    const today = hoyLocal();
-    publicables = json.filter(a => publicable(a, today));
+    const instante = ahoraMadrid();
+    publicables = json.filter(a => disponibleParaTablon(a, instante));
     if (anuncioSeleccionado) renderizarDetalle();
     else { configurarCategorias(); renderizar(); }
   } catch (err) {
@@ -327,6 +360,7 @@ async function cargar() {
     countLabel.textContent = "Anuncios no disponibles";
     featuredSection.hidden = true;
     listSection.hidden = false;
+    historySection.hidden = true;
     mostrarMensaje(listGrid, "No se han podido cargar los anuncios. Prueba a actualizar la página.", true);
     console.error("Tablón:", err);
   }
