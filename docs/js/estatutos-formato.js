@@ -1,5 +1,5 @@
 // Formato común del texto de los Estatutos (web pública y vista previa de administración).
-// Los subapartados (4.1., 4.2., etc.) siguen perteneciendo a un único artículo.
+// Los subapartados (4.1., 5.1., etc.) pertenecen siempre a su artículo original.
 const escapar = valor => String(valor ?? "").replace(/[&<>"']/g, c => ({
   "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
 }[c]));
@@ -28,6 +28,13 @@ export function formatearContenidoEstatutos(texto = "") {
       vaciarParrafo(); vaciarLista();
       partes.push('<h4 class="estatutos-apartado"><span class="estatutos-apartado-numero">' +
         escapar(apartado[1] + "." + apartado[2] + ".") + "</span> " + escapar(apartado[3]) + "</h4>");
+      continue;
+    }
+    const apartadoSinNumero = /^Apartado\s+(\d+)\.\s+(.+)$/i.exec(t);
+    if (apartadoSinNumero) {
+      vaciarParrafo(); vaciarLista();
+      partes.push('<h4 class="estatutos-apartado"><span class="estatutos-apartado-numero">' +
+        escapar("Apartado " + apartadoSinNumero[1] + ".") + "</span> " + escapar(apartadoSinNumero[2]) + "</h4>");
       continue;
     }
     const letra = /^([A-Z])\)\s+(.+)$/.exec(t);
