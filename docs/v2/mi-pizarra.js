@@ -16,7 +16,7 @@ try {
     if(!Number.isInteger(dias)||dias<=0)continue;
     const cierre=encuesta.closedAt||encuesta.closes;
     if(!cierre)continue;
-    const fechaCierre=new Date(cierre);
+    const fechaCierre=new Date(String(cierre).replace(' ','T'));
     if(!Number.isFinite(fechaCierre.getTime()))continue;
     const antiguedad=ahora-fechaCierre.getTime();
     if(antiguedad<0||antiguedad>=dias*24*60*60*1000)continue;
