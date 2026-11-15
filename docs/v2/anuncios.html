@@ -9,7 +9,7 @@
   
   <link rel="stylesheet" href="./styles.css?v=20261107-3">
   <script src="./scroll-top.js" defer></script>
-  <script type="module" src="./anuncios.js?v=20261112-destacados"></script>
+  <script type="module" src="./anuncios.js?v=20261115-historico-tablon"></script>
   <script defer src="./acceso-cofrade.js"></script>
 <style>html:not(.cofrade-verificado) body{visibility:hidden}</style><script defer src="./mobile-nav.js"></script>
 </head>
@@ -87,6 +87,17 @@
       <div class="board-grid" id="board-list" aria-live="polite">
         <div class="message">Cargando las novedades de la cofradía…</div>
       </div>
+    </section>
+
+    <section class="board-list-section board-history-section" id="board-history-section" aria-labelledby="board-history-title" hidden>
+      <div class="section-heading board-section-heading">
+        <div>
+          <p class="eyebrow">Archivo de la Cofradía</p>
+          <h2 class="section-title" id="board-history-title">Anuncios anteriores</h2>
+          <p class="board-history-description">Avisos ya finalizados que se conservan para consulta. No están activos en Mi Pizarra.</p>
+        </div>
+      </div>
+      <div class="board-grid" id="board-history" aria-live="polite"></div>
     </section>
 
     <aside class="note-band board-next">
