@@ -1294,3 +1294,18 @@ body.board-detail-mode .board-next {display:none!important}
 .board-detail-back:hover {text-decoration:underline}
 .board-detail .board-card {width:100%}
 .board-detail .board-card-body {white-space:pre-wrap;overflow-wrap:anywhere;display:block;-webkit-line-clamp:unset}
+
+/* Estatutos: apartados numerados dentro de un único artículo */
+.estatutos-contenido{min-width:0}
+.estatutos-contenido .estatutos-apartado{margin:26px 0 11px;padding:0 0 9px;border-bottom:1px solid #e9d9cf;color:var(--wine-dark);font:700 18px/1.35 Georgia,serif}
+.estatutos-contenido .estatutos-apartado:first-child{margin-top:7px}
+.estatutos-contenido .estatutos-apartado-numero{color:var(--wine);font-variant-numeric:tabular-nums}
+.estatutos-contenido .estatutos-subapartado{margin:18px 0 8px;color:var(--wine);font-size:14px;line-height:1.4}
+.estatutos-contenido .estatutos-parrafo{margin:0 0 12px;font-size:13px;line-height:1.8;color:#5d514b;overflow-wrap:anywhere}
+.estatutos-contenido .estatutos-lista{margin:4px 0 15px;padding-left:22px}
+.estatutos-contenido .estatutos-lista li{margin:0 0 8px;line-height:1.75;overflow-wrap:anywhere}
+@media(max-width:680px){
+ .estatutos-contenido .estatutos-apartado{font-size:17px;margin-top:23px}
+ .estatutos-contenido .estatutos-parrafo,.estatutos-contenido .estatutos-lista li{font-size:12px}
+ .estatutos-contenido .estatutos-lista{padding-left:18px}
+}
