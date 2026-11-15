@@ -31,10 +31,24 @@ async function loadReport(sb,id,cofrades){
   const nombres=new Map(cofrades.map(c=>[String(c.id),clean(c.nombre)]));
   const asistentesLista=(detalle.asistencias||[]).filter(a=>a.estado==="si").map(a=>clean(a.nombre||nombres.get(String(a.cofrade_id)))).filter(Boolean);
   const organizadoresLista=(detalle.organizadores||[]).map(id=>nombres.get(String(id))||"").filter(Boolean);
-  const gastos=(economia.gastos||[]).map(g=>({
-    concepto:clean(g.concepto)||"Gasto adicional",importe:Number(g.importe||0),
-    pagadores:g.pagado_con_remanente?"Bote común":(g.pagos||[]).length?(g.pagos||[]).map(p=>(nombres.get(String(p.cofrade_id))||"Cofrade")+" ("+money(p.importe)+")").join(", "):(nombres.get(String(g.pagador_id))||"Sin pagador registrado")
-  }));
+  const gastos=(economia.gastos||[]).map(g=>{
+    // El reparto se obtiene de las reglas guardadas para cada gasto, no de
+    // quienes adelantaron el importe (son conceptos distintos).
+    const reparto=String(g.reparto||"");
+    const seleccionados=[...new Set((g.cofrades||[]).map(id=>nombres.get(String(id))).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"));
+    const participantes=g.pagado_con_remanente||reparto==="bote"
+      ?"Bote común (sin reparto individual)"
+      :reparto==="asistentes"
+        ?asistentesLista.join(", ")||"No constan asistentes"
+        :reparto==="seleccionados"
+          ?seleccionados.join(", ")||"No constan participantes seleccionados"
+          :"Reparto no especificado";
+    return {
+      concepto:clean(g.concepto)||"Gasto adicional",importe:Number(g.importe||0),
+      pagadores:g.pagado_con_remanente?"Bote común":(g.pagos||[]).length?(g.pagos||[]).map(p=>(nombres.get(String(p.cofrade_id))||"Cofrade")+" ("+money(p.importe)+")").join(", "):(nombres.get(String(g.pagador_id))||"Sin pagador registrado"),
+      participantes
+    };
+  });
   const totalRest=Number(economia.restaurante_total??comida.importe_restaurante_total??0);
   const totalExtras=gastos.reduce((n,g)=>n+g.importe,0);
   return {restaurante,comida,gastos,totalRest,totalExtras,estado,asistentesLista,organizadoresLista,
@@ -69,9 +83,9 @@ async function makePdf(data){
   };
   const menus=[["ENTRANTES",data.comida.menu_entrantes],["PRINCIPALES",data.comida.menu_principales],["POSTRES",data.comida.menu_postres],["BEBIDAS",data.comida.menu_bebidas]].map(([label,value])=>({label,platos:separarPlatos(value)}));
   const transfers=[
-    ...(data.estado.movimientos||[]).map(m=>({who:clean(m.de)+"  a  "+clean(m.a),amount:Number(m.importe)})),
-    ...(data.estado.bote||[]).map(m=>({who:"Bote común  a  "+clean(m.a),amount:Number(m.importe)})),
-    ...(data.estado.invitados||[]).map(m=>({who:clean(m.de)+" (invitado)  a  "+clean(m.a),amount:Number(m.importe)}))
+    ...(data.estado.movimientos||[]).map(m=>({who:clean(m.de)+"  a  "+clean(m.a),amount:Number(m.importe),pagado:m.pagado===true})),
+    ...(data.estado.bote||[]).map(m=>({who:"Bote común  a  "+clean(m.a),amount:Number(m.importe),pagado:m.pagado===true})),
+    ...(data.estado.invitados||[]).map(m=>({who:clean(m.de)+" (invitado)  a  "+clean(m.a),amount:Number(m.importe),pagado:m.pagado===true}))
   ];
   function drawing(scale,visible,paginate=false){
     let y=13;
@@ -257,14 +271,15 @@ async function makePdf(data){
     text("GASTO TOTAL DE LA COMIDA",L+5,y+9,10,"white","bold");
     text(money(data.totalRest+data.totalExtras),R-5,y+9.5,13,"white","bold",{align:"right"});
     y+=20;
-    function cost(name,amount,note){
-      const concepto=clean(name),importe=money(amount),observacion=clean(note);
+    function cost(name,amount,note,reparto=""){
+      const concepto=clean(name),importe=money(amount);
+      const notas=[note,reparto].map(clean).filter(Boolean);
       doc.setFont("helvetica","normal");doc.setFontSize(8.8*scale);
       const titleLines=doc.splitTextToSize(concepto,127*scale).length;
       doc.setFontSize(7.4*scale);
-      const noteLines=observacion?doc.splitTextToSize(observacion,160*scale).length:0;
+      const alturasNotas=notas.map(n=>doc.splitTextToSize(n,160*scale).length*4.1+1.2);
       const titleHeight=Math.max(5,titleLines*4);
-      const noteHeight=noteLines?3+noteLines*4.1:0;
+      const noteHeight=notas.length?3+alturasNotas.reduce((n,h)=>n+h,0):0;
       const rowHeight=10+titleHeight+noteHeight+2;
       ensureRoom(rowHeight+2,"RESUMEN ECONÓMICO · CONTINUACIÓN");
       rect(L,y,W,rowHeight,"sage",2);
@@ -285,11 +300,18 @@ async function makePdf(data){
           doc.setLineDashPattern([],0);
         }
       }
-      if(noteLines)wrapped(observacion,L+4,baseline+titleHeight+1,160,7.6,"gray","normal",4.1);
+      let yNota=baseline+titleHeight+1;
+      for(const nota of notas)yNota+=wrapped(nota,L+4,yNota,160,7.6,"gray","normal",4.1)+1.2;
       y+=rowHeight+2;
     }
     cost("Restaurante",data.totalRest,data.pagadoresRest?"Adelantado por: "+data.pagadoresRest:"");
-    for(const g of data.gastos)cost(g.concepto,g.importe,"Pagado por: "+g.pagadores);
+    for(const g of data.gastos){
+      const adelanto=g.pagadores==="Bote común"?"Pagado con el bote común":"Pagado por: "+g.pagadores;
+      const reparto=g.participantes.startsWith("Bote común")
+        ?"Reparto: "+g.participantes
+        :"Repartido entre: "+g.participantes;
+      cost(g.concepto,g.importe,adelanto,reparto);
+    }
     ensureRoom(14);
     rect(L,y,W,11,"sage",2);
     text("Aportación del bote a la comida",L+4,y+7.2,8.7,"ink","bold");
@@ -303,11 +325,12 @@ async function makePdf(data){
       for(const m of transfers){
         doc.setFontSize(8.6*scale);
         const rows=doc.splitTextToSize(m.who,138*scale);
-        const height=Math.max(9,rows.length*4+3);
+        const height=Math.max(15,rows.length*4+7);
         ensureRoom(height+2,"PAGOS A REALIZAR · CONTINUACIÓN");
         rect(L,y,W,height,"bluegray",2);
         wrapped(m.who,L+5,y+5,135,8.5,"ink","normal",4);
         text(money(m.amount),R-5,y+5,9.5,"wine","bold",{align:"right"});
+        text(m.pagado?"PAGADO":"PENDIENTE",R-5,y+10.5,7.3,m.pagado?"green":"wine","bold",{align:"right"});
         y+=height+2;
       }
     }
