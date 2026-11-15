@@ -77,23 +77,36 @@ let cambiandoPublicacion=false;
 function mostrarControlResultados(e){
   const modo=e?.pizarra_modo_publicacion||"automatica";
   const cerrada=!!e&&["cerrada","archivada"].includes(e.estado_efectivo||e.estado);
-  const guardadaVisible=!!e&&e.mostrar_resultados!==false&&e.mostrar_encuesta!==false;
-  const formularioVisible=mostrarResultados.checked&&mostrarEncuesta.checked;
-  const permisoPublicar=cerrada&&guardadaVisible&&formularioVisible;
-  const n=e?.dias_resultados_pizarra??7;
-  if(!e)estadoResultados.textContent="Primero crea y guarda la encuesta. Las opciones manuales estarán disponibles al cerrarse.";
-  else if(modo==="publicada")estadoResultados.textContent="Publicación manual activa: los resultados aparecen en Mi Pizarra hasta que decidas retirarlos.";
-  else if(modo==="oculta")estadoResultados.textContent="Publicación manual desactivada: los resultados no aparecen en Mi Pizarra, aunque el plazo automático siga vigente.";
-  else if(n===0)estadoResultados.textContent="Modo automático: No publicar. Puedes usar «Publicar ahora» al cerrar la encuesta.";
-  else estadoResultados.textContent="Modo automático: los resultados aparecen durante "+n+(n===1?" día":" días")+" desde el cierre de la encuesta.";
-  if(e&&!cerrada)estadoResultados.textContent+=" Solo puedes publicar resultados cuando la encuesta esté cerrada.";
-  else if(cerrada&&!guardadaVisible)estadoResultados.textContent+=" Activa «Mostrar encuesta» y «Mostrar resultados», y guarda los cambios antes de publicar.";
-  btnPublicarResultados.disabled=cambiandoPublicacion||!permisoPublicar||modo==="publicada";
-  btnRetirarResultados.disabled=cambiandoPublicacion||!e||modo==="oculta";
-  btnResultadosAutomaticos.disabled=cambiandoPublicacion||!e||modo==="automatica";
+  const activa=!!e&&e.mostrar_resultados!==false&&e.mostrar_encuesta!==false;
+  const dias=Number(e?.dias_resultados_pizarra??7);
+  const cierre=e?.cerrada_en||e?.cierra_en||e?.actualizada_en;
+  const cierreMs=cierre?new Date(cierre).getTime():NaN;
+  const publicadaAutomatica=modo==="automatica"&&cerrada&&activa&&dias>0&&
+    Number.isFinite(cierreMs)&&Date.now()>=cierreMs&&Date.now()<cierreMs+dias*86400000;
+  const publicadaManual=modo==="publicada"&&cerrada&&activa;
+  const visible=publicadaAutomatica||publicadaManual;
+  const cambiosSinGuardar=!!e&&(mostrarResultados.checked!==(e.mostrar_resultados!==false)||
+    mostrarEncuesta.checked!==(e.mostrar_encuesta!==false));
+  if(!e)estadoResultados.textContent="Guarda primero la encuesta. Los resultados se podrán publicar manualmente cuando esté cerrada.";
+  else if(modo==="publicada")estadoResultados.textContent=visible
+    ?"Modo actual: publicación manual. Los resultados están visibles hasta que decidas retirarlos."
+    :"Modo manual seleccionado, pero los resultados no son visibles porque la encuesta o sus resultados están ocultos.";
+  else if(modo==="oculta")estadoResultados.textContent="Modo actual: retirado. Los resultados no aparecen en Mi Pizarra.";
+  else estadoResultados.textContent="Modo actual: automático ("+(dias===0?"no publicar":dias+(dias===1?" día":" días")+" desde el cierre")+"). "+
+    (visible?"Los resultados están visibles ahora.":"No se están mostrando resultados en Mi Pizarra.");
+  if(e&&!cerrada)estadoResultados.textContent+=" Solo se pueden publicar resultados de encuestas cerradas.";
+  if(e&&cerrada&&!activa)estadoResultados.textContent+=" Puedes pulsar «Publicar ahora»: se activarán la visibilidad de la encuesta y de sus resultados.";
+  if(cambiosSinGuardar)estadoResultados.textContent+=" Hay casillas modificadas sin guardar; la publicación manual usará los datos guardados y activará ambas opciones de visibilidad.";
+  btnPublicarResultados.disabled=cambiandoPublicacion||!e||!cerrada||(modo==="publicada"&&visible);
+  btnPublicarResultados.hidden=!!e&&modo==="publicada"&&visible;
+  btnRetirarResultados.hidden=!e||modo==="oculta"||(!visible&&modo!=="publicada");
+  btnRetirarResultados.disabled=cambiandoPublicacion;
+  btnResultadosAutomaticos.hidden=!e||modo==="automatica";
+  btnResultadosAutomaticos.disabled=cambiandoPublicacion;
+  btnResultadosAutomaticos.textContent="Volver al plazo automático";
   document.getElementById("diasResultadosPizarra").title=modo==="automatica"
     ?"Duración de publicación automática desde el cierre"
-    :"Se usará solo al volver a la programación automática";
+    :"Se utilizará únicamente si vuelves al modo automático";
 }
 for(const element of [mostrarResultados,mostrarEncuesta]){
   element.addEventListener("change",()=>{
@@ -109,9 +122,10 @@ async function cambiarPublicacionResultados(modo){
   if(modo==="publicada"){
     if(!["cerrada","archivada"].includes(e.estado_efectivo||e.estado))
       return AMPDialog.alert("Solo puedes publicar los resultados de una encuesta cerrada.");
-    if(!e.mostrar_resultados||!e.mostrar_encuesta)
-      return AMPDialog.alert("Guarda primero la encuesta con «Mostrar encuesta» y «Mostrar resultados» activados.");
-    if(!(await AMPDialog.confirm("¿Publicar ahora los resultados de esta encuesta en Mi Pizarra? Permanecerán visibles hasta que decidas retirarlos.")))return;
+    const hayOpcionesOcultas=!e.mostrar_resultados||!e.mostrar_encuesta||!mostrarEncuesta.checked||!mostrarResultados.checked;
+    const avisoVisibilidad=hayOpcionesOcultas
+      ?"\\n\\nAl publicar se activarán automáticamente «Mostrar encuesta» y «Mostrar resultados». Si la encuesta estaba oculta, volverá a aparecer también en la sección Encuestas.":"";
+    if(!(await AMPDialog.confirm("¿Publicar ahora los resultados de «"+e.titulo+"» en Mi Pizarra? Permanecerán visibles hasta que decidas retirarlos."+avisoVisibilidad)))return;
   }else if(modo==="oculta"){
     if(!(await AMPDialog.confirm("¿Retirar ahora estos resultados de Mi Pizarra? La encuesta y sus votos no se modificarán.")))return;
   }
