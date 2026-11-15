@@ -119,8 +119,24 @@ function renderHome() {
 }
 
 let galeria=null, indice=0, botonAnterior=null;
+let temporizadorFoto=null;
+function cancelarPulsacionFoto(){
+  clearTimeout(temporizadorFoto);
+  temporizadorFoto=null;
+}
+function cerrarOpcionesFoto(){
+  document.getElementById('gallery-photo-options').hidden=true;
+}
+function mostrarOpcionesFoto(){
+  if(!galeria)return;
+  document.getElementById('gallery-original-link').href=origenFoto(galeria,indice);
+  document.getElementById('gallery-photo-options').hidden=false;
+}
 function refrescarGaleria() {
   if(!galeria) return;
+  cancelarPulsacionFoto();
+  cerrarOpcionesFoto();
+  document.getElementById('gallery-download-status').textContent='';
   const img=document.getElementById('gallery-image');
   img.src=origenFoto(galeria,indice);
   img.alt=galeria.restaurante+' · Foto '+String(indice+1);
@@ -139,25 +155,87 @@ function moverFoto(paso) {
   indice=(indice+paso+urlsFotos(galeria).length)%urlsFotos(galeria).length;
   refrescarGaleria();
 }
+async function descargarFotoGaleria(){
+  if(!galeria)return;
+  const origen=origenFoto(galeria,indice);
+  const posicion=indice+1;
+  const restaurante=txt(galeria.restaurante).normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'-')
+    .replace(/^-+|-+$/g,'').slice(0,45)||'Comida';
+  const estado=document.getElementById('gallery-download-status');
+  const botones=[document.getElementById('gallery-save'),document.getElementById('gallery-menu-save')];
+  botones.forEach(b=>b.disabled=true);
+  estado.textContent='Preparando la fotografía…';
+  try{
+    // Se descarga el archivo almacenado sin reescalarlo ni recomprimirlo.
+    const respuesta=await fetch(origen,{mode:'cors'});
+    if(!respuesta.ok)throw new Error('HTTP '+respuesta.status);
+    const archivo=await respuesta.blob();
+    if(!archivo.size)throw new Error('Archivo vacío');
+    const tipo=archivo.type.split(';')[0].toLowerCase();
+    const extensiones={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/heic':'heic','image/heif':'heif'};
+    const extension=extensiones[tipo]||(origen.split('?')[0].match(/\.(jpe?g|png|webp|heic|heif)$/i)||[])[1]||'jpg';
+    const temporal=URL.createObjectURL(archivo);
+    const enlace=document.createElement('a');
+    enlace.href=temporal;
+    enlace.download='A-Mesa-Puesta-'+restaurante+'-foto-'+posicion+'.'+extension.toLowerCase();
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+    setTimeout(()=>URL.revokeObjectURL(temporal),60000);
+    cerrarOpcionesFoto();
+    estado.textContent='Descarga solicitada. En iPhone puedes encontrarla en Archivos > Descargas.';
+  }catch(error){
+    console.warn('No se pudo descargar la fotografía',error);
+    mostrarOpcionesFoto();
+    estado.textContent='No se pudo descargar directamente. Abre el original y mantén pulsada la imagen para guardarla.';
+  }finally{
+    botones.forEach(b=>b.disabled=false);
+  }
+}
 function prepararGaleria(){
   const dialog=document.getElementById('gallery');
+  const imagen=document.getElementById('gallery-image');
+  const opciones=document.getElementById('gallery-photo-options');
   document.getElementById('gallery-close').addEventListener('click',()=>dialog.close());
   document.getElementById('gallery-next').addEventListener('click',()=>moverFoto(1));
   document.getElementById('gallery-prev').addEventListener('click',()=>moverFoto(-1));
-  dialog.addEventListener('close',()=>botonAnterior?.focus());
+  document.getElementById('gallery-save').addEventListener('click',descargarFotoGaleria);
+  document.getElementById('gallery-menu-save').addEventListener('click',descargarFotoGaleria);
+  document.getElementById('gallery-menu-cancel').addEventListener('click',cerrarOpcionesFoto);
+  dialog.addEventListener('close',()=>{cancelarPulsacionFoto();cerrarOpcionesFoto();botonAnterior?.focus()});
   dialog.addEventListener('click',e=>{if(e.target===dialog) dialog.close();});
   document.addEventListener('keydown',e=>{
     if(!dialog.open)return;
+    if(e.key==='Escape'&&!opciones.hidden){cerrarOpcionesFoto();return;}
+    if(!opciones.hidden)return;
     if(e.key==='ArrowLeft')moverFoto(-1);
     if(e.key==='ArrowRight')moverFoto(1);
   });
-  let inicio=0;
+  let inicio=0, toqueInicial=null;
   const zona=document.getElementById('gallery-stage');
   zona.addEventListener('touchstart',e=>{inicio=e.changedTouches[0].screenX;},{passive:true});
   zona.addEventListener('touchend',e=>{
+    if(!opciones.hidden)return;
     const diff=e.changedTouches[0].screenX-inicio;
     if(Math.abs(diff)>55)moverFoto(diff<0?1:-1);
   },{passive:true});
+  imagen.addEventListener('touchstart',e=>{
+    cancelarPulsacionFoto();
+    if(e.touches.length!==1)return;
+    toqueInicial={x:e.touches[0].clientX,y:e.touches[0].clientY};
+    temporizadorFoto=setTimeout(()=>{temporizadorFoto=null;mostrarOpcionesFoto()},600);
+  },{passive:true});
+  imagen.addEventListener('touchmove',e=>{
+    if(!toqueInicial||!e.touches.length)return;
+    const dx=e.touches[0].clientX-toqueInicial.x;
+    const dy=e.touches[0].clientY-toqueInicial.y;
+    if(Math.hypot(dx,dy)>14)cancelarPulsacionFoto();
+  },{passive:true});
+  const finalizarToque=()=>{cancelarPulsacionFoto();toqueInicial=null};
+  imagen.addEventListener('touchend',finalizarToque,{passive:true});
+  imagen.addEventListener('touchcancel',finalizarToque,{passive:true});
+  imagen.addEventListener('contextmenu',e=>{e.preventDefault();mostrarOpcionesFoto()});
 }
 function grupoMenu(label,value){
   if(!txt(value)||txt(value)==='-')return null;
