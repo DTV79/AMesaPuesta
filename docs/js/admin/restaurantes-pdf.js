@@ -75,6 +75,8 @@ async function makePdf(data){
   ];
   function drawing(scale,visible,paginate=false){
     let y=13;
+    // Coordenadas de diseño: el límite depende de la escala aplicada al PDF.
+    const limitePagina=13+(279-13)/scale;
     function fill(key){if(visible)doc.setFillColor(...colors[key])}
     function stroke(key){if(visible)doc.setDrawColor(...colors[key])}
     function rect(x,yy,w,h,color,rad=3){
@@ -116,7 +118,7 @@ async function makePdf(data){
       y+=26;
     }
     function ensureRoom(height){
-      if(paginate&&visible&&y+height>279)nextPage();
+      if(paginate&&visible&&y+height>limitePagina)nextPage();
     }
     function section(label,firstBlock=15){
       ensureRoom(12+firstBlock);
@@ -210,8 +212,8 @@ async function makePdf(data){
       const cursor=[0,0];
       let primera=true;
       while(cursor.some((indice,col)=>indice<menuLines[row*2+col].length)){
-        if(paginate&&visible&&y+24>279)nextPage();
-        const disponible=paginate&&visible?Math.max(0,279-y-16):Infinity;
+        if(paginate&&visible&&y+24>limitePagina)nextPage();
+        const disponible=paginate&&visible?Math.max(0,limitePagina-y-16):Infinity;
         const trozos=[[],[]],consumo=[0,0];
         for(let col=0;col<2;col++){
           const filas=menuLines[row*2+col];
@@ -310,8 +312,11 @@ async function makePdf(data){
     return y+4;
   }
   const total=drawing(1,false);
-  // Mantener el tamaño de letra original y utilizar las hojas que se necesiten.
-  drawing(1,true,total>279);
+  // Si el informe entra con una reducción muy leve, conservar una hoja.
+  // En caso contrario, paginar con letra legible en lugar de comprimirlo todo.
+  const escalaUnaHoja=Math.min(1,(279-13)/(total-13));
+  if(escalaUnaHoja>=.88)drawing(escalaUnaHoja,true);
+  else drawing(.92,true,true);
   const paginas=doc.internal.getNumberOfPages();
   for(let pagina=1;pagina<=paginas;pagina++){
     doc.setPage(pagina);
