@@ -15,6 +15,8 @@ export function prepararAvisoEstatutos({sb,$,guardar,versiones,abrir,obtenerActu
   let aprobadoEnEstaOperacion=false;
   let modoSoloAviso=false;
   let procesando=false;
+  let anuncioDeVersion=null;
+  let estadoSeq=0;
 
   const horaMadrid=()=>{
     const partes=Object.fromEntries(new Intl.DateTimeFormat("en-GB",{
@@ -29,6 +31,90 @@ export function prepararAvisoEstatutos({sb,$,guardar,versiones,abrir,obtenerActu
   };
   const numeroVersion=v=>String(v||"").replace(/^versi[oó]n\s+/i,"").trim();
   const nombreAviso=v=>"Estatutos actualizados · Versión "+numeroVersion(v);
+
+  const esAnuncioDeVersion=(a,v)=>a?.titulo===nombreAviso(v)&&a?.enlace===ENLACE_ESTAtUTOS;
+  async function listarAnuncios(){
+    const {data,error}=await sb.rpc("listar_anuncios_admin");
+    if(error)throw error;
+    if(!Array.isArray(data))throw new Error("No se pudo obtener la lista de anuncios.");
+    return data;
+  }
+  // Mantener los demás campos del anuncio al cambiar su visibilidad.
+  function datosParaGuardar(a,visible){
+    return {
+      id:a.id,
+      fecha:a.fecha||"",
+      fecha_publicacion:a.fecha_publicacion||"",
+      hora_publicacion:a.hora_publicacion||"00:00",
+      fecha_fin:a.fecha_fin||"",
+      hora_fin:a.hora_fin||"23:59",
+      fecha_evento:a.fecha_evento||"",
+      tipo:a.tipo||"General",
+      titulo:a.titulo,
+      texto:a.texto||"",
+      destacado:!!a.destacado,
+      dias_destacado:a.dias_destacado??"",
+      visible,
+      autor:a.autor||"",
+      enlace:a.enlace||"",
+      orden:Number(a.orden||0)
+    };
+  }
+  function estadoAnuncio(a){
+    if(!a)return "No se ha creado un aviso para esta versión.";
+    if(!a.visible)return "Aviso oculto: no aparece en Mi Pizarra ni en el Tablón.";
+    const fin=a.fecha_fin?String(a.fecha_fin).slice(0,10):"";
+    const hora=String(a.hora_fin||"23:59").slice(0,5);
+    return fin?"Aviso publicado o programado hasta el "+fin.split("-").reverse().join("/")+" a las "+hora+".":"Aviso publicado sin fecha de retirada.";
+  }
+  async function refrescarEstado(){
+    const token=++estadoSeq;
+    const {id,detalle}=obtenerActual();
+    const estado=$("estadoAvisoEstatutos"),retirar=$("retirarAvisoEstatutos"),anunciar=$("avisarVersionVigente");
+    anuncioDeVersion=null;
+    retirar.hidden=true;
+    if(detalle?.version?.estado!=="vigente"){
+      estado.hidden=true;
+      return;
+    }
+    estado.hidden=false;
+    estado.textContent="Comprobando si hay un aviso publicado…";
+    anunciar.textContent="📣 Anunciar cambios";
+    try{
+      const anuncios=await listarAnuncios();
+      if(token!==estadoSeq||id!==obtenerActual().id)return;
+      const anuncio=anuncios.find(a=>esAnuncioDeVersion(a,detalle.version.version));
+      anuncioDeVersion=anuncio||null;
+      estado.textContent=estadoAnuncio(anuncio);
+      retirar.hidden=!(anuncio&&anuncio.visible);
+      anunciar.textContent=!anuncio?"📣 Anunciar cambios":anuncio.visible?"📣 Actualizar anuncio":"📣 Volver a publicar aviso";
+    }catch(error){
+      if(token!==estadoSeq||id!==obtenerActual().id)return;
+      estado.textContent="No se pudo comprobar el estado del aviso. Actualiza la página.";
+      console.error("Aviso de Estatutos:",error);
+    }
+  }
+  $("retirarAvisoEstatutos").onclick=async()=>{
+    const {detalle}=obtenerActual();
+    const anuncio=anuncioDeVersion;
+    if(procesando||detalle?.version?.estado!=="vigente"||!anuncio?.visible||!esAnuncioDeVersion(anuncio,detalle.version.version))return;
+    if(!(await AMPDialog.confirm("¿Dejar de publicar el aviso de la versión "+numeroVersion(detalle.version.version)+"? Desaparecerá de Mi Pizarra y del Tablón, pero los Estatutos seguirán publicados.")))return;
+    if(!esAnuncioDeVersion(anuncio,obtenerActual().detalle?.version?.version))return;
+    procesando=true;
+    const boton=$("retirarAvisoEstatutos");
+    boton.disabled=true;
+    try{
+      const {error}=await sb.rpc("guardar_anuncio_admin",{p:datosParaGuardar(anuncio,false)});
+      if(error)throw error;
+      $("msg").textContent="✓ Aviso retirado de Mi Pizarra y del Tablón. La versión de los Estatutos sigue vigente.";
+      await refrescarEstado();
+    }catch(err){
+      await AMPDialog.alert("No se pudo retirar el aviso: "+(err?.message||"error desconocido"));
+    }finally{
+      procesando=false;
+      boton.disabled=false;
+    }
+  };
 
   const actualizarVista=()=>{
     ajustes.hidden=!activar.checked;
@@ -68,12 +154,10 @@ export function prepararAvisoEstatutos({sb,$,guardar,versiones,abrir,obtenerActu
     const momento=horaMadrid();
     const tituloAnuncio=nombreAviso(version);
     // Reintentar no debe duplicar el aviso si la primera respuesta llegó con retraso.
-    const {data:existentes,error:errorLista}=await sb.rpc("listar_anuncios_admin");
-    if(errorLista)throw errorLista;
-    if(Array.isArray(existentes)&&existentes.some(a=>a.titulo===tituloAnuncio&&a.enlace===ENLACE_ESTAtUTOS)){
-      return false;
-    }
+    const existentes=await listarAnuncios();
+    const anterior=existentes.find(a=>esAnuncioDeVersion(a,version));
     const anuncio={
+      ...(anterior?{id:anterior.id}:{}),
       fecha:momento.fecha,
       fecha_publicacion:momento.fecha,
       hora_publicacion:momento.hora,
@@ -92,7 +176,7 @@ export function prepararAvisoEstatutos({sb,$,guardar,versiones,abrir,obtenerActu
     };
     const {error}=await sb.rpc("guardar_anuncio_admin",{p:anuncio});
     if(error)throw error;
-    return true;
+    return !anterior;
   }
 
   function abrirOpciones(soloAviso=false){
@@ -149,7 +233,7 @@ export function prepararAvisoEstatutos({sb,$,guardar,versiones,abrir,obtenerActu
           const creado=await crearAnuncio(detalle.version.version,n,resumen);
           await refrescar(id,creado
             ?(modoSoloAviso?"✓ Aviso publicado en Mi Pizarra y el Tablón.":"✓ Estatutos aprobados y aviso publicado en Mi Pizarra y el Tablón.")
-            :(modoSoloAviso?"✓ Ya existe un aviso de esta versión en el Tablón.":"✓ Estatutos aprobados. Ya existía un aviso de esta versión en el Tablón."));
+            :"✓ Aviso actualizado y publicado en Mi Pizarra y el Tablón.");
         }catch(err){
           // La aprobación no se revierte ni se repite si el aviso falla.
           mensaje.textContent="Los Estatutos ya están aprobados, pero no se pudo publicar el aviso: "+
@@ -168,4 +252,5 @@ export function prepararAvisoEstatutos({sb,$,guardar,versiones,abrir,obtenerActu
       cancelar.disabled=false;
     }
   });
+  return {refrescarEstado};
 }
