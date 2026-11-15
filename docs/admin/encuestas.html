@@ -29,6 +29,7 @@
 .control-manual-botones{display:flex;flex-wrap:wrap;gap:7px;margin:11px 0}
 .control-manual-botones button{cursor:pointer;min-height:38px;padding:8px 11px;border-radius:9px}
 .control-manual-botones button:disabled{cursor:default;opacity:.5}
+.control-manual-botones button[hidden]{display:none!important}
 .control-manual-resultados small{display:block;font-size:12px;line-height:1.5}
 @media(max-width:520px){.control-manual-botones{display:grid;grid-template-columns:1fr 1fr}.control-manual-botones button{font-size:12px;padding:8px 6px}.control-manual-botones button:last-child{grid-column:1/-1}}
 </style><script defer src="../js/admin/dialogos.js"></script></head><body><main class="shell"><div class="top"><div><div class="brand">🍽️ A Mesa Puesta</div><div class="muted">Administración · Encuestas</div></div></div><div class="row"><div><h1 class="title"><span aria-hidden="true" style="font-size:.8em;margin-right:.35em">📊</span>Encuestas</h1><div class="muted">Crea votaciones y consulta su participación.</div></div><button id="nueva" class="btn">+ Nueva encuesta</button></div><div id="lista"></div></main>
@@ -39,9 +40,9 @@
   <div class="control-manual-botones">
    <button type="button" class="soft" id="publicarResultadosAhora">📊 Publicar ahora</button>
    <button type="button" class="soft danger" id="retirarResultadosPizarra">Retirar de Mi Pizarra</button>
-   <button type="button" class="soft" id="restablecerResultadosAutomaticos">Usar plazo automático</button>
+   <button type="button" class="soft" id="restablecerResultadosAutomaticos">Volver al plazo automático</button>
   </div>
-  <small class="muted">Puedes publicar y retirar cuando quieras, sin esperar ni depender del plazo automático. Por privacidad, solo se permite publicar resultados de encuestas cerradas.</small>
+  <small class="muted">«Publicar ahora» activa la visibilidad de la encuesta y de sus resultados si estaban desactivadas. «Volver al plazo automático» solo aparece cuando has elegido publicar o retirar manualmente. Los resultados de una encuesta abierta nunca se publican aquí.</small>
  </section><button class="btn" id="guardarEncuesta">Guardar encuesta</button> <button type="button" id="eliminar" class="soft danger">Eliminar</button></form></aside></div>
 <dialog class="encuesta-share-dialogo" id="encuestaTarjetaDialogo" aria-labelledby="encuestaTarjetaTitulo">
 <section class="encuesta-share-contenido">
@@ -58,4 +59,4 @@
 </div>
 <p id="encuestaTarjetaEstado" role="status" aria-live="polite"></p>
 </section>
-</dialog><script type="module" src="../js/admin/encuestas.js?v=20261115-publicacion-manual"></script><script src="../cabecera-comun.js"></script></body></html>
+</dialog><script type="module" src="../js/admin/encuestas.js?v=20261115-publicacion-manual-directa"></script><script src="../cabecera-comun.js"></script></body></html>
