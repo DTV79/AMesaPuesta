@@ -124,7 +124,7 @@ async function cambiarPublicacionResultados(modo){
       return AMPDialog.alert("Solo puedes publicar los resultados de una encuesta cerrada.");
     const hayOpcionesOcultas=!e.mostrar_resultados||!e.mostrar_encuesta||!mostrarEncuesta.checked||!mostrarResultados.checked;
     const avisoVisibilidad=hayOpcionesOcultas
-      ?"\\n\\nAl publicar se activarán automáticamente «Mostrar encuesta» y «Mostrar resultados». Si la encuesta estaba oculta, volverá a aparecer también en la sección Encuestas.":"";
+      ?"\n\nAl publicar se activarán automáticamente «Mostrar encuesta» y «Mostrar resultados». Si la encuesta estaba oculta, volverá a aparecer también en la sección Encuestas.":"";
     if(!(await AMPDialog.confirm("¿Publicar ahora los resultados de «"+e.titulo+"» en Mi Pizarra? Permanecerán visibles hasta que decidas retirarlos."+avisoVisibilidad)))return;
   }else if(modo==="oculta"){
     if(!(await AMPDialog.confirm("¿Retirar ahora estos resultados de Mi Pizarra? La encuesta y sus votos no se modificarán.")))return;
