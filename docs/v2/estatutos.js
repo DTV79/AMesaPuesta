@@ -1,3 +1,4 @@
+import {formatearContenidoEstatutos} from "../js/estatutos-formato.js";
 import {SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY} from "./config.js";
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -16,7 +17,7 @@ let chapters=[],current=null;
 for(const b of bloques){if(b.tipo==="capitulo"){current={title:b.titulo||"Capítulo",items:[]};chapters.push(current)}else{if(!current){current={title:"Disposiciones generales",items:[]};chapters.push(current)}current.items.push(b)}}
 const index=chapters.map((c,i)=>'<li><a href="#capitulo-'+(i+1)+'"><span>'+String(i+1).padStart(2,"0")+'</span> '+esc(String(c.title).replace(/^Cofrade Fundador · Requisitos$/i,"Cofrade Veterano · Requisitos"))+'</a></li>').join("");
 $("indice-estatutos").innerHTML=index;$("indice-movil").innerHTML=index;
-$("estatutos-contenido").innerHTML=chapters.map((c,i)=>'<section class="capitulo" id="capitulo-'+(i+1)+'"><div class="capitulo-head"><h2>'+esc(String(c.title).replace(/^Cofrade Fundador · Requisitos$/i,"Cofrade Veterano · Requisitos"))+'</h2></div><div class="capitulo-body">'+c.items.map(b=>'<article class="articulo"><h3>'+esc(b.titulo||"")+'</h3><div>'+esc(b.contenido||"").replace(/\n/g,"<br>")+'</div></article>').join("")+'</div></section>').join("");
+$("estatutos-contenido").innerHTML=chapters.map((c,i)=>'<section class="capitulo" id="capitulo-'+(i+1)+'"><div class="capitulo-head"><h2>'+esc(String(c.title).replace(/^Cofrade Fundador · Requisitos$/i,"Cofrade Veterano · Requisitos"))+'</h2></div><div class="capitulo-body">'+c.items.map(b=>'<article class="articulo"><h3>'+esc(b.titulo||"")+'</h3><div class="estatutos-contenido">'+formatearContenidoEstatutos(b.contenido||"")+'</div></article>').join("")+'</div></section>').join("");
 }catch(err){$("estatutos-contenido").textContent="No se han podido cargar los estatutos vigentes. Inténtalo de nuevo más tarde.";console.error(err)}
 }
 iniciar();
