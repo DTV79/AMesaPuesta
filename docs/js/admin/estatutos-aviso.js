@@ -39,17 +39,23 @@ export function prepararAvisoEstatutos({sb,$,guardar,versiones,abrir,obtenerActu
   texto.addEventListener("input",actualizarVista);
 
   async function refrescar(id,info){
+    let recargaError=null;
+    try{
+      await versiones.cargar();
+      await abrir(id);
+    }catch(err){
+      recargaError=err;
+      console.error("No se pudo actualizar el editor de Estatutos:",err);
+    }
     modal.classList.remove("open");
     aprobadoEnEstaOperacion=false;
-    await versiones.cargar();
-    await abrir(id);
-    $("msg").textContent=info;
+    $("msg").textContent=info+(recargaError?" No se pudo actualizar la vista; recarga la página.":"");
   }
   const cerrar=async()=>{
     if(procesando)return;
     const id=obtenerActual().id;
     if(aprobadoEnEstaOperacion && id){
-      await refrescar(id,"✓ Estatutos aprobados. No se ha creado un anuncio automático; puedes hacerlo desde el Tablón.");
+      await refrescar(id,"✓ Estatutos aprobados. Comprueba en el Tablón si se llegó a publicar el aviso.");
     }else{
       modal.classList.remove("open");
     }
