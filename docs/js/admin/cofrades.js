@@ -59,7 +59,7 @@ document.getElementById("incCalcular").onclick=async()=>{
  document.getElementById("incCuota").value=data.cuota_anual;
  document.getElementById("incAportacion").value=data.aportacion_sugerida;
  actualizarTotalIncorporacion();
- estado.textContent="Participación por cofrade: "+euro(data.participacion_estimada)+". Cuota anual: "+euro(data.cuota_anual)+". Entrada al bote: "+euro(data.aportacion_sugerida)+". Total: "+euro(data.total_sugerido)+". Referencia: "+data.cofrades_referencia+" cofrades. Se tienen en cuenta "+euro(data.cuotas_pendientes_referencia)+" de cuotas pendientes SOLO para calcular la participación; no se han cobrado ni añadido al remanente real. Revisa los importes antes de confirmar.";
+ estado.textContent="Participación por cofrade: "+euro(data.participacion_estimada)+". Cuota anual: "+euro(data.cuota_anual)+". Entrada al bote: "+euro(data.aportacion_sugerida)+". Total: "+euro(data.total_sugerido)+". Referencia: "+data.cofrades_referencia+" cofrades. Remanente antes de compromisos: "+euro(data.remanente_real)+". Reembolsos del bote pendientes de pago y ya descontados para este cálculo: "+euro(data.bote_comprometido_pendiente||0)+". Cuotas pendientes consideradas únicamente en la simulación: "+euro(data.cuotas_pendientes_referencia)+". Ninguna de estas operaciones registra pagos ni modifica el remanente. Revisa los importes antes de confirmar.";
 };
 document.getElementById("incGuardar").onclick=async()=>{
  const cofrade=document.querySelector("#id").value,comida=document.getElementById("incComida").value,cuota=Number(document.getElementById("incCuota").value),aport=Number(document.getElementById("incAportacion").value),miembro=miembros.find(x=>x.id===cofrade);
