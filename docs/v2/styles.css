@@ -907,6 +907,12 @@ button {cursor:pointer}
 .board-featured {margin-top:33px}
 .board-featured[hidden],.board-list-section[hidden] {display:none}
 .board-list-section {margin-top:35px}
+/* Tablón: archivo histórico consultable, independiente de Mi Pizarra. */
+.board-history-section {margin-top:46px;padding-top:26px;border-top:1px solid var(--line)}
+.board-history-description {margin:10px 0 0;font-size:13px;color:#77685e;line-height:1.65}
+.board-card-historical {border-top-color:#d8d0c9;background:#fffdfb;box-shadow:0 5px 18px rgba(54,28,19,.025)}
+.board-historical-tag {display:inline-flex;align-items:center;min-height:28px;padding:5px 10px;border-radius:30px;background:#f2f0ed;color:#68615b;font-size:11px;font-weight:700;line-height:1.2}
+
 .board-section-heading {margin-bottom:17px}
 .board-section-heading .section-title {font-size:clamp(28px,3.5vw,40px)}
 .board-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
