@@ -169,13 +169,18 @@ function enlaceSeguro(value) {
   }
 }
 
+function avisoDeEstatutos(a) {
+  return normalizar(a.titulo).startsWith("estatutos actualizados") &&
+    txt(a.enlace).includes("/AMesaPuesta/v2/estatutos.html");
+}
+
 function crearAnuncio(a, destacado) {
   const article = crear("article", "board-card" + (destacado ? " board-card-featured" : ""));
   if (tipoCanonico(a.tipo) === "urgente") article.classList.add("board-card-urgent");
 
   const heading = crear("div", "board-card-head");
   const chips = crear("div", "board-card-labels");
-  const info = tipoInfo(a.tipo);
+  const info = avisoDeEstatutos(a) ? {icono:"📜",nombre:"Estatutos"} : tipoInfo(a.tipo);
   chips.append(crear("span", "board-category", info.icono + " " + info.nombre));
   if (destacado) {
     const dias = diasDestacado(a);
@@ -217,7 +222,7 @@ function crearAnuncio(a, destacado) {
 
   const href = enlaceSeguro(a.enlace);
   if (href) {
-    const link = crear("a", "board-external", "Abrir enlace ↗");
+    const link = crear("a", "board-external", avisoDeEstatutos(a) ? "Consultar los Estatutos ↗" : "Abrir enlace ↗");
     link.href = href;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
