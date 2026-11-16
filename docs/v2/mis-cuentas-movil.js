@@ -1,5 +1,5 @@
-/* Presentación móvil de Mis cuentas. Lee los datos ya calculados por la página;
-   no hace llamadas a la base de datos ni modifica los cálculos contables. */
+/* Pestañas de Mis cuentas en ordenador y móvil, con registros compactos solo en móvil.
+   Lee los datos existentes sin modificar los cálculos contables. */
 (()=>{
   "use strict";
   const main=document.querySelector(".cuotas-wrap");
@@ -12,7 +12,7 @@
   let selected="resumen";
   function applyTab(scroll){
     const mobile=breakpoint.matches;
-    main.classList.toggle("cuentas-tabs-activas",mobile);
+    main.classList.add("cuentas-tabs-activas");
     for(const b of buttons){
       const active=b.dataset.cuentasTab===selected;
       b.setAttribute("aria-selected",String(active));
@@ -22,8 +22,8 @@
       const active=panel.dataset.cuentasPanel===selected;
       panel.classList.toggle("cuentas-tab-activo",active);
       // Los paneles existentes pueden estar ocultos hasta que se complete la carga.
-      panel.inert=mobile&&!active;
-      if(mobile&&!active)panel.setAttribute("aria-hidden","true");
+      panel.inert=!active;
+      if(!active)panel.setAttribute("aria-hidden","true");
       else panel.removeAttribute("aria-hidden");
     }
     if(scroll&&mobile)nav.scrollIntoView({behavior:"smooth",block:"start"});
@@ -34,7 +34,6 @@
       applyTab(true);
     });
     buttons[i].addEventListener("keydown",event=>{
-      if(!breakpoint.matches)return;
       if(event.key!=="ArrowLeft"&&event.key!=="ArrowRight")return;
       event.preventDefault();
       const step=event.key==="ArrowRight"?1:-1;
