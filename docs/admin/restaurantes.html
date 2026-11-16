@@ -194,9 +194,9 @@
 .cobros-dialog-cabecera h2{margin:0 0 5px;font-size:22px}
 .cobros-dialog-cerrar{width:34px;height:34px;border:1px solid #e8dfd4;border-radius:10px;background:#faf7f3;flex:none;font-size:21px;cursor:pointer}
 .cobros-dialog-filtros{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 20px 11px;flex-wrap:wrap}
-.cobros-dialog-filtros .grupo-filtros{display:flex;gap:5px;padding:3px;background:#f0ebe3;border-radius:10px}
-.cobros-dialog-filtros button{border:0;padding:9px 11px;border-radius:8px;background:transparent;font-size:13px;font-weight:750;cursor:pointer}
-.cobros-dialog-filtros button.activo{background:#fff;box-shadow:0 1px 5px #0001}
+.cobros-dialog-filtros .grupo-filtros{display:flex;gap:12px;padding:0;background:transparent;border-radius:0;flex-wrap:wrap}
+.cobros-dialog-filtros button{border:1px solid #e7ded4;padding:9px 13px;min-height:40px;border-radius:10px;background:#f8f5f1;color:#52473e;font-size:13px;font-weight:750;cursor:pointer;transition:background .15s,border-color .15s}
+.cobros-dialog-filtros button.activo{background:#571923;border-color:#571923;color:#fff;box-shadow:none}
 #actualizarCobrosComidas{background:#f8f5f1;border:1px solid #e9e1d8}
 #cobrosComidasResumen{margin:0;padding:0 20px 8px;font-size:13px;color:#5c554d}
 #cobrosComidasAviso{margin:0 20px;padding:0;font-size:12px;color:#216b47}
@@ -308,4 +308,4 @@
   <p id="cobrosComidasResumen" role="status"></p><p id="cobrosComidasAviso" role="status" aria-live="polite"></p>
   <div id="cobrosComidasContenido" class="cobros-comidas-scroll" aria-label="Transferencias entre cofrades"></div>
  </div>
-</dialog><script type="module" src="../js/admin/restaurantes.js?v=20261116-cobros-bote-totales"></script><script type="module" src="../js/admin/restaurantes-historico.js?v=20261116-historico-liquidaciones"></script><script src="../cabecera-comun.js"></script></body></html>
+</dialog><script type="module" src="../js/admin/restaurantes.js?v=20261116-cobros-botones-separados"></script><script type="module" src="../js/admin/restaurantes-historico.js?v=20261116-historico-liquidaciones"></script><script src="../cabecera-comun.js"></script></body></html>
