@@ -7,9 +7,9 @@
   <meta name="description" content="Descubre las comidas de la Cofradía A Mesa Puesta: restaurantes, fechas, menús y fotografías de cada encuentro.">
   <title>Nuestras comidas · Cofradía A Mesa Puesta</title>
   
-  <link rel="stylesheet" href="./styles.css?v=20261115-guardar-foto">
+  <link rel="stylesheet" href="./styles.css?v=20261116-fotos-iphone">
   <script src="./scroll-top.js" defer></script>
-  <script type="module" src="./app.js?v=20261115-guardar-foto"></script>
+  <script type="module" src="./app.js?v=20261116-fotos-iphone"></script>
   <script defer src="./acceso-cofrade.js"></script>
 <style>
 .meal-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
@@ -83,18 +83,18 @@
         <button class="gallery-next" type="button" id="gallery-next" aria-label="Foto siguiente">›</button>
       </div>
       <div class="gallery-caption" id="gallery-count" aria-live="polite"></div>
-      <div class="gallery-tools">
-        <button type="button" id="gallery-save" class="gallery-save">↓ Guardar foto</button>
-        <span>Mantén pulsada una foto para guardarla</span>
-      </div>
       <div class="gallery-photo-options" id="gallery-photo-options" hidden>
         <strong>¿Quieres guardar esta foto?</strong>
-        <button type="button" id="gallery-menu-save">↓ Descargar foto</button>
-        <a id="gallery-original-link" href="#" target="_blank" rel="noopener noreferrer">Abrir foto original</a>
+        <button type="button" id="gallery-menu-save">Guardar foto</button>
+        <button type="button" id="gallery-original-link">Abrir foto original</button>
         <button type="button" id="gallery-menu-cancel" class="gallery-menu-cancel">Cancelar</button>
+        <small id="gallery-download-status" class="gallery-download-status" role="status" aria-live="polite"></small>
       </div>
-      <div id="gallery-download-status" class="gallery-download-status" role="status" aria-live="polite"></div>
     </div>
+  </dialog>
+  <dialog id="gallery-original" class="gallery-original" aria-label="Foto original">
+    <button type="button" id="gallery-original-close" class="gallery-original-close" aria-label="Volver a la galería">×</button>
+    <img id="gallery-original-image" alt="Foto original">
   </dialog>
   <footer class="site-footer">
     <div class="container footer-inner">

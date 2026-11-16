@@ -120,6 +120,9 @@ function renderHome() {
 
 let galeria=null, indice=0, botonAnterior=null;
 let temporizadorFoto=null;
+let fotoPreparada=null;
+const navegadorIOS=/iPad|iPhone|iPod/i.test(navigator.userAgent)
+  || (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 function cancelarPulsacionFoto(){
   clearTimeout(temporizadorFoto);
   temporizadorFoto=null;
@@ -127,25 +130,70 @@ function cancelarPulsacionFoto(){
 function cerrarOpcionesFoto(){
   document.getElementById('gallery-photo-options').hidden=true;
 }
+function actualizarBotonGuardar(){
+  const boton=document.getElementById('gallery-menu-save');
+  const estado=document.getElementById('gallery-download-status');
+  if(!boton||!estado)return;
+  boton.textContent=navegadorIOS?'Guardar en Fotos':'Descargar foto';
+  if(!fotoPreparada||!fotoPreparada.file&&!fotoPreparada.error){
+    boton.disabled=true;
+    estado.textContent='Preparando la foto original…';
+  }else{
+    boton.disabled=false;
+    estado.textContent=fotoPreparada.error
+      ?'Para guardarla, abre la foto original y mantén pulsada la imagen.'
+      :navegadorIOS?'En el menú de compartir elige «Guardar imagen».':'';
+  }
+}
+function nombreFotoDescargada(url,tipo){
+  const restaurante=txt(galeria?.restaurante).normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'-')
+    .replace(/^-+|-+$/g,'').slice(0,45)||'Comida';
+  const extensiones={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/heic':'heic','image/heif':'heif'};
+  const extension=extensiones[tipo]||(url.split('?')[0].match(/\.(jpe?g|png|webp|heic|heif)$/i)||[])[1]||'jpg';
+  return 'A-Mesa-Puesta-'+restaurante+'-foto-'+(indice+1)+'.'+extension.toLowerCase();
+}
+function prepararFotoActual(url){
+  const reserva={url,file:null,error:null};
+  fotoPreparada=reserva;
+  const control=new AbortController();
+  const timer=setTimeout(()=>control.abort(),20000);
+  fetch(url,{mode:'cors',signal:control.signal}).then(async respuesta=>{
+    if(!respuesta.ok)throw Error('HTTP '+respuesta.status);
+    const blob=await respuesta.blob();
+    if(!blob.size)throw Error('Archivo vacío');
+    const tipo=blob.type.split(';')[0].toLowerCase()||'image/jpeg';
+    reserva.file=new File([blob],nombreFotoDescargada(url,tipo),{type:tipo});
+  }).catch(error=>{
+    console.warn('No se pudo preparar la foto para compartir',error);
+    reserva.error=error;
+  }).finally(()=>{
+    clearTimeout(timer);
+    if(fotoPreparada===reserva&&!document.getElementById('gallery-photo-options').hidden){
+      actualizarBotonGuardar();
+    }
+  });
+}
 function mostrarOpcionesFoto(){
   if(!galeria)return;
-  document.getElementById('gallery-original-link').href=origenFoto(galeria,indice);
   document.getElementById('gallery-photo-options').hidden=false;
+  actualizarBotonGuardar();
 }
 function refrescarGaleria() {
-  if(!galeria) return;
+  if(!galeria)return;
   cancelarPulsacionFoto();
   cerrarOpcionesFoto();
-  document.getElementById('gallery-download-status').textContent='';
   const img=document.getElementById('gallery-image');
-  img.src=origenFoto(galeria,indice);
+  const url=origenFoto(galeria,indice);
+  img.src=url;
   img.alt=galeria.restaurante+' · Foto '+String(indice+1);
   document.getElementById('gallery-title').textContent=galeria.restaurante;
   document.getElementById('gallery-count').textContent=
     'Foto '+String(indice+1)+' de '+String(urlsFotos(galeria).length);
+  prepararFotoActual(url);
 }
 function abrirGaleria(m,boton) {
-  if(!fotosDisponibles(m)) return;
+  if(!fotosDisponibles(m))return;
   galeria=m;indice=0;botonAnterior=boton;
   refrescarGaleria();
   document.getElementById('gallery').showModal();
@@ -155,64 +203,84 @@ function moverFoto(paso) {
   indice=(indice+paso+urlsFotos(galeria).length)%urlsFotos(galeria).length;
   refrescarGaleria();
 }
-async function descargarFotoGaleria(){
+function abrirFotoOriginal(){
   if(!galeria)return;
-  const origen=origenFoto(galeria,indice);
-  const posicion=indice+1;
-  const restaurante=txt(galeria.restaurante).normalize('NFD')
-    .replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'-')
-    .replace(/^-+|-+$/g,'').slice(0,45)||'Comida';
+  const imagen=document.getElementById('gallery-original-image');
+  imagen.src=origenFoto(galeria,indice);
+  imagen.alt=galeria.restaurante+' · Foto '+String(indice+1);
+  cerrarOpcionesFoto();
+  const dialog=document.getElementById('gallery-original');
+  if(!dialog.open)dialog.showModal();
+}
+function guardarFotoGaleria(){
+  if(!galeria||!fotoPreparada)return;
   const estado=document.getElementById('gallery-download-status');
-  const botones=[document.getElementById('gallery-save'),document.getElementById('gallery-menu-save')];
-  botones.forEach(b=>b.disabled=true);
-  estado.textContent='Preparando la fotografía…';
-  try{
-    // Se descarga el archivo almacenado sin reescalarlo ni recomprimirlo.
-    const respuesta=await fetch(origen,{mode:'cors'});
-    if(!respuesta.ok)throw new Error('HTTP '+respuesta.status);
-    const archivo=await respuesta.blob();
-    if(!archivo.size)throw new Error('Archivo vacío');
-    const tipo=archivo.type.split(';')[0].toLowerCase();
-    const extensiones={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/heic':'heic','image/heif':'heif'};
-    const extension=extensiones[tipo]||(origen.split('?')[0].match(/\.(jpe?g|png|webp|heic|heif)$/i)||[])[1]||'jpg';
-    const temporal=URL.createObjectURL(archivo);
-    const enlace=document.createElement('a');
-    enlace.href=temporal;
-    enlace.download='A-Mesa-Puesta-'+restaurante+'-foto-'+posicion+'.'+extension.toLowerCase();
-    document.body.appendChild(enlace);
-    enlace.click();
-    enlace.remove();
-    setTimeout(()=>URL.revokeObjectURL(temporal),60000);
-    cerrarOpcionesFoto();
-    estado.textContent='Descarga solicitada. En iPhone puedes encontrarla en Archivos > Descargas.';
-  }catch(error){
-    console.warn('No se pudo descargar la fotografía',error);
-    mostrarOpcionesFoto();
-    estado.textContent='No se pudo descargar directamente. Abre el original y mantén pulsada la imagen para guardarla.';
-  }finally{
-    botones.forEach(b=>b.disabled=false);
+  const archivo=fotoPreparada.file;
+  if(!archivo){
+    if(fotoPreparada.error)abrirFotoOriginal();
+    else estado.textContent='Preparando la foto original…';
+    return;
   }
+  // En iPhone, descargar un blob abre una vista previa JPG: la hoja nativa
+  // para compartir un archivo permite seleccionar «Guardar imagen» en Fotos.
+  if(navegadorIOS){
+    if(typeof navigator.share==='function'&&navigator.canShare?.({files:[archivo]})){
+      try{
+        // Se llama directamente en el gesto del usuario (sin await antes).
+        navigator.share({files:[archivo]}).then(()=>{
+          cerrarOpcionesFoto();
+        }).catch(error=>{
+          if(error?.name==='AbortError')return;
+          console.warn('El menú de compartir no está disponible',error);
+          abrirFotoOriginal();
+        });
+      }catch(error){
+        console.warn('No se pudo compartir la foto',error);
+        abrirFotoOriginal();
+      }
+    }else abrirFotoOriginal();
+    return;
+  }
+  const temporal=URL.createObjectURL(archivo);
+  const enlace=document.createElement('a');
+  enlace.href=temporal;
+  enlace.download=archivo.name;
+  document.body.append(enlace);
+  enlace.click();
+  enlace.remove();
+  setTimeout(()=>URL.revokeObjectURL(temporal),60000);
+  cerrarOpcionesFoto();
 }
 function prepararGaleria(){
   const dialog=document.getElementById('gallery');
+  const original=document.getElementById('gallery-original');
   const imagen=document.getElementById('gallery-image');
   const opciones=document.getElementById('gallery-photo-options');
   document.getElementById('gallery-close').addEventListener('click',()=>dialog.close());
   document.getElementById('gallery-next').addEventListener('click',()=>moverFoto(1));
   document.getElementById('gallery-prev').addEventListener('click',()=>moverFoto(-1));
-  document.getElementById('gallery-save').addEventListener('click',descargarFotoGaleria);
-  document.getElementById('gallery-menu-save').addEventListener('click',descargarFotoGaleria);
+  document.getElementById('gallery-menu-save').addEventListener('click',guardarFotoGaleria);
+  document.getElementById('gallery-original-link').addEventListener('click',abrirFotoOriginal);
   document.getElementById('gallery-menu-cancel').addEventListener('click',cerrarOpcionesFoto);
-  dialog.addEventListener('close',()=>{cancelarPulsacionFoto();cerrarOpcionesFoto();botonAnterior?.focus()});
-  dialog.addEventListener('click',e=>{if(e.target===dialog) dialog.close();});
+  document.getElementById('gallery-original-close').addEventListener('click',()=>original.close());
+  original.addEventListener('close',()=>document.getElementById('gallery-original-image').removeAttribute('src'));
+  dialog.addEventListener('close',()=>{
+    cancelarPulsacionFoto();
+    cerrarOpcionesFoto();
+    if(original.open)original.close();
+    botonAnterior?.focus();
+  });
+  dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
+  dialog.addEventListener('cancel',e=>{
+    if(!opciones.hidden){e.preventDefault();cerrarOpcionesFoto();}
+  });
   document.addEventListener('keydown',e=>{
-    if(!dialog.open)return;
-    if(e.key==='Escape'&&!opciones.hidden){cerrarOpcionesFoto();return;}
+    if(!dialog.open||original.open)return;
     if(!opciones.hidden)return;
     if(e.key==='ArrowLeft')moverFoto(-1);
     if(e.key==='ArrowRight')moverFoto(1);
   });
-  let inicio=0, toqueInicial=null;
+  let inicio=0,toqueInicial=null;
   const zona=document.getElementById('gallery-stage');
   zona.addEventListener('touchstart',e=>{inicio=e.changedTouches[0].screenX;},{passive:true});
   zona.addEventListener('touchend',e=>{
