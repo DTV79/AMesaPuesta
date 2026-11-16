@@ -55,7 +55,7 @@ async function verDetalleValoraciones(id){
     '<summary style="padding:11px 0;cursor:pointer;font-weight:700">'+titulo+' ('+nombres.length+')</summary>'+
     listaNombres(nombres,vacio)+'</details>';
   const participacion='<section aria-label="Participación en las valoraciones" style="padding-top:12px">'+
-    '<h4 style="margin:0 0 5px">👥 Participación: '+(votaron.length+pendientes.length)+' de '+totalAsistentes+' asistentes</h4>'+
+    '<h4 style="margin:0 0 5px">👥 Participación: '+votaron.length+' de '+totalAsistentes+' asistentes han valorado</h4>'+
     '<p class="muted" style="margin:5px 0 10px;font-size:12px">Solo cofrades asistentes. Las notas individuales son confidenciales.</p>'+
     grupo('✅ Ya han valorado',votaron,'Todavía no ha valorado ningún asistente.')+
     grupo('⏳ Pendientes de valorar',pendientes,'Todos los cofrades asistentes han valorado la comida.')+
