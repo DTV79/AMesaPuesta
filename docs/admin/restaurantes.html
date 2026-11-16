@@ -239,6 +239,32 @@
  .cobros-comida-fila{grid-template-columns:minmax(0,1fr) 96px;gap:7px}
  .cobros-comida-estado{min-width:96px}
 }
+/* Histórico compacto de transferencias: filtro anual y una comida abierta cada vez. */
+.filtro-anio-cobros{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 20px 12px}
+.filtro-anio-cobros[hidden]{display:none!important}
+.filtro-anio-cobros label{font-size:12px;color:#665d54;margin:0}
+#anioCobrosComidas{box-sizing:border-box;width:165px;max-width:55%;padding:8px 10px;font-size:13px}
+.cobros-cabecera-anio{font-size:13px;font-weight:850;color:#6d6256;margin:17px 4px 8px}
+.cobros-comida-card.cobros-comida-compacta{padding:0;overflow:hidden}
+.cobros-comida-toggle{width:100%;border:0;background:#fff;color:inherit;font:inherit;text-align:left;padding:13px 14px;cursor:pointer}
+.cobros-comida-toggle[aria-expanded="false"]{border-bottom:0}
+.cobros-comida-toggle:hover{background:#faf8f5}
+.cobros-comida-toggle:focus-visible{outline:2px solid #a6754c;outline-offset:-3px}
+.cobros-comida-meta{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap;min-width:0}
+.cobros-comida-badge{font-size:11px;font-weight:750;border-radius:7px;padding:5px 6px;color:#975516;background:#fff0db;white-space:nowrap}
+.cobros-comida-check{font-size:17px;color:#257a50;font-weight:850}
+.cobros-comida-chevron{font-size:19px;font-weight:750;line-height:1;color:#6e665e}
+.cobros-comida-compacta>.cobros-comida-movimientos,.cobros-comida-compacta>.cobros-cambios-recientes,.cobros-comida-compacta>.cobros-comida-historico{margin-left:14px;margin-right:14px}
+.cobros-comida-compacta>.cobros-comida-historico{margin-bottom:11px}
+.cobros-comida-compacta>.cobros-todos-pagados{padding:0 14px}
+@media(max-width:720px){
+ .filtro-anio-cobros{padding:4px 15px 10px}
+ #anioCobrosComidas{width:135px}
+ .cobros-comida-toggle{padding:12px}
+ .cobros-comida-compacta>.cobros-comida-movimientos,.cobros-comida-compacta>.cobros-cambios-recientes,.cobros-comida-compacta>.cobros-comida-historico{margin-left:12px;margin-right:12px}
+ .cobros-comida-meta{gap:5px}
+ .cobros-comida-badge{font-size:10px}
+}
 </style><script defer src="../js/admin/dialogos.js"></script></head><body><main class="shell"><div class="top"><div><h1 class="title"><span aria-hidden="true" style="font-size:.8em;margin-right:.35em">🍴</span>Restaurantes y comidas</h1><div class="muted">Gestiona todo lo que después se mostrará en la web pública.</div></div><div class="acciones-comidas"><button id="abrirCobrosComidas" type="button" class="btn soft">💶 Cobros pendientes <span id="contadorCobrosComidas" aria-live="polite"></span></button><button id="nuevo" class="btn primary">+ Nueva comida</button></div></div><nav class="hist-tabs" role="tablist" aria-label="Apartados de restaurantes y comidas"><button type="button" id="tabComidas" class="active" role="tab" aria-selected="true" aria-controls="lista">Comidas</button><button type="button" id="tabHistorico" role="tab" aria-selected="false" aria-controls="historicoPanel">📊 Histórico de gastos</button></nav><section id="historicoPanel" hidden aria-label="Histórico de gastos por restaurante y comida"><div class="hist-filtros"><h2>Histórico de gastos por comida</h2><label for="historicoAnio">Ejercicio <select id="historicoAnio"><option value="todos">Todos los años</option></select></label></div><div class="hist-kpis"><div class="hist-kpi"><span>Gastos totales</span><strong id="historicoTotal">—</strong></div><div class="hist-kpi"><span>Nº. Comidas</span><strong id="historicoComidas">—</strong></div><div class="hist-kpi"><span>Gastos comidas</span><strong id="historicoGastosComidas">—</strong></div><div class="hist-kpi"><span>Otros gastos</span><strong id="historicoOtrosGastos">—</strong></div></div><p id="historicoEstado" class="muted" role="status"></p><div class="hist-comidas-scroll"><div class="hist-encabezado" aria-hidden="true"><span>Restaurante / Fecha</span><span>Cofrades</span><span>Gasto comida</span><span>Otros gastos</span><span>Total</span><span>Detalle</span></div><div id="historicoFilas"></div></div><p id="historicoNota" class="muted">Importes históricos de comida y bote. No equivalen necesariamente a pagos realizados.</p></section><div id="lista" class="grid"></div><section id="editor" class="drawer panel"><div class="row"><h2 id="editorTitle">Nueva comida</h2><button id="cerrar" class="btn soft" type="button" aria-label="Cerrar sin guardar" title="Cerrar sin guardar">×</button></div><div class="sections">
 <div class="section"><h3>🏠 Restaurante</h3><label>Restaurante</label><select id="restSel"></select><label>Nombre</label><input id="rNombre"><label>Dirección</label><input id="rDireccion" placeholder="Praza Igrexa, 13b"><div class="twocol"><div><label>C.P.</label><input id="rCP" inputmode="numeric" maxlength="5" placeholder="36847"></div><div><label>Lugar</label><input id="rLugar" placeholder="Fornelos de Montes"></div></div><label>Provincia</label><input id="rProvincia" placeholder="Pontevedra"><div class="twocol"><div><label>Teléfono</label><input id="rTelefono"></div><div><label>Persona de contacto (opcional)</label><input id="rContacto" placeholder="Nombre de contacto"></div></div><label>Web</label><input id="rWeb"><div class="twocol"><div><label>Latitud</label><input id="rLat"></div><div><label>Longitud</label><input id="rLon"></div></div></div>
 <div class="section"><h3>🍽️ Comida y menú</h3><div class="twocol"><div><label>Fecha</label><input id="fecha" type="date"></div><div><label>Estado</label><select id="estado"><option value="celebrada">Realizada</option><option value="planificada">Programada</option></select></div></div><label>Entrantes</label><textarea id="entrantes"></textarea><label>Platos principales</label><textarea id="principales"></textarea><label>Postres</label><textarea id="postres"></textarea><label>Bebidas</label><textarea id="bebidas"></textarea></div>
@@ -251,7 +277,8 @@
  <div class="cobros-dialog-interior">
   <div class="cobros-dialog-cabecera"><div><h2 id="tituloCobrosComidas">💶 Cobros de comidas</h2><div class="muted" style="font-size:13px">Transferencias entre cofrades de liquidaciones cerradas</div></div><button type="button" class="cobros-dialog-cerrar" id="cerrarCobrosComidas" aria-label="Cerrar cobros">×</button></div>
   <div class="cobros-dialog-filtros"><div class="grupo-filtros" role="group" aria-label="Filtrar cobros"><button type="button" class="activo" data-filtro-cobros="pendientes" aria-pressed="true">Pendientes</button><button type="button" data-filtro-cobros="todos" aria-pressed="false">Todas</button></div><button type="button" id="actualizarCobrosComidas">↻ Actualizar</button></div>
+  <div id="filtroAnioCobrosComidas" class="filtro-anio-cobros" hidden><label for="anioCobrosComidas">Histórico por año</label><select id="anioCobrosComidas" aria-label="Seleccionar ejercicio de los cobros"><option value="todos">Todos los años</option></select></div>
   <p id="cobrosComidasResumen" role="status"></p><p id="cobrosComidasAviso" role="status" aria-live="polite"></p>
   <div id="cobrosComidasContenido" class="cobros-comidas-scroll" aria-label="Transferencias entre cofrades"></div>
  </div>
-</dialog><script type="module" src="../js/admin/restaurantes.js?v=20261116-cobros-rapidos"></script><script type="module" src="../js/admin/restaurantes-historico.js?v=20261116-historico-liquidaciones"></script><script src="../cabecera-comun.js"></script></body></html>
+</dialog><script type="module" src="../js/admin/restaurantes.js?v=20261116-cobros-historico-plegable"></script><script type="module" src="../js/admin/restaurantes-historico.js?v=20261116-historico-liquidaciones"></script><script src="../cabecera-comun.js"></script></body></html>
