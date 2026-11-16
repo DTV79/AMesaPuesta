@@ -98,15 +98,35 @@ document.getElementById("aceptarAnularCobro").onclick=async()=>{
  if(error){errorEl.textContent=error.message;btn.disabled=false;return;}
  cerrarAnularCobro();document.getElementById("drawer").classList.remove("open");await cargar();await abrirPago(cofradeId,cuotaId);
 };
+let solicitudFichaEconomica=0;
 async function abrirPago(cofradeId,cuotaId){
  const r=filas.find(x=>x.cofrade_id===cofradeId&&x.cuota_id===cuotaId);if(!r)return;
+ const solicitud=++solicitudFichaEconomica;
  $("#cofradeId").value=cofradeId;$("#cuotaId").value=cuotaId;$("#fNombre").textContent=r.nombre;
  $("#fEstado").innerHTML='<div class="card"><div class="muted">Cuota '+r.ejercicio+'</div><div style="margin-top:6px">Asignado: <b>'+euro(r.importe_asignado)+'</b> · Pagado: <b>'+euro(r.pagado)+'</b> · Pendiente: <b>'+euro(r.pendiente)+'</b></div></div>';
  $("#importe").value=Number(r.pendiente)>0?Number(r.pendiente).toFixed(2):"";$("#importe").max=Number(r.pendiente);$("#fecha").value=hoy();$("#metodo").value="";$("#referencia").value="";$("#okPago").style.display="none";
- const [cuotaResultado,incorporacionResultado]=await Promise.all([
+ const [cuotaResultado,incorporacionResultado,detalleIncorporacion]=await Promise.all([
   supabase.rpc("pagos_cuota_cofrade_admin",{p_cofrade:cofradeId,p_cuota:cuotaId}),
-  supabase.rpc("pagos_incorporacion_cofrade_admin",{p_cofrade:cofradeId})
+  supabase.rpc("pagos_incorporacion_cofrade_admin",{p_cofrade:cofradeId}),
+  supabase.rpc("opciones_incorporacion_admin",{p_cofrade:cofradeId})
  ]);
+ if(solicitud!==solicitudFichaEconomica)return;
+ const incorporacion=detalleIncorporacion.data?.incorporacion;
+ if(detalleIncorporacion.error){
+  const aviso=document.createElement("p");aviso.className="ficha-nota";aviso.textContent="No se ha podido consultar la información de incorporación.";
+  $("#fEstado").append(aviso);
+ }else if(incorporacion){
+  const importeIncorporacion=Number(incorporacion.aportacion_incorporacion||0);
+  const pagadoIncorporacion=Number(incorporacion.pagado_incorporacion||0);
+  const pendienteIncorporacion=Number(incorporacion.pendiente_incorporacion||0);
+  const totalPendiente=Number(r.pendiente||0)+pendienteIncorporacion;
+  const tarjeta=document.createElement("div");tarjeta.className="card ficha-incorporacion";
+  tarjeta.innerHTML='<div class="muted">Aportación de incorporación'+(Number(incorporacion.ejercicio)===Number(r.ejercicio)?'':' · '+Number(incorporacion.ejercicio))+'</div>'
+   +'<div class="ficha-detalle">Asignado: <b>'+euro(importeIncorporacion)+'</b> · Pagado: <b>'+euro(pagadoIncorporacion)+'</b> · Pendiente: <b>'+euro(pendienteIncorporacion)+'</b></div>'
+   +'<div class="ficha-total"><span>Total pendiente de estos conceptos</span><strong>'+euro(totalPendiente)+'</strong></div>'
+   +'<p class="ficha-nota">El formulario inferior cobra solo la cuota anual. La aportación de incorporación se cobra desde Cofrades → ficha del cofrade.</p>';
+  $("#fEstado").append(tarjeta);
+ }
  const historial=$("#historial");historial.replaceChildren();
  const error=cuotaResultado.error||incorporacionResultado.error;
  const cuotas=Array.isArray(cuotaResultado.data)?cuotaResultado.data.map(p=>({...p,tipo_pago:"cuota"})):[];
