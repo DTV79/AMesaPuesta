@@ -60,6 +60,22 @@ function estrellas(n) {
   const x = Number(n);
   return Number.isInteger(x)&&x>0&&x<=5 ? '★'.repeat(x)+'☆'.repeat(5-x) : 'Sin valoración';
 }
+// Una nota real de 3,5 se muestra como 3 estrellas completas, media y una vacía.
+// Solo la representación visual se redondea al medio punto más cercano.
+function estrellasConMitades(media) {
+  const grupo=el('span','rating-stars-precise');
+  const valor=Math.max(0,Math.min(5,Math.round(Number(media)*2)/2));
+  for(let i=0;i<5;i++){
+    const estrella=el('span','rating-star');
+    estrella.setAttribute('aria-hidden','true');
+    estrella.append(el('span','rating-star-base','★'));
+    const relleno=el('span','rating-star-fill','★');
+    relleno.style.width=(Math.max(0,Math.min(1,valor-i))*100)+'%';
+    estrella.append(relleno);
+    grupo.append(estrella);
+  }
+  return grupo;
+}
 function linkExterno(url) {
   try {const parsed=new URL(txt(url));return ['https:','http:'].includes(parsed.protocol)?parsed.href:'';}
   catch{return '';}
@@ -476,11 +492,18 @@ function historialCard(m) {
   const contenido=el('div','history-content');
   const estadoValoracion=valoracionesDisponibles.get(m.codigo);
   const notaFinal=estadoValoracion&&Number(estadoValoracion.votos)>0&&Number.isFinite(Number(estadoValoracion.media_general)) ? Number(estadoValoracion.media_general) : null;
-  // La valoración histórica se conserva hasta que existan votos nuevos de cofrades.
-  const estrellasMostrar=notaFinal!==null ? estrellas(Math.max(1,Math.min(5,Math.round(notaFinal)))) : estrellas(m.valoracion);
-  const stars=el('div','rating rating-restaurante',estrellasMostrar);
-  if(notaFinal!==null)stars.title='Media de los cofrades: '+notaFinal.toLocaleString('es-ES')+'/5';
-  stars.setAttribute('aria-label',notaFinal!==null?'Media de los cofrades '+notaFinal+' de 5':'Valoración '+String(m.valoracion||0)+' de 5');
+  // Se conserva la valoración histórica hasta que existan votos de cofrades.
+  const stars=el('div','rating rating-restaurante');
+  if(notaFinal!==null){
+    const notaExacta=notaFinal.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1});
+    stars.append(estrellasConMitades(notaFinal),el('span','rating-exacta',notaExacta+'/5'));
+    stars.title='Media de los cofrades: '+notaExacta+'/5';
+    stars.setAttribute('aria-label','Media de los cofrades: '+notaExacta+' de 5');
+  }else{
+    stars.textContent=estrellas(m.valoracion);
+    stars.setAttribute('aria-label','Valoración '+String(m.valoracion||0)+' de 5');
+  }
+  stars.setAttribute('role','img');
 
   const cabecera=el('div','meal-heading');
   const titulos=el('div','meal-heading-titles');

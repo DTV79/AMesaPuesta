@@ -1115,6 +1115,11 @@ button {cursor:pointer}
 
 /* Tamaño uniforme de estrellas en las fichas de restaurantes */
 .history-card .rating.rating-restaurante{font-size:17px;line-height:1.35;letter-spacing:1px}
+.history-card .rating-stars-precise{display:inline-flex;align-items:center;gap:2px;letter-spacing:0;vertical-align:middle;line-height:1}
+.history-card .rating-star{position:relative;display:inline-block;width:1em;height:1em;line-height:1;vertical-align:middle;flex:none}
+.history-card .rating-star-base{display:block;color:#ded4c7;line-height:1}
+.history-card .rating-star-fill{position:absolute;top:0;left:0;display:block;white-space:nowrap;overflow:hidden;color:#b07b34;line-height:1}
+.history-card .rating-exacta{display:inline-block;vertical-align:middle;white-space:nowrap;color:#734a31;font:700 12px/1.35 system-ui,sans-serif;letter-spacing:0;margin-left:9px}
 
 /* Cabecera móvil: cofrades en una fila, administradores en dos. */
 .site-header .header-inner .admin-access{display:none}
