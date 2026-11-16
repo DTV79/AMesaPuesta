@@ -145,7 +145,7 @@ button {cursor:pointer}
 .gallery-photo-options .gallery-menu-cancel {background:transparent;color:#f4e2db}
 .gallery-download-status {display:block;font-size:11px;color:#e8d0c3;text-align:center;line-height:1.4}
 .gallery-download-status:empty {display:none}
-.gallery-original {position:fixed;width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;margin:0;border:0;padding:12px;background:#0b090a;color:#fff;overflow:hidden}
+.gallery-original {position:fixed;inset:0;width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;margin:0;border:0;padding:12px;background:#0b090a;color:#fff;overflow:hidden}
 .gallery-original::backdrop {background:#090708ee}
 .gallery-original[open] {display:flex;align-items:center;justify-content:center}
 .gallery-original img {display:block;width:100%;height:100%;object-fit:contain;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
