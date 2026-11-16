@@ -90,7 +90,18 @@ document.getElementById("incRegistrarPago").onclick=async()=>{
   if(error){await AMPDialog.alert("No se pudo registrar el cobro: "+error.message);return}
   document.getElementById("incPagoImporte").value="";
   await cargarIncorporacion(cofrade);
-  await AMPDialog.alert("Cobro registrado: "+euro(data.cuota)+" de cuota y "+euro(data.incorporacion)+" de incorporación. Total: "+euro(data.total)+".");
+  // Actualizar también el indicador de cuota y el listado tras guardar el cobro.
+  const {data:cuotasActualizadas,error:errorCuotas}=await sb.rpc("resumen_cuotas_cofrades_admin",{p_ejercicio:ejercicioActual});
+  if(!errorCuotas){
+   estados=cuotasActualizadas||[];
+   render();
+   if(document.querySelector("#id").value===cofrade){
+    const estadoActual=estados.find(x=>x.cofrade_id===cofrade);
+    const indicador=resumen.querySelector(".stat:nth-child(2) strong");
+    if(indicador)indicador.textContent=estadoActual?(estadoActual.estado==="al_corriente"?"Al día":euro(estadoActual.pendiente)+" pendiente"):"—";
+   }
+  }else console.error("Cobro registrado, pero no se pudo refrescar el estado de cuotas:",errorCuotas);
+  await AMPDialog.alert("Cobro registrado: "+euro(data.cuota)+" de cuota y "+euro(data.incorporacion)+" de incorporación. Total: "+euro(data.total)+"."+(errorCuotas?" Actualiza la página para ver el estado de las cuotas.":""));
  }finally{
   actualizarVistaCobro();
  }
