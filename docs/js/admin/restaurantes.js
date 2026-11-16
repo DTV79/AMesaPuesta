@@ -32,7 +32,7 @@ async function verDetalleValoraciones(id){
  const pintar=(resumen,comentarios)=>{
   dlg.innerHTML='<div style="display:flex;flex-direction:column;max-height:min(85vh,720px);min-height:0">'+
     '<div style="position:relative;padding:22px 58px 10px 22px;flex:none">'+resumen+'<button type="button" id="cerrarValoraciones" aria-label="Cerrar detalle de valoraciones" title="Cerrar" style="position:absolute;top:14px;right:14px;width:34px;height:34px;border:1px solid #e9ded5;border-radius:50%;background:#faf7f3;color:#493b34;font-size:22px;line-height:1;cursor:pointer;display:grid;place-items:center">×</button></div>'+
-    '<div style="padding:0 22px 16px;min-height:0;display:flex;flex-direction:column;flex:1">'+comentarios+'</div></div>';
+    '<div tabindex="0" role="region" aria-label="Participación y comentarios de la comida" style="padding:0 22px 16px;min-height:0;overflow-y:auto;overscroll-behavior:contain;flex:1">'+comentarios+'</div></div>';
   dlg.querySelector('#cerrarValoraciones').onclick=()=>dlg.close();
  };
  pintar('<h3 style="margin:0 0 12px">⭐ Detalle de valoraciones</h3><p>Cargando datos…</p>','');
@@ -44,8 +44,25 @@ async function verDetalleValoraciones(id){
   const fila=(nombre,valor)=>'<div style="display:flex;justify-content:space-between;gap:15px;padding:9px 0;border-bottom:1px solid #eee"><span>'+nombre+'</span><strong>'+((valor===null||valor===undefined)?'—':Number(valor).toLocaleString('es-ES')+' / 5')+'</strong></div>';
   const resumen='<h3 style="margin:0 0 10px">⭐ Detalle de valoraciones</h3><p style="margin:0 0 8px">'+Number(d.total||0)+' '+(Number(d.total)===1?'valoración registrada':'valoraciones registradas')+'</p>'+fila('🍽️ Comida',d.comida)+fila('🤝 Servicio',d.servicio)+fila('🏡 Local y ambiente',d.ambiente)+fila('⭐ Media general',d.general);
   const entradas=d.comentarios?.length?d.comentarios.map(c=>'<div style="padding:10px 0;border-bottom:1px solid #eee"><strong>'+esc(c.autor||'Cofrade')+'</strong><p style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0">'+esc(c.texto||'')+'</p></div>').join(''):'<p>No hay comentarios.</p>';
-  const comentarios='<h4 style="margin:12px 0 6px;flex:none">💬 Comentarios'+(d.comentarios?.length?' ('+d.comentarios.length+')':'')+'</h4><div tabindex="0" role="region" aria-label="Lista de comentarios" style="overflow-y:auto;overscroll-behavior:contain;min-height:0;flex:1">'+entradas+'</div>';
-  pintar(resumen,comentarios);
+  // Solo las personas que asistieron. Nunca se revelan sus puntuaciones individuales.
+  const votaron=Array.isArray(d.ya_valoraron)?d.ya_valoraron:[];
+  const pendientes=Array.isArray(d.pendientes_valorar)?d.pendientes_valorar:[];
+  const totalAsistentes=Number(d.asistentes_total||0);
+  const listaNombres=(nombres,vacio)=>nombres.length
+    ?'<ul style="padding:0 0 0 20px;margin:8px 0 11px;line-height:1.8">'+nombres.map(nombre=>'<li>'+esc(nombre)+'</li>').join('')+'</ul>'
+    :'<p class="muted" style="margin:8px 0 11px">'+vacio+'</p>';
+  const grupo=(titulo,nombres,vacio)=>'<details style="border:1px solid #e9ded5;border-radius:10px;margin-top:8px;background:#faf7f3;padding:0 12px">'+
+    '<summary style="padding:11px 0;cursor:pointer;font-weight:700">'+titulo+' ('+nombres.length+')</summary>'+
+    listaNombres(nombres,vacio)+'</details>';
+  const participacion='<section aria-label="Participación en las valoraciones" style="padding-top:12px">'+
+    '<h4 style="margin:0 0 5px">👥 Participación: '+(votaron.length+pendientes.length)+' de '+totalAsistentes+' asistentes</h4>'+
+    '<p class="muted" style="margin:5px 0 10px;font-size:12px">Solo cofrades asistentes. Las notas individuales son confidenciales.</p>'+
+    grupo('✅ Ya han valorado',votaron,'Todavía no ha valorado ningún asistente.')+
+    grupo('⏳ Pendientes de valorar',pendientes,'Todos los cofrades asistentes han valorado la comida.')+
+    '</section>';
+  const comentarios='<h4 style="margin:18px 0 6px">💬 Comentarios'+(d.comentarios?.length?' ('+d.comentarios.length+')':'')+'</h4>'+
+    '<div>'+entradas+'</div>';
+  pintar(resumen,participacion+comentarios);
  }catch(e){pintar('<h3>Detalle de valoraciones</h3><p>No se pudo cargar: '+esc(e.message||String(e))+'</p>','')}
 }
 async function confirmarEliminarComida(id){const c=comidas.find(x=>String(x.id)===String(id));if(!c)return;let dlg=document.getElementById("confirmarEliminarComidaDialog");if(!dlg){dlg=document.createElement("dialog");dlg.id="confirmarEliminarComidaDialog";dlg.style.cssText="border:1px solid #e7ded3;border-radius:16px;padding:24px;max-width:430px;width:calc(100% - 32px);box-shadow:0 18px 60px #0003";dlg.innerHTML='<h3 style="margin:0 0 8px">Eliminar comida</h3><p id="confirmarEliminarComidaTexto"></p><p style="color:#a33;font-size:13px">Esta acción es irreversible. Se eliminarán también valoraciones, comentarios, fotos y participantes. Si hay pagos o movimientos económicos, la eliminación se bloqueará.</p><p id="confirmarEliminarComidaError" style="color:#a33"></p><div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px"><button type="button" class="btn soft" id="cancelarEliminarComida">Cancelar</button><button type="button" class="btn primary" id="aceptarEliminarComida">Eliminar comida</button></div>';document.body.appendChild(dlg)}dlg.querySelector("#confirmarEliminarComidaTexto").textContent="¿Eliminar definitivamente la comida del "+fmt(c.fecha)+" ("+(c.restaurante?.nombre||"Sin restaurante")+")?";dlg.querySelector("#confirmarEliminarComidaError").textContent="";dlg.querySelector("#cancelarEliminarComida").onclick=()=>dlg.close();dlg.querySelector("#aceptarEliminarComida").onclick=async()=>{const btn=dlg.querySelector("#aceptarEliminarComida");btn.disabled=true;try{const{error}=await sb.rpc("eliminar_comida_admin",{p_id:id});if(error)throw error;comidas=comidas.filter(x=>String(x.id)!==String(id));renderLista();ficha.renderRest();dlg.close()}catch(e){dlg.querySelector("#confirmarEliminarComidaError").textContent=e.message||String(e)}finally{btn.disabled=false}};dlg.showModal()}
