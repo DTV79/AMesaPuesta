@@ -441,18 +441,27 @@ function valoracionPublica(m){
       }).catch(e=>console.warn(e));
   }
   if(!estado.abierta)return box;
-  box.append(el('p','meal-voting-note','Solo pueden votar los cofrades asistentes. Una valoración por persona.'));
-  const btn=el('button','meal-vote-button','⭐ Valorar esta comida');btn.type='button';box.append(btn);
   const tokenActual=localStorage.getItem('amp_cofrade_token');
-  if(tokenActual){
-    btn.hidden=true;
-    fetch(SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/rpc/mi_valoracion_comida_sesion',{
-      method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_token:tokenActual,p_codigo:m.codigo}),cache:'no-store'
-    }).then(async res=>{if(!res.ok)throw Error('Estado no disponible');return res.json()})
-      .then(data=>{if(data.valorada){box.append(el('p','meal-voting-note','✓ Ya has valorado esta comida. ¡Gracias por participar!'));}else btn.hidden=false;})
-      .catch(()=>{btn.hidden=false;});
-  }
+  // Nunca mostrar el botón sin confirmar que ESTE cofrade asistió.
+  if(!tokenActual)return box;
+  const btn=el('button','meal-vote-button','⭐ Valorar esta comida');
+  btn.type='button';
+  btn.hidden=true;
+  box.append(btn);
+  let asistenciaConfirmada=false;
+  fetch(SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/rpc/mi_valoracion_comida_sesion',{
+    method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({p_token:tokenActual,p_codigo:m.codigo}),cache:'no-store'
+  }).then(async res=>{if(!res.ok)throw Error('Estado no disponible');return res.json()})
+    .then(data=>{
+      if(data.asistio!==true)return;
+      asistenciaConfirmada=true;
+      if(data.valorada){
+        box.append(el('p','meal-voting-note','✓ Ya has valorado esta comida. ¡Gracias por participar!'));
+      }else{
+        btn.hidden=false;
+      }
+    }).catch(error=>console.warn('No se pudo comprobar la asistencia para valorar',error));
   const form=el('form','meal-vote-form');form.hidden=true;
   for(const [key,label] of [['comida','Comida'],['servicio','Servicio'],['ambiente','Local y ambiente'],['general','Experiencia general']]){
     const field=el('div','meal-rating-field');
@@ -469,9 +478,11 @@ function valoracionPublica(m){
   const comment=el('label','','Comentario (opcional)');const textarea=el('textarea');textarea.name='comentario';textarea.maxLength=1000;textarea.rows=3;comment.append(textarea);form.append(comment);
   const submit=el('button','meal-vote-button','Enviar valoración');submit.type='submit';form.append(submit);
   const msg=el('p','meal-voting-note');msg.setAttribute('role','status');form.append(msg);box.append(form);
-  btn.addEventListener('click',()=>{form.hidden=!form.hidden;});
+  btn.addEventListener('click',()=>{if(!asistenciaConfirmada)return;form.hidden=!form.hidden;});
   form.addEventListener('submit',async ev=>{
-    ev.preventDefault();submit.disabled=true;msg.textContent='Guardando valoración…';
+    ev.preventDefault();
+    if(!asistenciaConfirmada)return;
+    submit.disabled=true;msg.textContent='Guardando valoración…';
     try{
       const token=localStorage.getItem('amp_cofrade_token');
       if(!token)throw Error('Identifícate como cofrade para valorar esta comida.');
