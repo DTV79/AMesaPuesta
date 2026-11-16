@@ -1199,6 +1199,12 @@ button {cursor:pointer}
  #dialog-bote .bote-tabla-responsive tbody td::before{content:attr(data-label);flex:0 0 43%;text-align:left;font-size:12px;font-weight:700;color:#756b65}
 }
 
+/* Desglose del bote: importe destacado y estado de pago diferenciado. */
+#bote-movimientos .bote-tabla-responsive tbody td:nth-child(4){font-weight:800;color:#571923}
+#bote-movimientos .bote-tabla-responsive tbody td.bote-estado-pagado{color:#276b47;font-weight:750}
+#bote-movimientos .bote-tabla-responsive tbody td.bote-estado-pendiente{color:#a26019;font-weight:750}
+#dialog-bote .bote-nota-movimientos{font-size:12px;line-height:1.5;color:#777169;margin:4px 0 14px}
+
 /* Bloquear el fondo y desplazar el propio diálogo también en horizontal/iOS. */
 html.bote-modal-abierto{overflow:hidden;overscroll-behavior:none}
 body.bote-modal-abierto{overflow:hidden}
