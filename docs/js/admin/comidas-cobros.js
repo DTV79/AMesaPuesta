@@ -8,12 +8,23 @@ export function crearPanelCobrosComidas({sb,getComidas,onActualizado}){
  const aviso=document.getElementById("cobrosComidasAviso");
  const cerrar=document.getElementById("cerrarCobrosComidas");
  const filtros=[...dialogo.querySelectorAll("[data-filtro-cobros]")];
+ const selectorAnio=document.getElementById("anioCobrosComidas");
+ const campoAnio=document.getElementById("filtroAnioCobrosComidas");
  const recientes=new Set();
- let grupos=[],filtro="pendientes",consultaEnCurso=null,guardando=false;
+ let grupos=[],filtro="pendientes",consultaEnCurso=null,guardando=false,anioSeleccionado=null,comidaDesplegada=null;
  const euros=n=>new Intl.NumberFormat("es-ES",{style:"currency",currency:"EUR"}).format(Number(n||0));
  const fecha=d=>d?new Date(d+"T12:00:00").toLocaleDateString("es-ES"):"—";
  const nodo=(tag,clase,texto)=>{const el=document.createElement(tag);if(clase)el.className=clase;if(texto!==undefined)el.textContent=texto;return el};
  const pendientes=g=>(g.movimientos||[]).filter(m=>!m.pagado);
+ const anioDe=g=>/^\d{4}$/.test(String(g.comida?.fecha||"").slice(0,4))?String(g.comida.fecha).slice(0,4):"Sin año";
+ function configurarFiltroAnio(){
+  const anios=[...new Set(grupos.map(anioDe))].sort((a,b)=>b.localeCompare(a,"es"));
+  if(anioSeleccionado!=="todos"&&!anios.includes(anioSeleccionado))anioSeleccionado=anios[0]||"todos";
+  selectorAnio.replaceChildren();
+  const todos=nodo("option","","Todos los años");todos.value="todos";selectorAnio.append(todos);
+  for(const anio of anios){const opcion=nodo("option","",anio);opcion.value=anio;selectorAnio.append(opcion)}
+  selectorAnio.value=anioSeleccionado;
+ }
  const cantidad=()=>grupos.reduce((n,g)=>n+pendientes(g).length,0);
  function actualizarContador(){
   const n=cantidad();
@@ -56,21 +67,44 @@ export function crearPanelCobrosComidas({sb,getComidas,onActualizado}){
  }
  function pintar(){
   filtros.forEach(b=>{const activo=b.dataset.filtroCobros===filtro;b.classList.toggle("activo",activo);b.setAttribute("aria-pressed",String(activo))});
+  campoAnio.hidden=filtro!=="todos";
+  if(filtro==="todos")configurarFiltroAnio();
   const n=cantidad();
   resumen.textContent=n?n+" transferencia"+(n===1?" pendiente":"s pendientes")+" entre cofrades · "+euros(grupos.reduce((s,g)=>s+pendientes(g).reduce((t,m)=>t+Number(m.importe||0),0),0)):"Todas las transferencias entre cofrades están cobradas.";
+  const posAnterior=contenido.scrollTop;
   contenido.replaceChildren();
-  const visibles=grupos.filter(g=>filtro==="todos"||pendientes(g).length||(g.movimientos||[]).some(m=>recientes.has(m.id)));
+  const visibles=grupos.filter(g=>filtro==="todos"?(anioSeleccionado==="todos"||anioDe(g)===anioSeleccionado):pendientes(g).length||(g.movimientos||[]).some(m=>recientes.has(m.id)));
   if(!visibles.length){
-   contenido.append(nodo("p","cobros-sin-pendientes",filtro==="todos"?"No hay transferencias registradas en comidas con liquidación cerrada.":"No hay cobros pendientes entre cofrades."));
+   contenido.append(nodo("p","cobros-sin-pendientes",filtro==="todos"?"No hay comidas con transferencias registradas para el año seleccionado.":"No hay cobros pendientes entre cofrades."));
    return;
   }
+  let anioAnterior="";
   for(const grupo of visibles){
-   const card=nodo("section","cobros-comida-card");
-   const cabecera=nodo("div","cobros-comida-cabecera");
+   if(filtro==="todos"&&anioSeleccionado==="todos"&&anioDe(grupo)!==anioAnterior){
+    anioAnterior=anioDe(grupo);
+    contenido.append(nodo("h3","cobros-cabecera-anio",anioAnterior));
+   }
+   const esHistorico=filtro==="todos";
+   const desplegado=String(comidaDesplegada)===String(grupo.comida.id);
+   const card=nodo("section","cobros-comida-card"+(esHistorico?" cobros-comida-compacta":""));
+   const cabecera=nodo(esHistorico?"button":"div","cobros-comida-cabecera"+(esHistorico?" cobros-comida-toggle":""));
    const titulos=nodo("div","cobros-comida-titulos");
    titulos.append(nodo("h3","",grupo.comida.restaurante?.nombre||"Comida sin restaurante"),nodo("span","cobros-comida-fecha",fecha(grupo.comida.fecha)));
-   cabecera.append(titulos,nodo("span","cobros-comida-progreso",grupo.pagados+"/"+grupo.total+" pagados"));
+   const meta=nodo("span","cobros-comida-meta");
+   meta.append(nodo("span","cobros-comida-progreso",grupo.pagados+"/"+grupo.total+" pagados"));
+   if(esHistorico){
+    const sinCobrar=pendientes(grupo).length;
+    if(sinCobrar)meta.append(nodo("span","cobros-comida-badge",sinCobrar+" pendiente"+(sinCobrar===1?"":"s")));
+    else meta.append(nodo("span","cobros-comida-check","✓"));
+    meta.append(nodo("span","cobros-comida-chevron",desplegado?"⌃":"⌄"));
+    cabecera.type="button";
+    cabecera.setAttribute("aria-expanded",String(desplegado));
+    cabecera.setAttribute("aria-label",(desplegado?"Cerrar ":"Ver ")+"transferencias de "+(grupo.comida.restaurante?.nombre||"la comida")+" del "+fecha(grupo.comida.fecha));
+    cabecera.addEventListener("click",()=>{comidaDesplegada=desplegado?null:grupo.comida.id;pintar()});
+   }
+   cabecera.append(titulos,meta);
    card.append(cabecera);
+   if(esHistorico&&!desplegado){contenido.append(card);continue}
    const debidos=pendientes(grupo);
    const pagados=(grupo.movimientos||[]).filter(m=>m.pagado);
    const cambiados=pagados.filter(m=>recientes.has(m.id));
@@ -95,6 +129,7 @@ export function crearPanelCobrosComidas({sb,getComidas,onActualizado}){
    }
    contenido.append(card);
   }
+  contenido.scrollTop=posAnterior;
  }
  async function cambiarEstado(grupo,m){
   if(guardando)return;
@@ -117,12 +152,13 @@ export function crearPanelCobrosComidas({sb,getComidas,onActualizado}){
   }catch(e){mensaje("No se ha podido completar la operación: "+(e.message||String(e)),true)}
   finally{guardando=false;actualizarContador();pintar()}
  }
- filtros.forEach(b=>b.addEventListener("click",()=>{filtro=b.dataset.filtroCobros;pintar()}));
+ filtros.forEach(b=>b.addEventListener("click",()=>{filtro=b.dataset.filtroCobros;comidaDesplegada=null;pintar();contenido.scrollTop=0}));
+ selectorAnio.addEventListener("change",()=>{anioSeleccionado=selectorAnio.value;comidaDesplegada=null;pintar();contenido.scrollTop=0});
  cerrar.addEventListener("click",()=>dialogo.close());
  dialogo.addEventListener("close",()=>{recientes.clear();mensaje("")});
  boton.addEventListener("click",async()=>{
   if(!dialogo.open)dialogo.showModal();
-  filtro="pendientes";mensaje("Consultando cobros…");contenido.replaceChildren(nodo("p","cobros-sin-pendientes","Cargando transferencias…"));
+  filtro="pendientes";anioSeleccionado=null;comidaDesplegada=null;mensaje("Consultando cobros…");contenido.replaceChildren(nodo("p","cobros-sin-pendientes","Cargando transferencias…"));
   try{await consultar();mensaje("")}catch(e){mensaje("No se pudieron consultar los cobros: "+(e.message||String(e)),true);contenido.replaceChildren()}
  });
  document.getElementById("actualizarCobrosComidas").addEventListener("click",async()=>{
