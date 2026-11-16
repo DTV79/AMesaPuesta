@@ -1092,6 +1092,18 @@ button {cursor:pointer}
 /* Valoraciones cerradas: estrellas destacadas y comentarios plegables */
 .rating.rating-final{font-size:20px;line-height:1.35;letter-spacing:2px}
 .meal-voting:has(> .meal-comments-toggle):not(:has(.meal-vote-button)){padding:0;border:0;background:transparent;margin-top:10px}
+/* Medias públicas por apartado, con la misma estética que los comentarios. */
+.meal-scores-toggle{margin-top:10px;border:1px solid #eadbd0;border-radius:12px;background:#fffaf6;overflow:hidden;max-width:100%}
+.meal-scores-toggle>summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:700;color:#862c2c;font-size:13px}
+.meal-scores-toggle>summary::-webkit-details-marker{display:none}
+.meal-scores-toggle>summary::after{content:' ▾';float:right}
+.meal-scores-toggle[open]>summary::after{content:' ▴'}
+.meal-scores-list{padding:4px 14px 14px}
+.meal-score-item{padding:9px 0;border-top:1px solid #eee2da}
+.meal-score-heading{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:13px;color:#4a3332}
+.meal-score-heading strong{color:#75252b;font-variant-numeric:tabular-nums;white-space:nowrap}
+.meal-score-track{height:6px;border-radius:99px;background:#eee5dd;overflow:hidden;margin-top:7px}
+.meal-score-fill{display:block;height:100%;border-radius:99px;background:#b18a53}
 .meal-comments-toggle{margin-top:10px;border:1px solid #eadbd0;border-radius:12px;background:#fffaf6;overflow:hidden}
 .meal-comments-toggle>summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:700;color:#862c2c;font-size:13px}
 .meal-comments-toggle>summary::-webkit-details-marker{display:none}

@@ -368,7 +368,38 @@ function valoracionPublica(m){
   if(!estado.abierta&&!(Number(estado.votos)>0))box.style.display='none';
   if(estado.abierta||Number(estado.votos)>0){
     box.append(el('h3','','⭐ Valoración de la comida'));
-    if(estado.votos>0)box.append(el('p','meal-voting-summary','Nota general: '+Number(estado.media_general).toLocaleString('es-ES')+'/5 · '+estado.votos+' '+(estado.votos===1?'valoración':'valoraciones')));
+    if(estado.votos>0){
+      box.append(el('p','meal-voting-summary','Nota general: '+Number(estado.media_general).toLocaleString('es-ES')+'/5 · '+estado.votos+' '+(estado.votos===1?'valoración':'valoraciones')));
+      const apartados=[
+        ['Comida',estado.media_comida],
+        ['Servicio',estado.media_servicio],
+        ['Local y ambiente',estado.media_ambiente],
+        ['Experiencia general',estado.media_general]
+      ];
+      if(apartados.every(([,media])=>media!==null&&media!==undefined&&Number.isFinite(Number(media)))){
+        const desglose=el('details','meal-scores-toggle');
+        desglose.append(el('summary','','⭐ Ver puntuaciones'));
+        const lista=el('div','meal-scores-list');
+        for(const [nombre,media] of apartados){
+          const valor=Math.max(0,Math.min(5,Number(media)));
+          const fila=el('div','meal-score-item');
+          const cabecera=el('div','meal-score-heading');
+          cabecera.append(
+            el('span','',nombre),
+            el('strong','',valor.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+'/5')
+          );
+          const fondo=el('div','meal-score-track');
+          fondo.setAttribute('aria-hidden','true');
+          const progreso=el('span','meal-score-fill');
+          progreso.style.width=(valor/5*100)+'%';
+          fondo.append(progreso);
+          fila.append(cabecera,fondo);
+          lista.append(fila);
+        }
+        desglose.append(lista);
+        box.append(desglose);
+      }
+    }
   }
   const tokenComentarios=localStorage.getItem('amp_cofrade_token');
   if(tokenComentarios){
