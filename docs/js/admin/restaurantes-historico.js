@@ -3,7 +3,7 @@ const sb=createClient("https://wmfcpnihymiiwgpvbngj.supabase.co","sb_publishable
 const $=id=>document.getElementById(id);
 const euros=v=>{const [parte,centimos]=(Number(v)||0).toFixed(2).split(".");return parte.replace(/\B(?=(\d{3})+(?!\d))/g,".")+","+centimos+" €"};
 const fecha=v=>v?String(v).slice(0,10).split("-").reverse().join("/"):"—";
-let registros=[],cargados=false;
+let registros=[];
 const pestañas=[["comidas","tabComidas"],["historico","tabHistorico"]];
 function activar(tipo){
   const historico=tipo==="historico";
@@ -18,8 +18,8 @@ function activar(tipo){
   $("historicoPanel").hidden=!historico;
   if(historico){
     $("editor").classList.remove("open");
-    if(!cargados)cargar();
-    else mostrar();
+    // Cada entrada recupera los gastos y las liquidaciones que acaban de cerrarse.
+    cargar();
   }
 }
 function mostrar(){
@@ -33,7 +33,7 @@ function mostrar(){
   $("historicoComidas").textContent=String(lista.length);
   $("historicoGastosComidas").textContent=euros(gastosComidas);
   $("historicoOtrosGastos").textContent=otrosConocidos?euros(otrosGastos):"Sin registrar";
-  $("historicoNota").textContent="El gasto de comida incluye el bote. «Sin registrar» indica que no consta información de otros gastos; los totales muestran los importes identificados, no necesariamente todos los gastos ni pagos realizados.";
+  $("historicoNota").textContent="Las comidas con liquidación cerrada aparecen aunque haya pagos y reembolsos pendientes. El gasto del restaurante incluye la parte financiada con el bote. En las comidas antiguas, «Sin registrar» indica que faltan datos de otros gastos. Estos importes reflejan gastos, no pagos realizados.";
   const caja=$("historicoFilas");
   caja.replaceChildren();
   if(!lista.length){
@@ -94,7 +94,6 @@ async function cargar(){
     const ejercicios=[...new Set(registros.map(r=>String(r.fecha).slice(0,4)))].sort().reverse();
     for(const anio of ejercicios)select.add(new Option(anio,anio));
     select.value="todos";
-    cargados=true;
     $("historicoEstado").textContent="";
     mostrar();
   }catch(e){
