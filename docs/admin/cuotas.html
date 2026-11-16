@@ -84,6 +84,13 @@
 .cuotas-tabpanel[hidden]{display:none!important}
 .cuotas-tab-actions{display:flex;justify-content:flex-end;margin:0 0 14px}
 @media(max-width:760px){.cuotas-tabs{gap:4px;padding:4px}.cuotas-tab{font-size:clamp(12px,3.5vw,15px);padding:12px 3px}.cuotas-tab-actions .cuota-actions{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.cuotas-tab-actions .btn{min-width:0;padding:11px 7px;font-size:clamp(12px,3.2vw,14px)}}
+/* Resumen informativo de incorporación en la ficha económica; el cobro sigue separado. */
+#fEstado .ficha-incorporacion{margin-top:12px;padding:16px}
+#fEstado .ficha-detalle{margin-top:7px;line-height:1.55;font-size:14px}
+#fEstado .ficha-total{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid #ebe5dd;font-size:14px;font-weight:800}
+#fEstado .ficha-total strong{font-size:20px;white-space:nowrap;font-variant-numeric:tabular-nums}
+#fEstado .ficha-nota{margin:12px 0 0;color:#77736b;font-size:12px;line-height:1.5}
+@media(max-width:420px){#fEstado .ficha-total{flex-wrap:wrap;gap:6px}#fEstado .ficha-total strong{margin-left:auto}}
 </style><script defer src="../js/admin/dialogos.js"></script></head><body><main class="shell">
 <div class="top"><div><div class="brand">🍽️ Cofradía A Mesa Puesta</div><div class="muted">Administración</div></div></div>
 <div class="cuotas-heading"><div><h1 class="title"><span aria-hidden="true" style="font-size:.8em;margin-right:.35em">💶</span>Cuotas y cobros</h1><div class="muted">Control de cuotas, pagos y situación de los cofrades.</div></div></div>
