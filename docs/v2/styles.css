@@ -1383,3 +1383,5 @@ body.board-detail-mode .board-next {display:none!important}
  .agenda-lista .history-card{grid-template-columns:minmax(0,1fr)}
  .agenda-lista .history-photo{height:150px;min-height:150px}
 }
+
+.agenda-ics-nota{margin:8px 0 0;color:#806b5e;font-size:11px;line-height:1.5}
