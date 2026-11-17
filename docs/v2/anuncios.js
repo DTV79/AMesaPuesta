@@ -343,7 +343,7 @@ function configurarCategorias() {
 
 async function cargar() {
   try {
-    const response = await fetch(SUPABASE_URL + "/rest/v1/rpc/listar_anuncios_tablon_v2", {method: "POST", headers: {apikey: SUPABASE_PUBLISHABLE_KEY, "Content-Type": "application/json"}, body: "{}", cache: "no-store"});
+    const response = await fetch(SUPABASE_URL + "/functions/v1/listados-cofradia?consulta=listar_anuncios_tablon_v2", {method: "POST", headers: {apikey: SUPABASE_PUBLISHABLE_KEY, "x-cofrade-token": localStorage.getItem("amp_cofrade_token") || "", "Content-Type": "application/json"}, body: "{}", cache: "no-store"});
     if (!response.ok) throw new Error("No se pudieron obtener los anuncios (" + response.status + ")");
     const json = await response.json();
     if (!Array.isArray(json)) throw new Error("Formato de anuncios no válido");
