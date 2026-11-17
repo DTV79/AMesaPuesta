@@ -79,7 +79,8 @@ def revisar_archivos(raiz: Path) -> tuple[int, int]:
             raise RuntimeError("Falta un archivo del manifiesto")
         if destino.stat().st_size != item.get("bytes"):
             raise RuntimeError("El tamaño de un archivo no coincide")
-        huella = hashlib.file_digest(destino.open("rb"), "sha256").hexdigest()
+        with destino.open("rb") as archivo:
+            huella = hashlib.file_digest(archivo, "sha256").hexdigest()
         if huella != item.get("sha256"):
             raise RuntimeError("SHA-256 incorrecto: respaldo alterado")
         if len(ruta.parts) >= 3 and ruta.parts[0] == "storage" and ruta.parts[1] in totales:
@@ -90,7 +91,11 @@ def revisar_archivos(raiz: Path) -> tuple[int, int]:
     }
     if actuales != observados:
         raise RuntimeError("Los archivos del respaldo no coinciden con el manifiesto")
-    if "base.dump" not in observados or not (raiz / "base.dump").read_bytes()[:5] == b"PGDMP":
+    if "base.dump" not in observados:
+        raise RuntimeError("No existe base.dump en el manifiesto")
+    with (raiz / "base.dump").open("rb") as archivo_dump:
+        cabecera = archivo_dump.read(5)
+    if cabecera != b"PGDMP":
         raise RuntimeError("El archivo de base de datos no es un dump PostgreSQL válido")
     if not all(totales.values()):
         raise RuntimeError("Faltan fotos o documentos estatutarios del respaldo")
