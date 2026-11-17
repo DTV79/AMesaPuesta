@@ -1,7 +1,7 @@
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js';
 
 // Solo datos previamente públicos: NO se consultan cuotas, cargos ni saldos.
-const API = SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rpc/listar_cofrades_publicos_v2';
+const API = SUPABASE_URL.replace(/\/$/, '') + '/functions/v1/listados-cofradia?consulta=listar_cofrades_publicos_v2';
 
 const crear = (etiqueta, clase = '', valor = null) => {
   const nodo = document.createElement(etiqueta);
@@ -41,6 +41,7 @@ async function consultarCofrades() {
       method:'POST',
       headers:{
         apikey:SUPABASE_PUBLISHABLE_KEY,
+        'x-cofrade-token':localStorage.getItem('amp_cofrade_token')||'',
         'Content-Type':'application/json',
         'Accept':'application/json'
       },
