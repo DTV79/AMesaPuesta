@@ -376,6 +376,12 @@ async function cargarEstadoValoraciones(){
   const data=await res.json();
   valoracionesDisponibles=new Map((Array.isArray(data)?data:[]).map(v=>[v.codigo,v]));
 }
+// El acceso «Valorar» desde Mi Pizarra baja al formulario de esa comida.
+function valoracionSolicitada(codigo){
+  if(new URLSearchParams(location.search).get('valorar')!=='1')return false;
+  try{return decodeURIComponent(location.hash.slice(1))===String(codigo);}
+  catch{return false;}
+}
 function valoracionPublica(m){
   const estado=valoracionesDisponibles.get(m.codigo);
   if(!estado)return null;
@@ -460,6 +466,11 @@ function valoracionPublica(m){
         box.append(el('p','meal-voting-note','✓ Ya has valorado esta comida. ¡Gracias por participar!'));
       }else{
         btn.hidden=false;
+        // Abrir únicamente después de confirmar asistencia y voto pendiente.
+        if(valoracionSolicitada(m.codigo)){
+          form.hidden=false;
+          requestAnimationFrame(()=>form.scrollIntoView({block:'start',behavior:'smooth'}));
+        }
       }
     }).catch(error=>console.warn('No se pudo comprobar la asistencia para valorar',error));
   const form=el('form','meal-vote-form');form.hidden=true;
@@ -750,7 +761,10 @@ function iniciarRestaurantes(){
   if(codigo && comidas.some(comida=>comida.codigo===codigo)){
     const tarjeta=document.getElementById(codigo);
     if(tarjeta){
-      if(new URLSearchParams(location.search).get("puntuaciones")==="1"){
+      if(valoracionSolicitada(codigo)){
+        const destino=tarjeta.querySelector(".meal-voting")||tarjeta;
+        requestAnimationFrame(()=>destino.scrollIntoView({block:"start"}));
+      }else if(new URLSearchParams(location.search).get("puntuaciones")==="1"){
         const desglose=tarjeta.querySelector(".meal-scores-toggle");
         if(desglose)desglose.open=true;
         const destino=tarjeta.querySelector(".meal-voting")||tarjeta;
