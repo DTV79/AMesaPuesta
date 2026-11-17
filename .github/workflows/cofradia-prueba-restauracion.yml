@@ -4,6 +4,9 @@ name: Prueba de restauración aislada de Cofradía
 # No se conecta al PostgreSQL real: solo lee la copia cifrada de Google Drive.
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 4 17 * *'
+      timezone: 'Europe/Madrid'
   push:
     branches: [main]
     paths:
