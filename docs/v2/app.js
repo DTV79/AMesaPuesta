@@ -687,25 +687,14 @@ async function renderAgenda(){
       destino.replaceChildren(el('p','agenda-sin-fecha','Todavía no hay una próxima comida anunciada.'));
       return;
     }
+    const nombres=personas.map(persona=>txt(persona?.nombre)).filter(Boolean);
     const tarjeta=el('article','agenda-sin-confirmar');
-    const icono=el('div','agenda-sin-confirmar-icono','📅');
-    icono.setAttribute('aria-hidden','true');
-    const cuerpo=el('div','agenda-sin-confirmar-cuerpo');
-    cuerpo.append(
-      el('span','agenda-estado','Fecha y restaurante pendientes'),
-      el('h3','','Próxima organización')
+    tarjeta.append(
+      el('h3','','📅 Próxima organización'),
+      el('p','agenda-nombres',nombres.length?nombres.join(' & '):'Organizadores por confirmar'),
+      el('p','agenda-estado-texto','Fecha y restaurante pendientes'),
+      el('p','agenda-nota','Podrás añadirla al calendario cuando se publique la fecha.')
     );
-    const lista=el('div','agenda-organizadores');
-    for(const persona of personas){
-      if(!txt(persona?.nombre))continue;
-      const bloque=el('div','agenda-organizador');
-      bloque.append(el('strong','',persona.nombre));
-      const metodo=persona.metodo==='sorteo'?'Por sorteo':persona.metodo==='voluntario'?'Voluntario':'';
-      if(metodo)bloque.append(el('small','',metodo));
-      lista.append(bloque);
-    }
-    cuerpo.append(lista,el('p','agenda-nota','En cuanto se publique la comida con una fecha, podrás guardarla en el calendario del móvil.'));
-    tarjeta.append(icono,cuerpo);
     destino.replaceChildren(tarjeta);
   }catch(error){
     console.warn('Agenda: próximos organizadores no disponibles',error);

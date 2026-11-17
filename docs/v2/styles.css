@@ -1361,25 +1361,17 @@ body.board-detail-mode .board-next {display:none!important}
 .agenda-lista{display:grid;grid-template-columns:1fr;gap:15px}
 .agenda-lista .history-card{width:100%;min-width:0}
 .agenda-cargando,.agenda-sin-fecha{margin:0;padding:17px 18px;border:1px dashed #d8c5b5;border-radius:13px;color:#6f5b52;font-size:13px;line-height:1.6}
-.agenda-sin-confirmar{display:flex;gap:20px;align-items:flex-start;padding:clamp(15px,2.7vw,24px);border:1px solid #dfc8ae;background:#fff;border-radius:17px}
-.agenda-sin-confirmar-icono{display:grid;place-items:center;flex:0 0 82px;min-height:82px;border-radius:13px;background:#f8f0e3;font-size:31px}
-.agenda-sin-confirmar-cuerpo{flex:1;min-width:0}
-.agenda-estado{display:inline-block;padding:5px 10px;background:#faeedc;color:#82512b;border-radius:99px;font-size:11px;font-weight:800}
-.agenda-sin-confirmar h3{margin:10px 0 15px;color:#581a24;font:700 clamp(19px,2.2vw,24px)/1.22 Georgia,serif}
-.agenda-organizadores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.agenda-organizador{border:1px solid #eee4d9;background:#fffbf8;border-radius:10px;padding:10px 12px;min-width:0}
-.agenda-organizador strong{display:block;font-size:13px;color:#362a28;overflow-wrap:anywhere}
-.agenda-organizador small{display:block;margin-top:4px;font-size:11px;color:#826f60;font-style:italic}
-.agenda-nota{margin:14px 0 0;color:#78655b;font-size:12px;line-height:1.55}
+.agenda-sin-confirmar{padding:15px 18px;background:#fff;border:1px solid #dfc8ae;border-radius:14px;min-width:0}
+.agenda-sin-confirmar h3{margin:0 0 7px;color:#581a24;font:700 clamp(16px,1.65vw,19px)/1.25 Georgia,serif}
+.agenda-nombres{margin:0;color:#302522;font-size:clamp(14px,1.5vw,16px);line-height:1.45;font-weight:750;overflow-wrap:break-word}
+.agenda-estado-texto{margin:5px 0 0;color:#895c39;font-size:12px;font-weight:750;line-height:1.4}
+.agenda-nota{margin:5px 0 0;color:#78655b;font-size:11px;line-height:1.45}
 .history-actions .agenda-calendar-button{background:#ead8bc;color:#5c331c}
 .history-actions .agenda-calendar-button:hover{background:#e1c79f}
 @media(max-width:600px){
- .agenda-comidas{margin:8px 0 24px;padding:16px 13px;border-radius:17px}
- .agenda-cabecera{margin-bottom:15px}
- .agenda-sin-confirmar{gap:12px;padding:14px}
- .agenda-sin-confirmar-icono{flex-basis:52px;min-height:60px;font-size:23px}
- .agenda-organizadores{grid-template-columns:1fr;gap:7px}
- .agenda-organizador{padding:9px 10px}
+ .agenda-comidas{margin:8px 0 20px;padding:14px 13px;border-radius:17px}
+ .agenda-cabecera{margin-bottom:12px}
+ .agenda-sin-confirmar{padding:13px 14px}
  .agenda-lista .history-card{grid-template-columns:minmax(0,1fr)}
  .agenda-lista .history-photo{height:150px;min-height:150px}
 }
