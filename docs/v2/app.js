@@ -580,6 +580,9 @@ function historialCard(m) {
     actions.append(a);
   }
   contenido.append(actions);
+  if(esProxima(m)){
+    contenido.append(el('p','agenda-ics-nota','La fecha se guarda como evento de día completo: aún no hay hora registrada.'));
+  }
 
   const detalles=el('details','history-details');
   detalles.append(el('summary','','Ver menú, asistentes y precio'));
