@@ -2146,9 +2146,9 @@ function renderWinnerBlock(poll){
       renderLoadingState();
 
       try{
-        const res = await fetch(SUPABASE_URL + "/rest/v1/rpc/listar_encuestas_cofradia", {
+        const res = await fetch(SUPABASE_URL + "/functions/v1/listados-cofradia?consulta=listar_encuestas_cofradia", {
           method: "POST",
-          headers: SUPABASE_HEADERS,
+          headers: {...SUPABASE_HEADERS, "x-cofrade-token": localStorage.getItem("amp_cofrade_token") || ""},
           body: "{}",
           cache: "no-store"
         });
