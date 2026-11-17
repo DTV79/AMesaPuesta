@@ -7,9 +7,9 @@
   <meta name="description" content="Descubre las comidas de la Cofradía A Mesa Puesta: restaurantes, fechas, menús y fotografías de cada encuentro.">
   <title>Nuestras comidas · Cofradía A Mesa Puesta</title>
   
-  <link rel="stylesheet" href="./styles.css?v=20261116-medias-estrellas">
+  <link rel="stylesheet" href="./styles.css?v=20261117-agenda-comidas">
   <script src="./scroll-top.js" defer></script>
-  <script type="module" src="./app.js?v=20261117-fotos-firmadas"></script>
+  <script type="module" src="./app.js?v=20261117-agenda-comidas"></script>
   <script defer src="./acceso-cofrade.js"></script>
 <style>
 .meal-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
@@ -48,6 +48,18 @@
       <h1>Cada mesa, <em>una historia.</em></h1>
       <p>Todos nuestros encuentros reunidos en un mismo lugar. Busca un restaurante, revive el menú, descubre las fotos y vuelve a esa sobremesa.</p>
     </header>
+    <section class="agenda-comidas" id="agenda-comidas" aria-labelledby="agenda-titulo">
+      <div class="agenda-cabecera">
+        <div>
+          <p class="eyebrow">Próximas citas</p>
+          <h2 class="section-title" id="agenda-titulo">Lo que viene a la mesa</h2>
+          <p>Fechas confirmadas, próximas organizaciones y un acceso para guardar las comidas en tu calendario.</p>
+        </div>
+      </div>
+      <div class="agenda-lista" id="agenda-lista" aria-live="polite">
+        <p class="agenda-cargando">Consultando las próximas comidas…</p>
+      </div>
+    </section>
     <section aria-label="Filtrar historial de comidas">
       <div class="filter-wrap">
         <label for="buscar">Buscar restaurante o lugar
