@@ -32,7 +32,7 @@ function urlFotoGuardada(ruta) {
   return STORAGE_FOTOS + String(ruta).split('/').map(encodeURIComponent).join('/');
 }
 function urlsFotos(m) {
-  const guardadas=(Array.isArray(m.fotos_nuevas)?m.fotos_nuevas:[]).filter(f=>f&&f.ruta).map(f=>urlFotoGuardada(f.ruta));
+  const guardadas=(Array.isArray(m.fotos_nuevas)?m.fotos_nuevas:[]).filter(f=>f&&f.ruta).map(f=>f.url||urlFotoGuardada(f.ruta));
   return [...new Set(guardadas)];
 }
 function fotosDisponibles(m) { return urlsFotos(m).length>0; }
