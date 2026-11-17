@@ -13,3 +13,15 @@
 *.pgpass
 *.dump
 *.backup
+
+# Copias privadas históricas que no deben volver a publicarse
+/docs/cofrades.json
+/docs/restaurantes.json
+/docs/anuncios.json
+/docs/Estatutos.pdf
+/docs2/cofrades.json
+/docs2/restaurantes.json
+/docs2/anuncios.json
+/docs2/Estatutos.pdf
+/docs/v2/Estatutos Versión 1.0.pdf
+/nueva-web/v2/Estatutos Versión 1.0.pdf
