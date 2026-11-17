@@ -558,6 +558,13 @@ function historialCard(m) {
   maps.target='_blank';
   maps.rel='noopener noreferrer';
   actions.append(maps);
+  if(esProxima(m)){
+    const calendario=el('button','agenda-calendar-button','📅 Añadir a mi calendario');
+    calendario.type='button';
+    calendario.title='Se guardará como evento de día completo, porque todavía no hay una hora registrada.';
+    calendario.addEventListener('click',()=>guardarComidaEnCalendario(m));
+    actions.append(calendario);
+  }
   if(fotosDisponibles(m)){
     const btn=el('button','','▧ Ver fotos');
     btn.type='button';
@@ -609,6 +616,100 @@ function historialCard(m) {
   return card;
 }
 
+
+// Guardar fecha en el dispositivo: la ficha actual de comidas no incluye hora.
+// Nunca se inventa una hora; la cita se exporta como evento de día completo.
+function fechaICS(iso){
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(txt(iso));
+  if(!m)return null;
+  const dia=new Date(Date.UTC(+m[1],+m[2]-1,+m[3]));
+  if(dia.getUTCFullYear()!==+m[1]||dia.getUTCMonth()!==+m[2]-1||dia.getUTCDate()!==+m[3])return null;
+  const formatear=d=>d.toISOString().slice(0,10).replace(/-/g,'');
+  const fin=new Date(dia.getTime()+86400000);
+  return {inicio:formatear(dia),fin:formatear(fin)};
+}
+function escapeICS(texto){
+  return txt(texto).replace(/\\/g,'\\\\').replace(/\r\n|\r|\n/g,'\\n').replace(/;/g,'\\;').replace(/,/g,'\\,');
+}
+function guardarComidaEnCalendario(comida){
+  const fechas=fechaICS(comida.fecha);
+  if(!fechas)return;
+  const ficha='https://dtv79.github.io/AMesaPuesta/v2/restaurantes.html#'+encodeURIComponent(comida.codigo);
+  const organizadores=nombres(comida.organizadores);
+  const descripcion=[organizadores.length?'Organizan: '+organizadores.join(' y '):'',
+    'Consulta la ficha para confirmar la hora y los detalles: '+ficha,
+    'Evento de día completo: la Cofradía todavía no ha publicado una hora en la ficha.'].filter(Boolean).join('\n');
+  const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
+  const uid='comida-'+txt(comida.codigo).replace(/[^a-z0-9-]/gi,'')+'@amesapuesta';
+  const campos=[
+    'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Cofradia A Mesa Puesta//Calendario//ES',
+    'CALSCALE:GREGORIAN','METHOD:PUBLISH','BEGIN:VEVENT',
+    'UID:'+uid,'DTSTAMP:'+stamp,
+    'DTSTART;VALUE=DATE:'+fechas.inicio,'DTEND;VALUE=DATE:'+fechas.fin,
+    'SUMMARY:'+escapeICS('Comida de A Mesa Puesta · '+comida.restaurante),
+    'LOCATION:'+escapeICS(comida.direccion||comida.restaurante),
+    'DESCRIPTION:'+escapeICS(descripcion),'STATUS:CONFIRMED',
+    'END:VEVENT','END:VCALENDAR'
+  ];
+  const blob=new Blob([campos.join('\r\n')+'\r\n'],{type:'text/calendar;charset=utf-8'});
+  const href=URL.createObjectURL(blob);
+  const enlace=document.createElement('a');
+  enlace.href=href;
+  enlace.download='Comida - '+txt(comida.restaurante).replace(/[\\/:*?"<>|]/g,'-').slice(0,55)+' - '+txt(comida.fecha)+'.ics';
+  document.body.append(enlace);
+  enlace.click();
+  enlace.remove();
+  setTimeout(()=>URL.revokeObjectURL(href),1500);
+}
+
+// La agenda y el histórico comparten datos; las comidas futuras no se duplican.
+async function renderAgenda(){
+  const destino=document.getElementById('agenda-lista');
+  if(!destino)return;
+  const futuras=comidas.filter(esProxima).sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)));
+  if(futuras.length){
+    destino.replaceChildren(...futuras.map(historialCard));
+    return;
+  }
+  try{
+    const respuesta=await fetch(SUPABASE_URL.replace(/\/$/,'')+
+      '/functions/v1/listados-cofradia?consulta=obtener_proximos_organizadores',{
+      method:'POST',
+      headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'x-cofrade-token':localStorage.getItem('amp_cofrade_token')||'','Content-Type':'application/json'},
+      body:'{}',cache:'no-store'
+    });
+    if(!respuesta.ok)throw Error('No se pudieron consultar los organizadores.');
+    const personas=await respuesta.json();
+    if(!Array.isArray(personas)||!personas.length){
+      destino.replaceChildren(el('p','agenda-sin-fecha','Todavía no hay una próxima comida anunciada.'));
+      return;
+    }
+    const tarjeta=el('article','agenda-sin-confirmar');
+    const icono=el('div','agenda-sin-confirmar-icono','📅');
+    icono.setAttribute('aria-hidden','true');
+    const cuerpo=el('div','agenda-sin-confirmar-cuerpo');
+    cuerpo.append(
+      el('span','agenda-estado','Fecha y restaurante pendientes'),
+      el('h3','','Próxima organización')
+    );
+    const lista=el('div','agenda-organizadores');
+    for(const persona of personas){
+      if(!txt(persona?.nombre))continue;
+      const bloque=el('div','agenda-organizador');
+      bloque.append(el('strong','',persona.nombre));
+      const metodo=persona.metodo==='sorteo'?'Por sorteo':persona.metodo==='voluntario'?'Voluntario':'';
+      if(metodo)bloque.append(el('small','',metodo));
+      lista.append(bloque);
+    }
+    cuerpo.append(lista,el('p','agenda-nota','En cuanto se publique la comida con una fecha, podrás guardarla en el calendario del móvil.'));
+    tarjeta.append(icono,cuerpo);
+    destino.replaceChildren(tarjeta);
+  }catch(error){
+    console.warn('Agenda: próximos organizadores no disponibles',error);
+    destino.replaceChildren(el('p','agenda-sin-fecha','Aún no hay una comida futura publicada. Consulta Mi Pizarra para las próximas novedades.'));
+  }
+}
+
 async function actualizarValoracionesEnPantalla(){
   if(document.body.dataset.page!=='restaurantes'||document.hidden)return;
   try{
@@ -627,19 +728,21 @@ async function actualizarValoracionesEnPantalla(){
 }
 function iniciarRestaurantes(){
   prepararGaleria();
+  void renderAgenda();
+  const historicas=comidas.filter(m=>!esProxima(m));
   const buscar=document.getElementById('buscar'),anio=document.getElementById('anio'),
         limpiar=document.getElementById('limpiar'),contenedor=document.getElementById('historial'),
         contador=document.getElementById('resultado-contador');
-  const years=[...new Set(comidas.map(m=>String(m.fecha).slice(0,4)))].sort().reverse();
+  const years=[...new Set(historicas.map(m=>String(m.fecha).slice(0,4)))].sort().reverse();
   for(const year of years){const option=el('option','',year);option.value=year;anio.append(option);}
   function pintar(){
     const q=txt(buscar.value).toLocaleLowerCase('es'),y=anio.value;
-    const filtered=comidas.filter(m=>{
+    const filtered=historicas.filter(m=>{
       const contenido=[m.restaurante,m.direccion,m.fecha,m.comentario].map(txt).join(' ').toLocaleLowerCase('es');
       return (!q||contenido.includes(q))&&(!y||String(m.fecha).startsWith(y));
     });
     contador.textContent=String(filtered.length)+(filtered.length===1?' comida':' comidas');
-    if(!filtered.length){mostrarMensaje(contenedor,'No hay resultados para estos filtros.');return;}
+    if(!filtered.length){mostrarMensaje(contenedor,(!q&&!y)?'Todavía no hay comidas celebradas en el histórico.':'No hay resultados para estos filtros.');return;}
     contenedor.replaceChildren(...filtered.map(historialCard));
   }
   buscar.addEventListener('input',pintar);
