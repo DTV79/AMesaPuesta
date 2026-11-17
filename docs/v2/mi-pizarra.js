@@ -12,11 +12,7 @@
       if(!respuesta.ok)throw Error("HTTP "+respuesta.status);
       return respuesta.json();
     };
-    const valoraciones=await consulta("listar_valoraciones_comidas_publicas_v2").catch(async error=>{
-      // Las dos consultas forman parte de los listados de cofrades con sesión.
-      // Si el alias v2 no existe, se usa la consulta que sirve a Nuestras comidas.
-      return consulta("listar_valoraciones_comidas_publicas");
-    });
+    const valoraciones=await consulta("listar_valoraciones_comidas_publicas");
     const abiertas=(Array.isArray(valoraciones)?valoraciones:[]).filter(v=>v?.abierta===true&&v.codigo);
     const pendientes=new Set((data.valoraciones_pendientes||[]).map(v=>String(v.codigo)));
     const sinPendiente=abiertas.filter(v=>!pendientes.has(String(v.codigo)));
