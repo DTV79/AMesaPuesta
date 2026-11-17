@@ -155,7 +155,7 @@ def restaurar_datos(raiz: Path) -> None:
             if not seccion or seccion[0] != "":
                 raise RuntimeError(f"Comienzo COPY no reconocido en {tabla}")
             try:
-                fin = seccion.index(r"\\.", 1)
+                fin = seccion.index(r"\.", 1)
             except ValueError as error:
                 raise RuntimeError(f"Fin COPY no encontrado en {tabla}") from error
             filas_lineas = seccion[1:fin]
@@ -167,7 +167,7 @@ def restaurar_datos(raiz: Path) -> None:
                 f"CREATE TABLE public.{tabla} ({cols});\n"
                 f"COPY public.{tabla} ({', '.join(columnas)}) FROM stdin;\n"
             )
-            contenido = encabezado + filas + "\n\\.\nCOMMIT;\n"
+            contenido = encabezado + (filas + "\n" if filas else "") + "\\.\nCOMMIT;\n"
             ejecutar(
                 ["docker", "exec", "-i", CONTENEDOR, "psql",
                  "-U", "postgres", "-v", "ON_ERROR_STOP=1", "-q"],
