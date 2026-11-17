@@ -151,12 +151,16 @@ def restaurar_datos(raiz: Path) -> None:
                 CAMPO_RE.fullmatch(v) for v in columnas
             ):
                 raise RuntimeError(f"Cabecera COPY no válida en {tabla}")
-            inicio = m.end() + 1
-            fin = sql.find("\n\\.\n", inicio)
-            if fin < 0:
-                raise RuntimeError(f"Fin COPY no encontrado en {tabla}")
-            filas = sql[inicio:fin]
-            n = len(filas.splitlines()) if filas else 0
+            seccion = sql[m.end():].splitlines()
+            if not seccion or seccion[0] != "":
+                raise RuntimeError(f"Comienzo COPY no reconocido en {tabla}")
+            try:
+                fin = seccion.index(r"\\.", 1)
+            except ValueError as error:
+                raise RuntimeError(f"Fin COPY no encontrado en {tabla}") from error
+            filas_lineas = seccion[1:fin]
+            filas = "\n".join(filas_lineas)
+            n = len(filas_lineas)
             cols = ", ".join(f"{c} text" for c in columnas)
             encabezado = (
                 "BEGIN;\n"
