@@ -1,10 +1,8 @@
 /* Protección TOTP opcional por cuenta: nunca se activa hasta verificar el código. */
 (()=>{
   "use strict";
-  const sb=window.supabase.createClient(
-    "https://wmfcpnihymiiwgpvbngj.supabase.co",
-    "sb_publishable_ij3sYbyMrLI2B34OOYt6JA_Aez1R2cJ"
-  );
+  const sb=window.ampAdminSupabaseClient;
+  if(!sb){console.error("No se pudo inicializar la sesión de administradores");return}
   const $=id=>document.getElementById(id);
   let obligatorio=false;
   let factoresVerificados=[];
