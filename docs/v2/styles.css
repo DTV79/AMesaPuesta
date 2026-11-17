@@ -1340,3 +1340,14 @@ body.board-detail-mode .board-next {display:none!important}
  .estatutos-contenido .estatutos-parrafo,.estatutos-contenido .estatutos-lista li{font-size:12px}
  .estatutos-contenido .estatutos-lista{padding-left:18px}
 }
+
+/* Mi Pizarra: estados integrados en las tarjetas existentes, sin crear otro panel. */
+.pizarra-aviso-encabezado{display:flex;flex-wrap:wrap;align-items:center;gap:6px 9px;min-width:0}
+.pizarra-aviso-encabezado strong{min-width:0;overflow-wrap:anywhere}
+.pizarra-estado{display:inline-flex;align-items:center;width:max-content;max-width:100%;padding:3px 8px;border-radius:20px;background:#e6f1e8;color:#23543b;font-size:10px;font-weight:800;line-height:1.3}
+.pizarra-aviso--pendiente{border-color:#d0b685;box-shadow:inset 3px 0 0 #f6d394}
+.pizarra-aviso--urgente{border-color:#f4a988;background:#55473b;box-shadow:inset 3px 0 0 #f6a47b}
+.pizarra-aviso--urgente:hover{background:#665043}
+.pizarra-estado--urgente{background:#fff1de;color:#873e20}
+.pizarra-aviso:focus-visible{outline:3px solid #f6d394;outline-offset:2px}
+@media(max-width:440px){.pizarra-aviso{padding:12px 9px}.pizarra-aviso-accion{white-space:normal;text-align:right;max-width:74px;line-height:1.35}}
