@@ -1,6 +1,6 @@
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js';
 
-const API = SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rpc/listar_comidas_publicas_v2';
+const API = SUPABASE_URL.replace(/\/$/, '') + '/functions/v1/listados-cofradia?consulta=listar_comidas_publicas_v2';
 let comidas = [];
 let valoracionesDisponibles = new Map();
 
@@ -96,7 +96,7 @@ async function consultarHistorial() {
   try {
     const res=await fetch(API,{
       method:'POST',
-      headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json','Accept':'application/json'},
+      headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'x-cofrade-token':localStorage.getItem('amp_cofrade_token')||'','Content-Type':'application/json','Accept':'application/json'},
       body:'{}',cache:'no-store',signal:c.signal
     });
     if (!res.ok) throw new Error('HTTP '+res.status);
@@ -369,8 +369,8 @@ function esProxima(m) {
   return fechaComida >= fechaHoy;
 }
 async function cargarEstadoValoraciones(){
-  const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/rpc/listar_valoraciones_comidas_publicas',{
-    method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json'},body:'{}',cache:'no-store'
+  const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/functions/v1/listados-cofradia?consulta=listar_valoraciones_comidas_publicas',{
+    method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'x-cofrade-token':localStorage.getItem('amp_cofrade_token')||'','Content-Type':'application/json'},body:'{}',cache:'no-store'
   });
   if(!res.ok)throw Error('HTTP '+res.status);
   const data=await res.json();
@@ -657,8 +657,8 @@ async function iniciar() {
   try {
     comidas=await consultarHistorial();
     try {
-      const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/rpc/listar_fotos_comidas_publicas_v2',{
-        method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json'},body:'{}',cache:'no-store'
+      const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/functions/v1/listados-cofradia?consulta=listar_fotos_comidas_publicas_v2',{
+        method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'x-cofrade-token':localStorage.getItem('amp_cofrade_token')||'','Content-Type':'application/json'},body:'{}',cache:'no-store'
       });
       if(res.ok){
         const rows=await res.json();
