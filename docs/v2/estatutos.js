@@ -5,7 +5,7 @@ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const date=v=>{if(!v)return "";const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(v);return m?m[3]+"/"+m[2]+"/"+m[1]:esc(v)};
 async function iniciar(){
 try{
-const response=await fetch(SUPABASE_URL+"/rest/v1/rpc/estatutos_vigentes_publicos",{method:"POST",headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Content-Type":"application/json"},body:"{}"});
+const response=await fetch(SUPABASE_URL+"/functions/v1/listados-cofradia?consulta=estatutos_vigentes_publicos",{method:"POST",headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"x-cofrade-token":localStorage.getItem("amp_cofrade_token")||"","Content-Type":"application/json"},body:"{}"});
 if(!response.ok)throw new Error("No se pudieron cargar los estatutos ("+response.status+")");
 const data=await response.json(),v=data||{},bloques=data?.bloques||[];
 if(!bloques.length){$("estatutos-contenido").textContent="No hay contenido público disponible en la versión vigente.";return}
