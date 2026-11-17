@@ -648,9 +648,22 @@ function iniciarRestaurantes(){
   pintar();
   setInterval(actualizarValoracionesEnPantalla,15000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)actualizarValoracionesEnPantalla()});
-  const codigo=decodeURIComponent(location.hash.slice(1));
-  if(/^RES-\d{4}$/.test(codigo)){
-    document.getElementById(codigo)?.scrollIntoView({block:'start'});
+  // Las comidas nuevas usan códigos WEB-... además de los históricos RES-0000.
+  // Solo navegar a una comida presente en el historial ya cargado.
+  let codigo="";
+  try{codigo=decodeURIComponent(location.hash.slice(1))}catch(_){}
+  if(codigo && comidas.some(comida=>comida.codigo===codigo)){
+    const tarjeta=document.getElementById(codigo);
+    if(tarjeta){
+      if(new URLSearchParams(location.search).get("puntuaciones")==="1"){
+        const desglose=tarjeta.querySelector(".meal-scores-toggle");
+        if(desglose)desglose.open=true;
+        const destino=tarjeta.querySelector(".meal-voting")||tarjeta;
+        requestAnimationFrame(()=>destino.scrollIntoView({block:"center"}));
+      }else{
+        requestAnimationFrame(()=>tarjeta.scrollIntoView({block:"start"}));
+      }
+    }
   }
 }
 async function iniciar() {
