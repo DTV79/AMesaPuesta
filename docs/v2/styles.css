@@ -1061,7 +1061,7 @@ button {cursor:pointer}
 .mi-pizarra{min-width:0;display:flex;flex-direction:column;gap:14px;padding:clamp(22px,3vw,36px);background:linear-gradient(145deg,#193b34,#24483d);color:#fff}
 .pizarra-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .pizarra-heading h2{font:700 clamp(24px,2.5vw,34px)/1.12 Georgia,serif;margin:8px 0 0}
-.pizarra-subtitle{color:#e9d4c8;font-size:12px;line-height:1.5;margin:0}
+.pizarra-subtitle{color:#e9d4c8;font-size:12px;line-height:1.5;margin:0;min-height:1.5em}
 .pizarra-count{background:#446a5b;color:#fff;border-radius:99px;padding:6px 10px;font-size:11px;font-weight:800;white-space:nowrap}
 .pizarra-avisos{display:flex;flex-direction:column;gap:9px;max-height:290px;overflow:auto}
 .pizarra-aviso{display:flex;gap:10px;align-items:center;padding:13px 11px;border:1px solid #567567;border-radius:12px;background:#305449;text-decoration:none;color:#fff}
