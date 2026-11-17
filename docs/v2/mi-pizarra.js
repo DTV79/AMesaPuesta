@@ -113,7 +113,7 @@ for(const d of data.deudas_comidas||[]){add("💸","Debes "+euros(d.importe)+" a
      const nombresComida=proxima&&Array.isArray(proxima.organizadores)?proxima.organizadores.filter(n=>typeof n==="string"&&n.trim()):[];
      const nombresAsignados=asignados.map(persona=>String(persona.nombre||"").trim()).filter(Boolean);
      const nombres=nombresComida.length?nombresComida:nombresAsignados;
-     let propio=false;
+     let propio=false,companeros=[];
      try {
        if(asignados.length){
          const respuesta=await fetch(base+"/functions/v1/acceso-cofrade",{
@@ -123,8 +123,10 @@ for(const d of data.deudas_comidas||[]){add("💸","Debes "+euros(d.importe)+" a
          if(respuesta.ok){
            const sesion=await respuesta.json();
            const asignado=asignados.find(persona=>sesion?.cofrade_id&&String(persona.id)===String(sesion.cofrade_id));
-           // No marcar al cofrade como organizador si pertenece a otro turno.
+           // El mensaje personal se muestra solo si pertenece a esta organización.
            propio=!!asignado&&(!proxima||!nombresComida.length||nombresComida.some(nombre=>nombre.trim().toLocaleLowerCase("es")===String(asignado.nombre||"").trim().toLocaleLowerCase("es")));
+           if(propio)companeros=asignados.filter(persona=>String(persona.id)!==String(sesion.cofrade_id))
+             .map(persona=>String(persona.nombre||"").trim()).filter(Boolean);
          }
        }
      }catch(error){console.warn("No se pudo verificar si toca organizar",error)}
@@ -133,10 +135,26 @@ for(const d of data.deudas_comidas||[]){add("💸","Debes "+euros(d.importe)+" a
      if(propio)tarjeta.classList.add("pizarra-aviso--pendiente");
      tarjeta.dataset.prioridad=propio?"1":"4";
      if(propio)tarjeta.dataset.pendiente="1";
+     let cuerpo=tarjeta;
+     if(!proxima){
+       // Un solo icono, destacado como el de los otros avisos de Mi Pizarra.
+       const fila=document.createElement("div");
+       fila.className="pizarra-proxima-solo";
+       const icono=document.createElement("span");
+       icono.className="pizarra-proxima-icono";
+       icono.textContent="👥";
+       icono.setAttribute("aria-hidden","true");
+       cuerpo=document.createElement("div");
+       cuerpo.className="pizarra-proxima-solo-contenido";
+       fila.append(icono,cuerpo);
+       tarjeta.append(fila);
+     }
      const encabezado=document.createElement("div");
      encabezado.className="pizarra-proxima-encabezado";
      const titulo=document.createElement("strong");
-     titulo.textContent=proxima?"🍽️ Próxima comida":"👥 Organizadores próxima comida";
+     titulo.textContent=proxima?"🍽️ Próxima comida":propio
+       ?"Organizas la próxima comida"+(companeros.length?" junto a "+companeros.join(" y "):"")
+       :"Organizadores próxima comida";
      encabezado.append(titulo);
      if(proxima){
        const estado=document.createElement("span");
@@ -144,7 +162,7 @@ for(const d of data.deudas_comidas||[]){add("💸","Debes "+euros(d.importe)+" a
        estado.textContent="Programada";
        encabezado.append(estado);
      }
-     tarjeta.append(encabezado);
+     cuerpo.append(encabezado);
      if(proxima){
        const restaurante=document.createElement("strong");
        restaurante.className="pizarra-proxima-restaurante";
@@ -154,13 +172,36 @@ for(const d of data.deudas_comidas||[]){add("💸","Debes "+euros(d.importe)+" a
        const fechaReal=parseFecha(proxima.fecha);
        const fechaTexto=new Intl.DateTimeFormat("es-ES",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(fechaReal);
        fecha.textContent="📅 "+fechaTexto.charAt(0).toUpperCase()+fechaTexto.slice(1);
-       tarjeta.append(restaurante,fecha);
+       cuerpo.append(restaurante,fecha);
      }
      if(nombres.length){
-       const organizadores=document.createElement("span");
-       organizadores.className="pizarra-proxima-organizadores";
-       organizadores.textContent="👥 "+nombres.join(" & ");
-       tarjeta.append(organizadores);
+       if(proxima){
+         const organizadores=document.createElement("span");
+         organizadores.className="pizarra-proxima-organizadores";
+         organizadores.textContent="👥 "+nombres.join(" & ");
+         cuerpo.append(organizadores);
+       }else{
+         const fila=document.createElement("div");
+         fila.className="pizarra-proxima-nombres";
+         for(const [indice,nombre] of nombres.entries()){
+           if(indice){
+             const separador=document.createElement("span");
+             separador.className="pizarra-proxima-separador";
+             separador.textContent="&";
+             fila.append(separador);
+           }
+           const persona=document.createElement("span");
+           persona.className="pizarra-proxima-persona";
+           const nombreVisible=document.createElement("span");
+           nombreVisible.textContent=nombre;
+           const asignado=asignados.find(x=>String(x.nombre||"").trim().toLocaleLowerCase("es")===nombre.trim().toLocaleLowerCase("es"));
+           const metodo=document.createElement("small");
+           metodo.textContent=asignado?.metodo==="sorteo"?"Por sorteo":asignado?.metodo==="voluntario"?"Voluntario":"Pendiente de indicar";
+           persona.append(nombreVisible,metodo);
+           fila.append(persona);
+         }
+         cuerpo.append(fila);
+       }
      }
      if(propio){
        const aviso=document.createElement("span");
