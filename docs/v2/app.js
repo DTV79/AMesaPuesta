@@ -534,7 +534,7 @@ function historialCard(m) {
   const ausentes=nombres(m.no_asistentes);
   const invitados=nombres(m.invitados);
   const info=el('div','visit-info');
-  info.append(datoEncabezado('Organizaron',organizadores.join(' · ')||'Sin registro'));
+  info.append(datoEncabezado(esProxima(m) ? 'Organizan' : 'Organizaron',organizadores.join(' · ')||'Sin registro'));
   contenido.append(info);
 
   if(txt(m.comentario)){
