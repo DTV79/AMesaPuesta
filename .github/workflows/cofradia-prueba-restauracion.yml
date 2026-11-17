@@ -1,0 +1,82 @@
+name: Prueba de restauración aislada de Cofradía
+
+# Ejecutable manualmente y, únicamente al crearse/modificarse, desde main.
+# No se conecta al PostgreSQL real: solo lee la copia cifrada de Google Drive.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/cofradia-prueba-restauracion.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cofradia-prueba-restauracion
+  cancel-in-progress: false
+
+jobs:
+  prueba:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Obtener el verificador de restauración
+        uses: actions/checkout@v4
+
+      - name: Instalar rclone
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rclone
+
+      - name: Descargar y contrastar la última copia cifrada
+        shell: bash
+        env:
+          RCLONE_CONFIG_B64: ${{ secrets.COFRADIA_RCLONE_CONFIG_B64 }}
+        run: |
+          set -euo pipefail
+          umask 077
+          if [ -z "$RCLONE_CONFIG_B64" ]; then
+            echo "::error::Falta el secreto de configuración de rclone"
+            exit 1
+          fi
+          printf '%s' "$RCLONE_CONFIG_B64" | base64 -d > "$RUNNER_TEMP/rclone.conf"
+          unset RCLONE_CONFIG_B64
+          export RCLONE_CONFIG="$RUNNER_TEMP/rclone.conf"
+
+          ORIGEN=""
+          for TIPO in automaticas manuales; do
+            CANDIDATO="$(rclone lsf "cofradia_cifrado:$TIPO" --dirs-only \
+              | grep -E '^backup_[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}-[0-9]{2}-[0-9]{2}/$' \
+              | sort | tail -n 1 || true)"
+            if [ -n "$CANDIDATO" ]; then
+              ORIGEN="cofradia_cifrado:$TIPO/${CANDIDATO%/}"
+              break
+            fi
+          done
+          if [ -z "$ORIGEN" ]; then
+            echo "::error::No se encuentra ninguna copia cifrada en Google Drive"
+            exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/restauracion"
+          rclone copy "$ORIGEN" "$RUNNER_TEMP/restauracion" --stats-one-line
+          rclone check "$RUNNER_TEMP/restauracion" "$ORIGEN" --one-way --download
+          echo "Copia cifrada descargada y verificada frente a Google Drive."
+          echo "RESTORE_DIR=$RUNNER_TEMP/restauracion" >> "$GITHUB_ENV"
+
+      - name: Comprobar SHA y restaurar tablas en PostgreSQL temporal
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/prueba-restauracion.py "$RESTORE_DIR"
+
+      - name: Eliminar datos de prueba del ejecutor
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f cofradia-recuperacion-temporal >/dev/null 2>&1 || true
+          if [ -n "$RUNNER_TEMP" ]; then
+            rm -rf "$RUNNER_TEMP/restauracion" "$RUNNER_TEMP/rclone.conf"
+          fi
