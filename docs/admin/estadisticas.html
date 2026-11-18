@@ -34,7 +34,7 @@
     .note.green{background:#eef6f1;color:#346447;border-color:#cfe2d3}.pill{border-radius:100px;background:#f3ede7;padding:4px 8px;color:#7d4e48;font-size:11px;font-weight:800}
      .table-wrap{min-width:0;max-width:100%;overflow-x:auto}.rank{border-collapse:collapse;width:100%;min-width:400px}.rank td,.rank th{padding:10px 7px;border-bottom:1px solid #eee4de;text-align:left;font-size:12px}
     .rank th{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#836e63}.rank tr:last-child td{border:0}.rank .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-    .rank strong{font-weight:820}.empty{padding:16px;color:#776d67;background:#f7f4f0;border-radius:9px;font-size:13px}
+    .rank strong{font-weight:820}.rank .value-detail::before{content:attr(data-separador)}.empty{padding:16px;color:#776d67;background:#f7f4f0;border-radius:9px;font-size:13px}
     .bars{display:grid;gap:12px}.bar-row{display:grid;grid-template-columns:65px 1fr 27px;align-items:center;gap:10px;font-size:12px;font-weight:750}
     .bar-bg{height:12px;border-radius:40px;background:#f2e8e2;overflow:hidden}.bar-fill{height:100%;background:#9b4a51;border-radius:40px}
     .special{font:700 21px Georgia,serif;color:#632734;margin:8px 0}.special-sub{color:#88746b;font-size:13px}
@@ -58,6 +58,18 @@
       .rank th:first-child,.rank td:first-child{width:39%}
       .special{font-size:19px;overflow-wrap:anywhere}
       .stat,.tag{max-width:100%;overflow-wrap:anywhere}
+      /* Fichas legibles en vez de columnas estrechas para rankings y restaurantes. */
+      .rank.mobile-cards,.rank.mobile-cards tbody{display:block;width:100%}
+      .rank.mobile-cards thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+      .rank.mobile-cards tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 8px;padding:12px 0;border-bottom:1px solid #eee4de}
+      .rank.mobile-cards[data-metrics="2"] tr{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .rank.mobile-cards tbody tr:last-child{border:0}
+      .rank.mobile-cards td,.rank.mobile-cards td.num{display:block;min-width:0;width:auto;padding:0;border:0;text-align:left;white-space:normal;overflow-wrap:break-word;word-break:normal;font-size:12px}
+      .rank.mobile-cards td:first-child{grid-column:1/-1;font-size:14px;padding-bottom:2px}
+      .rank.mobile-cards td:not(:first-child)::before{content:attr(data-label);display:block;min-height:2.5em;margin-bottom:5px;color:#836e63;font-weight:800;font-size:9px;line-height:1.25;text-transform:uppercase;letter-spacing:.1px}
+      .rank.mobile-cards .value-main{display:block;white-space:normal}
+      .rank.mobile-cards .value-detail{display:block;margin-top:3px;color:#786d66;font-size:11px}
+      .rank.mobile-cards .value-detail::before{content:none}
     }
   </style>
 </head>
@@ -110,10 +122,11 @@ const tarjeta=(titulo)=>{
   c.append(nodo('h2',titulo));
   return c;
 };
-function tabla(titulos, filas, vacio){
+function tabla(titulos, filas, vacio, movilTarjetas=false){
   const wrap=nodo('div',undefined,'table-wrap');
   if(!filas.length){wrap.append(nodo('div',vacio||'Sin registros en este periodo.','empty'));return wrap;}
-  const t=nodo('table',undefined,'rank');
+  const t=nodo('table',undefined,movilTarjetas?'rank mobile-cards':'rank');
+  if(movilTarjetas)t.dataset.metrics=String(titulos.length-1);
   const th=nodo('thead'),h=nodo('tr');
   titulos.forEach((n,i)=>{const e=nodo('th',n,i?'num':'');h.append(e)});
   th.append(h);t.append(th);
@@ -121,7 +134,13 @@ function tabla(titulos, filas, vacio){
   filas.forEach(f=>{
     const tr=nodo('tr');
     f.forEach((valor,i)=>{
-      const td=nodo('td',valor,i?'num':'');
+      const compuesto=valor&&typeof valor==='object'&&'principal' in valor;
+      const td=nodo('td',compuesto?undefined:valor,i?'num':'');
+      td.dataset.label=titulos[i];
+      if(compuesto){
+        td.append(nodo('span',valor.principal,'value-main'));
+        if(valor.detalle){const detalle=nodo('span',valor.detalle,'value-detail');detalle.dataset.separador=valor.separador??' ';td.append(detalle)}
+      }
       if(!i){const strong=nodo('strong',valor);td.replaceChildren(strong)}
       tr.append(td);
     });
@@ -179,11 +198,11 @@ function pintarWeb(m){
   wrap.append(stats);
   const grid=nodo('div',undefined,'grid');
   const max=parCard('Los que más participan',tabla(['Cofrade','Encuestas','Valoraciones','Respondió / pudo'],m.webMas.slice(0,18).map(c=>[
-    c.nombre,String(c.encuestas),String(c.valoraciones),`${c.respuestas} / ${c.oportunidades} (${porcentaje(c)})`
-  ]),'Aún no hay oportunidades de participación comparables.'));
+    c.nombre,String(c.encuestas),String(c.valoraciones),{principal:`${c.respuestas} / ${c.oportunidades}`,detalle:`(${porcentaje(c)})`}
+  ]),'Aún no hay oportunidades de participación comparables.',true));
   const min=parCard('Los que menos participan',tabla(['Cofrade','Respondió / pudo','Participación'],m.webMenos.slice(0,18).map(c=>[
     c.nombre,`${c.respuestas} / ${c.oportunidades}`,porcentaje(c)
-  ]),'Nadie tiene oportunidades evaluables todavía.'));
+  ]),'Nadie tiene oportunidades evaluables todavía.',true));
   grid.append(max,min);wrap.append(grid);
   const sin=tarjeta('Cofrades que no han participado');
   if(m.webNunca.length){
@@ -214,8 +233,8 @@ function pintarWeb(m){
 function pintarRestaurantes(m){
   const wrap=$('tab-restaurantes');wrap.replaceChildren();
   wrap.append(parCard('Restaurantes y puntuaciones',tabla(['Restaurante','Comidas','Asistencias','Nota media'],m.restaurantes.map(r=>[
-    r.nombre,String(r.visitas),String(r.asistentes),r.media===null?'Sin valoraciones':`${redondeo(r.media)} / 5 · ${r.votos} votos`
-  ]),'No hay restaurantes registrados para este periodo.')));
+    r.nombre,String(r.visitas),String(r.asistentes),r.media===null?'Sin valoraciones':{principal:`${redondeo(r.media)} / 5`,detalle:`${r.votos} votos`,separador:' · '}
+  ]),'No hay restaurantes registrados para este periodo.',true)));
   wrap.append(nodo('div','Las notas medias se calculan con valoraciones individuales de asistentes. Las reseñas históricas (anteriores al sistema de votación) se conservan en la ficha, pero no se mezclan con estas medias.','note'));
 }
 
