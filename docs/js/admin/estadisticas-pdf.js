@@ -193,8 +193,6 @@ export async function descargarAnuario(modelo){
     c=>c.respuestas+' de '+c.oportunidades+' respuestas · '+porcentaje(c.actividadPct));
   if(!equipo.length)y=parrafo('¡Nadie por aquí! Todos han superado la mitad de sus oportunidades.',19,y,174,9);
   for(const grupo of equipo)y=tarjetaEmpate(grupo,y,siguienteEquipo);
-  if(y+22>270)y=siguienteEquipo();
-  parrafo('Los empates comparten mantel y nadie aparece dos veces. Solo cuentan las oportunidades de participar que tuvo cada cofrade.',18,y+8,174,8);
 
   // Asistencia y organización sin recortar la lista ni repetir los empates.
   pdf.addPage();encabezado('Premios del tenedor · '+periodo);
