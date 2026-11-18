@@ -132,7 +132,7 @@ function pintarComidas(m){
   const curiosa=tarjeta('Curiosidades de sobremesa');
   const cs=nodo('div',undefined,'grid');
   const alta=nodo('div');alta.append(nodo('p','La mesa más concurrida','muted'),nodo('div',m.maximaComida?m.maximaComida.restaurante:'Sin comidas','special'),nodo('div',m.maximaComida?`${m.maximaComida.asistentes} asistentes · ${fechaLegible(m.maximaComida.fecha)}`:'—','special-sub'));
-  const frecuente=nodo('div');frecuente.append(nodo('p','Donde más hemos repetido','muted'),nodo('div',m.restauranMas?m.restauranMas.nombre:'Sin comidas','special'),nodo('div',m.restauranMas?`${m.restauranMas.visitas} comidas celebradas`:'—','special-sub'));
+  const frecuente=nodo('div');frecuente.append(nodo('p','Donde más hemos repetido · histórico completo','muted'),nodo('div',m.restauranMas?m.restauranMas.nombre:'Sin comidas','special'),nodo('div',m.restauranMas?`${m.restauranMas.visitas} comidas celebradas desde 2022`:'—','special-sub'));
   cs.append(alta,frecuente);curiosa.append(cs);wrap.append(curiosa);
   const historico=tarjeta('Comidas celebradas por año');
   const bars=nodo('div',undefined,'bars');
@@ -163,11 +163,11 @@ function pintarWeb(m){
     c.nombre,`${c.respuestas} / ${c.oportunidades}`,porcentaje(c)
   ]),'Nadie tiene oportunidades evaluables todavía.'));
   grid.append(max,min);wrap.append(grid);
-  const sin=tarjeta('Sin ninguna respuesta registrada');
+  const sin=tarjeta('Cofrades que no han participado');
   if(m.webNunca.length){
-    sin.append(nodo('p',`${m.webNunca.length} cofrade(s) con al menos una oportunidad real y sin respuestas registradas en este periodo.`,'muted'));
-    const tags=nodo('div',undefined,'tags');m.webNunca.forEach(c=>tags.append(nodo('span',c.nombre,'tag')));sin.append(tags);
-  }else sin.append(nodo('p','Todos los cofrades con oportunidades tienen alguna respuesta registrada, o todavía no existen oportunidades evaluables.','muted'));
+    sin.append(nodo('p',`${m.webNunca.length} cofrade(s) tuvieron oportunidades evaluables en este periodo y no respondieron a ninguna. Pueden tener votos anteriores en encuestas históricas importadas.`,'muted'));
+    const tags=nodo('div',undefined,'tags');m.webNunca.forEach(c=>tags.append(nodo('span',`${c.nombre} · 0 de ${c.oportunidades}`,'tag')));sin.append(tags);
+  }else sin.append(nodo('p','Ningún cofrade ha dejado todas sus oportunidades sin responder, o todavía no existen oportunidades evaluables.','muted'));
   wrap.append(sin);
   const metodologia=tarjeta('Cómo se calcula (para no ser injustos)');
   const lista=nodo('ul');
