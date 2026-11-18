@@ -167,23 +167,34 @@ export async function descargarAnuario(modelo){
     y+=alto+8;
   }
 
-  // Rankings completos, agrupados por resultado para que los empates
-  // ocupen una tarjeta y aparezcan todos sus protagonistas.
+  // Dos ligas sin duplicados: más del 50 % arriba, hasta el 50 % abajo.
+  // Los empates van agrupados y solo participan quienes tuvieron oportunidades.
   pdf.addPage();encabezado('Participación en la web · '+periodo);
   titulo('Los que siempre tienen algo que decir',45);
   texto('Entre encuestas y valoraciones, también se vota con el tenedor.',18,56,9,'gris');
-  const siguienteClic=()=>{
+  const siguienteClic=(tituloContinuacion)=>{
     pdf.addPage();encabezado('Participación en la web · '+periodo);
-    titulo('La liga del clic continúa',45);return 70;
+    titulo(tituloContinuacion,45);return 70;
   };
-  y=bloque('La liga del clic',73);
-  const todosWeb=gruposDe(modelo.webMas,
+  const siguienteLiga=()=>siguienteClic('La liga del clic continúa');
+  const siguienteEquipo=()=>siguienteClic('El «ahora respondo» continúa');
+  const todosConOportunidad=Array.isArray(modelo.webMas)?modelo.webMas:[];
+  const porcentual=(a,b)=>b.actividadPct-a.actividadPct || b.respuestas-a.respuestas || a.nombre.localeCompare(b.nombre,'es');
+  const liga=gruposDe(todosConOportunidad.filter(c=>c.oportunidades>0 && c.actividadPct>50).sort(porcentual),
     c=>[c.respuestas,c.oportunidades,c.actividadPct].join('|'),
     c=>c.respuestas+' de '+c.oportunidades+' respuestas · '+porcentaje(c.actividadPct));
-  if(!todosWeb.length)y=parrafo('La web todavía espera sus primeras respuestas.',19,y,170,9);
-  for(const grupo of todosWeb)y=tarjetaEmpate(grupo,y,siguienteClic);
-  if(y+22>270)y=siguienteClic();
-  parrafo('Los empates comparten mantel: todos los nombres están incluidos, aunque el resultado sea el mismo.',18,y+8,174,8);
+  y=bloque('La liga del clic · Más del 50 %',73);
+  if(!liga.length)y=parrafo('Todavía no hay nadie por encima del 50 %. ¡Hay margen para remontar!',19,y,170,9);
+  for(const grupo of liga)y=tarjetaEmpate(grupo,y,siguienteLiga);
+  if(y+37>270)y=siguienteEquipo();
+  y=bloque('El equipo del «ahora respondo» · Hasta el 50 %',y+6);
+  const equipo=gruposDe(todosConOportunidad.filter(c=>c.oportunidades>0 && c.actividadPct<=50).sort(porcentual),
+    c=>[c.respuestas,c.oportunidades,c.actividadPct].join('|'),
+    c=>c.respuestas+' de '+c.oportunidades+' respuestas · '+porcentaje(c.actividadPct));
+  if(!equipo.length)y=parrafo('¡Nadie por aquí! Todos han superado la mitad de sus oportunidades.',19,y,174,9);
+  for(const grupo of equipo)y=tarjetaEmpate(grupo,y,siguienteEquipo);
+  if(y+22>270)y=siguienteEquipo();
+  parrafo('Los empates comparten mantel y nadie aparece dos veces. Solo cuentan las oportunidades de participar que tuvo cada cofrade.',18,y+8,174,8);
 
   // Asistencia y organización sin recortar la lista ni repetir los empates.
   pdf.addPage();encabezado('Premios del tenedor · '+periodo);
