@@ -168,7 +168,30 @@ export function generarResumen(datos, periodo = 'todos', opciones = {}) {
     visitas:maxRepeticiones,
     empate:empatados.length > 1
   } : null;
+  // Recuerdos auténticos de las comidas: frases firmadas y comentarios de valoraciones.
+  // Los comentarios de valoraciones se incluyen sin atribuirlos a una persona.
+  const frasesSobremesa = [];
+  const limpiarFrase = texto => String(texto || '').replace(/\s+/g, ' ').trim();
+  for (const c of cenas) {
+    const texto = limpiarFrase(c.frase);
+    if (texto) frasesSobremesa.push({
+      tipo: 'frase', texto, restaurante: c.restaurante || 'Nuestra comida',
+      fecha: c.fecha, autor: limpiarFrase(c.autor_frase)
+    });
+  }
+  for (const v of valoraciones) {
+    const texto = limpiarFrase(v.comentario);
+    if (!texto) continue;
+    const c = cenas.find(comida => identificador(comida.id) === identificador(v.comida_id));
+    if (c) frasesSobremesa.push({
+      tipo: 'valoracion', texto, restaurante: c.restaurante || 'Nuestra comida',
+      fecha: c.fecha, autor: ''
+    });
+  }
+  frasesSobremesa.sort((a,b) => b.fecha.localeCompare(a.fecha) || (a.tipo === 'frase' ? -1 : 1));
+
   return {
+    frasesSobremesa,
     periodo, incluirBajas, bajasExcluidas, cofrades, activos, comidas:cenas.map(c => ({
       ...c, asistentes:asistentesPorComida.get(identificador(c.id))?.size||0
     })), encuestas: encuestasWeb,
