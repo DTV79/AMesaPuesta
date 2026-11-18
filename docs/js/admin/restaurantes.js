@@ -6,6 +6,19 @@ import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95
   });
   panelCobrosComidas.actualizar();
  }
+ const parametrosAuditoria=new URLSearchParams(window.location.search);
+ const comidaAuditoria=parametrosAuditoria.get("comida");
+ if(comidaAuditoria&&comidas.some(c=>String(c.id)===comidaAuditoria)){
+  await editar(comidaAuditoria);
+  if(parametrosAuditoria.get("seccion")==="gastos"){
+   const gastoAuditoria=parametrosAuditoria.get("gasto");
+   const gastoExacto=Array.from($("gastosExtra").children).find(el=>gastoAuditoria&&el.dataset.gastoId===gastoAuditoria);
+   const destinoGasto=gastoExacto||$("gastosExtra");
+   destinoGasto.style.boxShadow="0 0 0 3px #c69043";
+   destinoGasto.style.borderRadius="12px";
+   destinoGasto.scrollIntoView({behavior:"instant",block:"center"});
+  }
+ }
 }async function refrescarListadoComidas(){const{data,error}=await sb.rpc("listar_comidas_admin");if(error)throw error;comidas=(data||[]).map(x=>({...x,...(comidas.find(c=>c.id===x.id)||{}),asistentes:x.asistentes,no_asistentes:x.no_asistentes,invitados:x.invitados}));renderLista();if(panelCobrosComidas)panelCobrosComidas.actualizar()}
 let invitadosActuales=[];function renderInvitados(){const box=$("invitadosComida");box.innerHTML=invitadosActuales.map((x,i)=>'<div class="invitadoRow" data-invitado="'+i+'"><label>Nombre<input class="invNombre" value="'+esc(x.nombre)+'" placeholder="Nombre del invitado"></label><label>¿Paga?<select class="invPaga"><option value="no" '+(!x.importe_pagado?'selected':'')+'>No</option><option value="si" '+(x.importe_pagado?'selected':'')+'>Sí</option></select></label><label>Importe €<input class="invImporte" type="number" step=".01" min="0" value="'+(Number(x.importe_pagado)||0)+'" '+(!x.importe_pagado?'disabled':'')+'></label><button type="button" class="mini invQuitar" aria-label="Quitar invitado">×</button></div>').join("");box.querySelectorAll(".invitadoRow").forEach((row,i)=>{row.querySelector(".invQuitar").onclick=()=>{recogerInvitados();invitadosActuales.splice(i,1);renderInvitados()};row.querySelector(".invPaga").onchange=()=>{row.querySelector(".invImporte").disabled=row.querySelector(".invPaga").value!=="si";if(row.querySelector(".invPaga").value!=="si")row.querySelector(".invImporte").value="0"}})}function recogerInvitados(){return invitadosActuales=[...document.querySelectorAll(".invitadoRow")].map((row,i)=>({id:invitadosActuales[i]?.id||null,nombre:row.querySelector(".invNombre").value.trim(),importe_pagado:row.querySelector(".invPaga").value==="si"?Number(row.querySelector(".invImporte").value||0):0}))}async function cargarInvitados(id){const{data,error}=await sb.rpc("gestionar_invitados_comida_admin",{p_comida:id});if(error)throw error;invitadosActuales=data||[];renderInvitados()}$("invitadosComida").addEventListener("input",()=>renderResumenEco());$("invitadosComida").addEventListener("change",()=>renderResumenEco());
 $("addInvitado").onclick=()=>{recogerInvitados();invitadosActuales.push({nombre:"",importe_pagado:0});renderInvitados()};function fotosHistoricas(x){const carpeta=String(x.carpeta_fotos_legacy||"").trim();const total=Number(x.numero_fotos_legacy||0);if(!/^[a-zA-Z0-9_-]+$/.test(carpeta)||total<1)return"";const base="https://dtv79.github.io/AMesaPuesta/Fotos/"+encodeURIComponent(carpeta)+"/";return '<div class="legacy-gallery"><img loading="lazy" src="'+base+'1.webp" alt="Fotografía de '+esc(x.restaurante?.nombre||"la comida")+'" onerror="this.style.display=\'none\'"><div class="legacy-gallery-links"><a href="'+base+'1.webp" target="_blank" rel="noopener">Ver foto</a> · <a href="https://dtv79.github.io/AMesaPuesta/v2/restaurantes.html" target="_blank" rel="noopener">Galería histórica ('+total+' fotos)</a></div></div>'}
