@@ -120,7 +120,9 @@ export function generarResumen(datos, periodo = 'todos') {
   const webMenos = [...webConOportunidad].sort((a,b) =>
     (a.actividadPct || 0) - (b.actividadPct || 0) ||
     a.participacionesTotales - b.participacionesTotales || a.nombre.localeCompare(b.nombre,'es'));
-  const webNunca = webConOportunidad.filter(c => c.participacionesTotales === 0);
+  // El aviso de ausencia se refiere a oportunidades evaluables, no a votos
+  // que se importaron retrospectivamente desde encuestas antiguas.
+  const webNunca = webConOportunidad.filter(c => c.respuestas === 0);
   const sinOportunidad = cofrades.filter(c => c.oportunidades === 0);
 
   const restaurantes = new Map();
@@ -151,6 +153,16 @@ export function generarResumen(datos, periodo = 'todos') {
     anio:y,comidas:cenasTodas.filter(c=>anio(c.fecha)===y).length
   }));
   const maximaComida = [...cenas].sort((a,b)=>(asistentesPorComida.get(identificador(b.id))?.size||0)-(asistentesPorComida.get(identificador(a.id))?.size||0))[0];
+  // Curiosidad histórica: el filtro por año se aplica al resto de métricas,
+  // pero aquí cuentan todas las comidas celebradas y publicadas desde 2022.
+  const frecuenciasHistoricas = new Map();
+  for (const comida of cenasTodas) {
+    const nombre = comida.restaurante || 'Restaurante sin nombre';
+    if (!frecuenciasHistoricas.has(nombre)) frecuenciasHistoricas.set(nombre,{nombre,visitas:0});
+    frecuenciasHistoricas.get(nombre).visitas++;
+  }
+  const masRepetidoHistorico = [...frecuenciasHistoricas.values()]
+    .sort((a,b)=>b.visitas-a.visitas || a.nombre.localeCompare(b.nombre,'es'))[0] || null;
   return {
     periodo, cofrades, activos, comidas:cenas.map(c => ({
       ...c, asistentes:asistentesPorComida.get(identificador(c.id))?.size||0
@@ -163,6 +175,6 @@ export function generarResumen(datos, periodo = 'todos') {
     mejoresAsistentes, organizanMas, webMas, webMenos, webNunca, sinOportunidad,
     restaurantes:restaurantesOrdenados, anual,balance,porPeriodo,
     maximaComida:maximaComida ? {...maximaComida, asistentes:asistentesPorComida.get(identificador(maximaComida.id))?.size||0} : null,
-    restauranMas:[...restaurantesOrdenados].sort((a,b)=>b.visitas-a.visitas)[0] || null
+    restauranMas:masRepetidoHistorico
   };
 }
