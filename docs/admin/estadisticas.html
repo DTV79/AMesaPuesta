@@ -17,7 +17,7 @@
     h2{font:700 24px/1.2 Georgia,serif;color:#5e2930}h3{font-size:16px;color:#552b2b}
     p{line-height:1.6;color:#786d66}.topline{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap}
     .intro{font-size:14px;margin:9px 0 20px}.toolbar{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:19px}
-    .toolbar label{font-weight:800;font-size:13px}.toolbar select{min-height:43px;padding:9px 14px;border:1px solid #d9c9be;border-radius:10px;background:white;min-width:160px;color:#372925}
+    .toolbar label{font-weight:800;font-size:13px}.toolbar .check-bajas{display:inline-flex;align-items:center;gap:9px;cursor:pointer;white-space:normal;color:#5a403b}.check-bajas input{width:17px;height:17px;accent-color:#862731;cursor:pointer;flex:none}.toolbar select{min-height:43px;padding:9px 14px;border:1px solid #d9c9be;border-radius:10px;background:white;min-width:160px;color:#372925}
     .btn{border:1px solid #8b2631;border-radius:11px;padding:12px 16px;background:#8b2631;color:white;min-height:43px;cursor:pointer;font-size:13px;font-weight:800}
     .btn:disabled{opacity:.58;cursor:wait}.btn:hover{background:#731d29}.btn.alt{color:#7e2630;border-color:#dac4be;background:#fff}
     .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 20px}
@@ -44,7 +44,7 @@
     .inline-stats{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.stat{background:#edf4ec;color:#386548;padding:9px 13px;border-radius:9px;font-size:12px;font-weight:800}
     .subtle{font-size:12px;color:#80726b;margin-top:10px}.message{font-size:13px;font-weight:800;color:#87403d}
     @media(max-width:800px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr}.kpi{padding:14px}}
-    @media(max-width:520px){main{padding:18px 12px 115px}.kpi .number{font-size:22px}.toolbar{align-items:stretch}.toolbar label{width:100%}.toolbar select{flex:1;min-width:120px}.toolbar .btn{flex:1}.card{padding:16px}.web-header{padding:17px}.tab{padding:11px 12px}.rank{min-width:365px}.rank td,.rank th{padding:9px 5px}}
+    @media(max-width:520px){main{padding:18px 12px 115px}.kpi .number{font-size:22px}.toolbar{align-items:stretch}.toolbar label{width:100%}.toolbar .check-bajas{width:100%}.toolbar select{flex:1;min-width:120px}.toolbar .btn{flex:1}.card{padding:16px}.web-header{padding:17px}.tab{padding:11px 12px}.rank{min-width:365px}.rank td,.rank th{padding:9px 5px}}
   </style>
 </head>
 <body>
@@ -54,10 +54,12 @@
   <div class="toolbar">
     <label for="ejercicio">Periodo</label>
     <select id="ejercicio" aria-label="Seleccionar año"></select>
+    <label class="check-bajas" for="incluirBajas"><input type="checkbox" id="incluirBajas"> Incluir cofrades dados de baja</label>
     <button class="btn" type="button" id="descargar" disabled>↓ Descargar anuario PDF</button>
     <button class="btn alt" type="button" id="actualizar">↻ Actualizar datos</button>
   </div>
   <p id="estado" class="message" role="status" aria-live="polite">Consultando las estadísticas…</p>
+  <p id="filtroBajasInfo" class="subtle" aria-live="polite"></p>
   <div class="kpis" aria-label="Indicadores del periodo">
     <div class="kpi"><div class="small">Comidas celebradas</div><div class="number" id="kComidas">—</div><div class="detail">Restaurantes publicados</div></div>
     <div class="kpi"><div class="small">Asistencias acumuladas</div><div class="number" id="kAsistencias">—</div><div class="detail" id="kMedia">Media por comida</div></div>
@@ -214,7 +216,11 @@ function pintarEconomia(m){
 
 function pintar(){
   if(!originales)return;
-  modelo=generarResumen(originales,$('ejercicio').value);
+  modelo=generarResumen(originales,$('ejercicio').value,{incluirBajas:$('incluirBajas').checked});
+  $('filtroBajasInfo').textContent=modelo.incluirBajas
+    ? 'Incluidos los cofrades dados de baja en las clasificaciones personales y la participación.'
+    : `${modelo.bajasExcluidas} cofrade(s) dados de baja excluidos de las clasificaciones personales y la participación.`;
+  $('filtroBajasInfo').textContent+=' Las comidas celebradas, asistencias históricas totales y cuentas se mantienen intactas.';
   $('kComidas').textContent=modelo.comidasTotales.toLocaleString('es-ES');
   $('kAsistencias').textContent=modelo.asistentesTotal.toLocaleString('es-ES');
   $('kMedia').textContent='Media: '+redondeo(modelo.mediaAsistencia)+' asistentes por comida';
@@ -266,6 +272,7 @@ async function iniciar(){
   $('contenido').hidden=false;
   const script=document.createElement('script');script.src='../cabecera-comun.js';document.body.append(script);
   $('ejercicio').addEventListener('change',pintar);
+  $('incluirBajas').addEventListener('change',pintar);
   $('actualizar').addEventListener('click',cargar);
   $('descargar').addEventListener('click',async()=>{
     const btn=$('descargar');btn.disabled=true;btn.textContent='Preparando PDF…';
