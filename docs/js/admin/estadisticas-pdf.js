@@ -70,7 +70,29 @@ export async function descargarAnuario(modelo){
     });
     raya(y+3);return y+alto;
   };
-  const primeraSeis=(array,n)=>Array.isArray(array)?array.slice(0,n):[];
+  // Los empates se cuentan una sola vez: los nombres van juntos,
+  // sin repetir una fila por cada cofrade con el mismo resultado.
+  const gruposDe=(lista,obtenerClave,obtenerEtiqueta)=>{
+    const mapa=new Map();
+    for(const dato of (lista||[])){
+      const clave=obtenerClave(dato);
+      if(!mapa.has(clave))mapa.set(clave,{etiqueta:obtenerEtiqueta(dato),nombres:[]});
+      mapa.get(clave).nombres.push(limpiar(dato.nombre||'Sin nombre'));
+    }
+    return [...mapa.values()];
+  };
+  const tarjetaEmpate=(grupo,posicion,siguientePagina)=>{
+    pdf.setFont('helvetica','normal');pdf.setFontSize(9.5);
+    const lineas=pdf.splitTextToSize(grupo.nombres.join('  ·  '),158);
+    const alto=Math.max(25,17+lineas.length*5.7);
+    let yy=posicion;
+    if(yy+alto>272)yy=siguientePagina();
+    caja(18,yy,174,alto,'crema');
+    texto(grupo.etiqueta,24,yy+10,10,'vino','bold');
+    lineas.forEach((linea,i)=>texto(linea,24,yy+18+i*5.7,9.5,'oscuro'));
+    return yy+alto+5;
+  };
+
   const periodo=modelo.periodo==='todos'?'Nuestra historia completa':'Año '+modelo.periodo;
   const eventos=Array.isArray(modelo.comidas)?modelo.comidas:[];
   const anuales=Array.isArray(modelo.anual)?modelo.anual:[];
@@ -119,97 +141,131 @@ export async function descargarAnuario(modelo){
     texto(String(a.comidas),188,yy+1.5,9,'vino','bold',{align:'right'});
   });
 
-  // La ruta gastronómica, sin solemnidades.
+  // La ruta gastronómica: cada comida tiene su menú, no solo una fila.
   pdf.addPage();encabezado('De mesa en mesa · '+periodo);
   titulo('La ruta del tenedor',45);
   texto('Las fechas importantes suelen coincidir con algo bueno en el plato.',18,56,9,'gris');
-  texto('FECHA',19,70,8,'vino','bold');
-  texto('DÓNDE NOS SENTAMOS',50,70,8,'vino','bold');
-  texto('COMENSALES',190,70,8,'vino','bold',{align:'right'});
-  raya(74);y=82;
-  const recientes=eventos.slice(-17);
-  if(!recientes.length)y=parrafo('Aún no hay comidas que contar. De momento, queda hambre de estadísticas.',19,y,171,10);
-  recientes.forEach(comida=>{
-    texto(fechaCorta(comida.fecha),19,y,8.5);
-    pdf.setFont('helvetica','normal');pdf.setFontSize(9);
-    const nombre=pdf.splitTextToSize(limpiar(comida.restaurante||'Sin nombre'),112)[0];
-    texto(nombre||'Restaurante',50,y,9);
-    texto(String(comida.asistentes||0),189,y,9,'oscuro','bold',{align:'right'});
-    raya(y+3);y+=10;
-  });
-  if(eventos.length>17)y=parrafo('El recuento incluye todo el periodo; aquí aparecen las últimas 17 mesas.',18,262,174,8);
-  else if(y<245)y=parrafo('Buenas comidas, mejores compañías. El resto no cabe en una tabla.',18,Math.max(y+8,240),174,9);
+  y=69;
+  if(!eventos.length)y=parrafo('Aún no hay comidas que contar. De momento, queda hambre de estadísticas.',19,80,171,10);
+  for(const comida of eventos){
+    const platosPrincipales=String(comida.principales||'').split(/\r?\n|;/)
+      .map(x=>limpiar(x)).filter(Boolean);
+    const lineas=(platosPrincipales.length?platosPrincipales:['Los platos principales no quedaron apuntados.'])
+      .flatMap(plato=>pdf.splitTextToSize('• '+plato,155));
+    const alto=Math.max(eventos.length<=2?70:48,42+lineas.length*5.9);
+    if(y+alto>272){
+      pdf.addPage();encabezado('De mesa en mesa · '+periodo);
+      titulo('La ruta sigue dando hambre',45);
+      y=69;
+    }
+    caja(18,y,174,alto,'crema');
+    texto(fechaCorta(comida.fecha),24,y+10,9,'gris');
+    texto(String(comida.asistentes||0)+' a la mesa',186,y+10,9,'vino','bold',{align:'right'});
+    texto(limpiar(comida.restaurante||'Nuestra comida').slice(0,48),24,y+23,13,'oscuro','bold');
+    texto('LO QUE CAYÓ EN EL PLATO',24,y+35,8,'vino','bold');
+    lineas.forEach((linea,i)=>texto(linea,25,y+43+i*5.9,9.5,'oscuro'));
+    y+=alto+8;
+  }
 
-  // Participación: contar sin hacer injusticias con aprendices ni ausentes.
+  // Rankings completos, agrupados por resultado para que los empates
+  // ocupen una tarjeta y aparezcan todos sus protagonistas.
   pdf.addPage();encabezado('Participación en la web · '+periodo);
   titulo('Los que siempre tienen algo que decir',45);
   texto('Entre encuestas y valoraciones, también se vota con el tenedor.',18,56,9,'gris');
+  const siguienteClic=()=>{
+    pdf.addPage();encabezado('Participación en la web · '+periodo);
+    titulo('La liga del clic continúa',45);return 70;
+  };
   y=bloque('La liga del clic',73);
-  const webMas=primeraSeis(modelo.webMas,7);
-  const maxWeb=Math.max(1,...webMas.map(c=>c.respuestas||0));
-  if(!webMas.length)y=parrafo('La web todavía espera sus primeras respuestas.',19,y,170,9);
-  webMas.forEach((c,i)=>{
-    const yy=y+i*12.2;
-    texto(limpiar(c.nombre).slice(0,22),19,yy+2,9,'oscuro','bold');
-    caja(79,yy-2,68,5,'claro',2);
-    if(c.respuestas>0)caja(79,yy-2,68*c.respuestas/maxWeb,5,'vino',2);
-    texto(String(c.respuestas)+' / '+String(c.oportunidades),189,yy+2,9,'oscuro','bold',{align:'right'});
-  });
-  y=Math.max(185,y+webMas.length*12.2+11);
-  y=bloque('El equipo del «ahora respondo»',y);
-  if(!(modelo.webMenos||[]).length)y=parrafo('Todos llevan el voto al día, o todavía no hubo ocasión de participar.',18,y,174,9);
-  else for(const c of modelo.webMenos.slice(0,5)){
-    y=fila([c.nombre,String(c.respuestas)+' / '+String(c.oportunidades),porcentaje(c.actividadPct)],y,[86,48,38],8);
-  }
-  y=parrafo('Cada cofrade cuenta solo con las encuestas que podía votar y las comidas que podía valorar. Aquí nadie pierde puntos por no estar invitado.',18,Math.min(257,y+4),174,8);
+  const todosWeb=gruposDe(modelo.webMas,
+    c=>[c.respuestas,c.oportunidades,c.actividadPct].join('|'),
+    c=>c.respuestas+' de '+c.oportunidades+' respuestas · '+porcentaje(c.actividadPct));
+  if(!todosWeb.length)y=parrafo('La web todavía espera sus primeras respuestas.',19,y,170,9);
+  for(const grupo of todosWeb)y=tarjetaEmpate(grupo,y,siguienteClic);
+  if(y+22>270)y=siguienteClic();
+  parrafo('Los empates comparten mantel: todos los nombres están incluidos, aunque el resultado sea el mismo.',18,y+8,174,8);
 
-  // Trofeos con más mantel que pedestal.
+  // Asistencia y organización sin recortar la lista ni repetir los empates.
   pdf.addPage();encabezado('Premios del tenedor · '+periodo);
   titulo('El palmarés del buen comer',45);
+  const siguientePremio=()=>{
+    pdf.addPage();encabezado('Premios del tenedor · '+periodo);
+    titulo('El palmarés sigue repartiendo medallas',45);return 70;
+  };
   y=bloque('Abonados al mantel',65);
-  if(!(modelo.mejoresAsistentes||[]).length)y=parrafo('Sin clasificaciones de asistencia por ahora.',18,y,174,9);
-  else for(const c of modelo.mejoresAsistentes.slice(0,6)){
-    y=fila([c.nombre,String(c.comidas)+' de '+String(c.posiblesComidas)+' comidas',porcentaje(c.asistenciaPct)],y,[86,55,31],8.5);
-  }
-  y=bloque('Los que montan el sarao',Math.max(137,y+10));
-  if(!(modelo.organizanMas||[]).length)y=parrafo('Todavía no hay organizadores a los que colgarles una medalla.',18,y,174,9);
-  else for(const c of modelo.organizanMas.slice(0,4)){
-    y=fila([c.nombre,String(c.organizaciones)+' comidas',c.voluntarias>0?String(c.voluntarias)+' volunt.':'—'],y,[86,55,31],8.5);
-  }
-  y=bloque('La crítica gastronómica ha hablado',Math.max(205,y+9));
-  if(!(modelo.restaurantes||[]).length)y=parrafo('Todavía no hay restaurantes para puntuar.',18,y,174,9);
-  else for(const r of modelo.restaurantes.slice(0,5)){
-    const nota=r.media===null?'Sin votos':Number(r.media).toLocaleString('es-ES',{maximumFractionDigits:1})+' / 5 ('+r.votos+')';
-    y=fila([r.nombre,String(r.visitas)+' visitas',nota],y,[86,44,42],8);
-  }
+  const gruposAsistencia=gruposDe(modelo.mejoresAsistentes,
+    c=>[c.comidas,c.posiblesComidas,c.asistenciaPct].join('|'),
+    c=>c.comidas+' de '+c.posiblesComidas+' comidas · '+porcentaje(c.asistenciaPct));
+  if(!gruposAsistencia.length)y=parrafo('Sin clasificaciones de asistencia por ahora.',18,y,174,9);
+  for(const grupo of gruposAsistencia)y=tarjetaEmpate(grupo,y,siguientePremio);
+  if(y+32>270)y=siguientePremio();
+  y=bloque('Los que montan el sarao',y+6);
+  const gruposOrganizacion=gruposDe(modelo.organizanMas,
+    c=>[c.organizaciones,c.voluntarias,c.sorteos].join('|'),
+    c=>c.organizaciones+' '+(c.organizaciones===1?'comida organizada':'comidas organizadas')+
+      (c.voluntarias?' · '+c.voluntarias+' volunt.':'')+
+      (c.sorteos?' · '+c.sorteos+' por sorteo':''));
+  if(!gruposOrganizacion.length)y=parrafo('Todavía no hay organizadores a los que colgarles una medalla.',18,y,174,9);
+  for(const grupo of gruposOrganizacion)y=tarjetaEmpate(grupo,y,siguientePremio);
+  if(y+32>270)y=siguientePremio();
+  y=bloque('La crítica gastronómica ha hablado',y+6);
+  const gruposRestaurantes=gruposDe((modelo.restaurantes||[]).map(r=>({...r,nombre:r.nombre})),
+    r=>[r.visitas,r.media===null?'sin':r.media,r.votos].join('|'),
+    r=>r.visitas+' '+(r.visitas===1?'visita':'visitas')+' · '+
+      (r.media===null?'Sin votos':Number(r.media).toLocaleString('es-ES',{maximumFractionDigits:1})+' / 5 ('+r.votos+' valoraciones)'));
+  if(!gruposRestaurantes.length)y=parrafo('Todavía no hay restaurantes para puntuar.',18,y,174,9);
+  for(const grupo of gruposRestaurantes)y=tarjetaEmpate(grupo,y,siguientePremio);
 
-  // Las frases proceden del historial y de opiniones reales; nunca se inventan.
+  // Cada restaurante reúne su frase del día y todas sus valoraciones
+  // con los nombres que constan en las fichas de los cofrades.
   pdf.addPage();encabezado('Voces de la sobremesa · '+periodo);
   titulo('Lo que quedó para la posteridad',45);
   texto('Palabras textuales. Algunas merecen su propio plato.',18,56,9,'gris');
   y=70;
-  const frases=Array.isArray(modelo.frasesSobremesa)?modelo.frasesSobremesa:[];
-  if(!frases.length)parrafo('Este año los platos hablaron más que los teclados. Cuando haya frases y comentarios, los guardaremos aquí.',18,77,174,10);
-  for(const frase of frases){
-    const cita=limpiar(frase.texto);
-    if(!cita)continue;
-    // Las frases larguísimas se muestran como extractos, siempre con puntos suspensivos.
-    const recorte=cita.length>370?cita.slice(0,367).trimEnd()+'…':cita;
-    pdf.setFont('helvetica','normal');pdf.setFontSize(10);
-    const lineas=pdf.splitTextToSize('«'+recorte+'»',158);
-    const alto=Math.max(37,31+lineas.length*5.1+(frase.autor?6:0));
-    if(y+alto>273){
-      pdf.addPage();encabezado('Voces de la sobremesa · '+periodo);
-      titulo('Las frases siguen dando juego',45);
-      y=65;
+  const recuerdos=Array.isArray(modelo.vocesPorComida)?modelo.vocesPorComida:[];
+  if(!recuerdos.length)parrafo('Este año los platos hablaron más que los teclados. Cuando haya frases y comentarios, los guardaremos aquí.',18,77,174,10);
+  const siguienteVoz=()=>{
+    pdf.addPage();encabezado('Voces de la sobremesa · '+periodo);
+    titulo('La sobremesa todavía no termina',45);return 70;
+  };
+  for(const recuerdo of recuerdos){
+    const nombre=limpiar(recuerdo.restaurante||'Nuestra comida');
+    const pintaRestaurante=(continuacion=false)=>{
+      if(y+65>271)y=siguienteVoz();
+      caja(18,y,174,16,'vino');
+      texto(nombre.slice(0,43)+(continuacion?' (sigue)':''),24,y+10,11,'blanco','bold');
+      texto(fechaCorta(recuerdo.fecha),186,y+10,8.5,'blanco','normal',{align:'right'});
+      y+=20;
+    };
+    const aseguro=(espacio)=>{
+      if(y+espacio>272){y=siguienteVoz();pintaRestaurante(true);}
+    };
+    const pintaComentario=(cita,autor)=>{
+      const limpia=limpiar(cita);
+      const recorte=limpia.length>450?limpia.slice(0,447).trimEnd()+'…':limpia;
+      pdf.setFont('helvetica','normal');pdf.setFontSize(9.5);
+      const lineas=pdf.splitTextToSize('«'+recorte+'»',155);
+      const alto=Math.max(20,11+lineas.length*4.8+(autor?5:0));
+      aseguro(alto+6);
+      caja(18,y,174,alto,'crema');
+      lineas.forEach((linea,i)=>texto(linea,24,y+8+i*4.8,9.5,'oscuro'));
+      if(autor)texto('— '+limpiar(autor).slice(0,42),185,y+alto-4,8.5,'vino','bold',{align:'right'});
+      y+=alto+3;
+    };
+    pintaRestaurante();
+    if(recuerdo.frase){
+      aseguro(36);
+      texto('LA FRASE QUE QUEDÓ PARA LA HISTORIA',22,y+6,8.5,'vino','bold');
+      y+=8;
+      pintaComentario(recuerdo.frase,recuerdo.autorFrase);
     }
-    caja(18,y,174,alto,'crema');
-    texto(frase.tipo==='frase'?'FRASE DE LA COMIDA':'DICHO EN UNA VALORACIÓN',24,y+9,8,'vino','bold');
-    texto(fechaCorta(frase.fecha),186,y+9,8,'gris','normal',{align:'right'});
-    texto(limpiar(frase.restaurante||'Nuestra comida').slice(0,45),24,y+18,10,'oscuro','bold');
-    lineas.forEach((linea,i)=>texto(linea,24,y+27+i*5.1,10,'oscuro'));
-    if(frase.autor)texto('— '+limpiar(frase.autor),185,y+alto-6,9,'vino','bold',{align:'right'});
-    y+=alto+6;
+    if((recuerdo.comentarios||[]).length){
+      aseguro(35);
+      texto('LO QUE SOLTARON AL VALORAR',22,y+6,8.5,'vino','bold');
+      y+=8;
+      for(const comentario of recuerdo.comentarios)pintaComentario(comentario.texto,comentario.autor);
+    }
+    y+=5;
   }
 
   // Cierre económico: una explicación sencilla y un gráfico real.
