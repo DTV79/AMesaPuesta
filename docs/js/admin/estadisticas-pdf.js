@@ -97,7 +97,10 @@ export async function descargarAnuario(modelo){
     y+=39;
   }
   if(modelo.restauranMas){
-    y=nota(`El restaurante que más se repite en este periodo: ${modelo.restauranMas.nombre} (${modelo.restauranMas.visitas} comidas).`,y);
+    const frase = modelo.restauranMas.empate ? 'Empate entre restaurantes repetidos' : 'El restaurante más repetido';
+    y=nota(`${frase} en este periodo: ${modelo.restauranMas.nombre} (${modelo.restauranMas.visitas} visitas por restaurante).`,y);
+  }else if(modelo.comidasTotales){
+    y=nota('No hubo restaurantes repetidos en este periodo: ninguno acumuló más de una visita.',y);
   }
   y+=6;
   nota('Todos los importes están tomados de la tesorería registrada. Las votaciones históricas importadas se identifican y no se consideran oportunidades perdidas de voto.',y);

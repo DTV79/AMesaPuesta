@@ -120,7 +120,9 @@ export function generarResumen(datos, periodo = 'todos') {
   const webMenos = [...webConOportunidad].sort((a,b) =>
     (a.actividadPct || 0) - (b.actividadPct || 0) ||
     a.participacionesTotales - b.participacionesTotales || a.nombre.localeCompare(b.nombre,'es'));
-  const webNunca = webConOportunidad.filter(c => c.participacionesTotales === 0);
+  // El aviso de ausencia se refiere a oportunidades evaluables, no a votos
+  // que se importaron retrospectivamente desde encuestas antiguas.
+  const webNunca = webConOportunidad.filter(c => c.respuestas === 0);
   const sinOportunidad = cofrades.filter(c => c.oportunidades === 0);
 
   const restaurantes = new Map();
@@ -151,6 +153,17 @@ export function generarResumen(datos, periodo = 'todos') {
     anio:y,comidas:cenasTodas.filter(c=>anio(c.fecha)===y).length
   }));
   const maximaComida = [...cenas].sort((a,b)=>(asistentesPorComida.get(identificador(b.id))?.size||0)-(asistentesPorComida.get(identificador(a.id))?.size||0))[0];
+  // Una sola visita no es una repetición. Si hay empate real entre
+  // restaurantes repetidos, informamos de todos en vez de escoger uno.
+  const porRepeticion = [...restaurantesOrdenados]
+    .sort((a,b)=>b.visitas-a.visitas || a.nombre.localeCompare(b.nombre,'es'));
+  const maxRepeticiones = porRepeticion[0]?.visitas || 0;
+  const empatados = porRepeticion.filter(r=>r.visitas===maxRepeticiones);
+  const masRepetido = maxRepeticiones >= 2 ? {
+    nombre:empatados.map(r=>r.nombre).join(' · '),
+    visitas:maxRepeticiones,
+    empate:empatados.length > 1
+  } : null;
   return {
     periodo, cofrades, activos, comidas:cenas.map(c => ({
       ...c, asistentes:asistentesPorComida.get(identificador(c.id))?.size||0
@@ -163,6 +176,6 @@ export function generarResumen(datos, periodo = 'todos') {
     mejoresAsistentes, organizanMas, webMas, webMenos, webNunca, sinOportunidad,
     restaurantes:restaurantesOrdenados, anual,balance,porPeriodo,
     maximaComida:maximaComida ? {...maximaComida, asistentes:asistentesPorComida.get(identificador(maximaComida.id))?.size||0} : null,
-    restauranMas:[...restaurantesOrdenados].sort((a,b)=>b.visitas-a.visitas)[0] || null
+    restauranMas:masRepetido
   };
 }
