@@ -122,7 +122,7 @@ function pintarComidas(m){
   const wrap=$('tab-comidas');wrap.replaceChildren();
   const grid=nodo('div',undefined,'grid');
   grid.append(
-    parCard('Los más fieles a la mesa',tabla(['Cofrade','Asistencias','Porcentaje'],m.mejoresAsistentes.slice(0,12).map(c=>[
+    parCard('Asistencia de todos los cofrades',tabla(['Cofrade','Asistencias','Porcentaje'],m.mejoresAsistentes.map(c=>[
       c.nombre,`${c.comidas} / ${c.posiblesComidas}`,c.asistenciaPct===null?'—':redondeo(c.asistenciaPct)+' %'
     ]),'Aún no hay comidas para comparar.')),
     parCard('Los que más organizaron',tabla(['Cofrade','Comidas','Voluntario / Sorteo'],m.organizanMas.slice(0,12).map(c=>[
@@ -132,7 +132,13 @@ function pintarComidas(m){
   const curiosa=tarjeta('Curiosidades de sobremesa');
   const cs=nodo('div',undefined,'grid');
   const alta=nodo('div');alta.append(nodo('p','La mesa más concurrida','muted'),nodo('div',m.maximaComida?m.maximaComida.restaurante:'Sin comidas','special'),nodo('div',m.maximaComida?`${m.maximaComida.asistentes} asistentes · ${fechaLegible(m.maximaComida.fecha)}`:'—','special-sub'));
-  const frecuente=nodo('div');frecuente.append(nodo('p','Donde más hemos repetido · histórico completo','muted'),nodo('div',m.restauranMas?m.restauranMas.nombre:'Sin comidas','special'),nodo('div',m.restauranMas?`${m.restauranMas.visitas} comidas celebradas desde 2022`:'—','special-sub'));
+  const periodoTexto=m.periodo==='todos'?'en todo el histórico':`en ${m.periodo}`;
+  const destacado=m.restauranMas;
+  const tituloRepeticion=destacado ? (destacado.empate?'Empate: '+destacado.nombre:destacado.nombre) :
+    (m.comidasTotales ? 'Ningún restaurante repetido' : 'Sin comidas');
+  const detalleRepeticion=destacado ? `${destacado.visitas} visitas ${destacado.empate?'a cada uno':''} ${periodoTexto}` :
+    (m.comidasTotales ? `No hemos repetido restaurante ${periodoTexto}` : '—');
+  const frecuente=nodo('div');frecuente.append(nodo('p','Donde más hemos repetido','muted'),nodo('div',tituloRepeticion,'special'),nodo('div',detalleRepeticion,'special-sub'));
   cs.append(alta,frecuente);curiosa.append(cs);wrap.append(curiosa);
   const historico=tarjeta('Comidas celebradas por año');
   const bars=nodo('div',undefined,'bars');
