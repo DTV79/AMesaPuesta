@@ -3,9 +3,9 @@
   const prefix = admin && location.pathname.includes("/admin/") ? "../" : "./";
   const base = admin && location.pathname.includes("/admin/") ? "./" : "admin/";
   const links = admin ? [
-    ["Inicio","index.html"],["Cofrades","cofrades.html"],["Cuotas","cuotas.html"],
-    ["Encuestas","encuestas.html"],["Anuncios","anuncios.html"],
-    ["Comidas","restaurantes.html"],["Estatutos","estatutos.html"]
+    ["Inicio","index.html"],["Comidas","restaurantes.html"],["Cuotas","cuotas.html"],
+    ["Cofrades","cofrades.html"],["Encuestas","encuestas.html"],
+    ["Anuncios","anuncios.html"],["Estatutos","estatutos.html"]
   ].map(([label,href])=>[label,base === "./" ? href : base+href]) : [
     ["Inicio",prefix+"index.html"],["Nuestras comidas",prefix+"restaurantes.html"],
     ["Cofrades",prefix+"cofrades.html"],["Tablón",prefix+"anuncios.html"],
