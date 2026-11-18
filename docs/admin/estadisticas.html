@@ -28,11 +28,11 @@
     .tab{flex:none;border:1px solid #e3d5ca;border-radius:11px;padding:11px 15px;cursor:pointer;color:#7f4949;font-size:13px;font-weight:850;background:white;white-space:nowrap}
     .tab[aria-selected="true"]{color:white;background:#862731;border-color:#862731}
     .pane[hidden],[hidden]{display:none!important}.pane{animation:aparecer .12s ease-out}@keyframes aparecer{from{opacity:.5}to{opacity:1}}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{padding:21px;margin-bottom:14px}.card h2,.card h3{margin-bottom:13px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{min-width:0;max-width:100%;padding:21px;margin-bottom:14px}.card h2,.card h3{margin-bottom:13px}
     .section-head{display:flex;align-items:baseline;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-bottom:13px}
     .muted{font-size:12px;color:#796f68}.note{background:#fff9ef;border:1px solid #ead9bf;border-radius:12px;padding:13px 15px;font-size:13px;color:#775b41;line-height:1.55}
     .note.green{background:#eef6f1;color:#346447;border-color:#cfe2d3}.pill{border-radius:100px;background:#f3ede7;padding:4px 8px;color:#7d4e48;font-size:11px;font-weight:800}
-    .table-wrap{overflow-x:auto}.rank{border-collapse:collapse;width:100%;min-width:400px}.rank td,.rank th{padding:10px 7px;border-bottom:1px solid #eee4de;text-align:left;font-size:12px}
+     .table-wrap{min-width:0;max-width:100%;overflow-x:auto}.rank{border-collapse:collapse;width:100%;min-width:400px}.rank td,.rank th{padding:10px 7px;border-bottom:1px solid #eee4de;text-align:left;font-size:12px}
     .rank th{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#836e63}.rank tr:last-child td{border:0}.rank .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
     .rank strong{font-weight:820}.empty{padding:16px;color:#776d67;background:#f7f4f0;border-radius:9px;font-size:13px}
     .bars{display:grid;gap:12px}.bar-row{display:grid;grid-template-columns:65px 1fr 27px;align-items:center;gap:10px;font-size:12px;font-weight:750}
@@ -43,8 +43,22 @@
     .web-header h2{color:#f9dec1;margin-bottom:7px}.web-header p{color:#d8e4d7;font-size:13px;margin:0}
     .inline-stats{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.stat{background:#edf4ec;color:#386548;padding:9px 13px;border-radius:9px;font-size:12px;font-weight:800}
     .subtle{font-size:12px;color:#80726b;margin-top:10px}.message{font-size:13px;font-weight:800;color:#87403d}
-    @media(max-width:800px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr}.kpi{padding:14px}}
-    @media(max-width:520px){main{padding:18px 12px 115px}.kpi .number{font-size:22px}.toolbar{align-items:stretch}.toolbar label{width:100%}.toolbar .check-bajas{width:100%}.toolbar select{flex:1;min-width:120px}.toolbar .btn{flex:1}.card{padding:16px}.web-header{padding:17px}.tab{padding:11px 12px}.rank{min-width:365px}.rank td,.rank th{padding:9px 5px}}
+    @media(max-width:800px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:minmax(0,1fr)}.kpi{min-width:0;padding:14px}}
+    @media(max-width:520px){
+      main{min-width:0;padding:18px 12px 115px}
+      .kpi .number{font-size:22px;overflow-wrap:anywhere}
+      .toolbar{align-items:stretch}.toolbar label{width:100%}.toolbar .check-bajas{width:100%}
+      .toolbar select{width:100%;min-width:0;flex:1 1 100%}.toolbar .btn{flex:1 1 100%;min-width:0;white-space:normal}
+      .card{min-width:0;max-width:100%;padding:16px}.web-header{min-width:0;padding:17px}
+      .tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow-x:visible;gap:8px}
+      .tab{min-width:0;min-height:48px;padding:10px 7px;white-space:normal;line-height:1.3;overflow-wrap:anywhere}
+      .rank{min-width:0;width:100%;table-layout:fixed}
+      .rank th,.rank td{padding:9px 4px;font-size:11px;line-height:1.35;overflow-wrap:anywhere}
+      .rank th{font-size:9px}.rank .num{white-space:normal}
+      .rank th:first-child,.rank td:first-child{width:39%}
+      .special{font-size:19px;overflow-wrap:anywhere}
+      .stat,.tag{max-width:100%;overflow-wrap:anywhere}
+    }
   </style>
 </head>
 <body>
