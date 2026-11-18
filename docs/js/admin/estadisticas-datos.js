@@ -153,16 +153,17 @@ export function generarResumen(datos, periodo = 'todos') {
     anio:y,comidas:cenasTodas.filter(c=>anio(c.fecha)===y).length
   }));
   const maximaComida = [...cenas].sort((a,b)=>(asistentesPorComida.get(identificador(b.id))?.size||0)-(asistentesPorComida.get(identificador(a.id))?.size||0))[0];
-  // Curiosidad histórica: el filtro por año se aplica al resto de métricas,
-  // pero aquí cuentan todas las comidas celebradas y publicadas desde 2022.
-  const frecuenciasHistoricas = new Map();
-  for (const comida of cenasTodas) {
-    const nombre = comida.restaurante || 'Restaurante sin nombre';
-    if (!frecuenciasHistoricas.has(nombre)) frecuenciasHistoricas.set(nombre,{nombre,visitas:0});
-    frecuenciasHistoricas.get(nombre).visitas++;
-  }
-  const masRepetidoHistorico = [...frecuenciasHistoricas.values()]
-    .sort((a,b)=>b.visitas-a.visitas || a.nombre.localeCompare(b.nombre,'es'))[0] || null;
+  // Una sola visita no es una repetición. Si hay empate real entre
+  // restaurantes repetidos, informamos de todos en vez de escoger uno.
+  const porRepeticion = [...restaurantesOrdenados]
+    .sort((a,b)=>b.visitas-a.visitas || a.nombre.localeCompare(b.nombre,'es'));
+  const maxRepeticiones = porRepeticion[0]?.visitas || 0;
+  const empatados = porRepeticion.filter(r=>r.visitas===maxRepeticiones);
+  const masRepetido = maxRepeticiones >= 2 ? {
+    nombre:empatados.map(r=>r.nombre).join(' · '),
+    visitas:maxRepeticiones,
+    empate:empatados.length > 1
+  } : null;
   return {
     periodo, cofrades, activos, comidas:cenas.map(c => ({
       ...c, asistentes:asistentesPorComida.get(identificador(c.id))?.size||0
@@ -175,6 +176,6 @@ export function generarResumen(datos, periodo = 'todos') {
     mejoresAsistentes, organizanMas, webMas, webMenos, webNunca, sinOportunidad,
     restaurantes:restaurantesOrdenados, anual,balance,porPeriodo,
     maximaComida:maximaComida ? {...maximaComida, asistentes:asistentesPorComida.get(identificador(maximaComida.id))?.size||0} : null,
-    restauranMas:masRepetidoHistorico
+    restauranMas:masRepetido
   };
 }
