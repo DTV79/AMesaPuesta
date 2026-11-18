@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f6f4ef">
+  <title>Estadísticas y anuarios · A Mesa Puesta</title>
+  <link rel="icon" href="./admin-icon.png" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./admin-icon.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <script src="../js/admin/session-guard.js"></script>
+  <script defer src="../js/admin/dialogos.js"></script>
+  <style>
+    :root{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:#2e2924;background:#f6f4ef}
+    *{box-sizing:border-box}body{margin:0}button,select{font:inherit}button,select{outline-offset:3px}
+    main{max-width:1130px;margin:auto;padding:27px 18px 90px}h1,h2,h3{margin:0}h1{font:700 clamp(26px,3.5vw,37px)/1.2 Georgia,serif;color:#70212e}
+    h2{font:700 24px/1.2 Georgia,serif;color:#5e2930}h3{font-size:16px;color:#552b2b}
+    p{line-height:1.6;color:#786d66}.topline{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap}
+    .intro{font-size:14px;margin:9px 0 20px}.toolbar{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:19px}
+    .toolbar label{font-weight:800;font-size:13px}.toolbar select{min-height:43px;padding:9px 14px;border:1px solid #d9c9be;border-radius:10px;background:white;min-width:160px;color:#372925}
+    .btn{border:1px solid #8b2631;border-radius:11px;padding:12px 16px;background:#8b2631;color:white;min-height:43px;cursor:pointer;font-size:13px;font-weight:800}
+    .btn:disabled{opacity:.58;cursor:wait}.btn:hover{background:#731d29}.btn.alt{color:#7e2630;border-color:#dac4be;background:#fff}
+    .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 20px}
+    .kpi,.card{background:white;border:1px solid #e6d9cd;border-radius:16px;box-shadow:0 4px 14px #3c261008}
+    .kpi{padding:17px}.kpi .small{font-size:12px;color:#806e67;font-weight:650}.kpi .number{font-weight:900;color:#792830;font-size:clamp(21px,2.4vw,30px);margin:8px 0 2px;letter-spacing:-.5px}
+    .kpi .detail{font-size:11px;color:#8b7f75}.kpi.green .number{color:#1f724d}
+    .tabs{display:flex;gap:7px;border-bottom:1px solid #e2d5cc;padding-bottom:10px;overflow-x:auto;scrollbar-width:thin;margin-bottom:18px}
+    .tab{flex:none;border:1px solid #e3d5ca;border-radius:11px;padding:11px 15px;cursor:pointer;color:#7f4949;font-size:13px;font-weight:850;background:white;white-space:nowrap}
+    .tab[aria-selected="true"]{color:white;background:#862731;border-color:#862731}
+    .pane[hidden],[hidden]{display:none!important}.pane{animation:aparecer .12s ease-out}@keyframes aparecer{from{opacity:.5}to{opacity:1}}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{padding:21px;margin-bottom:14px}.card h2,.card h3{margin-bottom:13px}
+    .section-head{display:flex;align-items:baseline;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-bottom:13px}
+    .muted{font-size:12px;color:#796f68}.note{background:#fff9ef;border:1px solid #ead9bf;border-radius:12px;padding:13px 15px;font-size:13px;color:#775b41;line-height:1.55}
+    .note.green{background:#eef6f1;color:#346447;border-color:#cfe2d3}.pill{border-radius:100px;background:#f3ede7;padding:4px 8px;color:#7d4e48;font-size:11px;font-weight:800}
+    .table-wrap{overflow-x:auto}.rank{border-collapse:collapse;width:100%;min-width:400px}.rank td,.rank th{padding:10px 7px;border-bottom:1px solid #eee4de;text-align:left;font-size:12px}
+    .rank th{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#836e63}.rank tr:last-child td{border:0}.rank .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+    .rank strong{font-weight:820}.empty{padding:16px;color:#776d67;background:#f7f4f0;border-radius:9px;font-size:13px}
+    .bars{display:grid;gap:12px}.bar-row{display:grid;grid-template-columns:65px 1fr 27px;align-items:center;gap:10px;font-size:12px;font-weight:750}
+    .bar-bg{height:12px;border-radius:40px;background:#f2e8e2;overflow:hidden}.bar-fill{height:100%;background:#9b4a51;border-radius:40px}
+    .special{font:700 21px Georgia,serif;color:#632734;margin:8px 0}.special-sub{color:#88746b;font-size:13px}
+    .tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}.tag{border:1px solid #eadbd0;background:#f9f3ec;color:#6a403d;border-radius:100px;padding:8px 11px;font-size:12px;font-weight:800}
+    .web-header{background:#263f35;color:#f7e1c7;border-radius:17px;padding:20px 22px;margin-bottom:14px}
+    .web-header h2{color:#f9dec1;margin-bottom:7px}.web-header p{color:#d8e4d7;font-size:13px;margin:0}
+    .inline-stats{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.stat{background:#edf4ec;color:#386548;padding:9px 13px;border-radius:9px;font-size:12px;font-weight:800}
+    .subtle{font-size:12px;color:#80726b;margin-top:10px}.message{font-size:13px;font-weight:800;color:#87403d}
+    @media(max-width:800px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr}.kpi{padding:14px}}
+    @media(max-width:520px){main{padding:18px 12px 115px}.kpi .number{font-size:22px}.toolbar{align-items:stretch}.toolbar label{width:100%}.toolbar select{flex:1;min-width:120px}.toolbar .btn{flex:1}.card{padding:16px}.web-header{padding:17px}.tab{padding:11px 12px}.rank{min-width:365px}.rank td,.rank th{padding:9px 5px}}
+  </style>
+</head>
+<body>
+<main id="contenido" hidden>
+  <div class="topline"><h1>📊 Estadísticas y anuarios</h1><span class="pill">Zona de administración</span></div>
+  <p class="intro">Una mirada a las comidas, la participación y las cuentas de la Cofradía. Datos actualizados desde los registros de la aplicación.</p>
+  <div class="toolbar">
+    <label for="ejercicio">Periodo</label>
+    <select id="ejercicio" aria-label="Seleccionar año"></select>
+    <button class="btn" type="button" id="descargar" disabled>↓ Descargar anuario PDF</button>
+    <button class="btn alt" type="button" id="actualizar">↻ Actualizar datos</button>
+  </div>
+  <p id="estado" class="message" role="status" aria-live="polite">Consultando las estadísticas…</p>
+  <div class="kpis" aria-label="Indicadores del periodo">
+    <div class="kpi"><div class="small">Comidas celebradas</div><div class="number" id="kComidas">—</div><div class="detail">Restaurantes publicados</div></div>
+    <div class="kpi"><div class="small">Asistencias acumuladas</div><div class="number" id="kAsistencias">—</div><div class="detail" id="kMedia">Media por comida</div></div>
+    <div class="kpi"><div class="small">Respuestas a encuestas</div><div class="number" id="kEncuestas">—</div><div class="detail">Votos registrados</div></div>
+    <div class="kpi green"><div class="small">Remanente acumulado</div><div class="number" id="kRemanente">—</div><div class="detail">Hasta el ejercicio elegido</div></div>
+  </div>
+  <div class="tabs" role="tablist" aria-label="Estadísticas">
+    <button class="tab" role="tab" aria-selected="true" aria-controls="tab-comidas" data-tab="comidas">🍽️ Comidas y cofrades</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="tab-web" data-tab="web">🗳️ Participación en la web</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="tab-restaurantes" data-tab="restaurantes">⭐ Restaurantes</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="tab-economia" data-tab="economia">💶 Economía</button>
+  </div>
+  <section id="tab-comidas" class="pane" role="tabpanel"></section>
+  <section id="tab-web" class="pane" role="tabpanel" hidden></section>
+  <section id="tab-restaurantes" class="pane" role="tabpanel" hidden></section>
+  <section id="tab-economia" class="pane" role="tabpanel" hidden></section>
+</main>
+<script type="module">
+import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/+esm';
+import {generarResumen,dinero,fechaLegible} from '../js/admin/estadisticas-datos.js';
+import {descargarAnuario} from '../js/admin/estadisticas-pdf.js';
+
+const sb=createClient('https://wmfcpnihymiiwgpvbngj.supabase.co','sb_publishable_ij3sYbyMrLI2B34OOYt6JA_Aez1R2cJ');
+const $=id=>document.getElementById(id);
+let originales=null, modelo=null;
+const nodo=(tag,texto,clase)=>{
+  const x=document.createElement(tag);
+  if(texto!==undefined)x.textContent=String(texto);
+  if(clase)x.className=clase;
+  return x;
+};
+const tarjeta=(titulo)=>{
+  const c=nodo('section',undefined,'card');
+  c.append(nodo('h2',titulo));
+  return c;
+};
+function tabla(titulos, filas, vacio){
+  const wrap=nodo('div',undefined,'table-wrap');
+  if(!filas.length){wrap.append(nodo('div',vacio||'Sin registros en este periodo.','empty'));return wrap;}
+  const t=nodo('table',undefined,'rank');
+  const th=nodo('thead'),h=nodo('tr');
+  titulos.forEach((n,i)=>{const e=nodo('th',n,i?'num':'');h.append(e)});
+  th.append(h);t.append(th);
+  const tbody=nodo('tbody');
+  filas.forEach(f=>{
+    const tr=nodo('tr');
+    f.forEach((valor,i)=>{
+      const td=nodo('td',valor,i?'num':'');
+      if(!i){const strong=nodo('strong',valor);td.replaceChildren(strong)}
+      tr.append(td);
+    });
+    tbody.append(tr);
+  });
+  t.append(tbody);wrap.append(t);
+  return wrap;
+}
+function parCard(titulo, tablaNodo){const c=tarjeta(titulo);c.append(tablaNodo);return c;}
+const redondeo=n=>Number(n||0).toLocaleString('es-ES',{maximumFractionDigits:1});
+const porcentaje=c=>c.actividadPct===null?'Sin oportunidades':redondeo(c.actividadPct)+' %';
+
+function pintarComidas(m){
+  const wrap=$('tab-comidas');wrap.replaceChildren();
+  const grid=nodo('div',undefined,'grid');
+  grid.append(
+    parCard('Los más fieles a la mesa',tabla(['Cofrade','Asistencias','Porcentaje'],m.mejoresAsistentes.slice(0,12).map(c=>[
+      c.nombre,`${c.comidas} / ${c.posiblesComidas}`,c.asistenciaPct===null?'—':redondeo(c.asistenciaPct)+' %'
+    ]),'Aún no hay comidas para comparar.')),
+    parCard('Los que más organizaron',tabla(['Cofrade','Comidas','Voluntario / Sorteo'],m.organizanMas.slice(0,12).map(c=>[
+      c.nombre,String(c.organizaciones),`${c.voluntarias} / ${c.sorteos}`
+    ]),'Todavía no hay organizadores registrados.'))
+  );wrap.append(grid);
+  const curiosa=tarjeta('Curiosidades de sobremesa');
+  const cs=nodo('div',undefined,'grid');
+  const alta=nodo('div');alta.append(nodo('p','La mesa más concurrida','muted'),nodo('div',m.maximaComida?m.maximaComida.restaurante:'Sin comidas','special'),nodo('div',m.maximaComida?`${m.maximaComida.asistentes} asistentes · ${fechaLegible(m.maximaComida.fecha)}`:'—','special-sub'));
+  const frecuente=nodo('div');frecuente.append(nodo('p','Donde más hemos repetido','muted'),nodo('div',m.restauranMas?m.restauranMas.nombre:'Sin comidas','special'),nodo('div',m.restauranMas?`${m.restauranMas.visitas} comidas celebradas`:'—','special-sub'));
+  cs.append(alta,frecuente);curiosa.append(cs);wrap.append(curiosa);
+  const historico=tarjeta('Comidas celebradas por año');
+  const bars=nodo('div',undefined,'bars');
+  const max=Math.max(1,...m.porPeriodo.map(a=>a.comidas));
+  for(const a of m.porPeriodo){
+    const row=nodo('div',undefined,'bar-row');
+    row.append(nodo('span',a.anio));
+    const bg=nodo('div',undefined,'bar-bg'),fill=nodo('div',undefined,'bar-fill');
+    fill.style.width=(a.comidas/max*100)+'%';bg.append(fill);row.append(bg,nodo('span',a.comidas));bars.append(row);
+  }
+  historico.append(bars);wrap.append(historico);
+  wrap.append(nodo('p','Las ausencias solo se calculan desde la fecha de entrada de cada cofrade, hasta su baja si la hubiera.','subtle'));
+}
+
+function pintarWeb(m){
+  const wrap=$('tab-web');wrap.replaceChildren();
+  const head=nodo('div',undefined,'web-header');
+  head.append(nodo('h2','¿Quién está más involucrado en la web?'),nodo('p','Un voto por encuesta respondida (aunque se puedan marcar varias opciones) y una valoración por comida. Solo se consideran oportunidades en las que el cofrade podía participar.'));
+  wrap.append(head);
+  const stats=nodo('div',undefined,'inline-stats');
+  stats.append(nodo('span',`${m.numeroEncuestasReales} encuestas digitales comparables`,'stat'),nodo('span',`${m.numeroEncuestasLegado} encuestas históricas importadas`,'stat'),nodo('span',`${m.valoraciones} valoraciones de comidas`,'stat'));
+  wrap.append(stats);
+  const grid=nodo('div',undefined,'grid');
+  const max=parCard('Los que más participan',tabla(['Cofrade','Encuestas','Valoraciones','Respondió / pudo'],m.webMas.slice(0,18).map(c=>[
+    c.nombre,String(c.encuestas),String(c.valoraciones),`${c.respuestas} / ${c.oportunidades} (${porcentaje(c)})`
+  ]),'Aún no hay oportunidades de participación comparables.'));
+  const min=parCard('Los que menos participan',tabla(['Cofrade','Respondió / pudo','Participación'],m.webMenos.slice(0,18).map(c=>[
+    c.nombre,`${c.respuestas} / ${c.oportunidades}`,porcentaje(c)
+  ]),'Nadie tiene oportunidades evaluables todavía.'));
+  grid.append(max,min);wrap.append(grid);
+  const sin=tarjeta('Sin ninguna respuesta registrada');
+  if(m.webNunca.length){
+    sin.append(nodo('p',`${m.webNunca.length} cofrade(s) con al menos una oportunidad real y sin respuestas registradas en este periodo.`,'muted'));
+    const tags=nodo('div',undefined,'tags');m.webNunca.forEach(c=>tags.append(nodo('span',c.nombre,'tag')));sin.append(tags);
+  }else sin.append(nodo('p','Todos los cofrades con oportunidades tienen alguna respuesta registrada, o todavía no existen oportunidades evaluables.','muted'));
+  wrap.append(sin);
+  const metodologia=tarjeta('Cómo se calcula (para no ser injustos)');
+  const lista=nodo('ul');
+  [
+    'Encuestas para todos: se cuentan únicamente cuando la persona ya era miembro y la encuesta estaba disponible.',
+    'Encuestas solo para cofrades: se excluye a los aprendices. Para años pasados se exige poder comprobar la condición de cofrade por fundador, antigüedad o comidas realizadas; no se inventa un historial de ascensos.',
+    'Valoraciones: solo cuentan para los asistentes a una comida cuyo formulario de valoración ya estaba abierto.',
+    'Las encuestas antiguas importadas sí suman respuestas conocidas, pero NO se cuentan como oportunidades perdidas en la web.',
+    'La clasificación de mayor actividad ordena por respuestas registradas. La de menor actividad, por porcentaje de oportunidades completadas. Quien nunca tuvo ocasión de responder no entra en el ranking negativo.'
+  ].forEach(t=>lista.append(nodo('li',t)));
+  metodologia.append(lista);
+  metodologia.append(nodo('div',`${m.sinOportunidad.length} cofrade(s) fuera de la clasificación negativa por no tener oportunidades comparables en el periodo.`,'note green'));
+  wrap.append(metodologia);
+}
+
+function pintarRestaurantes(m){
+  const wrap=$('tab-restaurantes');wrap.replaceChildren();
+  wrap.append(parCard('Restaurantes y puntuaciones',tabla(['Restaurante','Comidas','Asistencias','Nota media'],m.restaurantes.map(r=>[
+    r.nombre,String(r.visitas),String(r.asistentes),r.media===null?'Sin valoraciones':`${redondeo(r.media)} / 5 · ${r.votos} votos`
+  ]),'No hay restaurantes registrados para este periodo.')));
+  wrap.append(nodo('div','Las notas medias se calculan con valoraciones individuales de asistentes. Las reseñas históricas (anteriores al sistema de votación) se conservan en la ficha, pero no se mezclan con estas medias.','note'));
+}
+
+function pintarEconomia(m){
+  const wrap=$('tab-economia');wrap.replaceChildren();
+  const c=tarjeta('Tesorería del periodo');
+  c.append(tabla(['Concepto','Importe'],[
+    ['Cuotas y aportaciones',dinero(m.balance.ingresos)],
+    ['Gastos del bote',dinero(m.balance.gastos)],
+    ['Resultado del periodo',dinero(m.balance.resultado)],
+    ['Remanente acumulado',dinero(m.balance.remanente)]
+  ]));wrap.append(c);
+  wrap.append(parCard('Evolución de las cuentas por año',tabla(['Ejercicio','Aportaciones','Gastos','Remanente'],m.anual.map(a=>[
+    String(a.ejercicio),dinero(a.ingresos),dinero(a.gastos),dinero(a.remanente)
+  ]),'No constan movimientos de tesorería.')));
+  wrap.append(nodo('p','El remanente es acumulado desde el inicio, incluso cuando se selecciona un solo ejercicio. Las cifras proceden del mismo balance de tesorería que utiliza Administración. Para comprobar descuadres, utiliza la Auditoría económica.','note'));
+}
+
+function pintar(){
+  if(!originales)return;
+  modelo=generarResumen(originales,$('ejercicio').value);
+  $('kComidas').textContent=modelo.comidasTotales.toLocaleString('es-ES');
+  $('kAsistencias').textContent=modelo.asistentesTotal.toLocaleString('es-ES');
+  $('kMedia').textContent='Media: '+redondeo(modelo.mediaAsistencia)+' asistentes por comida';
+  $('kEncuestas').textContent=modelo.cofrades.reduce((n,c)=>n+c.encuestas,0).toLocaleString('es-ES');
+  $('kRemanente').textContent=dinero(modelo.balance.remanente);
+  pintarComidas(modelo);pintarWeb(modelo);pintarRestaurantes(modelo);pintarEconomia(modelo);
+  $('descargar').disabled=false;
+}
+function crearSelector(datos){
+  const anos=new Set([new Date().getFullYear()]);
+  (datos.comidas||[]).forEach(c=>anos.add(Number(String(c.fecha).slice(0,4))));
+  (datos.tesoreria||[]).forEach(t=>anos.add(Number(t.ejercicio)));
+  (datos.encuestas||[]).forEach(e=>anos.add(Number(String(e.cierra_en||e.cerrada_en||'').slice(0,4))));
+  const select=$('ejercicio');select.replaceChildren();
+  select.append(new Option('Todos los años','todos'));
+  [...anos].filter(Number.isFinite).filter(a=>a>=2022&&a<=new Date().getFullYear()).sort((a,b)=>b-a).forEach(a=>select.append(new Option(String(a),String(a))));
+  select.value=String(new Date().getFullYear());
+}
+async function cargar(){
+  const boton=$('actualizar');boton.disabled=true;
+  $('estado').textContent='Actualizando datos…';
+  try{
+    const {data,error}=await sb.rpc('datos_estadisticas_cofradia_admin');
+    if(error)throw error;
+    if(!Array.isArray(data?.cofrades)||!Array.isArray(data?.comidas))throw Error('Respuesta de estadísticas incompleta');
+    const anterior=$('ejercicio').value;
+    originales=data;crearSelector(data);
+    if([...$('ejercicio').options].some(o=>o.value===anterior))$('ejercicio').value=anterior;
+    pintar();
+    $('estado').textContent='Datos actualizados. Puedes elegir otro año o descargar el anuario.';
+  }catch(error){
+    console.error('Estadísticas de la Cofradía:',error);
+    $('estado').textContent='No se pudieron cargar las estadísticas. Prueba a actualizar de nuevo.';
+    $('descargar').disabled=!modelo;
+  }finally{boton.disabled=false;}
+}
+async function iniciar(){
+  const {data:{session},error:errorSesion}=await sb.auth.getSession();
+  if(errorSesion||!session){location.replace('index.html');return;}
+  const {data:admin,error:errorAdmin}=await sb.rpc('soy_admin_cofradia');
+  if(errorAdmin||admin!==true){document.body.textContent='Acceso reservado a administradores.';return;}
+  const {data:mfa,error:errorMfa}=await sb.rpc('estado_mfa_admin');
+  if(errorMfa)throw errorMfa;
+  if(mfa?.administrador && mfa.obligatorio){
+    const {data:nivel,error:errorNivel}=await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+    if(errorNivel)throw errorNivel;
+    if(nivel?.currentLevel!=='aal2'){location.replace('index.html');return;}
+  }
+  $('contenido').hidden=false;
+  const script=document.createElement('script');script.src='../cabecera-comun.js';document.body.append(script);
+  $('ejercicio').addEventListener('change',pintar);
+  $('actualizar').addEventListener('click',cargar);
+  $('descargar').addEventListener('click',async()=>{
+    const btn=$('descargar');btn.disabled=true;btn.textContent='Preparando PDF…';
+    try{await descargarAnuario(modelo);}
+    catch(error){console.error('Anuario:',error);$('estado').textContent='No se pudo crear el PDF. Inténtalo otra vez.';}
+    finally{btn.disabled=false;btn.textContent='↓ Descargar anuario PDF';}
+  });
+  document.querySelectorAll('[data-tab]').forEach(tab=>tab.addEventListener('click',()=>{
+    const nombre=tab.dataset.tab;
+    document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b===tab)));
+    document.querySelectorAll('.pane').forEach(panel=>panel.hidden=panel.id!=='tab-'+nombre);
+  }));
+  await cargar();
+}
+iniciar().catch(error=>{
+  console.error('No se pudo verificar el acceso:',error);
+  document.body.textContent='No se pudo verificar el acceso. Vuelve a iniciar sesión en Administración.';
+});
+</script>
+</body>
+</html>
