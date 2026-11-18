@@ -103,7 +103,7 @@ export async function descargarAnuario(modelo){
     y=nota('No hubo restaurantes repetidos en este periodo: ninguno acumuló más de una visita.',y);
   }
   y+=6;
-  nota('Todos los importes están tomados de la tesorería registrada. Las votaciones históricas importadas se identifican y no se consideran oportunidades perdidas de voto.',y);
+  nota('Todos los importes están tomados de la tesorería registrada. Las encuestas antiguas importadas se conservan en el historial, pero no entran en las estadísticas de participación de la web.',y);
 
   // Comidas y asistencia.
   pdf.addPage();tituloPagina(`Comidas y asistencia · ${periodo}`,2);
@@ -125,9 +125,9 @@ export async function descargarAnuario(modelo){
   // Participación en la web: el criterio está explicitado.
   pdf.addPage();tituloPagina(`Participación en la web · ${periodo}`,3);
   y=bloque('Quienes más responden',44);
-  texto('COFRADE',19,y,8,'vino','bold');texto('RESPUESTAS',105,y,8,'vino','bold');texto('OPORTUNIDADES',153,y,8,'vino','bold');y+=7;
+  texto('COFRADE',19,y,8,'vino','bold');texto('RESP. WEB',105,y,8,'vino','bold');texto('RESP. / PUDO',153,y,8,'vino','bold');y+=7;
   for(const c of modelo.webMas.slice(0,9)){
-    y=fila([c.nombre,String(c.participacionesTotales),`${c.respuestas} / ${c.oportunidades}`],y,[86,48,38]);
+    y=fila([c.nombre,String(c.respuestas),`${c.respuestas} / ${c.oportunidades}`],y,[86,48,38]);
   }
   y=Math.max(y+6,160);
   y=bloque('Menor participación registrada',y);
@@ -136,7 +136,7 @@ export async function descargarAnuario(modelo){
     y=fila([c.nombre,`${c.respuestas} / ${c.oportunidades}`,`${(c.actividadPct ?? 0).toLocaleString('es-ES')} %`],y,[86,48,38]);
   }
   y+=4;
-  y=nota(`Encuestas contabilizadas: ${modelo.numeroEncuestasReales} nativas y ${modelo.numeroEncuestasLegado} históricas importadas. Las importadas suman respuestas conocidas, pero no ausencias.`,y);
+  y=nota(`Encuestas consideradas: ${modelo.numeroEncuestasReales} publicadas en la web. Las encuestas antiguas importadas no suman ni respuestas ni oportunidades.`,y);
   y=nota('Solo se espera voto en encuestas elegibles por fecha y categoría. Las valoraciones cuentan únicamente para asistentes cuando el formulario ya estaba habilitado. Sin oportunidades no significa desinterés.',y);
   nota(modelo.incluirBajas ? 'Filtro: se incluyen cofrades dados de baja en las clasificaciones personales.' : `Filtro: ${modelo.bajasExcluidas} cofrade(s) dados de baja excluidos de las clasificaciones personales.`,y);
 

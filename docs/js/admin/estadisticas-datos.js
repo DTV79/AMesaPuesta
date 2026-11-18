@@ -82,12 +82,13 @@ export function generarResumen(datos, periodo = 'todos', opciones = {}) {
     return cierre > 0 && sello(e.creada_en) > cierre + 60 * 60 * 1000;
   };
 
+  const encuestasWeb = encuestas.filter(e => !esLegado(e));
   const cofrades = genteIncluida.map(m => {
     const disponibles = cenas.filter(c => miembroEnFecha(m, c.fecha));
     const comidasPropias = asistentes.filter(a => identificador(a.cofrade_id) === identificador(m.id)).length;
     const organ = organizadores.filter(o => identificador(o.cofrade_id) === identificador(m.id));
-    const encVotadas = encuestas.filter(e => participantePorEncuesta.has(`${e.id}|${m.id}`));
-    const encElegibles = encuestas.filter(e => !esLegado(e) && esElegible(m, e));
+    // Solo son comparables las respuestas a encuestas realmente disponibles en la web.
+    const encElegibles = encuestasWeb.filter(e => esElegible(m, e));
     const encRespondidas = encElegibles.filter(e => participantePorEncuesta.has(`${e.id}|${m.id}`));
     const ratingsPosibles = cenas.filter(c => {
       const rc = ratingConfig.get(identificador(c.id));
@@ -96,7 +97,6 @@ export function generarResumen(datos, periodo = 'todos', opciones = {}) {
       return sello(rc.abre_en) <= Date.now();
     });
     const ratingsHechos = ratingsPosibles.filter(c => (ratingPorComida.get(identificador(c.id)) || new Set()).has(identificador(m.id)));
-    const encHeredadas = encVotadas.filter(esLegado).length;
     const oportunidades = encElegibles.length + ratingsPosibles.length;
     const respuestas = encRespondidas.length + ratingsHechos.length;
     return {
@@ -104,11 +104,11 @@ export function generarResumen(datos, periodo = 'todos', opciones = {}) {
       posiblesComidas: disponibles.length, asistenciaPct: porcentaje(comidasPropias, disponibles.length),
       organizaciones: organ.length, voluntarias: organ.filter(o => /voluntar/i.test(o.fuente || '')).length,
       sorteos: organ.filter(o => /sorteo/i.test(o.fuente || '')).length,
-      encuestas: encVotadas.length, encuestasActuales: encRespondidas.length,
-      encuestasLegado: encHeredadas, valoraciones: ratingsHechos.length,
+      encuestas: encRespondidas.length, encuestasActuales: encRespondidas.length,
+      valoraciones: ratingsHechos.length,
       oportunidadesEncuestas: encElegibles.length, oportunidadesValoraciones: ratingsPosibles.length,
       respuestas, oportunidades, actividadPct: porcentaje(respuestas, oportunidades),
-      participacionesTotales: encVotadas.length + ratingsHechos.length
+      participacionesTotales: respuestas
     };
   });
   const activos = cofrades.filter(c => !c.baja || periodo !== 'todos' && anio(c.baja) >= Number(periodo));
@@ -119,11 +119,11 @@ export function generarResumen(datos, periodo = 'todos', opciones = {}) {
     .sort((a,b) => b.organizaciones - a.organizaciones || a.nombre.localeCompare(b.nombre,'es'));
   const webConOportunidad = [...cofrades].filter(c => c.oportunidades > 0);
   const webMas = [...webConOportunidad].sort((a,b) =>
-    b.participacionesTotales - a.participacionesTotales ||
+    b.respuestas - a.respuestas ||
     (b.actividadPct || 0) - (a.actividadPct || 0) || a.nombre.localeCompare(b.nombre,'es'));
   const webMenos = [...webConOportunidad].sort((a,b) =>
     (a.actividadPct || 0) - (b.actividadPct || 0) ||
-    a.participacionesTotales - b.participacionesTotales || a.nombre.localeCompare(b.nombre,'es'));
+    a.respuestas - b.respuestas || a.nombre.localeCompare(b.nombre,'es'));
   // El aviso de ausencia se refiere a oportunidades evaluables, no a votos
   // que se importaron retrospectivamente desde encuestas antiguas.
   const webNunca = webConOportunidad.filter(c => c.respuestas === 0);
@@ -171,10 +171,9 @@ export function generarResumen(datos, periodo = 'todos', opciones = {}) {
   return {
     periodo, incluirBajas, bajasExcluidas, cofrades, activos, comidas:cenas.map(c => ({
       ...c, asistentes:asistentesPorComida.get(identificador(c.id))?.size||0
-    })), encuestas,
-    participaciones: (datos.participaciones || []).length,
-    numeroEncuestasReales:encuestas.filter(e=>!esLegado(e)).length,
-    numeroEncuestasLegado:encuestas.filter(esLegado).length,
+    })), encuestas: encuestasWeb,
+    participaciones: cofrades.reduce((n,c)=>n+c.encuestas,0),
+    numeroEncuestasReales:encuestasWeb.length,
     asistentesTotal, mediaAsistencia: cenas.length ? asistentesTotal/cenas.length : 0,
     comidasTotales:cenas.length, valoraciones:valoraciones.length,
     mejoresAsistentes, organizanMas, webMas, webMenos, webNunca, sinOportunidad,
