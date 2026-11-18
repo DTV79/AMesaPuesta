@@ -137,7 +137,8 @@ export async function descargarAnuario(modelo){
   }
   y+=4;
   y=nota(`Encuestas contabilizadas: ${modelo.numeroEncuestasReales} nativas y ${modelo.numeroEncuestasLegado} históricas importadas. Las importadas suman respuestas conocidas, pero no ausencias.`,y);
-  nota('Solo se espera voto en encuestas elegibles por fecha y categoría. Las valoraciones cuentan únicamente para asistentes cuando el formulario ya estaba habilitado. Sin oportunidades no significa desinterés.',y);
+  y=nota('Solo se espera voto en encuestas elegibles por fecha y categoría. Las valoraciones cuentan únicamente para asistentes cuando el formulario ya estaba habilitado. Sin oportunidades no significa desinterés.',y);
+  nota(modelo.incluirBajas ? 'Filtro: se incluyen cofrades dados de baja en las clasificaciones personales.' : `Filtro: ${modelo.bajasExcluidas} cofrade(s) dados de baja excluidos de las clasificaciones personales.`,y);
 
   // Clasificaciones de sobremesa y restaurantes.
   pdf.addPage();tituloPagina(`Curiosidades gastronómicas · ${periodo}`,4);
@@ -179,5 +180,5 @@ export async function descargarAnuario(modelo){
   nota('Este anuario no sustituye la auditoría económica ni la comprobación de movimientos de banco y efectivo. Los datos de participación proceden exclusivamente de los registros disponibles.',y);
 
   const nombre = modelo.periodo === 'todos' ? 'Historico completo' : String(modelo.periodo);
-  pdf.save(`A Mesa Puesta - Anuario ${nombre}.pdf`);
+  pdf.save(`A Mesa Puesta - Anuario ${nombre}${modelo.incluirBajas ? ' - Con bajas' : ''}.pdf`);
 }
