@@ -187,8 +187,14 @@ function pintarWeb(m){
     'La clasificación de mayor actividad ordena por respuestas reales en la web. La de menor actividad, por porcentaje de oportunidades completadas. Quien nunca tuvo ocasión de responder no entra en el ranking negativo.'
   ].forEach(t=>lista.append(nodo('li',t)));
   metodologia.append(lista);
-  metodologia.append(nodo('div',`${m.sinOportunidad.length} cofrade(s) fuera de la clasificación negativa por no tener oportunidades comparables en el periodo.`,'note green'));
-  wrap.append(metodologia);
+  const sinOportunidad=tarjeta('Sin oportunidades de participación');
+  if(m.sinOportunidad.length){
+    sinOportunidad.append(nodo('p','No aparecen en la clasificación de menor participación porque todavía no han tenido ocasiones en las que pudieran responder.','muted'));
+    const detalle=nodo('div',undefined,'note green');
+    m.sinOportunidad.forEach(c=>detalle.append(nodo('div',`${c.nombre} — Todavía no ha tenido ocasión de participar en la web.`)));
+    sinOportunidad.append(detalle);
+  }else sinOportunidad.append(nodo('p','Todos los cofrades incluidos han tenido al menos una oportunidad de participar.','muted'));
+  wrap.append(sinOportunidad,metodologia);
 }
 
 function pintarRestaurantes(m){
