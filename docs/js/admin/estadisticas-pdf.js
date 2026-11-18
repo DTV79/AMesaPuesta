@@ -97,7 +97,7 @@ export async function descargarAnuario(modelo){
     y+=39;
   }
   if(modelo.restauranMas){
-    y=nota(`El restaurante que más se repite en este periodo: ${modelo.restauranMas.nombre} (${modelo.restauranMas.visitas} comidas).`,y);
+    y=nota(`El restaurante más repetido de toda la historia: ${modelo.restauranMas.nombre} (${modelo.restauranMas.visitas} comidas desde 2022).`,y);
   }
   y+=6;
   nota('Todos los importes están tomados de la tesorería registrada. Las votaciones históricas importadas se identifican y no se consideran oportunidades perdidas de voto.',y);
