@@ -63,7 +63,7 @@
   <div class="kpis" aria-label="Indicadores del periodo">
     <div class="kpi"><div class="small">Comidas celebradas</div><div class="number" id="kComidas">—</div><div class="detail">Restaurantes publicados</div></div>
     <div class="kpi"><div class="small">Asistencias acumuladas</div><div class="number" id="kAsistencias">—</div><div class="detail" id="kMedia">Media por comida</div></div>
-    <div class="kpi"><div class="small">Respuestas a encuestas</div><div class="number" id="kEncuestas">—</div><div class="detail">Votos registrados</div></div>
+    <div class="kpi"><div class="small">Respuestas a encuestas web</div><div class="number" id="kEncuestas">—</div><div class="detail">Sin votos históricos importados</div></div>
     <div class="kpi green"><div class="small">Remanente acumulado</div><div class="number" id="kRemanente">—</div><div class="detail">Hasta el ejercicio elegido</div></div>
   </div>
   <div class="tabs" role="tablist" aria-label="Estadísticas">
@@ -158,10 +158,10 @@ function pintarComidas(m){
 function pintarWeb(m){
   const wrap=$('tab-web');wrap.replaceChildren();
   const head=nodo('div',undefined,'web-header');
-  head.append(nodo('h2','¿Quién está más involucrado en la web?'),nodo('p','Un voto por encuesta respondida (aunque se puedan marcar varias opciones) y una valoración por comida. Solo se consideran oportunidades en las que el cofrade podía participar.'));
+  head.append(nodo('h2','¿Quién está más involucrado en la web?'),nodo('p','Solo cuentan respuestas registradas directamente en la web: una por encuesta respondida (aunque se marquen varias opciones) y una valoración por comida. Se respetan las oportunidades de cada cofrade.'));
   wrap.append(head);
   const stats=nodo('div',undefined,'inline-stats');
-  stats.append(nodo('span',`${m.numeroEncuestasReales} encuestas digitales comparables`,'stat'),nodo('span',`${m.numeroEncuestasLegado} encuestas históricas importadas`,'stat'),nodo('span',`${m.valoraciones} valoraciones de comidas`,'stat'));
+  stats.append(nodo('span',`${m.numeroEncuestasReales} encuestas de la web`,'stat'),nodo('span',`${m.valoraciones} valoraciones de comidas`,'stat'));
   wrap.append(stats);
   const grid=nodo('div',undefined,'grid');
   const max=parCard('Los que más participan',tabla(['Cofrade','Encuestas','Valoraciones','Respondió / pudo'],m.webMas.slice(0,18).map(c=>[
@@ -173,7 +173,7 @@ function pintarWeb(m){
   grid.append(max,min);wrap.append(grid);
   const sin=tarjeta('Cofrades que no han participado');
   if(m.webNunca.length){
-    sin.append(nodo('p',`${m.webNunca.length} cofrade(s) tuvieron oportunidades evaluables en este periodo y no respondieron a ninguna. Pueden tener votos anteriores en encuestas históricas importadas.`,'muted'));
+    sin.append(nodo('p',`${m.webNunca.length} cofrade(s) tuvieron oportunidades reales en la web en este periodo y no respondieron a ninguna.`,'muted'));
     const tags=nodo('div',undefined,'tags');m.webNunca.forEach(c=>tags.append(nodo('span',`${c.nombre} · 0 de ${c.oportunidades}`,'tag')));sin.append(tags);
   }else sin.append(nodo('p','Ningún cofrade ha dejado todas sus oportunidades sin responder, o todavía no existen oportunidades evaluables.','muted'));
   wrap.append(sin);
@@ -183,8 +183,8 @@ function pintarWeb(m){
     'Encuestas para todos: se cuentan únicamente cuando la persona ya era miembro y la encuesta estaba disponible.',
     'Encuestas solo para cofrades: se excluye a los aprendices. Para años pasados se exige poder comprobar la condición de cofrade por fundador, antigüedad o comidas realizadas; no se inventa un historial de ascensos.',
     'Valoraciones: solo cuentan para los asistentes a una comida cuyo formulario de valoración ya estaba abierto.',
-    'Las encuestas antiguas importadas sí suman respuestas conocidas, pero NO se cuentan como oportunidades perdidas en la web.',
-    'La clasificación de mayor actividad ordena por respuestas registradas. La de menor actividad, por porcentaje de oportunidades completadas. Quien nunca tuvo ocasión de responder no entra en el ranking negativo.'
+    'Las encuestas antiguas importadas se conservan en el historial, pero no suman respuestas ni oportunidades en estas estadísticas.',
+    'La clasificación de mayor actividad ordena por respuestas reales en la web. La de menor actividad, por porcentaje de oportunidades completadas. Quien nunca tuvo ocasión de responder no entra en el ranking negativo.'
   ].forEach(t=>lista.append(nodo('li',t)));
   metodologia.append(lista);
   metodologia.append(nodo('div',`${m.sinOportunidad.length} cofrade(s) fuera de la clasificación negativa por no tener oportunidades comparables en el periodo.`,'note green'));
