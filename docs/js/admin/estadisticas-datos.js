@@ -18,8 +18,12 @@ export const dinero = value => num(value).toLocaleString('de-DE', {
 export const porcentaje = (parte, total) => total > 0 ? Math.round(parte * 1000 / total) / 10 : null;
 export const fechaLegible = value => fecha(value) ? fecha(value).split('-').reverse().join('/') : '—';
 
-export function generarResumen(datos, periodo = 'todos') {
+export function generarResumen(datos, periodo = 'todos', opciones = {}) {
+  const incluirBajas = opciones.incluirBajas === true;
   const gente = Array.isArray(datos.cofrades) ? datos.cofrades : [];
+  // El filtro se aplica a las personas, no a los hechos históricos de comidas y tesorería.
+  const genteIncluida = gente.filter(m => incluirBajas || !m.baja);
+  const bajasExcluidas = gente.length - genteIncluida.length;
   const cenas = (datos.comidas || []).filter(m => m.estado === 'celebrada' && m.publicada === true)
     .filter(m => enPeriodo(m.fecha, periodo)).sort((a, b) => a.fecha.localeCompare(b.fecha));
   const cenasTodas = (datos.comidas || []).filter(m => m.estado === 'celebrada' && m.publicada === true);
@@ -78,7 +82,7 @@ export function generarResumen(datos, periodo = 'todos') {
     return cierre > 0 && sello(e.creada_en) > cierre + 60 * 60 * 1000;
   };
 
-  const cofrades = gente.map(m => {
+  const cofrades = genteIncluida.map(m => {
     const disponibles = cenas.filter(c => miembroEnFecha(m, c.fecha));
     const comidasPropias = asistentes.filter(a => identificador(a.cofrade_id) === identificador(m.id)).length;
     const organ = organizadores.filter(o => identificador(o.cofrade_id) === identificador(m.id));
@@ -165,7 +169,7 @@ export function generarResumen(datos, periodo = 'todos') {
     empate:empatados.length > 1
   } : null;
   return {
-    periodo, cofrades, activos, comidas:cenas.map(c => ({
+    periodo, incluirBajas, bajasExcluidas, cofrades, activos, comidas:cenas.map(c => ({
       ...c, asistentes:asistentesPorComida.get(identificador(c.id))?.size||0
     })), encuestas,
     participaciones: (datos.participaciones || []).length,
