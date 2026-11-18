@@ -70,6 +70,21 @@
       .rank.mobile-cards .value-main{display:block;white-space:normal}
       .rank.mobile-cards .value-detail{display:block;margin-top:3px;color:#786d66;font-size:11px}
       .rank.mobile-cards .value-detail::before{content:none}
+      /* Participación: resultado y porcentaje juntos, con filas más compactas. */
+      .rank.mobile-cards.web-participacion tr{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.7fr);gap:5px 6px;padding:9px 0}
+      .rank.mobile-cards.web-participacion td:first-child{padding-bottom:0}
+      .rank.mobile-cards.web-participacion td:not(:first-child)::before{min-height:1.35em;margin-bottom:3px}
+      .rank.mobile-cards.web-participacion .value-main,
+      .rank.mobile-cards.web-participacion .value-detail{display:inline;font-size:11px;white-space:nowrap}
+      .rank.mobile-cards.web-participacion .value-detail{margin:0;color:#786d66}
+      .rank.mobile-cards.web-participacion .value-detail::before{content:" "}
+      /* Economía: el ejercicio ocupa menos y las cantidades tienen más sitio. */
+      .rank.economia-anual th:first-child,.rank.economia-anual td:first-child{width:18%}
+      .rank.economia-anual th:nth-child(2),.rank.economia-anual td:nth-child(2){width:29%}
+      .rank.economia-anual th:nth-child(3),.rank.economia-anual td:nth-child(3){width:23%}
+      .rank.economia-anual th:nth-child(4),.rank.economia-anual td:nth-child(4){width:30%}
+      .rank.economia-anual th{font-size:8px;letter-spacing:0;white-space:nowrap;overflow-wrap:normal}
+      .rank.economia-anual td.num{font-size:10.5px;white-space:nowrap}
     }
   </style>
 </head>
@@ -122,10 +137,11 @@ const tarjeta=(titulo)=>{
   c.append(nodo('h2',titulo));
   return c;
 };
-function tabla(titulos, filas, vacio, movilTarjetas=false){
+function tabla(titulos, filas, vacio, movilTarjetas=false, claseExtra=""){
   const wrap=nodo('div',undefined,'table-wrap');
   if(!filas.length){wrap.append(nodo('div',vacio||'Sin registros en este periodo.','empty'));return wrap;}
   const t=nodo('table',undefined,movilTarjetas?'rank mobile-cards':'rank');
+  if(claseExtra)t.classList.add(claseExtra);
   if(movilTarjetas)t.dataset.metrics=String(titulos.length-1);
   const th=nodo('thead'),h=nodo('tr');
   titulos.forEach((n,i)=>{const e=nodo('th',n,i?'num':'');h.append(e)});
@@ -199,7 +215,7 @@ function pintarWeb(m){
   const grid=nodo('div',undefined,'grid');
   const max=parCard('Los que más participan',tabla(['Cofrade','Encuestas','Valoraciones','Respondió / pudo'],m.webMas.slice(0,18).map(c=>[
     c.nombre,String(c.encuestas),String(c.valoraciones),{principal:`${c.respuestas} / ${c.oportunidades}`,detalle:`(${porcentaje(c)})`}
-  ]),'Aún no hay oportunidades de participación comparables.',true));
+  ]),'Aún no hay oportunidades de participación comparables.',true,'web-participacion'));
   const min=parCard('Los que menos participan',tabla(['Cofrade','Respondió / pudo','Participación'],m.webMenos.slice(0,18).map(c=>[
     c.nombre,`${c.respuestas} / ${c.oportunidades}`,porcentaje(c)
   ]),'Nadie tiene oportunidades evaluables todavía.',true));
@@ -249,7 +265,7 @@ function pintarEconomia(m){
   ]));wrap.append(c);
   wrap.append(parCard('Evolución de las cuentas por año',tabla(['Ejercicio','Aportaciones','Gastos','Remanente'],m.anual.map(a=>[
     String(a.ejercicio),dinero(a.ingresos),dinero(a.gastos),dinero(a.remanente)
-  ]),'No constan movimientos de tesorería.')));
+  ]),'No constan movimientos de tesorería.',false,'economia-anual')));
   wrap.append(nodo('p','El remanente es acumulado desde el inicio, incluso cuando se selecciona un solo ejercicio. Las cifras proceden del mismo balance de tesorería que utiliza Administración. Para comprobar descuadres, utiliza la Auditoría económica.','note'));
 }
 
