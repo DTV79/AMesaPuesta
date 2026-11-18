@@ -168,30 +168,33 @@ export function generarResumen(datos, periodo = 'todos', opciones = {}) {
     visitas:maxRepeticiones,
     empate:empatados.length > 1
   } : null;
-  // Recuerdos auténticos de las comidas: frases firmadas y comentarios de valoraciones.
-  // Los comentarios de valoraciones se incluyen sin atribuirlos a una persona.
-  const frasesSobremesa = [];
+  // Recuerdos reales agrupados por comida, con autores de valoraciones
+  // recuperados de su ficha; el filtro de bajas también se respeta aquí.
   const limpiarFrase = texto => String(texto || '').replace(/\s+/g, ' ').trim();
-  for (const c of cenas) {
-    const texto = limpiarFrase(c.frase);
-    if (texto) frasesSobremesa.push({
-      tipo: 'frase', texto, restaurante: c.restaurante || 'Nuestra comida',
-      fecha: c.fecha, autor: limpiarFrase(c.autor_frase)
-    });
-  }
-  for (const v of valoraciones) {
-    const texto = limpiarFrase(v.comentario);
-    if (!texto) continue;
-    const c = cenas.find(comida => identificador(comida.id) === identificador(v.comida_id));
-    if (c) frasesSobremesa.push({
-      tipo: 'valoracion', texto, restaurante: c.restaurante || 'Nuestra comida',
-      fecha: c.fecha, autor: ''
-    });
-  }
-  frasesSobremesa.sort((a,b) => b.fecha.localeCompare(a.fecha) || (a.tipo === 'frase' ? -1 : 1));
+  const miembrosPorId = new Map(gente.map(m => [identificador(m.id), m.nombre || 'Cofrade']));
+  const miembrosVisibles = new Set(genteIncluida.map(m => identificador(m.id)));
+  const vocesPorComida = [...cenas].reverse().map(c => {
+    const comentarios = valoraciones.filter(v =>
+      identificador(v.comida_id) === identificador(c.id) &&
+      miembrosVisibles.has(identificador(v.cofrade_id)) &&
+      limpiarFrase(v.comentario)
+    ).map(v => ({
+      texto: limpiarFrase(v.comentario),
+      autor: miembrosPorId.get(identificador(v.cofrade_id)) || 'Cofrade'
+    }));
+    return {
+      id: c.id, restaurante: c.restaurante || 'Nuestra comida',
+      fecha: c.fecha, frase: limpiarFrase(c.frase),
+      autorFrase: limpiarFrase(c.autor_frase), comentarios
+    };
+  }).filter(c => c.frase || c.comentarios.length);
+  const frasesSobremesa = vocesPorComida.flatMap(c => [
+    ...(c.frase ? [{tipo:'frase', texto:c.frase, restaurante:c.restaurante, fecha:c.fecha, autor:c.autorFrase}] : []),
+    ...c.comentarios.map(v => ({tipo:'valoracion', texto:v.texto, restaurante:c.restaurante, fecha:c.fecha, autor:v.autor}))
+  ]);
 
   return {
-    frasesSobremesa,
+    frasesSobremesa, vocesPorComida,
     periodo, incluirBajas, bajasExcluidas, cofrades, activos, comidas:cenas.map(c => ({
       ...c, asistentes:asistentesPorComida.get(identificador(c.id))?.size||0
     })), encuestas: encuestasWeb,
