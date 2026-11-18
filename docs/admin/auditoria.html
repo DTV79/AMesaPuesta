@@ -67,6 +67,10 @@
     .incidence-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
     .incidence strong{font-size:13px}
     .incidence p{margin:7px 0 0;font-size:12px}
+    .incidence-link{display:block;text-decoration:none;color:inherit;transition:border-color .15s,box-shadow .15s}
+    .incidence-link:hover,.incidence-link:focus-visible{border-color:#a46a26;box-shadow:0 0 0 2px #dfb66b55;outline-offset:3px}
+    .incidence-action{display:block;margin-top:11px;font-size:12px;font-weight:800;color:#8c292f}
+    .check-link{display:inline-block;margin-top:9px;color:#8c292f;font-size:12px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
     .note{font-size:12px;color:#746f6a;line-height:1.6;margin-top:14px}
     .empty{padding:20px;border-radius:13px;background:#f0f5ed;color:#346345;font-size:13px;font-weight:700}
     .error{color:#9d3030;font-size:13px;font-weight:700}
@@ -172,6 +176,15 @@ function mostrar(datos){
       const head=elemento("div","check-head");
       head.append(elemento("strong","",item.nombre),elemento("span","status "+estadoClase(item.estado),estadoTexto(item.estado)));
       fila.append(head,elemento("p","",item.detalle||""));
+      if(item.estado!=="correcto"){
+        const destinos={"Tesorería":"cuotas.html","Cuotas":"cuotas.html","Comidas":"restaurantes.html","Reparto":"restaurantes.html","Transferencias":"restaurantes.html","Bote":"restaurantes.html"};
+        const destino=destinos[item.grupo];
+        if(destino){
+          const link=elemento("a","check-link","↗ Revisar en Administración");
+          link.href=destino;
+          fila.append(link);
+        }
+      }
       body.append(fila);
     }
     d.append(cabecera,body);
@@ -185,11 +198,21 @@ function mostrar(datos){
     problemas.append(elemento("div","empty","No se han identificado registros que requieran revisión individual."));
   }else{
     for(const item of incidencias){
-      const box=elemento("article","incidence"+(item.nivel==="error"?" bad":""));
+      const comidaId=String(item.comida_id||"");
+      const gastoId=String(item.gasto_id||"");
+      const restaurante=String(item.restaurante||item.referencia||"Restaurante sin identificar");
+      const box=elemento(comidaId?"a":"article","incidence"+(item.nivel==="error"?" bad":"")+(comidaId?" incidence-link":""));
+      if(comidaId){
+        const parametros=new URLSearchParams({comida:comidaId,seccion:"gastos"});
+        if(gastoId)parametros.set("gasto",gastoId);
+        box.href="restaurantes.html?"+parametros.toString();
+        box.title="Abrir la ficha de "+restaurante;
+      }
       const cabecera=elemento("div","incidence-head");
-      cabecera.append(elemento("strong","",String(item.concepto||"Incidencia")+" · "+String(item.referencia||"")),elemento("span","status "+estadoClase(item.nivel),estadoTexto(item.nivel)));
+      cabecera.append(elemento("strong","",String(item.concepto||"Incidencia")+" · "+restaurante),elemento("span","status "+estadoClase(item.nivel),estadoTexto(item.nivel)));
       box.append(cabecera,elemento("p","",String(item.detalle||"")));
       if(item.importe!==undefined)box.append(elemento("p","", "Importe registrado: "+euro(item.importe)));
+      if(comidaId)box.append(elemento("span","incidence-action","↗ Abrir la comida y localizar este gasto"));
       problemas.append(box);
     }
   }
