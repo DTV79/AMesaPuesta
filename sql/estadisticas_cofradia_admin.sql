@@ -9,6 +9,12 @@ BEGIN
   IF auth.uid() IS NULL OR NOT public.soy_admin_cofradia() THEN
     RAISE EXCEPTION 'Acceso reservado a administradores';
   END IF;
+  IF EXISTS (
+    SELECT 1 FROM public.administradores_cofradia adm
+    WHERE adm.usuario_id = auth.uid() AND adm.activo AND adm.mfa_obligatorio
+  ) AND coalesce(auth.jwt()->>'aal', '') <> 'aal2' THEN
+    RAISE EXCEPTION 'Se requiere verificación en dos pasos para consultar estadísticas';
+  END IF;
 
   RETURN jsonb_build_object(
     'generado_en', now(),
