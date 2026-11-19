@@ -213,12 +213,15 @@ function pintarWeb(m){
   stats.append(nodo('span',`${m.numeroEncuestasReales} encuestas de la web`,'stat'),nodo('span',`${m.valoraciones} valoraciones de comidas`,'stat'));
   wrap.append(stats);
   const grid=nodo('div',undefined,'grid');
-  const max=parCard('Los que más participan',tabla(['Cofrade','Encuestas','Valoraciones','Respondió / pudo'],m.webMas.slice(0,18).map(c=>[
+  const liga=m.webMas.filter(c=>c.oportunidades>0 && c.actividadPct>50)
+    .sort((a,b)=>(b.actividadPct||0)-(a.actividadPct||0) || b.respuestas-a.respuestas || a.nombre.localeCompare(b.nombre,'es'));
+  const equipo=m.webMenos.filter(c=>c.oportunidades>0 && c.actividadPct<=50);
+  const max=parCard('La liga del clic',tabla(['Cofrade','Encuestas','Valoraciones','Respondió / pudo'],liga.map(c=>[
     c.nombre,String(c.encuestas),String(c.valoraciones),{principal:`${c.respuestas} / ${c.oportunidades}`,detalle:`(${porcentaje(c)})`}
-  ]),'Aún no hay oportunidades de participación comparables.',true,'web-participacion'));
-  const min=parCard('Los que menos participan',tabla(['Cofrade','Respondió / pudo','Participación'],m.webMenos.slice(0,18).map(c=>[
+  ]),'Todavía no hay cofrades por encima del 50 % de participación.',true,'web-participacion'));
+  const min=parCard('El equipo del «ahora respondo»',tabla(['Cofrade','Respondió / pudo','Participación'],equipo.map(c=>[
     c.nombre,`${c.respuestas} / ${c.oportunidades}`,porcentaje(c)
-  ]),'Nadie tiene oportunidades evaluables todavía.',true));
+  ]),'¡Todos superan el 50 % de participación!',true));
   grid.append(max,min);wrap.append(grid);
   const sin=tarjeta('Cofrades que no han participado');
   if(m.webNunca.length){
