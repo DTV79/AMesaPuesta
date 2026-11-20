@@ -11,6 +11,15 @@ const line=(label,value)=>{
   p.append(b,document.createTextNode(String(value||'—')));return p;
 };
 const nombres=list=>(list||[]).map(x=>x.nombre).join(', ')||'Nadie';
+const momento=valor=>valor?new Intl.DateTimeFormat('es-ES',{
+  day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',
+  hour12:false,timeZone:'Europe/Madrid'
+}).format(new Date(valor)).replace(',',''):'—';
+const boton=(nombre,accion)=>{
+  const b=document.createElement('button');b.type='button';b.className='btn soft';
+  b.textContent=nombre;b.style.cssText='padding:7px 11px;font-size:13px';
+  b.addEventListener('click',accion);return b;
+};
 
 async function cargar(){
   const {data:{session}}=await sb.auth.getSession();
@@ -19,7 +28,8 @@ async function cargar(){
   if(error||!plan)return;
   const d=plan.datos||{};
   if(!plan.fecha_encuesta&&!plan.asistencia_encuesta
-    &&!Object.values(d).some(v=>String(v||'').trim()))return;
+    &&!Object.values(d).some(v=>String(v||'').trim())
+    &&!(plan.tareas||[]).length&&!(plan.comentarios||[]).length)return;
 
   const card=document.createElement('section');
   card.className='panel';
@@ -50,10 +60,73 @@ async function cargar(){
     ['Dirección',d.direccion],['Teléfono',d.telefono],
     ['Contacto',d.contacto],['Hora',d.hora],['Precio orientativo',d.precio_orientativo],
     ['Entrantes',d.entrantes],['Platos principales',d.principales],
-    ['Postres',d.postres],['Bebidas',d.bebidas],
-    ['Tareas pendientes',d.tareas],['Notas internas',d.notas]
+    ['Postres',d.postres],['Bebidas',d.bebidas]
   ];
   for(const [label,value] of campos){if(value)extra.append(line(label,value))}
+  async function gestionar(tipo,accion,id=null,texto=null,responsable=null){
+    const funcion=tipo==='tarea'?'gestionar_tarea_organizacion_admin'
+      :'gestionar_comentario_organizacion_admin';
+    const parametros={p_accion:accion,p_id:id,p_texto:texto};
+    if(tipo==='tarea')parametros.p_responsable=responsable;
+    const {error}=await sb.rpc(funcion,parametros);
+    if(error){alert(error.message);return}
+    location.reload();
+  }
+  const tareasTitulo=document.createElement('h3');
+  tareasTitulo.textContent='Tareas compartidas';tareasTitulo.style.margin='14px 0 8px';
+  extra.append(tareasTitulo);
+  if(!(plan.tareas||[]).length)extra.append(line('Tareas','Todavía ninguna'));
+  for(const tarea of plan.tareas||[]){
+    const fila=document.createElement('div');
+    fila.style.cssText='padding:9px 0;border-bottom:1px solid #eadbd2';
+    const texto=document.createElement('p');texto.style.cssText='margin:0 0 6px';
+    texto.textContent=(tarea.completada_en?'✓ ':'☐ ')+tarea.texto
+      +(tarea.responsable?' · Encargado: '+tarea.responsable:'');
+    fila.append(texto);
+    fila.append(line('Estado',tarea.completada_en
+      ?'Hecho por '+tarea.completador+' · '+momento(tarea.completada_en)
+      :'Pendiente · '+tarea.creador+' · '+momento(tarea.creada_en)));
+    const acciones=document.createElement('div');
+    acciones.style.cssText='display:flex;gap:7px;flex-wrap:wrap';
+    acciones.append(boton(tarea.completada_en?'Reabrir':'Marcar hecha',()=>
+      gestionar('tarea',tarea.completada_en?'reabrir':'completar',tarea.id)));
+    acciones.append(boton('Eliminar',()=>{
+      if(confirm('¿Quitar esta tarea?'))gestionar('tarea','eliminar',tarea.id);
+    }));
+    fila.append(acciones);extra.append(fila);
+  }
+  extra.append(boton('+ Añadir tarea',()=>{
+    const texto=prompt('Nueva tarea compartida:');
+    if(texto?.trim())gestionar('tarea','crear',null,texto.trim());
+  }));
+  const comentariosTitulo=document.createElement('h3');
+  comentariosTitulo.textContent='Notas entre organizadores';
+  comentariosTitulo.style.margin='18px 0 8px';extra.append(comentariosTitulo);
+  if(!(plan.comentarios||[]).length)extra.append(line('Notas','Todavía ninguna'));
+  for(const comentario of plan.comentarios||[]){
+    const fila=document.createElement('div');
+    fila.style.cssText='padding:10px 0;border-bottom:1px solid #eadbd2';
+    const titulo=document.createElement('strong');
+    titulo.textContent=momento(comentario.creado_en)+' · '+comentario.autor
+      +(comentario.editado_en?' · editado':'');
+    const contenido=document.createElement('p');contenido.style.cssText='white-space:pre-wrap;margin:5px 0 8px';
+    contenido.textContent=comentario.texto;fila.append(titulo,contenido);
+    const acciones=document.createElement('div');
+    acciones.style.cssText='display:flex;gap:7px;flex-wrap:wrap';
+    acciones.append(boton('Editar',()=>{
+      const texto=prompt('Editar comentario:',comentario.texto);
+      if(texto!==null&&texto.trim())gestionar('comentario','editar',comentario.id,texto.trim());
+    }));
+    acciones.append(boton('Borrar',()=>{
+      if(confirm('¿Borrar este comentario de la conversación?'))
+        gestionar('comentario','eliminar',comentario.id);
+    }));
+    fila.append(acciones);extra.append(fila);
+  }
+  extra.append(boton('+ Añadir comentario',()=>{
+    const texto=prompt('Comentario de Administración:');
+    if(texto?.trim())gestionar('comentario','crear',null,texto.trim());
+  }));
   if(plan.asistencia_encuesta){
     extra.append(line('Asistirán',nombres(plan.asistencia_encuesta.si)));
     extra.append(line('No asistirán',nombres(plan.asistencia_encuesta.no)));
@@ -69,7 +142,7 @@ async function cargar(){
   encuestas.textContent='📊 Gestionar encuestas';
   const editar=document.createElement('button');
   editar.type='button';editar.className='btn soft';
-  editar.textContent='✏️ Editar notas privadas';
+  editar.textContent='✏️ Editar ficha privada';
   const cambiarFecha=document.createElement('button');
   cambiarFecha.type='button';cambiarFecha.className='btn soft';
   cambiarFecha.textContent='📅 Corregir fecha';
@@ -102,13 +175,12 @@ async function cargar(){
       ['restaurante','Restaurante'],['direccion','Dirección'],['telefono','Teléfono'],
       ['contacto','Persona de contacto'],['reserva','Estado de reserva'],['hora','Hora prevista'],
       ['precio_orientativo','Precio orientativo'],['entrantes','Entrantes'],
-      ['principales','Platos principales'],['postres','Postres'],['bebidas','Bebidas'],
-      ['tareas','Tareas y responsables'],['notas','Notas internas']
+      ['principales','Platos principales'],['postres','Postres'],['bebidas','Bebidas']
     ];
     for(const [clave,rotulo] of camposEditar){
       const label=document.createElement('label');
       label.textContent=rotulo;label.style.cssText='font-weight:700;display:grid;gap:5px';
-      const input=['entrantes','principales','postres','bebidas','tareas','notas'].includes(clave)
+      const input=['entrantes','principales','postres','bebidas'].includes(clave)
         ?document.createElement('textarea'):document.createElement('input');
       input.value=String(d[clave]||'');
       input.style.cssText='box-sizing:border-box;width:100%;min-height:41px;padding:9px;border:1px solid #cbbdb5;border-radius:9px;font:15px system-ui,sans-serif';
