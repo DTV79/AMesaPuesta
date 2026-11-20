@@ -49,6 +49,29 @@
     .org-attendees ul{margin:0;padding-left:16px;font-size:13px;line-height:1.7}
     .org-private{border-left:5px solid #c99a5e}
     .org-private-note{background:#f9f1de;padding:12px 15px;border-radius:12px;color:#614a2a;font-size:14px}
+    .org-collab{margin-top:24px;padding-top:19px;border-top:1px solid #eadbd2}
+    .org-collab h3{font:700 21px Georgia,serif;color:#782936;margin:0 0 8px}
+    .org-collab-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+    .org-collab-list{list-style:none;padding:0;margin:13px 0;display:grid;gap:9px}
+    .org-task{background:#fff;border:1px solid #e5d4c9;border-radius:13px;padding:13px}
+    .org-task-main{display:flex;gap:11px;align-items:flex-start}
+    .org-task-main input{width:22px;height:22px;flex:none;accent-color:#387657;cursor:pointer;margin:1px 0}
+    .org-task-copy{flex:1;min-width:0}
+    .org-task-text{font-size:16px;font-weight:700;overflow-wrap:anywhere}
+    .org-task--done .org-task-text{text-decoration:line-through;color:#6e7771}
+    .org-small{font-size:13px;color:#69605c;line-height:1.5;margin-top:5px}
+    .org-task-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:7px}
+    .org-link-btn{border:0;background:none;color:#752936;font:700 14px system-ui,sans-serif;padding:6px;cursor:pointer}
+    .org-link-btn--danger{color:#a04439}
+    .org-inline-form{margin:12px 0;padding:14px;border:1px solid #dbc6b9;background:#fff8f1;border-radius:13px}
+    .org-inline-form .org-row{margin-top:10px}
+    .org-chat{list-style:none;margin:13px 0;padding:0;display:flex;flex-direction:column;gap:11px}
+    .org-message{max-width:min(100%,650px);background:#f6eee6;border:1px solid #e5d4c9;border-radius:15px;padding:13px 14px;overflow-wrap:anywhere}
+    .org-message--mine{align-self:flex-end;background:#eaf2e9;border-color:#c9decf}
+    .org-message-meta{font-size:13px;color:#66504d;font-weight:700;margin-bottom:6px}
+    .org-message-text{white-space:pre-wrap;line-height:1.55;font-size:16px}
+    .org-message-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:5px}
+    .org-empty{background:#f8f1eb;color:#6f615a;border-radius:12px;padding:13px;font-size:14px}
     .org-loading{padding:25px;text-align:center;color:#63343a}
     [hidden]{display:none!important}
     @media(max-width:650px){
@@ -60,7 +83,7 @@
   </style>
   <script defer src="./acceso-cofrade.js"></script>
   <script defer src="./mobile-nav.js"></script>
-  <script type="module" src="./organizar-comida.js"></script>
+  <script type="module" src="./organizar-comida.js?v=20261120-colaboracion"></script>
 </head>
 <body>
   <header class="site-header"><div class="container header-inner">
@@ -134,12 +157,33 @@
             <div class="org-field org-full"><label for="org-principales">Platos principales</label><textarea id="org-principales" maxlength="1500"></textarea></div>
             <div class="org-field"><label for="org-postres">Postres</label><textarea id="org-postres" maxlength="1500"></textarea></div>
             <div class="org-field"><label for="org-bebidas">Bebidas</label><textarea id="org-bebidas" maxlength="1500"></textarea></div>
-            <div class="org-field org-full"><label for="org-tareas">Tareas pendientes y responsables</label><textarea id="org-tareas" maxlength="3000" placeholder="Reservar mesa — Miguel&#10;Confirmar menú — Manolo"></textarea></div>
-            <div class="org-field org-full"><label for="org-notas">Notas entre organizadores</label><textarea id="org-notas" maxlength="3000" placeholder="Qué hablamos con el restaurante, condiciones, detalles por resolver…"></textarea></div>
           </div>
           <div class="org-row"><button type="submit" class="org-btn">Guardar preparativos</button><span id="org-private-msg" role="status"></span></div>
           <p id="org-private-updated" class="org-muted"></p>
         </form>
+        <div class="org-collab" aria-labelledby="org-tasks-title">
+          <div class="org-collab-head"><h3 id="org-tasks-title">✅ Tareas pendientes</h3><button type="button" id="org-toggle-task" class="org-btn org-btn--soft">+ Añadir tarea</button></div>
+          <p class="org-muted">Marcáis lo que ya está hecho y queda registrado quién lo hizo y cuándo. Cualquiera de los dos puede quitar una tarea que ya no sea necesaria.</p>
+          <form id="org-task-form" class="org-inline-form" hidden>
+            <div class="org-grid">
+              <div class="org-field org-full"><label for="org-task-text">¿Qué hay que hacer?</label><input id="org-task-text" maxlength="200" placeholder="Ej. Hablar con los taxis" required></div>
+              <div class="org-field"><label for="org-task-owner">Encargado (opcional)</label><select id="org-task-owner"><option value="">Cualquiera de los dos</option></select></div>
+            </div>
+            <div class="org-row"><button type="submit" class="org-btn">Crear tarea</button><button type="button" class="org-btn org-btn--soft" id="org-cancel-task">Cancelar</button></div>
+          </form>
+          <ul id="org-tasks-list" class="org-collab-list" aria-live="polite"></ul>
+          <p id="org-tasks-msg" class="org-status" role="status"></p>
+        </div>
+        <div class="org-collab" aria-labelledby="org-comments-title">
+          <div class="org-collab-head"><h3 id="org-comments-title">💬 Notas entre organizadores</h3><button type="button" id="org-toggle-comment" class="org-btn org-btn--soft">+ Añadir comentario</button></div>
+          <p class="org-muted">Una conversación privada. Cada nota muestra quién la escribió y la fecha; solo su autor puede editarla o borrarla.</p>
+          <form id="org-comment-form" class="org-inline-form" hidden>
+            <div class="org-field"><label for="org-comment-text">Nuevo comentario</label><textarea id="org-comment-text" maxlength="2000" rows="3" placeholder="Ej. Acordarse de llamar al restaurante…" required></textarea></div>
+            <div class="org-row"><button type="submit" class="org-btn">Publicar comentario</button><button type="button" class="org-btn org-btn--soft" id="org-cancel-comment">Cancelar</button></div>
+          </form>
+          <ul id="org-comments-list" class="org-chat" aria-live="polite"></ul>
+          <div class="org-row"><button type="button" class="org-btn org-btn--soft" id="org-refresh-notes">Actualizar lista</button><span id="org-comments-msg" class="org-status" role="status"></span></div>
+        </div>
       </section>
     </div>
   </main>
