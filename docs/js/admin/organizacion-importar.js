@@ -58,7 +58,7 @@ async function cargar(){
   extra.append(summary);
   const campos=[
     ['Dirección',d.direccion],['Teléfono',d.telefono],
-    ['Contacto',d.contacto],['Hora',d.hora],['Precio orientativo',d.precio_orientativo],
+    ['Contacto',d.contacto],['Fecha y hora comida',d.hora],['Precio orientativo',d.precio_orientativo],
     ['Entrantes',d.entrantes],['Platos principales',d.principales],
     ['Postres',d.postres],['Bebidas',d.bebidas]
   ];
@@ -173,7 +173,7 @@ async function cargar(){
     const controles={};
     const camposEditar=[
       ['restaurante','Restaurante'],['direccion','Dirección'],['telefono','Teléfono'],
-      ['contacto','Persona de contacto'],['reserva','Estado de reserva'],['hora','Hora prevista'],
+      ['contacto','Persona de contacto'],['reserva','Estado de reserva'],['hora','Fecha y hora comida'],
       ['precio_orientativo','Precio orientativo'],['entrantes','Entrantes'],
       ['principales','Platos principales'],['postres','Postres'],['bebidas','Bebidas']
     ];
