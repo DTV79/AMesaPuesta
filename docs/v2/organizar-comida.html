@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7f4ef">
+  <title>Organizar la próxima comida · A Mesa Puesta</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    html:not(.cofrade-verificado) body{visibility:hidden}
+    .org-main{max-width:940px;margin:0 auto;padding:28px 18px 80px}
+    .org-return{display:inline-flex;color:#7c2832;text-decoration:none;font-weight:700;margin:5px 0 22px}
+    .org-head{background:#75242f;color:#fff7f2;border-radius:22px;padding:26px;margin-bottom:20px}
+    .org-head h1{font-family:Georgia,serif;font-size:clamp(27px,5vw,39px);line-height:1.14;margin:0 0 9px}
+    .org-head p{margin:0;line-height:1.55;color:#f5dcd6}
+    .org-head .org-team{display:inline-block;margin-top:13px;color:#fff;font-weight:700}
+    .org-step,.org-private{background:#fffcf8;border:1px solid #eadbd2;border-radius:18px;padding:23px;margin:14px 0;box-shadow:0 8px 24px #5f28220c}
+    .org-step--locked{background:#f3efeb;color:#766b66}
+    .org-step--done{border-left:5px solid #45826b}
+    .org-step-head{display:flex;gap:12px;align-items:flex-start}
+    .org-number{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:50%;background:#782936;color:#fff;font:700 17px system-ui,sans-serif}
+    .org-step--locked .org-number{background:#b8ada7}
+    .org-step h2,.org-private h2{font:700 clamp(20px,3.4vw,26px)/1.2 Georgia,serif;color:#782936;margin:0 0 7px}
+    .org-step p,.org-private p{line-height:1.6}
+    .org-body{margin-top:15px}
+    .org-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .org-field{display:flex;flex-direction:column;gap:6px}
+    .org-field label,.org-field>span{font:700 13px system-ui,sans-serif;color:#573d39}
+    .org-field input,.org-field select,.org-field textarea{box-sizing:border-box;width:100%;border:1px solid #cbbdb5;border-radius:10px;background:#fff;color:#27211f;padding:11px 12px;font:16px/1.4 system-ui,sans-serif;min-width:0}
+    .org-field textarea{resize:vertical;min-height:86px}
+    .org-field:focus-within input,.org-field:focus-within select,.org-field:focus-within textarea{outline:2px solid #d19c7b;outline-offset:1px}
+    .org-full{grid-column:1/-1}
+    .org-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:15px}
+    .org-btn{border:0;border-radius:12px;background:#782936;color:#fff;padding:11px 17px;font:700 14px system-ui,sans-serif;cursor:pointer}
+    .org-btn:disabled{opacity:.58;cursor:wait}
+    .org-btn--soft{background:#f1e6dd;color:#6b2531;border:1px solid #d8bfb8}
+    .org-muted{color:#665f5b;font-size:14px}
+    .org-notice{background:#f7eee5;border:1px solid #e8d6c4;padding:12px 15px;border-radius:12px;line-height:1.5;margin:13px 0}
+    .org-success{background:#e9f3ec;border-color:#bad8c3;color:#24583b}
+    .org-status{font-weight:600;min-height:20px}
+    .org-dates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .org-list{list-style:none;padding:0;margin:12px 0}
+    .org-list li{padding:10px 0;border-bottom:1px solid #eadbd2;display:flex;justify-content:space-between;gap:14px;align-items:center}
+    .org-chip{display:inline-block;border-radius:999px;background:#eee6dd;color:#632a31;padding:5px 10px;font:700 12px system-ui,sans-serif}
+    .org-attendees{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .org-attendees>div{background:#f7f1eb;padding:13px;border-radius:12px}
+    .org-attendees h3{font-size:14px;margin:0 0 8px;color:#722936}
+    .org-attendees ul{margin:0;padding-left:16px;font-size:13px;line-height:1.7}
+    .org-private{border-left:5px solid #c99a5e}
+    .org-private-note{background:#f9f1de;padding:12px 15px;border-radius:12px;color:#614a2a;font-size:14px}
+    .org-loading{padding:25px;text-align:center;color:#63343a}
+    [hidden]{display:none!important}
+    @media(max-width:650px){
+      .org-grid,.org-dates,.org-attendees{grid-template-columns:1fr}
+      .org-step,.org-private{padding:17px}
+      .org-main{padding:15px 12px 85px}
+      .org-head{padding:21px}
+    }
+  </style>
+  <script defer src="./acceso-cofrade.js"></script>
+  <script type="module" src="./organizar-comida.js"></script>
+</head>
+<body>
+  <header class="site-header"><div class="container header-inner">
+    <a href="index.html" class="brand">
+      <span class="brand-mark"><img src="https://raw.githubusercontent.com/DTV79/AMesaPuesta/53b6073bb0bab12113dc6a1ba52bc687ac39b9bc/docs/Fotos/logo-cangrejo.png" width="38" height="38" alt=""></span>
+      <span class="brand-text">A Mesa Puesta<small>La cofradía · Desde 2022</small></span>
+    </a>
+    <nav class="desktop-nav" aria-label="Navegación principal"><a href="index.html">Inicio</a><a href="restaurantes.html">Nuestras comidas</a><a href="cofrades.html">Cofrades</a><a href="encuestas.html">Encuestas</a></nav>
+  </div></header>
+  <main class="org-main">
+    <a class="org-return" href="index.html">← Volver a Mi Pizarra</a>
+    <section class="org-head">
+      <h1>🍽️ Organicemos la próxima comida</h1>
+      <p>Sin carreras ni papeleo: primero elegimos el día, después contamos los comensales y, mientras tanto, vosotros preparáis la sorpresa gastronómica.</p>
+      <span class="org-team" id="org-team"></span>
+    </section>
+    <p id="org-loading" class="org-loading" role="status">Comprobando tu turno de organización…</p>
+    <div id="org-content" hidden>
+      <section class="org-step" id="org-step1" aria-labelledby="org-titulo1">
+        <div class="org-step-head"><span class="org-number">1</span><div><h2 id="org-titulo1">Elegir la fecha</h2><p class="org-muted">Votación secreta. Los cofrades no ven quién eligió cada día.</p></div></div>
+        <div class="org-body">
+          <div id="org-create-date">
+            <p>Propón entre 2 y 12 días y fija el cierre de la votación.</p>
+            <form id="org-form-date">
+              <div id="org-dates" class="org-dates"></div>
+              <div class="org-row"><button type="button" class="org-btn org-btn--soft" id="org-add-date">+ Otra fecha</button></div>
+              <div class="org-field" style="max-width:330px;margin-top:15px"><label for="org-deadline-date">Votar hasta el día y hora</label><input type="datetime-local" id="org-deadline-date" required></div>
+              <div class="org-row"><button class="org-btn" type="submit">Publicar encuesta de fecha</button><span id="org-msg-date" class="org-status" role="status"></span></div>
+            </form>
+          </div>
+          <div id="org-date-results" hidden>
+            <p id="org-date-status"></p>
+            <ul class="org-list" id="org-date-options"></ul>
+            <form id="org-form-confirm-date" hidden>
+              <div class="org-field" style="max-width:360px"><label for="org-final-date">Fecha definitiva (entre las más votadas)</label><select id="org-final-date" required></select></div>
+              <div class="org-row"><button class="org-btn" type="submit">Confirmar fecha definitiva</button><span id="org-msg-confirm" role="status"></span></div>
+            </form>
+          </div>
+          <p id="org-fixed-date" class="org-notice org-success" hidden></p>
+        </div>
+      </section>
+      <section class="org-step org-step--locked" id="org-step2" aria-labelledby="org-titulo2">
+        <div class="org-step-head"><span class="org-number">2</span><div><h2 id="org-titulo2">¿Quién se apunta?</h2><p class="org-muted">Votación pública de asistencia. Este paso se abre cuando la fecha esté fijada.</p></div></div>
+        <div class="org-body">
+          <p id="org-attendance-locked" class="org-notice">🔒 Primero hay que terminar la encuesta de fecha y confirmar el día.</p>
+          <form id="org-form-attendance" hidden>
+            <p>Los cofrades podrán responder «Sí, asistiré» o «No asistiré». Quien no responda dentro de plazo quedará identificado como sin confirmar.</p>
+            <div class="org-field" style="max-width:340px"><label for="org-deadline-attendance">Confirmar asistencia hasta</label><input type="datetime-local" id="org-deadline-attendance" required></div>
+            <div class="org-row"><button type="submit" class="org-btn">Publicar encuesta de asistencia</button><span id="org-msg-attendance" role="status"></span></div>
+          </form>
+          <div id="org-attendance-results" hidden><p id="org-attendance-status"></p><div id="org-attendance-groups" class="org-attendees"></div></div>
+        </div>
+      </section>
+      <section class="org-step org-step--locked" id="org-step3" aria-labelledby="org-titulo3">
+        <div class="org-step-head"><span class="org-number">3</span><div><h2 id="org-titulo3">¡Ya sabemos cuántos somos!</h2><p class="org-muted">Este paso se desbloquea al cerrar la confirmación de asistencia.</p></div></div>
+        <div class="org-body"><p id="org-step3-note" class="org-notice">🔒 Todavía falta cerrar la encuesta de asistencia.</p></div>
+      </section>
+      <section class="org-private" id="org-private" aria-labelledby="org-private-title">
+        <h2 id="org-private-title">🔐 Nuestro cuaderno de preparativos</h2>
+        <p class="org-private-note">Solo vosotros dos y Administración podéis ver estas notas. El restaurante y el menú no se publicarán por rellenarlas aquí.</p>
+        <form id="org-form-private">
+          <div class="org-grid">
+            <div class="org-field"><label for="org-restaurante">Restaurante</label><input id="org-restaurante" maxlength="180"></div>
+            <div class="org-field"><label for="org-reserva">Reserva</label><input id="org-reserva" placeholder="Pendiente, apalabrada, confirmada…" maxlength="120"></div>
+            <div class="org-field org-full"><label for="org-direccion">Dirección</label><input id="org-direccion" maxlength="300"></div>
+            <div class="org-field"><label for="org-telefono">Teléfono</label><input id="org-telefono" maxlength="60" type="tel"></div>
+            <div class="org-field"><label for="org-contacto">Persona de contacto</label><input id="org-contacto" maxlength="180"></div>
+            <div class="org-field"><label for="org-hora">Hora prevista</label><input id="org-hora" placeholder="14:30" maxlength="50"></div>
+            <div class="org-field"><label for="org-precio_orientativo">Precio orientativo</label><input id="org-precio_orientativo" placeholder="Ej. 35 €/persona" maxlength="60"></div>
+            <div class="org-field org-full"><label for="org-entrantes">Entrantes</label><textarea id="org-entrantes" maxlength="1500"></textarea></div>
+            <div class="org-field org-full"><label for="org-principales">Platos principales</label><textarea id="org-principales" maxlength="1500"></textarea></div>
+            <div class="org-field"><label for="org-postres">Postres</label><textarea id="org-postres" maxlength="1500"></textarea></div>
+            <div class="org-field"><label for="org-bebidas">Bebidas</label><textarea id="org-bebidas" maxlength="1500"></textarea></div>
+            <div class="org-field org-full"><label for="org-tareas">Tareas pendientes y responsables</label><textarea id="org-tareas" maxlength="3000" placeholder="Reservar mesa — Miguel&#10;Confirmar menú — Manolo"></textarea></div>
+            <div class="org-field org-full"><label for="org-notas">Notas entre organizadores</label><textarea id="org-notas" maxlength="3000" placeholder="Qué hablamos con el restaurante, condiciones, detalles por resolver…"></textarea></div>
+          </div>
+          <div class="org-row"><button type="submit" class="org-btn">Guardar preparativos</button><span id="org-private-msg" role="status"></span></div>
+          <p id="org-private-updated" class="org-muted"></p>
+        </form>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
