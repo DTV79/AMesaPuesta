@@ -84,7 +84,7 @@
   </style>
   <script defer src="./acceso-cofrade.js"></script>
   <script defer src="./mobile-nav.js"></script>
-  <script type="module" src="./organizar-comida.js?v=20261120-colaboracion"></script>
+  <script type="module" src="./organizar-comida.js?v=20261120-autosync"></script>
 </head>
 <body>
   <header class="site-header"><div class="container header-inner">
@@ -183,7 +183,8 @@
             <div class="org-row"><button type="submit" class="org-btn">Publicar comentario</button><button type="button" class="org-btn org-btn--soft" id="org-cancel-comment">Cancelar</button></div>
           </form>
           <ul id="org-comments-list" class="org-chat" aria-live="polite"></ul>
-          <div class="org-row"><button type="button" class="org-btn org-btn--soft" id="org-refresh-notes">Actualizar lista</button><span id="org-comments-msg" class="org-status" role="status"></span></div>
+          <p class="org-muted">Las tareas y los comentarios se actualizan automáticamente entre los dos organizadores.</p>
+          <p id="org-comments-msg" class="org-status" role="status"></p>
         </div>
       </section>
     </div>
