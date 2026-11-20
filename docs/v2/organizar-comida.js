@@ -77,12 +77,16 @@ const botonEl=(texto,clase,accion)=>{
   b.addEventListener('click',accion);return b;
 };
 function actualizarColaboracion(datos){
-  // No tocamos ni la revisión ni los campos del restaurante que alguien pueda
-  // tener a medio escribir; los mensajes y tareas se guardan por separado.
-  plan.tareas=datos.tareas||[];
-  plan.comentarios=datos.comentarios||[];
+  // Conservamos el borrador del restaurante y cualquier comentario en edición.
+  // Sin cambios, no repintamos las listas ni interrumpimos sus controles.
+  const tareas=datos.tareas||[];
+  const comentarios=datos.comentarios||[];
+  const hayCambios=JSON.stringify(plan.tareas||[])!==JSON.stringify(tareas)
+    ||JSON.stringify(plan.comentarios||[])!==JSON.stringify(comentarios);
+  plan.tareas=tareas;
+  plan.comentarios=comentarios;
   if(datos.yo_id)plan.yo_id=datos.yo_id;
-  pintarColaboracion();
+  if(hayCambios)pintarColaboracion();
 }
 async function actuar(tipo,accion,valores={}){
   const destino=tipo==='tarea'?'org-tasks-msg':'org-comments-msg';
@@ -274,16 +278,18 @@ $('org-comment-form').addEventListener('submit',async event=>{
   }catch(error){nota('org-comments-msg',error.message)}
   finally{boton.disabled=false}
 });
+let sincronizandoColaboracion=false;
 async function actualizarMensajes(){
-  const respuesta=await rpc('consultar_organizacion_cofrade',{p_token:token});
-  actualizarColaboracion(respuesta);
+  if(sincronizandoColaboracion||document.visibilityState!=='visible'
+    ||document.querySelector('.org-message-edit'))return;
+  sincronizandoColaboracion=true;
+  try{
+    const respuesta=await rpc('consultar_organizacion_cofrade',{p_token:token});
+    actualizarColaboracion(respuesta);
+  }finally{
+    sincronizandoColaboracion=false;
+  }
 }
-$('org-refresh-notes').addEventListener('click',async()=>{
-  const boton=$('org-refresh-notes');boton.disabled=true;
-  try{await actualizarMensajes();nota('org-comments-msg','Lista actualizada.',true)}
-  catch(error){nota('org-comments-msg',error.message)}
-  finally{boton.disabled=false}
-});
 
 $('org-add-date').addEventListener('click',()=>agregarFecha());
 $('org-form-date').addEventListener('submit',async event=>{
@@ -350,10 +356,12 @@ $('org-form-private').addEventListener('submit',async event=>{
     $('org-deadline-attendance').value=localInput(Date.now()+3*86400000);
     agregarFecha();agregarFecha();
     pintar();ponerOculto('org-loading',true);ponerOculto('org-content',false);
-    setInterval(()=>{
-      if(document.visibilityState!=='visible'||document.querySelector('.org-message-edit'))return;
-      actualizarMensajes().catch(()=>{});
-    },30000);
+    const sincronizar=()=>actualizarMensajes().catch(()=>{});
+    setInterval(sincronizar,15000);
+    document.addEventListener('visibilitychange',()=>{
+      if(document.visibilityState==='visible')sincronizar();
+    });
+    window.addEventListener('focus',sincronizar);
   }catch(error){
     $('org-loading').textContent='⛔ '+error.message;
   }
