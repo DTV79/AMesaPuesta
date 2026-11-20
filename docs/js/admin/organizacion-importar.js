@@ -67,12 +67,73 @@ async function cargar(){
   const encuestas=document.createElement('a');
   encuestas.href='encuestas.html';encuestas.className='btn soft';
   encuestas.textContent='📊 Gestionar encuestas';
-  actions.append(copiar,encuestas);
+  const editar=document.createElement('button');
+  editar.type='button';editar.className='btn soft';
+  editar.textContent='✏️ Editar notas privadas';
+  const cambiarFecha=document.createElement('button');
+  cambiarFecha.type='button';cambiarFecha.className='btn soft';
+  cambiarFecha.textContent='📅 Corregir fecha';
+  actions.append(copiar,editar,cambiarFecha,encuestas);
   card.append(actions);
   const nota=document.createElement('p');
   nota.className='muted';nota.style.cssText='font-size:13px;margin-top:9px';
   nota.textContent='La importación solo rellena el formulario; no publica nada ni modifica las cuentas. Revisa antes de guardar.';
   card.append(nota);
+  cambiarFecha.addEventListener('click',async()=>{
+    const fecha=prompt('Fecha definitiva (AAAA-MM-DD):',plan.fecha_definitiva||'');
+    if(fecha===null)return;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(fecha)){
+      alert('Escribe la fecha en formato AAAA-MM-DD.');return;
+    }
+    if(!confirm('¿Cambiar la fecha? Si ya hubo votos de asistencia, valora si hace falta una nueva confirmación.'))return;
+    const {error}=await sb.rpc('ajustar_fecha_organizacion_admin',{p_fecha:fecha});
+    if(error){alert(error.message);return}
+    location.reload();
+  });
+  editar.addEventListener('click',()=>{
+    const dialog=document.createElement('dialog');
+    dialog.style.cssText='border:1px solid #d9c4af;border-radius:17px;padding:20px;width:min(610px,calc(100% - 32px));max-height:85vh;overflow:auto';
+    const h=document.createElement('h2');
+    h.textContent='Preparativos privados · Administración';
+    h.style.cssText='font:700 24px Georgia,serif;color:#782936';
+    const form=document.createElement('form');form.style.cssText='display:grid;gap:10px';
+    const controles={};
+    const camposEditar=[
+      ['restaurante','Restaurante'],['direccion','Dirección'],['telefono','Teléfono'],
+      ['contacto','Persona de contacto'],['reserva','Estado de reserva'],['hora','Hora prevista'],
+      ['precio_orientativo','Precio orientativo'],['entrantes','Entrantes'],
+      ['principales','Platos principales'],['postres','Postres'],['bebidas','Bebidas'],
+      ['tareas','Tareas y responsables'],['notas','Notas internas']
+    ];
+    for(const [clave,rotulo] of camposEditar){
+      const label=document.createElement('label');
+      label.textContent=rotulo;label.style.cssText='font-weight:700;display:grid;gap:5px';
+      const input=['entrantes','principales','postres','bebidas','tareas','notas'].includes(clave)
+        ?document.createElement('textarea'):document.createElement('input');
+      input.value=String(d[clave]||'');
+      input.style.cssText='box-sizing:border-box;width:100%;min-height:41px;padding:9px;border:1px solid #cbbdb5;border-radius:9px;font:15px system-ui,sans-serif';
+      if(input.tagName==='TEXTAREA')input.rows=3;
+      controles[clave]=input;label.append(input);form.append(label);
+    }
+    const botones=document.createElement('div');
+    botones.style.cssText='display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap';
+    const cerrar=document.createElement('button');cerrar.type='button';
+    cerrar.textContent='Cancelar';cerrar.className='btn soft';
+    cerrar.onclick=()=>dialog.close();
+    const guardar=document.createElement('button');guardar.type='submit';
+    guardar.textContent='Guardar cambios';guardar.className='btn primary';
+    botones.append(cerrar,guardar);form.append(botones);
+    form.addEventListener('submit',async e=>{
+      e.preventDefault();guardar.disabled=true;
+      const datos=Object.fromEntries(Object.entries(controles).map(([k,v])=>[k,v.value.trim()]));
+      const {error}=await sb.rpc('guardar_preparativos_organizacion_admin',{p_datos:datos});
+      if(error){alert(error.message);guardar.disabled=false;return}
+      dialog.close();location.reload();
+    });
+    dialog.append(h,form);document.body.append(dialog);
+    dialog.addEventListener('close',()=>dialog.remove());
+    dialog.showModal();
+  });
   copiar.addEventListener('click',()=>{
     if(!$('nuevo')||!$('personas')?.children.length){
       alert('Espera a que termine de cargar la administración y vuelve a intentarlo.');return;
