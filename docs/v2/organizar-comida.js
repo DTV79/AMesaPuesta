@@ -250,10 +250,35 @@ function pintar(){
 }
 
 function alternarFormulario(id,visible){ponerOculto(id,!visible)}
+function enfocarFormularioVisible(idFormulario,idCampo){
+  const formulario=$(idFormulario),campo=$(idCampo);
+  // En iPhone, abrir el teclado reduce la zona visible DESPUÉS del focus.
+  // Situamos el formulario ahora y lo reajustamos cuando termina de abrirse.
+  if(window.matchMedia('(max-width:650px)').matches)
+    formulario.scrollIntoView({block:'center',behavior:'instant'});
+  campo.focus({preventScroll:true});
+  if(!window.matchMedia('(max-width:650px)').matches)return;
+  const ajustar=()=>{
+    if(formulario.hidden||document.activeElement!==campo)return;
+    const vista=window.visualViewport;
+    const cabecera=document.querySelector('.site-header')?.getBoundingClientRect().height||0;
+    const superior=Math.max((vista?.offsetTop||0)+12,cabecera+12);
+    const inferior=(vista?.offsetTop||0)+(vista?.height||window.innerHeight)-16;
+    const disponible=Math.max(100,inferior-superior);
+    const rect=formulario.getBoundingClientRect();
+    const destino=superior+Math.max(0,(disponible-Math.min(rect.height,disponible))/2);
+    const desplazamiento=rect.top-destino;
+    if(Math.abs(desplazamiento)>6)
+      window.scrollBy({top:Math.round(desplazamiento),behavior:'instant'});
+  };
+  requestAnimationFrame(ajustar);
+  setTimeout(ajustar,250);
+  setTimeout(ajustar,500);
+}
 $('org-toggle-task').addEventListener('click',()=>{
   const abrir=$('org-task-form').hidden;
   alternarFormulario('org-task-form',abrir);
-  if(abrir)$('org-task-text').focus();
+  if(abrir)enfocarFormularioVisible('org-task-form','org-task-text');
 });
 $('org-cancel-task').addEventListener('click',()=>alternarFormulario('org-task-form',false));
 $('org-task-form').addEventListener('submit',async event=>{
@@ -267,7 +292,7 @@ $('org-task-form').addEventListener('submit',async event=>{
 $('org-toggle-comment').addEventListener('click',()=>{
   const abrir=$('org-comment-form').hidden;
   alternarFormulario('org-comment-form',abrir);
-  if(abrir)$('org-comment-text').focus();
+  if(abrir)enfocarFormularioVisible('org-comment-form','org-comment-text');
 });
 $('org-cancel-comment').addEventListener('click',()=>alternarFormulario('org-comment-form',false));
 $('org-comment-form').addEventListener('submit',async event=>{
