@@ -208,6 +208,14 @@ for(const d of data.deudas_comidas||[]){add("💸","Debes "+euros(d.importe)+" a
        aviso.className="pizarra-proxima-personal";
        aviso.textContent="Te toca organizar esta comida";
        tarjeta.append(aviso);
+       const accesoOrganizacion=document.createElement("div");
+       accesoOrganizacion.className="pizarra-proxima-acciones";
+       const preparar=document.createElement("a");
+       preparar.href="organizar-comida.html";
+       preparar.textContent="📋 Preparar la comida";
+       preparar.style.cssText="display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;background:#fff1dd;color:#571923;border-radius:10px;font-weight:800;text-decoration:none";
+       accesoOrganizacion.append(preparar);
+       tarjeta.append(accesoOrganizacion);
      }
      if(proxima){
        const acciones=document.createElement("div");
