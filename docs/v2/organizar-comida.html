@@ -25,9 +25,9 @@
     .org-step p,.org-private p{line-height:1.6}
     .org-body{margin-top:15px}
     .org-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-    .org-field{display:flex;flex-direction:column;gap:6px}
+    .org-field{display:flex;flex-direction:column;gap:6px;min-width:0;max-width:100%}
     .org-field label,.org-field>span{font:700 13px system-ui,sans-serif;color:#573d39}
-    .org-field input,.org-field select,.org-field textarea{box-sizing:border-box;width:100%;border:1px solid #cbbdb5;border-radius:10px;background:#fff;color:#27211f;padding:11px 12px;font:16px/1.4 system-ui,sans-serif;min-width:0}
+    .org-field input,.org-field select,.org-field textarea{box-sizing:border-box;width:100%;border:1px solid #cbbdb5;border-radius:10px;background:#fff;color:#27211f;padding:11px 12px;font:16px/1.4 system-ui,sans-serif;min-width:0;max-width:100%}
     .org-field textarea{resize:vertical;min-height:86px}
     .org-field:focus-within input,.org-field:focus-within select,.org-field:focus-within textarea{outline:2px solid #d19c7b;outline-offset:1px}
     .org-full{grid-column:1/-1}
@@ -39,7 +39,8 @@
     .org-notice{background:#f7eee5;border:1px solid #e8d6c4;padding:12px 15px;border-radius:12px;line-height:1.5;margin:13px 0}
     .org-success{background:#e9f3ec;border-color:#bad8c3;color:#24583b}
     .org-status{font-weight:600;min-height:20px}
-    .org-dates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .org-dates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;min-width:0;max-width:100%}
+    .org-field input[type="date"],.org-field input[type="datetime-local"]{display:block;min-width:0;max-width:100%;width:100%;inline-size:100%;min-inline-size:0;max-inline-size:100%}
     .org-list{list-style:none;padding:0;margin:12px 0}
     .org-list li{padding:10px 0;border-bottom:1px solid #eadbd2;display:flex;justify-content:space-between;gap:14px;align-items:center}
     .org-chip{display:inline-block;border-radius:999px;background:#eee6dd;color:#632a31;padding:5px 10px;font:700 12px system-ui,sans-serif}
@@ -75,7 +76,7 @@
     .org-loading{padding:25px;text-align:center;color:#63343a}
     [hidden]{display:none!important}
     @media(max-width:650px){
-      .org-grid,.org-dates,.org-attendees{grid-template-columns:1fr}
+      .org-grid,.org-dates,.org-attendees{grid-template-columns:minmax(0,1fr)}
       .org-step,.org-private{padding:17px}
       .org-main{padding:15px 12px 85px}
       .org-head{padding:21px}
