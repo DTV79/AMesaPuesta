@@ -88,7 +88,7 @@ function tarjeta(propuesta){
   const cabecera=nodo('div','descubrir-card-head');
   const nombres=nodo('div');
   nombres.append(nodo('h3','',propuesta.nombre),nodo('p','descubrir-ubicacion','📍 '+propuesta.localidad));
-  cabecera.append(nombres,nodo('span','descubrir-badge'+(propuesta.estado==='visitado'?' visitado':''),propuesta.estado==='visitado'?'✓ Visitado':'Por descubrir'));
+  cabecera.append(nombres,nodo('span','descubrir-badge','Por descubrir'));
   card.append(cabecera);
   if(propuesta.motivo)card.append(nodo('p','descubrir-motivo','«'+propuesta.motivo+'»'));
   const info=[`Propuesto por ${propuesta.proponente}`];
@@ -103,11 +103,6 @@ function tarjeta(propuesta){
   if(propuesta.telefono){
     const numero=String(propuesta.telefono).replace(/[^\d+]/g,'');
     if(numero)enlaceExterno(enlaces,'📞 '+propuesta.telefono,'tel:'+numero);
-  }
-  if(propuesta.estado==='visitado'&&propuesta.comida_codigo){
-    const a=nodo('a','','🍽️ Ver ficha oficial');
-    a.href='restaurantes.html#'+encodeURIComponent(propuesta.comida_codigo);
-    enlaces.append(a);
   }
   card.append(enlaces);
   const meta=nodo('div','descubrir-meta');
@@ -124,6 +119,22 @@ function tarjeta(propuesta){
     if(propuesta.es_mia){
       const editar=nodo('button','descubrir-small','✎ Editar');editar.type='button';
       editar.addEventListener('click',()=>abrirFormulario(propuesta));meta.append(editar);
+      const retirar=nodo('button','descubrir-small retirar','🗑️ Eliminar');retirar.type='button';
+      retirar.addEventListener('click',async()=>{
+        const opiniones=Number(propuesta.interesados)||0;
+        const comentarios=propuesta.comentarios?.length||0;
+        const aviso=(opiniones||comentarios)
+          ?'Hay '+opiniones+' interesados y '+comentarios+' comentarios. Dejarán de mostrarse, pero se conservarán por si administración recupera la propuesta.\n\n'
+          :'';
+        if(!confirm('¿Eliminar «'+propuesta.nombre+'» de los restaurantes por descubrir?\n\n'+aviso+'Podrás pedir a administración que la recupere si te equivocas.'))return;
+        retirar.disabled=true;
+        try{
+          await rpc('retirar_sugerencia_restaurante_cofrade',{p_id:propuesta.id});
+          await cargar({mantenerPosicion:true});
+          avisar('Propuesta retirada. Ya no aparece en la lista.');
+        }catch(error){avisar(error.message,true);retirar.disabled=false;}
+      });
+      meta.append(retirar);
     }
   }
   card.append(meta);
@@ -162,9 +173,8 @@ function tarjeta(propuesta){
 }
 function pintar(){
   const q=normalizar($('descubrir-buscar').value);
-  const estado=$('descubrir-estado').value;
   const orden=$('descubrir-orden').value;
-  const visibles=propuestas.filter(p=>(estado==='todos'||p.estado===estado)
+  const visibles=propuestas.filter(p=>p.estado==='en_lista'
     &&(!q||normalizar(p.nombre+' '+p.localidad+' '+p.proponente+' '+p.motivo).includes(q)));
   visibles.sort((a,b)=>orden==='recientes'
     ?new Date(b.creada_en)-new Date(a.creada_en)
@@ -172,7 +182,6 @@ function pintar(){
   $('descubrir-contador').textContent=visibles.length+' '+(visibles.length===1?'restaurante':'restaurantes');
   $('descubrir-lista').replaceChildren(...(visibles.length?visibles.map(tarjeta):[
     nodo('p','descubrir-vacio',q?'No hay restaurantes con ese nombre o localidad.':
-      estado==='visitado'?'Todavía no hemos visitado ninguno de los restaurantes propuestos.':
       'Todavía no hay propuestas. ¡Anímate a estrenar la lista!')
   ]));
 }
@@ -186,7 +195,7 @@ async function cargar({mantenerPosicion=false}={}){
 
 $('descubrir-abrir').addEventListener('click',()=>abrirFormulario());
 $('descubrir-cancelar').addEventListener('click',cerrarFormulario);
-for(const id of ['descubrir-buscar','descubrir-estado','descubrir-orden'])
+for(const id of ['descubrir-buscar','descubrir-orden'])
   $(id).addEventListener(id==='descubrir-buscar'?'input':'change',pintar);
 $('descubrir-formulario').addEventListener('submit',async e=>{
   e.preventDefault();const guardar=$('descubrir-guardar');guardar.disabled=true;
@@ -195,7 +204,7 @@ $('descubrir-formulario').addEventListener('submit',async e=>{
     const datos={id:editando,nombre:form.get('nombre'),localidad:form.get('localidad'),
       enlace:form.get('enlace'),telefono:form.get('telefono'),motivo:form.get('motivo'),precio_orientativo:form.get('precio_orientativo')};
     await rpc('guardar_sugerencia_restaurante_cofrade',{p_datos:datos});
-    cerrarFormulario();$('descubrir-estado').value='en_lista';
+    cerrarFormulario();
     $('descubrir-buscar').value='';await cargar();
     avisar('¡Restaurante guardado! Ya pueden verlo los demás cofrades.');
   }catch(error){avisar(error.message,true);}

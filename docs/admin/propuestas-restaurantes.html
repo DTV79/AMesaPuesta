@@ -13,7 +13,7 @@
     h1{margin:17px 0 5px;font-size:clamp(25px,5vw,33px)}.lead{color:#71665d;line-height:1.6;margin:0 0 25px}
     .lista{display:grid;gap:15px}.card{background:#fff;border:1px solid #e7d9cd;border-radius:17px;padding:19px;min-width:0}
     .cabecera{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}.cabecera h2{margin:0;color:#672534;font:700 clamp(20px,4vw,25px)/1.25 Georgia,serif}
-    .meta{color:#736962;font-size:13px;line-height:1.5;margin:7px 0 0}.pill{display:inline-block;font-weight:800;font-size:12px;border-radius:99px;padding:7px 11px;background:#ecf3e9;color:#315e36}.pill.visitado{background:#f4ead6;color:#745322}.pill.descartado{background:#f1ece8;color:#7d6663}
+    .meta{color:#736962;font-size:13px;line-height:1.5;margin:7px 0 0}.pill{display:inline-block;font-weight:800;font-size:12px;border-radius:99px;padding:7px 11px;background:#ecf3e9;color:#315e36}.pill.visitado{background:#f4ead6;color:#745322}.pill.descartado{background:#f1ece8;color:#7d6663}.pill.retirado{background:#f7e7e5;color:#8d3740}
     .motivo{margin:14px 0;color:#52463f;white-space:pre-line;overflow-wrap:anywhere;line-height:1.55}.acciones{display:flex;gap:8px;flex-wrap:wrap;margin-top:17px}.boton{border:1px solid #dac8bd;background:#f7eee8;color:#642733;border-radius:10px;padding:10px 13px;min-height:43px;font-weight:750;cursor:pointer;font-size:14px}.boton.principal{background:#6b2631;color:#fff;border-color:#6b2631}.boton:disabled{opacity:.5}
     .formulario{background:#fbf7f3;border:1px solid #ebdcd0;border-radius:13px;padding:15px;margin-top:15px;display:grid;gap:12px}.formulario[hidden]{display:none}
     .campos{display:grid;grid-template-columns:1fr 1fr;gap:12px}.formulario label{display:grid;gap:5px;font-weight:700;font-size:13px;color:#554941}
@@ -21,13 +21,13 @@
     .formulario textarea{resize:vertical}.formulario .acciones{margin-top:0}.status{min-height:20px;font-weight:750;color:#236744;margin:15px 0}.status.error{color:#9e3030}.vacio{padding:25px;background:white;border-radius:14px;border:1px solid #e7d9cd;color:#766961}
     @media(max-width:600px){.shell{padding:18px 12px 80px}.card{padding:15px}.campos{grid-template-columns:1fr}}
   </style>
-  <script type="module" src="../js/admin/propuestas-restaurantes.js?v=20261121-2"></script>
+  <script type="module" src="../js/admin/propuestas-restaurantes.js?v=20261121-3"></script>
 </head>
 <body>
   <main class="shell">
     <a href="restaurantes.html" class="back">← Volver a Restaurantes y comidas</a>
     <h1>💡 Restaurantes por descubrir</h1>
-    <p class="lead">Revisa las propuestas de los cofrades. Cuando una comida ya se haya celebrado y publicado, podrás vincularla como «Visitado». Hasta entonces la elección de los organizadores seguirá siendo privada.</p>
+    <p class="lead">Revisa las propuestas de los cofrades. Al vincular un restaurante con una comida ya celebrada y publicada, desaparecerá de «Por descubrir». Aquí también puedes recuperar propuestas retiradas por su autor. Hasta entonces la elección de los organizadores seguirá siendo privada.</p>
     <p class="status" id="estado" role="status" aria-live="polite"></p>
     <div id="propuestas" class="lista"><p class="vacio">Cargando sugerencias…</p></div>
   </main>
