@@ -52,8 +52,9 @@ function prepararAvisoWhatsApp(tipo,encuesta){
     'Acceso con vuestro usuario:',
     accesoCofrades
   ].join('\n');
-  const enlace=$('org-share-'+tipo);
-  enlace.href='https://wa.me/?text='+encodeURIComponent(mensaje);
+  // Los IDs del HTML son "date" y "attendance", no "fecha" y "attendance".
+  const enlace=$(esFecha?'org-share-date':'org-share-attendance');
+  if(enlace)enlace.href='https://wa.me/?text='+encodeURIComponent(mensaje);
 }
 const localInput=(fecha)=>{
   const d=new Date(fecha),pad=n=>String(n).padStart(2,'0');
