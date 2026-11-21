@@ -112,6 +112,8 @@ async function cargar(){
     }
     if(!confirm('¿Abrimos una nueva ficha y copiamos los preparativos? Los datos sin guardar en el editor actual se perderán.'))return;
     $('nuevo').click();
+    // Conservamos el identificador exacto para vincular la nueva comida oficial.
+    document.body.dataset.ampPreparacionOrigen=plan.id;
     const rellenar=(id,valor)=>{if($(id)&&valor)$(id).value=valor};
     rellenar('fecha',plan.fecha_definitiva);
     if(d.restaurante){

@@ -24,6 +24,8 @@ const instante=value=>{
 };
 const nombreOrganizadores=lista=>(Array.isArray(lista)?lista:[])
   .map(x=>String(x?.nombre||'').trim()).filter(Boolean).join(' y ');
+const euros=valor=>valor===null||valor===undefined||valor===''?'—':
+  Number(valor).toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
 
 async function rpc(nombre,parametros){
   const respuesta=await fetch(base+'/rest/v1/rpc/'+nombre,{
@@ -111,13 +113,24 @@ function pintarRestaurante(datos){
   const destino=$('hist-panel-restaurante');destino.replaceChildren();
   destino.append(el('h3','','🍽️ Restaurante y menú'));
   const d=datos.datos||{};
+  const oficial=datos.comida_oficial||null;
+  destino.append(el('p','hist-meta',oficial
+    ?'Ficha definitiva de Administración. Los cambios posteriores se muestran automáticamente.'
+    :'Datos que quedaron guardados al cerrar la organización.'));
   const campos=[
-    ['Restaurante',d.restaurante],
-    ['Fecha y hora comida',[fecha(datos.fecha_definitiva),d.hora].filter(Boolean).join(' · ')],
-    ['Reserva',d.reserva],['Dirección',d.direccion],['Teléfono',d.telefono],
-    ['Persona de contacto',d.contacto],['Precio orientativo',d.precio_orientativo],
-    ['Entrantes',d.entrantes],['Platos principales',d.principales],
-    ['Postres',d.postres],['Bebidas',d.bebidas]
+    ['Restaurante',oficial?oficial.restaurante:d.restaurante],
+    ['Fecha y hora comida',[fecha(oficial?.fecha||datos.fecha_definitiva),d.hora].filter(Boolean).join(' · ')],
+    ['Reserva',d.reserva],
+    ['Dirección',oficial?oficial.direccion:d.direccion],
+    ['Teléfono',oficial?oficial.telefono:d.telefono],
+    ['Persona de contacto',oficial?oficial.contacto:d.contacto],
+    ...(oficial?[['Web',oficial.web],
+      ['Importe total del restaurante',euros(oficial.importe_total)]]:[]),
+    ['Precio orientativo de la organización',d.precio_orientativo],
+    ['Entrantes',oficial?oficial.entrantes:d.entrantes],
+    ['Platos principales',oficial?oficial.principales:d.principales],
+    ['Postres',oficial?oficial.postres:d.postres],
+    ['Bebidas',oficial?oficial.bebidas:d.bebidas]
   ];
   const rejilla=el('div','hist-fields');
   for(const [titulo,valor] of campos){
@@ -142,7 +155,7 @@ for(const nombre of ['votaciones','anotaciones','restaurante']){
 function pintarLista(lista){
   const destino=$('hist-cards');destino.replaceChildren();
   if(!lista.length){
-    notaVacia(destino,'Todavía no tienes preparativos archivados. Solo se guardan los de comidas en las que se utilizaron tareas o comentarios.');
+    notaVacia(destino,'Todavía no tienes organizaciones archivadas. Se guardarán al asignar a los siguientes organizadores, aunque no haya tareas ni comentarios.');
     return;
   }
   for(const item of lista){
@@ -155,14 +168,14 @@ function pintarLista(lista){
     enlace.append(arriba);
     enlace.append(el('p','hist-meta','Organizada por '+nombreOrganizadores(item.organizadores)));
     enlace.append(el('p','hist-meta','Archivada el '+instante(item.cerrado_en)));
-    enlace.append(el('div','hist-card-accion','Consultar tareas y anotaciones →'));
+    enlace.append(el('div','hist-card-accion','Consultar organización →'));
     destino.append(enlace);
   }
 }
 
 function pintarDetalle(datos){
-  $('hist-detail-title').textContent=fecha(datos.fecha_definitiva)+' · '+
-    String(datos.datos?.restaurante||'Restaurante por confirmar');
+  $('hist-detail-title').textContent=fecha(datos.comida_oficial?.fecha||datos.fecha_definitiva)+' · '+
+    String(datos.comida_oficial?.restaurante||datos.datos?.restaurante||'Restaurante por confirmar');
   $('hist-detail-meta').textContent='Organizada por '+nombreOrganizadores(datos.organizadores)+
     ' · Archivada el '+instante(datos.cerrado_en);
   $('hist-demo-warning').hidden=!datos.es_demo;

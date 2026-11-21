@@ -87,6 +87,10 @@ async function verDetalleValoraciones(id){
  }catch(e){pintar('<h3>Detalle de valoraciones</h3><p>No se pudo cargar: '+esc(e.message||String(e))+'</p>','')}
 }
 async function confirmarEliminarComida(id){const c=comidas.find(x=>String(x.id)===String(id));if(!c)return;let dlg=document.getElementById("confirmarEliminarComidaDialog");if(!dlg){dlg=document.createElement("dialog");dlg.id="confirmarEliminarComidaDialog";dlg.style.cssText="border:1px solid #e7ded3;border-radius:16px;padding:24px;max-width:430px;width:calc(100% - 32px);box-shadow:0 18px 60px #0003";dlg.innerHTML='<h3 style="margin:0 0 8px">Eliminar comida</h3><p id="confirmarEliminarComidaTexto"></p><p style="color:#a33;font-size:13px">Esta acción es irreversible. Se eliminarán también valoraciones, comentarios, fotos y participantes. Si hay pagos o movimientos económicos, la eliminación se bloqueará.</p><p id="confirmarEliminarComidaError" style="color:#a33"></p><div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px"><button type="button" class="btn soft" id="cancelarEliminarComida">Cancelar</button><button type="button" class="btn primary" id="aceptarEliminarComida">Eliminar comida</button></div>';document.body.appendChild(dlg)}dlg.querySelector("#confirmarEliminarComidaTexto").textContent="¿Eliminar definitivamente la comida del "+fmt(c.fecha)+" ("+(c.restaurante?.nombre||"Sin restaurante")+")?";dlg.querySelector("#confirmarEliminarComidaError").textContent="";dlg.querySelector("#cancelarEliminarComida").onclick=()=>dlg.close();dlg.querySelector("#aceptarEliminarComida").onclick=async()=>{const btn=dlg.querySelector("#aceptarEliminarComida");btn.disabled=true;try{const{error}=await sb.rpc("eliminar_comida_admin",{p_id:id});if(error)throw error;comidas=comidas.filter(x=>String(x.id)!==String(id));renderLista();ficha.renderRest();dlg.close()}catch(e){dlg.querySelector("#confirmarEliminarComidaError").textContent=e.message||String(e)}finally{btn.disabled=false}};dlg.showModal()}
+// Un borrador descartado no debe quedar vinculado a otra comida por accidente.
+document.addEventListener('click',event=>{
+ if(event.target.closest('#nuevo,#cerrar'))delete document.body.dataset.ampPreparacionOrigen;
+},true);
 function esc(s){return String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}function mostrarEditorSinSaltoMovil(){
  const editor=$("editor");
  editor.classList.add("open");
@@ -159,6 +163,14 @@ $("guardar").onclick=async()=>{
   const{data,error}=await sb.rpc("guardar_comida_admin",{p});
   if(error)throw error;
   actual=data;
+  const preparacionOrigen=document.body.dataset.ampPreparacionOrigen;
+  if(preparacionOrigen){
+   const {error:enlaceError}=await sb.rpc("vincular_comida_organizacion_admin",{
+    p_preparacion:preparacionOrigen,p_comida:actual
+   });
+   if(enlaceError)throw Error("Comida guardada, pero no se pudo vincular a la organización: "+enlaceError.message);
+   delete document.body.dataset.ampPreparacionOrigen;
+  }
   try{
    const{error:ie}=await sb.rpc("gestionar_invitados_comida_admin",{p_comida:actual,p_invitados:invitados});
    if(ie)throw ie;
