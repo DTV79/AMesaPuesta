@@ -6,7 +6,11 @@ const base=SUPABASE_URL.replace(/\/$/,'');
 const campos=['restaurante','direccion','telefono','contacto','reserva','hora',
   'entrantes','principales','postres','bebidas','precio_orientativo'];
 let plan=null;
-function recibirPlan(nuevo){plan={...nuevo,yo_id:nuevo.yo_id||plan?.yo_id}}
+function recibirPlan(nuevo){
+  plan={...nuevo,yo_id:nuevo.yo_id||plan?.yo_id,
+    entregado_en:Object.prototype.hasOwnProperty.call(nuevo,'entregado_en')
+      ?nuevo.entregado_en:plan?.entregado_en};
+}
 
 async function rpc(nombre,parametros){
   const respuesta=await fetch(base+'/rest/v1/rpc/'+nombre,{
@@ -86,6 +90,11 @@ function actualizarColaboracion(datos){
   plan.tareas=tareas;
   plan.comentarios=comentarios;
   if(datos.yo_id)plan.yo_id=datos.yo_id;
+  if(Object.prototype.hasOwnProperty.call(datos,'entregado_en')
+    &&datos.entregado_en!==plan.entregado_en){
+    plan.entregado_en=datos.entregado_en;
+    pintarEntrega();
+  }
   if(hayCambios)pintarColaboracion();
 }
 async function actuar(tipo,accion,valores={}){
@@ -180,6 +189,22 @@ function verGrupo(titulo,personas){
   if(!personas.length){const li=document.createElement('li');li.textContent='Ninguno';ul.append(li)}
   div.append(h,ul);return div;
 }
+function pintarEntrega(){
+  const boton=$('org-deliver'),estado=$('org-delivery-status');
+  const entregado=!!plan?.entregado_en;
+  const asistenciaCerrada=!!plan?.asistencia_encuesta?.cerrada;
+  const restauranteGuardado=!!String(plan?.datos?.restaurante||'').trim();
+  boton.hidden=entregado;
+  boton.disabled=entregado||!asistenciaCerrada||!restauranteGuardado;
+  estado.textContent=entregado
+    ?'✓ Ficha entregada el '+momento(plan.entregado_en)+'. Administración ya puede consultar restaurante y menú.'
+    :!asistenciaCerrada
+      ?'Disponible cuando termine la encuesta de asistencia.'
+      :!restauranteGuardado
+        ?'Guardad primero el nombre del restaurante.'
+        :'Listo para entregar cuando lo decidáis. Las tareas y notas seguirán siendo privadas.';
+  estado.style.color=entregado?'#286c4d':'#666';
+}
 function pintar(){
   if(!plan)return;
   const fecha=plan.fecha_encuesta,asistencia=plan.asistencia_encuesta,definitiva=plan.fecha_definitiva;
@@ -235,7 +260,7 @@ function pintar(){
   const terminada=!!asistencia?.cerrada;
   badgeEstado($('org-step3'),terminada);
   $('org-step3-note').textContent=terminada
-    ?'✅ Asistencia cerrada. Ya podéis completar los últimos detalles. Administración podrá trasladar los asistentes y vuestra ficha al registro de comidas cuando corresponda.'
+    ?'✅ Asistencia cerrada. Completad el cuaderno y, cuando queráis, pulsad «Entregar datos a Administración» al final de la página.'
     :'🔒 Este paso estará disponible al cerrar la encuesta de asistencia.';
   $('org-step3-note').classList.toggle('org-success',terminada);
   cargarDatosPrivados(plan.datos);
@@ -247,6 +272,7 @@ function pintar(){
     responsable.append(option);
   });
   pintarColaboracion();
+  pintarEntrega();
 }
 
 function alternarFormulario(id,visible){ponerOculto(id,!visible)}
@@ -371,6 +397,20 @@ $('org-form-private').addEventListener('submit',async event=>{
     nota('org-private-msg','✓ Guardado para los dos organizadores.',true);
   }catch(error){nota('org-private-msg',error.message+' Si otra persona guardó, recarga para ver sus cambios.')}
   finally{boton.disabled=false;}
+});
+
+$('org-deliver').addEventListener('click',async()=>{
+  if(!plan||plan.entregado_en)return;
+  if(!confirm('¿Entregar la ficha a Administración? Podrán ver el restaurante, dirección y menú para crear la comida oficial. Las tareas y comentarios entre organizadores seguirán siendo privados.'))return;
+  const boton=$('org-deliver');boton.disabled=true;
+  try{
+    recibirPlan(await rpc('entregar_preparativos_cofrade',{p_token:token}));
+    pintarEntrega();
+  }catch(error){
+    nota('org-delivery-status',error.message);
+  }finally{
+    if(!plan?.entregado_en)boton.disabled=false;
+  }
 });
 
 (async()=>{
