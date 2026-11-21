@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS public.sugerencias_restaurantes (
   creada_por uuid NOT NULL REFERENCES public.cofrades(id) ON DELETE RESTRICT,
   creada_en timestamptz NOT NULL DEFAULT now(),
   actualizada_en timestamptz NOT NULL DEFAULT now(),
-  estado text NOT NULL DEFAULT 'en_lista' CHECK (estado IN ('en_lista','visitado','descartado')),
+  estado text NOT NULL DEFAULT 'en_lista' CHECK (estado IN ('en_lista','visitado','descartado','retirado')),
   comida_id uuid REFERENCES public.comidas(id) ON DELETE SET NULL,
   CONSTRAINT sugerencias_restaurantes_nombre CHECK (char_length(btrim(nombre)) BETWEEN 3 AND 120),
   CONSTRAINT sugerencias_restaurantes_localidad CHECK (char_length(btrim(localidad)) BETWEEN 2 AND 100),
@@ -23,6 +23,12 @@ CREATE TABLE IF NOT EXISTS public.sugerencias_restaurantes (
 ALTER TABLE public.sugerencias_restaurantes
   ADD COLUMN IF NOT EXISTS telefono text NOT NULL DEFAULT ''
   CHECK (char_length(telefono) <= 40);
+-- Retirado: eliminación recuperable del autor. Visitado: fuera del listado de recomendaciones.
+ALTER TABLE public.sugerencias_restaurantes
+  DROP CONSTRAINT IF EXISTS sugerencias_restaurantes_estado_check;
+ALTER TABLE public.sugerencias_restaurantes
+  ADD CONSTRAINT sugerencias_restaurantes_estado_check
+  CHECK (estado IN ('en_lista','visitado','descartado','retirado'));
 CREATE UNIQUE INDEX IF NOT EXISTS sugerencias_restaurantes_sin_duplicados
   ON public.sugerencias_restaurantes (lower(btrim(nombre)),lower(btrim(localidad)))
   WHERE estado = 'en_lista';
@@ -86,7 +92,7 @@ RETURNS jsonb LANGUAGE sql STABLE SET search_path TO '' AS $sql$
   FROM public.sugerencias_restaurantes s
   JOIN public.cofrades c ON c.id=s.creada_por
   LEFT JOIN public.comidas comida ON comida.id=s.comida_id
-  WHERE p_admin OR s.estado<>'descartado';
+  WHERE p_admin OR s.estado='en_lista';
 $sql$;
 REVOKE ALL ON FUNCTION cofradia_privada.resumen_sugerencias_restaurantes(uuid,boolean) FROM PUBLIC,anon,authenticated;
 
@@ -138,6 +144,20 @@ EXCEPTION WHEN unique_violation THEN
   RAISE EXCEPTION 'Ya tenemos este restaurante propuesto en esa localidad';
 END $fn$;
 
+-- El autor solo puede retirar propuestas pendientes; no borra votos ni comentarios.
+CREATE OR REPLACE FUNCTION public.retirar_sugerencia_restaurante_cofrade(p_token text,p_id uuid)
+RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path TO '' AS $fn$
+DECLARE v_actor uuid;v_count integer;
+BEGIN
+  v_actor:=cofradia_privada.cofrade_sesion_historial(p_token);
+  UPDATE public.sugerencias_restaurantes
+     SET estado='retirado',actualizada_en=now()
+   WHERE id=p_id AND creada_por=v_actor AND estado='en_lista' AND comida_id IS NULL;
+  GET DIAGNOSTICS v_count=ROW_COUNT;
+  IF v_count<>1 THEN RAISE EXCEPTION 'Solo puedes eliminar tus propuestas pendientes'; END IF;
+  RETURN true;
+END $fn$;
+
 CREATE OR REPLACE FUNCTION public.cambiar_interes_restaurante_cofrade(p_token text,p_id uuid)
 RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path TO '' AS $fn$
 DECLARE v_actor uuid;v_borrados integer;
@@ -160,7 +180,7 @@ RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path TO '' AS $fn$
 DECLARE v_actor uuid;v_id uuid;v_texto text:=btrim(coalesce(p_texto,''));
 BEGIN
   v_actor:=cofradia_privada.cofrade_sesion_historial(p_token);
-  IF NOT EXISTS(SELECT 1 FROM public.sugerencias_restaurantes WHERE id=p_sugerencia AND estado<>'descartado') THEN
+  IF NOT EXISTS(SELECT 1 FROM public.sugerencias_restaurantes WHERE id=p_sugerencia AND estado='en_lista') THEN
     RAISE EXCEPTION 'Esta propuesta no admite comentarios';
   END IF;
   IF p_eliminar THEN
@@ -233,7 +253,7 @@ RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path TO '' AS $fn$
 DECLARE v_count integer;
 BEGIN
   IF NOT cofradia_privada.es_admin() THEN RAISE EXCEPTION 'Acceso restringido' USING errcode='42501'; END IF;
-  IF p_estado NOT IN ('en_lista','visitado','descartado') THEN RAISE EXCEPTION 'Estado no válido'; END IF;
+  IF p_estado NOT IN ('en_lista','visitado','descartado','retirado') THEN RAISE EXCEPTION 'Estado no válido'; END IF;
   IF p_estado='visitado' AND NOT EXISTS (
     SELECT 1 FROM public.comidas WHERE id=p_comida AND publicada=true AND fecha<=current_date
   ) THEN
@@ -261,6 +281,7 @@ END $fn$;
 
 REVOKE ALL ON FUNCTION public.listar_sugerencias_restaurantes_cofrade(text),
   public.guardar_sugerencia_restaurante_cofrade(text,jsonb),
+  public.retirar_sugerencia_restaurante_cofrade(text,uuid),
   public.cambiar_interes_restaurante_cofrade(text,uuid),
   public.gestionar_comentario_restaurante_cofrade(text,uuid,text,uuid,boolean),
   public.listar_sugerencias_restaurantes_admin(),
@@ -270,6 +291,7 @@ REVOKE ALL ON FUNCTION public.listar_sugerencias_restaurantes_cofrade(text),
   FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.listar_sugerencias_restaurantes_cofrade(text),
   public.guardar_sugerencia_restaurante_cofrade(text,jsonb),
+  public.retirar_sugerencia_restaurante_cofrade(text,uuid),
   public.cambiar_interes_restaurante_cofrade(text,uuid),
   public.gestionar_comentario_restaurante_cofrade(text,uuid,text,uuid,boolean)
   TO anon,authenticated;

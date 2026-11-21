@@ -46,7 +46,7 @@ function editar(propuesta){
 function gestionarEstado(propuesta){
   const form=el('form',undefined,'formulario');form.hidden=true;
   const estados=el('label','Estado'),select=el('select');select.name='estado';
-  for(const [value,display] of [['en_lista','Por descubrir'],['visitado','Visitado'],['descartado','Descartado']]){
+  for(const [value,display] of [['en_lista','Por descubrir'],['visitado','Visitado'],['descartado','Descartado'],['retirado','Retirado por su autor']]){
     const o=el('option',display);o.value=value;select.append(o);
   }
   select.value=propuesta.estado;estados.append(select);
@@ -76,7 +76,7 @@ function tarjeta(p){
   const card=el('article',undefined,'card');
   const head=el('div',undefined,'cabecera'),texto=el('div');
   texto.append(el('h2',p.nombre),el('p',p.localidad+' · Propuesto por '+p.proponente+' · '+fecha(p.creada_en),'meta'));
-  const badge=el('span',({en_lista:'Por descubrir',visitado:'Visitado',descartado:'Descartado'})[p.estado],'pill '+p.estado);
+  const badge=el('span',({en_lista:'Por descubrir',visitado:'Visitado',descartado:'Descartado',retirado:'Retirado por su autor'})[p.estado],'pill '+p.estado);
   head.append(texto,badge);card.append(head);
   if(p.motivo)card.append(el('p',p.motivo,'motivo'));
   const detalles=[p.interesados+' interesados',(p.comentarios?.length||0)+' comentarios'];
