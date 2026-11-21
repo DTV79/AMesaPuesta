@@ -15,6 +15,17 @@
     .org-head h1{font-family:Georgia,serif;font-size:clamp(27px,5vw,39px);line-height:1.14;margin:0 0 9px}
     .org-head p{margin:0;line-height:1.55;color:#f5dcd6}
     .org-head .org-team{display:inline-block;margin-top:13px;color:#fff;font-weight:700}
+    .org-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;
+      position:sticky;top:var(--org-header-height,64px);z-index:90;margin:0 0 15px;
+      padding:7px;border:1px solid #e4d3c8;border-radius:16px;
+      background:rgba(255,252,248,.97);box-shadow:0 6px 20px #5f282217}
+    .org-tab{box-sizing:border-box;min-width:0;min-height:45px;padding:10px 8px;
+      border:1px solid transparent;border-radius:11px;background:transparent;
+      color:#6e4d47;font:700 15px/1.25 system-ui,sans-serif;cursor:pointer}
+    .org-tab[aria-selected="true"]{background:#782936;color:#fff;box-shadow:0 2px 8px #78293629}
+    .org-tab:focus-visible{outline:3px solid #d19c7b;outline-offset:2px}
+    .org-tabs,.org-panel{scroll-margin-top:calc(var(--org-header-height,64px) + 13px)}
+    .org-panel{min-width:0}
     .org-step,.org-private{background:#fffcf8;border:1px solid #eadbd2;border-radius:18px;padding:23px;margin:14px 0;box-shadow:0 8px 24px #5f28220c}
     .org-step--locked{background:#f3efeb;color:#766b66}
     .org-step--done{border-left:5px solid #45826b}
@@ -80,12 +91,14 @@
       .org-step,.org-private{padding:17px}
       .org-main{padding:15px 12px 85px}
       .org-head{padding:21px}
+      .org-tabs{gap:4px;padding:5px;border-radius:13px}
+      .org-tab{min-height:43px;padding:9px 4px;font-size:13px}
     }
   </style>
   <script defer src="./acceso-cofrade.js"></script>
   <script defer src="./mobile-nav.js"></script>
   <script defer src="./scroll-top.js"></script>
-  <script type="module" src="./organizar-comida.js?v=20261121-entrega-privada"></script>
+  <script type="module" src="./organizar-comida.js?v=20261121-tres-pestanas"></script>
 </head>
 <body>
   <header class="site-header"><div class="container header-inner">
@@ -104,6 +117,12 @@
     </section>
     <p id="org-loading" class="org-loading" role="status">Comprobando tu turno de organización…</p>
     <div id="org-content" hidden>
+      <div class="org-tabs" role="tablist" aria-label="Apartados de organización">
+        <button type="button" class="org-tab" role="tab" id="org-tab-votaciones" aria-controls="org-panel-votaciones" aria-selected="true" tabindex="0">Votaciones</button>
+        <button type="button" class="org-tab" role="tab" id="org-tab-anotaciones" aria-controls="org-panel-anotaciones" aria-selected="false" tabindex="-1">Anotaciones</button>
+        <button type="button" class="org-tab" role="tab" id="org-tab-restaurante" aria-controls="org-panel-restaurante" aria-selected="false" tabindex="-1">Restaurante</button>
+      </div>
+      <div class="org-panel" id="org-panel-votaciones" role="tabpanel" aria-labelledby="org-tab-votaciones" tabindex="0">
       <section class="org-step" id="org-step1" aria-labelledby="org-titulo1">
         <div class="org-step-head"><span class="org-number">1</span><div><h2 id="org-titulo1">Elegir la fecha</h2><p class="org-muted">Votación secreta. Los cofrades no ven quién eligió cada día.</p></div></div>
         <div class="org-body">
@@ -143,26 +162,11 @@
         <div class="org-step-head"><span class="org-number">3</span><div><h2 id="org-titulo3">¡Ya sabemos cuántos somos!</h2><p class="org-muted">Este paso se desbloquea al cerrar la confirmación de asistencia.</p></div></div>
         <div class="org-body"><p id="org-step3-note" class="org-notice">🔒 Todavía falta cerrar la encuesta de asistencia.</p></div>
       </section>
-      <section class="org-private" id="org-private" aria-labelledby="org-private-title">
-        <h2 id="org-private-title">🔐 Nuestro cuaderno de preparativos</h2>
-        <p class="org-private-note">Este cuaderno solo lo podéis ver los dos organizadores. Nadie de Administración verá el restaurante ni el menú hasta que decidáis entregar la ficha.</p>
-        <form id="org-form-private">
-          <div class="org-grid">
-            <div class="org-field"><label for="org-restaurante">Restaurante</label><input id="org-restaurante" maxlength="180"></div>
-            <div class="org-field"><label for="org-reserva">Reserva</label><input id="org-reserva" placeholder="Pendiente, apalabrada, confirmada…" maxlength="120"></div>
-            <div class="org-field org-full"><label for="org-direccion">Dirección</label><input id="org-direccion" maxlength="300"></div>
-            <div class="org-field"><label for="org-telefono">Teléfono</label><input id="org-telefono" maxlength="60" type="tel"></div>
-            <div class="org-field"><label for="org-contacto">Persona de contacto</label><input id="org-contacto" maxlength="180"></div>
-            <div class="org-field"><label for="org-hora">Fecha y hora comida</label><input id="org-hora" placeholder="Ej. 28/11/2026, 14:30" maxlength="50"></div>
-            <div class="org-field"><label for="org-precio_orientativo">Precio orientativo</label><input id="org-precio_orientativo" placeholder="Ej. 35 €/persona" maxlength="60"></div>
-            <div class="org-field org-full"><label for="org-entrantes">Entrantes</label><textarea id="org-entrantes" maxlength="1500"></textarea></div>
-            <div class="org-field org-full"><label for="org-principales">Platos principales</label><textarea id="org-principales" maxlength="1500"></textarea></div>
-            <div class="org-field"><label for="org-postres">Postres</label><textarea id="org-postres" maxlength="1500"></textarea></div>
-            <div class="org-field"><label for="org-bebidas">Bebidas</label><textarea id="org-bebidas" maxlength="1500"></textarea></div>
-          </div>
-          <div class="org-row"><button type="submit" class="org-btn">Guardar preparativos</button><span id="org-private-msg" role="status"></span></div>
-          <p id="org-private-updated" class="org-muted"></p>
-        </form>
+      </div>
+      <div class="org-panel" id="org-panel-anotaciones" role="tabpanel" aria-labelledby="org-tab-anotaciones" tabindex="0" hidden>
+        <section class="org-private" id="org-annotations" aria-labelledby="org-annotations-title">
+          <h2 id="org-annotations-title">📝 Tareas y anotaciones</h2>
+          <p class="org-private-note">Este espacio es exclusivamente para los dos organizadores. Las tareas y las conversaciones no se muestran en Administración, ni siquiera después de entregar la ficha del restaurante.</p>
         <div class="org-collab" aria-labelledby="org-tasks-title">
           <div class="org-collab-head"><h3 id="org-tasks-title">✅ Tareas pendientes</h3><button type="button" id="org-toggle-task" class="org-btn org-btn--soft">+ Añadir tarea</button></div>
           <p class="org-muted">Marcáis lo que ya está hecho y queda registrado quién lo hizo y cuándo. Cualquiera de los dos puede quitar una tarea que ya no sea necesaria.</p>
@@ -187,12 +191,36 @@
           <p class="org-muted">Las tareas y los comentarios se actualizan automáticamente entre los dos organizadores.</p>
           <p id="org-comments-msg" class="org-status" role="status"></p>
         </div>
+        </section>
+      </div>
+      <div class="org-panel" id="org-panel-restaurante" role="tabpanel" aria-labelledby="org-tab-restaurante" tabindex="0" hidden>
+        <section class="org-private" id="org-private" aria-labelledby="org-private-title">
+          <h2 id="org-private-title">🍽️ Restaurante y menú</h2>
+          <p class="org-private-note">Solo los dos organizadores podéis ver estos datos durante la preparación. Administración verá la ficha cuando decidáis entregarla.</p>
+        <form id="org-form-private">
+          <div class="org-grid">
+            <div class="org-field"><label for="org-restaurante">Restaurante</label><input id="org-restaurante" maxlength="180"></div>
+            <div class="org-field"><label for="org-reserva">Reserva</label><input id="org-reserva" placeholder="Pendiente, apalabrada, confirmada…" maxlength="120"></div>
+            <div class="org-field org-full"><label for="org-direccion">Dirección</label><input id="org-direccion" maxlength="300"></div>
+            <div class="org-field"><label for="org-telefono">Teléfono</label><input id="org-telefono" maxlength="60" type="tel"></div>
+            <div class="org-field"><label for="org-contacto">Persona de contacto</label><input id="org-contacto" maxlength="180"></div>
+            <div class="org-field"><label for="org-hora">Fecha y hora comida</label><input id="org-hora" placeholder="Ej. 28/11/2026, 14:30" maxlength="50"></div>
+            <div class="org-field"><label for="org-precio_orientativo">Precio orientativo</label><input id="org-precio_orientativo" placeholder="Ej. 35 €/persona" maxlength="60"></div>
+            <div class="org-field org-full"><label for="org-entrantes">Entrantes</label><textarea id="org-entrantes" maxlength="1500"></textarea></div>
+            <div class="org-field org-full"><label for="org-principales">Platos principales</label><textarea id="org-principales" maxlength="1500"></textarea></div>
+            <div class="org-field"><label for="org-postres">Postres</label><textarea id="org-postres" maxlength="1500"></textarea></div>
+            <div class="org-field"><label for="org-bebidas">Bebidas</label><textarea id="org-bebidas" maxlength="1500"></textarea></div>
+          </div>
+          <div class="org-row"><button type="submit" class="org-btn">Guardar preparativos</button><span id="org-private-msg" role="status"></span></div>
+          <p id="org-private-updated" class="org-muted"></p>
+        </form>
         <div class="org-collab" id="org-delivery" aria-labelledby="org-delivery-title">
           <h3 id="org-delivery-title">📤 Entregar ficha a Administración</h3>
           <p class="org-muted">Cuando terminéis de organizar la comida, podéis compartir los datos del restaurante y el menú con Administración para preparar la ficha oficial. Las tareas y las notas entre vosotros nunca se entregan.</p>
           <div class="org-row"><button type="button" id="org-deliver" class="org-btn">Entregar datos a Administración</button><span id="org-delivery-status" class="org-status" role="status"></span></div>
         </div>
-      </section>
+        </section>
+      </div>
     </div>
   </main>
   <nav class="mobile-nav" aria-label="Navegación móvil">
