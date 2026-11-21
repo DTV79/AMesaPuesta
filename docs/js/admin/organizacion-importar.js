@@ -85,7 +85,8 @@ async function cargar(){
   encuestas.textContent='📊 Gestionar encuestas';
   const cambiarFecha=document.createElement('button');
   cambiarFecha.type='button';cambiarFecha.className='btn soft';
-  cambiarFecha.textContent='📅 Corregir fecha';
+  cambiarFecha.textContent='📅 Modificar fecha';
+  cambiarFecha.style.cssText='font-size:13px;padding:8px 11px;background:transparent;border:1px solid #ded0c4;color:#76645f';
   if(entregado)actions.append(copiar);
   actions.append(cambiarFecha,encuestas);
   card.append(actions);
