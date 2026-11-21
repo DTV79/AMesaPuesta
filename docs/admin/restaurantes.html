@@ -186,6 +186,7 @@
 /* Acceso rápido a cobros sin abrir el editor de comidas. */
 .acciones-comidas{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 .acciones-comidas>.btn{white-space:nowrap}
+.acciones-comidas>.propuestas-shortcut{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#682736}
 #contadorCobrosComidas{font-variant-numeric:tabular-nums}
 .cobros-comidas-dialog{box-sizing:border-box;border:1px solid #e6ded4;border-radius:18px;padding:0;width:min(620px,calc(100vw - 24px));max-width:calc(100vw - 24px);max-height:min(88dvh,840px);box-shadow:0 24px 75px #0004;color:#26231f;background:#fff}
 .cobros-comidas-dialog::backdrop{background:rgba(25,23,20,.58)}
@@ -225,8 +226,9 @@
 .cobros-sin-pendientes,.cobros-todos-pagados{font-size:13px;color:#56765c;line-height:1.5;margin:12px 0}
 @media(max-width:720px){
  .top{flex-wrap:wrap;gap:13px}
- .top .acciones-comidas{flex:none;width:100%;justify-content:stretch}
- .acciones-comidas>.btn{flex:1;min-width:0;padding:11px 9px;font-size:12px}
+ .top .acciones-comidas{flex:none;width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .acciones-comidas>.btn{display:flex;align-items:center;justify-content:center;gap:4px;min-width:0;min-height:48px;padding:11px 9px;font-size:clamp(13px,3.4vw,15px);line-height:1.25;text-align:center;white-space:normal}
+ .acciones-comidas>#nuevo{grid-column:1/-1}
  .cobros-comidas-dialog{max-height:calc(100dvh - 38px)}
  .cobros-dialog-interior{max-height:calc(100dvh - 38px)}
  .cobros-dialog-cabecera{padding:17px 15px 7px}
@@ -308,4 +310,4 @@
   <p id="cobrosComidasResumen" role="status"></p><p id="cobrosComidasAviso" role="status" aria-live="polite"></p>
   <div id="cobrosComidasContenido" class="cobros-comidas-scroll" aria-label="Transferencias entre cofrades"></div>
  </div>
-</dialog><script defer src="../js/admin/enlace-propuestas.js?v=20261121-1"></script><script type="module" src="../js/admin/restaurantes.js?v=20261121-vinculo-historico"></script><script type="module" src="../js/admin/organizacion-importar.js?v=20261121-modificar-fecha"></script><script type="module" src="../js/admin/restaurantes-historico.js?v=20261116-historico-liquidaciones"></script><script src="../cabecera-comun.js"></script></body></html>
+</dialog><script defer src="../js/admin/enlace-propuestas.js?v=20261121-2"></script><script type="module" src="../js/admin/restaurantes.js?v=20261121-vinculo-historico"></script><script type="module" src="../js/admin/organizacion-importar.js?v=20261121-modificar-fecha"></script><script type="module" src="../js/admin/restaurantes-historico.js?v=20261116-historico-liquidaciones"></script><script src="../cabecera-comun.js"></script></body></html>
