@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f8f4ed">
+  <meta name="description" content="Restaurantes que los cofrades proponen para futuras comidas de A Mesa Puesta.">
+  <title>Restaurantes por descubrir · A Mesa Puesta</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="./styles.css?v=20261117-pizarra-proxima">
+  <link rel="stylesheet" href="./descubrir.css?v=20261121-1">
+  <script src="./scroll-top.js" defer></script>
+  <script defer src="./acceso-cofrade.js"></script>
+  <script defer src="./mobile-nav.js"></script>
+  <script type="module" src="./descubrir.js?v=20261121-1"></script>
+  <style>html:not(.cofrade-verificado) body{visibility:hidden}</style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand" aria-label="Cofradía A Mesa Puesta, inicio">
+        <span class="brand-mark"><img src="https://raw.githubusercontent.com/DTV79/AMesaPuesta/53b6073bb0bab12113dc6a1ba52bc687ac39b9bc/docs/Fotos/logo-cangrejo.png" width="38" height="38" alt=""></span>
+        <span class="brand-text">A Mesa Puesta<small>La cofradía · Desde 2022</small></span>
+      </a>
+      <nav class="desktop-nav" aria-label="Navegación principal">
+        <a href="index.html">Inicio</a>
+        <a href="restaurantes.html" aria-current="page">Nuestras comidas</a>
+        <a href="cofrades.html">Cofrades</a>
+        <a href="anuncios.html">Tablón</a>
+        <a href="encuestas.html">Encuestas</a>
+        <a href="estatutos.html">Estatutos</a>
+        <a href="himno.html">Himno</a>
+      </nav>
+      <a class="admin-access" href="../admin/index.html" aria-label="Acceder a administración">🔒 <span>Admin</span></a>
+    </div>
+  </header>
+  <main id="contenido" class="container descubrir-page">
+    <header class="page-intro board-intro descubrir-intro">
+      <p class="eyebrow">Ideas para el próximo mantel</p>
+      <h1>Restaurantes <em>por descubrir.</em></h1>
+      <p>¿Conoces un sitio que merezca una visita? Déjalo aquí y veremos a cuántos cofrades les apetece ir.</p>
+    </header>
+    <nav class="descubrir-tabs" aria-label="Apartados de Comidas">
+      <a href="restaurantes.html">🍽️ Restaurantes</a>
+      <a class="active" aria-current="page" href="por-descubrir.html">💡 Por descubrir</a>
+    </nav>
+    <section class="descubrir-tools" aria-label="Propuestas de restaurantes">
+      <div class="descubrir-tools-top">
+        <div><h2>La lista del buen comer</h2><p id="descubrir-contador" aria-live="polite">Cargando propuestas…</p></div>
+        <button class="descubrir-primary" id="descubrir-abrir" type="button">+ Proponer restaurante</button>
+      </div>
+      <form id="descubrir-formulario" class="descubrir-formulario" hidden>
+        <h3 id="descubrir-form-titulo">Proponer restaurante</h3>
+        <p>Con el nombre y la localidad es suficiente. El resto, si lo sabes, ayuda a los demás.</p>
+        <div class="descubrir-form-grid">
+          <label>Nombre del restaurante <span>*</span><input name="nombre" required maxlength="120" minlength="3" autocomplete="off" placeholder="¿Cómo se llama?"></label>
+          <label>Localidad <span>*</span><input name="localidad" required maxlength="100" minlength="2" placeholder="Ej. Tui, Vigo, Ourense…"></label>
+          <label>Enlace a Maps o a su web <input name="enlace" type="url" maxlength="500" inputmode="url" placeholder="https://…"></label>
+          <label>Precio aproximado por persona (€) <input name="precio_orientativo" type="number" inputmode="decimal" min="0" max="2000" step="0.01" placeholder="Opcional"></label>
+        </div>
+        <label>¿Por qué lo recomiendas? <textarea name="motivo" maxlength="600" rows="3" placeholder="Algo especial que tenga, lo que te han contado…"></textarea></label>
+        <div class="descubrir-form-actions">
+          <button type="submit" class="descubrir-primary" id="descubrir-guardar">Guardar propuesta</button>
+          <button type="button" class="descubrir-secondary" id="descubrir-cancelar">Cancelar</button>
+        </div>
+      </form>
+      <div class="descubrir-filtros">
+        <label>Buscar<input id="descubrir-buscar" type="search" placeholder="Restaurante o localidad…" autocomplete="off"></label>
+        <label>Mostrar<select id="descubrir-estado"><option value="en_lista">Por descubrir</option><option value="visitado">Ya visitados</option><option value="todos">Todos</option></select></label>
+        <label>Ordenar<select id="descubrir-orden"><option value="populares">Más populares</option><option value="recientes">Más recientes</option></select></label>
+      </div>
+      <p id="descubrir-aviso" role="status" aria-live="polite"></p>
+    </section>
+    <section id="descubrir-lista" class="descubrir-lista" aria-label="Restaurantes propuestos" aria-live="polite">
+      <p class="descubrir-vacio">Consultando las propuestas de la Cofradía…</p>
+    </section>
+    <aside class="descubrir-nota">💡 Las sugerencias y los «me gustaría ir» son orientativos. La elección de la próxima comida sigue en manos de sus organizadores y puede ser una sorpresa.</aside>
+  </main>
+  <footer class="site-footer"><div class="container footer-inner"><span>© Cofradía A Mesa Puesta · Desde 2022 · Buenas mesas y mejores recuerdos</span></div></footer>
+  <nav class="mobile-nav" aria-label="Navegación móvil">
+    <a href="index.html"><span aria-hidden="true">⌂</span>Inicio</a>
+    <a href="restaurantes.html" aria-current="page"><span aria-hidden="true">🍽</span>Comidas</a>
+    <a href="cofrades.html"><span aria-hidden="true">👥</span>Cofrades</a>
+    <a href="index.html#secciones"><span aria-hidden="true">☰</span>Más</a>
+  </nav>
+</body>
+</html>
