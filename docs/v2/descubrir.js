@@ -49,7 +49,7 @@ function abrirFormulario(propuesta=null){
   $('descubrir-form-titulo').textContent=editando?'Editar mi propuesta':'Proponer restaurante';
   $('descubrir-guardar').textContent=editando?'Guardar cambios':'Guardar propuesta';
   if(propuesta){
-    for(const nombre of ['nombre','localidad','enlace','motivo'])formulario.elements[nombre].value=propuesta[nombre]||'';
+    for(const nombre of ['nombre','localidad','enlace','telefono','motivo'])formulario.elements[nombre].value=propuesta[nombre]||'';
     formulario.elements.precio_orientativo.value=propuesta.precio_orientativo??'';
   }
   formulario.hidden=false;
@@ -100,6 +100,10 @@ function tarjeta(propuesta){
   const url=enlaceSeguro(propuesta.enlace);
   if(url)enlaceExterno(enlaces,/maps|goo\.gl/i.test(url)?'📍 Ver ubicación':'🌐 Ver enlace',url);
   else enlaceExterno(enlaces,'📍 Buscar en Maps','https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(propuesta.nombre+' '+propuesta.localidad));
+  if(propuesta.telefono){
+    const numero=String(propuesta.telefono).replace(/[^\d+]/g,'');
+    if(numero)enlaceExterno(enlaces,'📞 '+propuesta.telefono,'tel:'+numero);
+  }
   if(propuesta.estado==='visitado'&&propuesta.comida_codigo){
     const a=nodo('a','','🍽️ Ver ficha oficial');
     a.href='restaurantes.html#'+encodeURIComponent(propuesta.comida_codigo);
@@ -189,7 +193,7 @@ $('descubrir-formulario').addEventListener('submit',async e=>{
   try{
     const form=new FormData(e.currentTarget);
     const datos={id:editando,nombre:form.get('nombre'),localidad:form.get('localidad'),
-      enlace:form.get('enlace'),motivo:form.get('motivo'),precio_orientativo:form.get('precio_orientativo')};
+      enlace:form.get('enlace'),telefono:form.get('telefono'),motivo:form.get('motivo'),precio_orientativo:form.get('precio_orientativo')};
     await rpc('guardar_sugerencia_restaurante_cofrade',{p_datos:datos});
     cerrarFormulario();$('descubrir-estado').value='en_lista';
     $('descubrir-buscar').value='';await cargar();

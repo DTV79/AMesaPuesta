@@ -19,6 +19,10 @@ CREATE TABLE IF NOT EXISTS public.sugerencias_restaurantes (
   CONSTRAINT sugerencias_restaurantes_enlace CHECK (char_length(enlace) <= 500 AND (enlace = '' OR enlace ~* '^https?://')),
   CONSTRAINT sugerencias_restaurantes_precio CHECK (precio_orientativo IS NULL OR precio_orientativo BETWEEN 0 AND 2000)
 );
+-- Campo opcional añadido sin alterar las propuestas que ya existan.
+ALTER TABLE public.sugerencias_restaurantes
+  ADD COLUMN IF NOT EXISTS telefono text NOT NULL DEFAULT ''
+  CHECK (char_length(telefono) <= 40);
 CREATE UNIQUE INDEX IF NOT EXISTS sugerencias_restaurantes_sin_duplicados
   ON public.sugerencias_restaurantes (lower(btrim(nombre)),lower(btrim(localidad)))
   WHERE estado = 'en_lista';
@@ -60,7 +64,7 @@ CREATE OR REPLACE FUNCTION cofradia_privada.resumen_sugerencias_restaurantes(
 RETURNS jsonb LANGUAGE sql STABLE SET search_path TO '' AS $sql$
   SELECT COALESCE(jsonb_agg(jsonb_build_object(
     'id',s.id,'nombre',s.nombre,'localidad',s.localidad,
-    'enlace',s.enlace,'motivo',s.motivo,'precio_orientativo',s.precio_orientativo,
+    'enlace',s.enlace,'telefono',s.telefono,'motivo',s.motivo,'precio_orientativo',s.precio_orientativo,
     'creada_por',s.creada_por,'proponente',COALESCE(c.nombre,'Cofrade'),
     'creada_en',s.creada_en,'estado',s.estado,
     'es_mia',s.creada_por=p_cofrade,
@@ -102,12 +106,13 @@ DECLARE
   v_nombre text:=btrim(coalesce(p_datos->>'nombre',''));
   v_localidad text:=btrim(coalesce(p_datos->>'localidad',''));
   v_enlace text:=btrim(coalesce(p_datos->>'enlace',''));
+  v_telefono text:=btrim(coalesce(p_datos->>'telefono',''));
   v_motivo text:=btrim(coalesce(p_datos->>'motivo',''));
   v_precio numeric;
 BEGIN
   v_actor:=cofradia_privada.cofrade_sesion_historial(p_token);
   IF char_length(v_nombre) NOT BETWEEN 3 AND 120 OR char_length(v_localidad) NOT BETWEEN 2 AND 100
-    OR char_length(v_motivo)>600 OR char_length(v_enlace)>500
+    OR char_length(v_motivo)>600 OR char_length(v_enlace)>500 OR char_length(v_telefono)>40
     OR (v_enlace<>'' AND v_enlace !~* '^https?://') THEN
     RAISE EXCEPTION 'Revisa el nombre, la localidad, el enlace y la descripción';
   END IF;
@@ -118,14 +123,14 @@ BEGIN
   IF nullif(p_datos->>'id','') IS NOT NULL THEN
     v_id:=(p_datos->>'id')::uuid;
     UPDATE public.sugerencias_restaurantes
-       SET nombre=v_nombre,localidad=v_localidad,enlace=v_enlace,motivo=v_motivo,
+       SET nombre=v_nombre,localidad=v_localidad,enlace=v_enlace,telefono=v_telefono,motivo=v_motivo,
            precio_orientativo=v_precio,actualizada_en=now()
      WHERE id=v_id AND creada_por=v_actor AND estado='en_lista' AND comida_id IS NULL
      RETURNING id INTO v_id;
     IF v_id IS NULL THEN RAISE EXCEPTION 'Esta propuesta no se puede editar'; END IF;
   ELSE
-    INSERT INTO public.sugerencias_restaurantes(nombre,localidad,enlace,motivo,precio_orientativo,creada_por)
-    VALUES(v_nombre,v_localidad,v_enlace,v_motivo,v_precio,v_actor)
+    INSERT INTO public.sugerencias_restaurantes(nombre,localidad,enlace,telefono,motivo,precio_orientativo,creada_por)
+    VALUES(v_nombre,v_localidad,v_enlace,v_telefono,v_motivo,v_precio,v_actor)
     RETURNING id INTO v_id;
   END IF;
   RETURN v_id;
@@ -199,12 +204,13 @@ DECLARE
   v_nombre text:=btrim(coalesce(p_datos->>'nombre',''));
   v_localidad text:=btrim(coalesce(p_datos->>'localidad',''));
   v_enlace text:=btrim(coalesce(p_datos->>'enlace',''));
+  v_telefono text:=btrim(coalesce(p_datos->>'telefono',''));
   v_motivo text:=btrim(coalesce(p_datos->>'motivo',''));
   v_precio numeric;v_count integer;
 BEGIN
   IF NOT cofradia_privada.es_admin() THEN RAISE EXCEPTION 'Acceso restringido' USING errcode='42501'; END IF;
   IF char_length(v_nombre) NOT BETWEEN 3 AND 120 OR char_length(v_localidad) NOT BETWEEN 2 AND 100
-    OR char_length(v_motivo)>600 OR char_length(v_enlace)>500
+    OR char_length(v_motivo)>600 OR char_length(v_enlace)>500 OR char_length(v_telefono)>40
     OR (v_enlace<>'' AND v_enlace !~* '^https?://') THEN
     RAISE EXCEPTION 'Revisa los datos de la propuesta';
   END IF;
@@ -213,7 +219,7 @@ BEGIN
     IF v_precio NOT BETWEEN 0 AND 2000 THEN RAISE EXCEPTION 'Precio no válido'; END IF;
   END IF;
   UPDATE public.sugerencias_restaurantes SET
-    nombre=v_nombre,localidad=v_localidad,enlace=v_enlace,motivo=v_motivo,
+    nombre=v_nombre,localidad=v_localidad,enlace=v_enlace,telefono=v_telefono,motivo=v_motivo,
     precio_orientativo=v_precio,actualizada_en=now() WHERE id=p_id;
   GET DIAGNOSTICS v_count=ROW_COUNT;
   RETURN v_count=1;
