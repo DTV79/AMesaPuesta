@@ -6,6 +6,8 @@ const base=SUPABASE_URL.replace(/\/$/,'');
 const campos=['restaurante','direccion','telefono','contacto','reserva','hora',
   'entrantes','principales','postres','bebidas','precio_orientativo'];
 let plan=null;
+let encuestasExtra=[];
+let encuestaEnEdicion=null;
 function recibirPlan(nuevo){
   plan={...nuevo,yo_id:nuevo.yo_id||plan?.yo_id,
     entregado_en:Object.prototype.hasOwnProperty.call(nuevo,'entregado_en')
@@ -84,6 +86,133 @@ function agregarFecha(iso=''){
   div.append(label,input);
   cont.append(div);
   $('org-add-date').disabled=cont.children.length>=12;
+}
+const fechaEncuestaISO=texto=>{
+  const m=/^(\d{2})\/(\d{2})\/(\d{4})$/.exec(texto||'');
+  return m?`${m[3]}-${m[2]}-${m[1]}`:texto;
+};
+const fechaEncuestaTexto=iso=>{
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||'');
+  return m?`${m[3]}/${m[2]}/${m[1]}`:iso;
+};
+const nombreTipo={secreta:'🔒 Secreta',participacion:'👥 Participación',publica:'📢 Pública'};
+function mensajeEncuestaExtra(encuesta){
+  const cuerpo=[
+    '🦀 *Cofradía A Mesa Puesta*','',
+    '📊 Nueva votación pendiente: *'+encuesta.titulo+'*',
+    '',
+    'Entrad en *Mi Pizarra* para votar antes del '+tiempo(encuesta.cierra_en)+'.',
+    '', 'Acceso con vuestro usuario:',accesoCofrades
+  ].join('\n');
+  return 'https://wa.me/?text='+encodeURIComponent(cuerpo);
+}
+function pintarEncuestasExtra(){
+  const cont=$('org-extra-list');cont.replaceChildren();
+  if(!encuestasExtra.length){
+    cont.append(textoEl('p','org-muted','Todavía no se han creado votaciones adicionales.'));
+    return;
+  }
+  for(const encuesta of encuestasExtra){
+    const card=document.createElement('article');card.className='org-vote-card';
+    card.append(textoEl('h3','',encuesta.titulo));
+    const cerrada=!!encuesta.cerrada;
+    card.append(textoEl('p','org-muted',
+      (nombreTipo[encuesta.tipo]||'Votación')+' · '+
+      (cerrada?'Cerrada':'Abierta hasta '+tiempo(encuesta.cierra_en))+
+      ' · '+encuesta.participantes+' participante(s)'));
+    if(encuesta.descripcion)card.append(textoEl('p','',encuesta.descripcion));
+    const opciones=document.createElement('ul');opciones.className='org-list';
+    for(const o of encuesta.opciones||[]){
+      const li=document.createElement('li');li.append(textoEl('span','',o.texto));
+      li.append(textoEl('strong','',o.votos===null?'🔒 Hasta el cierre':o.votos+' votos'));
+      opciones.append(li);
+    }
+    card.append(opciones);
+    const acciones=document.createElement('div');acciones.className='org-row';
+    if(!cerrada){
+      const aviso=document.createElement('a');aviso.className='org-btn org-btn--soft org-share';
+      aviso.href=mensajeEncuestaExtra(encuesta);aviso.target='_blank';aviso.rel='noopener noreferrer';
+      aviso.textContent='📲 Avisar por WhatsApp';acciones.append(aviso);
+      const editar=document.createElement('button');editar.type='button';
+      editar.className='org-btn org-btn--soft';editar.textContent='✏️ Editar encuesta';
+      editar.addEventListener('click',()=>abrirEdicionEncuesta(encuesta.id));acciones.append(editar);
+    }
+    card.append(acciones);cont.append(card);
+  }
+}
+async function cargarEncuestasExtra(){
+  encuestasExtra=await rpc('listar_encuestas_extra_organizacion_cofrade',{p_token:token});
+  pintarEncuestasExtra();
+}
+function añadirOpcion(destino,valor='',modo='texto',bloqueada=false){
+  if(destino.children.length>=12)return;
+  const fila=document.createElement('div');fila.className='org-choice-row';
+  const campo=document.createElement('input');campo.type=modo==='fecha'?'date':'text';
+  campo.value=valor;campo.required=true;campo.maxLength=180;
+  campo.disabled=bloqueada;
+  campo.setAttribute('aria-label','Opción '+(destino.children.length+1));
+  fila.append(campo);
+  if(!bloqueada){
+    const borrar=document.createElement('button');borrar.type='button';
+    borrar.className='org-btn org-btn--soft';borrar.textContent='✕';
+    borrar.setAttribute('aria-label','Quitar opción');
+    borrar.addEventListener('click',()=>{
+      if(destino.children.length<=2)return;
+      fila.remove();actualizarNumeroOpciones(destino);
+    });
+    fila.append(borrar);
+  }
+  destino.append(fila);actualizarNumeroOpciones(destino);
+}
+function actualizarNumeroOpciones(destino){
+  const clase=destino.id.includes('edit')?'edit':'extra';
+  const seleccion=$('org-'+clase+'-max'),actual=Number(seleccion.value)||1;
+  seleccion.replaceChildren();
+  for(let n=1;n<=destino.children.length;n++){
+    const opcion=document.createElement('option');opcion.value=String(n);
+    opcion.textContent=n===1?'Solo una':'Hasta '+n+' opciones';seleccion.append(opcion);
+  }
+  seleccion.value=String(clase==='edit'&&encuestaEnEdicion?.clase==='fecha'
+    ?destino.children.length:Math.min(actual,destino.children.length));
+  $('org-'+clase+'-add-option').disabled=destino.children.length>=12;
+}
+function opcionesFormulario(id,modo){
+  return [...$(id).querySelectorAll('input')].map(input=>{
+    const texto=input.value.trim();
+    return modo==='fecha'?fechaEncuestaTexto(texto):texto;
+  });
+}
+async function refrescarVotaciones(){
+  recibirPlan(await rpc('consultar_organizacion_cofrade',{p_token:token}));
+  pintar();await cargarEncuestasExtra();
+}
+async function abrirEdicionEncuesta(id){
+  nota('org-edit-msg','');
+  try{
+    const encuesta=await rpc('consultar_edicion_encuesta_organizacion_cofrade',{p_token:token,p_id:id});
+    if(encuesta.cerrada)throw Error('Esta votación ya está cerrada.');
+    encuestaEnEdicion=encuesta;
+    $('org-edit-question').value=encuesta.titulo;
+    $('org-edit-description').value=encuesta.descripcion||'';
+    $('org-edit-type').value=encuesta.tipo;
+    $('org-edit-deadline').value=localInput(encuesta.cierra_en);
+    const fija=encuesta.clase!=='extra',conVotos=Number(encuesta.participantes)>0;
+    $('org-edit-type').disabled=fija||conVotos;
+    const cont=$('org-edit-options');cont.replaceChildren();
+    const bloqueada=conVotos||encuesta.clase==='asistencia';
+    for(const texto of encuesta.opciones||[])
+      añadirOpcion(cont,encuesta.clase==='fecha'?fechaEncuestaISO(texto):texto,
+        encuesta.clase==='fecha'?'fecha':'texto',bloqueada);
+    $('org-edit-add-option').hidden=bloqueada;
+    $('org-edit-max').value=String(encuesta.max_opciones);
+    $('org-edit-max').disabled=fija||conVotos;
+    $('org-edit-explanation').textContent=conVotos
+      ?'Ya hay votos: únicamente podéis cambiar el título, la explicación o la fecha de cierre.'
+      :fija?'Esta votación principal conserva su modalidad y sus reglas de respuesta.'
+        :'Podéis cambiar la modalidad y las respuestas mientras nadie haya votado.';
+    $('org-edit-section').hidden=false;
+    $('org-edit-section').scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(error){nota('org-extra-msg',error.message);}
 }
 function cargarDatosPrivados(datos){
   campos.forEach(campo=>{$('org-'+campo).value=String(datos?.[campo]||'')});
@@ -239,6 +368,7 @@ function pintar(){
   if(fecha){
     const cerrado=!!fecha.cerrada;
     ponerOculto('org-share-date-row',cerrado);
+    ponerOculto('org-edit-date-row',cerrado);
     if(!cerrado)prepararAvisoWhatsApp('fecha',fecha);
     $('org-date-status').textContent=cerrado
       ?'Encuesta cerrada · '+fecha.participantes+' cofrades votaron.'
@@ -267,7 +397,7 @@ function pintar(){
     }
     if(cerrado&&!definitiva&&max===0)nota('org-msg-confirm','No hubo votos. Administración puede resolverlo.');
   }
-  else ponerOculto('org-share-date-row',true);
+  else{ponerOculto('org-share-date-row',true);ponerOculto('org-edit-date-row',true)}
   badgeEstado($('org-step1'),!!definitiva);
   badgeEstado($('org-step2'),!!definitiva);
   ponerOculto('org-attendance-locked',!!definitiva);
@@ -275,6 +405,7 @@ function pintar(){
   ponerOculto('org-attendance-results',!asistencia);
   if(asistencia){
     ponerOculto('org-share-attendance-row',!!asistencia.cerrada);
+    ponerOculto('org-edit-attendance-row',!!asistencia.cerrada);
     if(!asistencia.cerrada)prepararAvisoWhatsApp('attendance',asistencia);
     const grupos=$('org-attendance-groups');grupos.replaceChildren();
     const si=asistencia.si||[],no=asistencia.no||[],sin=asistencia.sin_respuesta||[];
@@ -282,14 +413,16 @@ function pintar(){
     $('org-attendance-status').textContent=asistencia.cerrada
       ?'Plazo cerrado. Asistentes confirmados: '+si.length+'.'
       :'Encuesta pública abierta hasta '+tiempo(asistencia.cierra_en)+'. Puedes consultar quién ha respondido.';
+    ponerOculto('org-attendance-summary',!asistencia.cerrada);
+    if(asistencia.cerrada)$('org-attendance-summary').textContent=
+      '✅ Asistencia cerrada: '+si.length+' confirmados, '+no.length+
+      ' no asistirán y '+sin.length+' sin responder. Ya podéis completar los datos del restaurante y entregar la ficha a Administración.';
   }
-  else ponerOculto('org-share-attendance-row',true);
-  const terminada=!!asistencia?.cerrada;
-  badgeEstado($('org-step3'),terminada);
-  $('org-step3-note').textContent=terminada
-    ?'✅ Asistencia cerrada. Completad el cuaderno y, cuando queráis, pulsad «Entregar datos a Administración» al final de la página.'
-    :'🔒 Este paso estará disponible al cerrar la encuesta de asistencia.';
-  $('org-step3-note').classList.toggle('org-success',terminada);
+  else{
+    ponerOculto('org-share-attendance-row',true);
+    ponerOculto('org-edit-attendance-row',true);
+    ponerOculto('org-attendance-summary',true);
+  }
   cargarDatosPrivados(plan.datos);
   const responsable=$('org-task-owner');responsable.replaceChildren();
   const libre=document.createElement('option');libre.value='';libre.textContent='Cualquiera de los dos';
@@ -412,6 +545,78 @@ $('org-form-attendance').addEventListener('submit',async event=>{
   }catch(error){nota('org-msg-attendance',error.message)}
   finally{boton.disabled=false;}
 });
+$('org-edit-date').addEventListener('click',()=>{
+  if(plan?.fecha_encuesta?.id)abrirEdicionEncuesta(plan.fecha_encuesta.id);
+});
+$('org-edit-attendance').addEventListener('click',()=>{
+  if(plan?.asistencia_encuesta?.id)abrirEdicionEncuesta(plan.asistencia_encuesta.id);
+});
+for(const clase of ['extra','edit']){
+  $('org-'+clase+'-info-toggle').addEventListener('click',()=>{
+    const info=$('org-'+clase+'-info'),abrir=info.hidden;
+    info.hidden=!abrir;
+    $('org-'+clase+'-info-toggle').setAttribute('aria-expanded',String(abrir));
+  });
+}
+$('org-extra-toggle').addEventListener('click',()=>{
+  const abrir=$('org-extra-form').hidden;
+  $('org-extra-form').hidden=!abrir;
+  if(abrir)$('org-extra-title-input').focus();
+});
+$('org-extra-cancel').addEventListener('click',()=>{$('org-extra-form').hidden=true});
+$('org-extra-add-option').addEventListener('click',()=>añadirOpcion($('org-extra-options')));
+$('org-edit-add-option').addEventListener('click',()=>añadirOpcion($('org-edit-options'),'',
+  encuestaEnEdicion?.clase==='fecha'?'fecha':'texto'));
+$('org-edit-cancel').addEventListener('click',()=>{
+  $('org-edit-section').hidden=true;encuestaEnEdicion=null;
+});
+$('org-extra-form').addEventListener('submit',async event=>{
+  event.preventDefault();const boton=event.submitter;boton.disabled=true;
+  nota('org-extra-msg','');
+  try{
+    const opciones=opcionesFormulario('org-extra-options','texto');
+    if(opciones.length<2||new Set(opciones.map(x=>x.toLocaleLowerCase('es-ES'))).size!==opciones.length
+      ||opciones.some(x=>!x))throw Error('Introduce al menos dos opciones distintas.');
+    const plazo=$('org-extra-deadline').value;
+    if(!plazo)throw Error('Indica la fecha y la hora de cierre.');
+    if(!confirm('¿Publicamos esta votación '+$('org-extra-type').selectedOptions[0].text.toLowerCase()+' para los cofrades?'))return;
+    encuestasExtra=await rpc('crear_encuesta_extra_organizacion_cofrade',{
+      p_token:token,p_titulo:$('org-extra-title-input').value.trim(),
+      p_descripcion:$('org-extra-description').value.trim(),
+      p_tipo:$('org-extra-type').value,p_opciones:opciones,
+      p_max_opciones:Number($('org-extra-max').value),
+      p_cierre:new Date(plazo).toISOString()
+    });
+    pintarEncuestasExtra();
+    $('org-extra-form').reset();$('org-extra-options').replaceChildren();
+    añadirOpcion($('org-extra-options'));añadirOpcion($('org-extra-options'));
+    $('org-extra-form').hidden=true;
+  }catch(error){nota('org-extra-msg',error.message);}
+  finally{boton.disabled=false;}
+});
+$('org-edit-form').addEventListener('submit',async event=>{
+  event.preventDefault();const boton=event.submitter;boton.disabled=true;
+  nota('org-edit-msg','');
+  try{
+    if(!encuestaEnEdicion)throw Error('Elige primero la encuesta.');
+    const opciones=opcionesFormulario('org-edit-options',
+      encuestaEnEdicion.clase==='fecha'?'fecha':'texto');
+    const plazo=$('org-edit-deadline').value;
+    if(!plazo)throw Error('Indica el cierre de la encuesta.');
+    await rpc('editar_encuesta_organizacion_cofrade',{
+      p_token:token,p_id:encuestaEnEdicion.id,
+      p_titulo:$('org-edit-question').value.trim(),
+      p_descripcion:$('org-edit-description').value.trim(),
+      p_tipo:$('org-edit-type').value,p_opciones:opciones,
+      p_max_opciones:Number($('org-edit-max').value),
+      p_cierre:new Date(plazo).toISOString()
+    });
+    $('org-edit-section').hidden=true;encuestaEnEdicion=null;
+    await refrescarVotaciones();
+    nota('org-extra-msg','✓ Encuesta actualizada correctamente.',true);
+  }catch(error){nota('org-edit-msg',error.message);}
+  finally{boton.disabled=false;}
+});
 $('org-form-private').addEventListener('submit',async event=>{
   event.preventDefault();const boton=event.submitter;boton.disabled=true;
   nota('org-private-msg','');
@@ -488,8 +693,11 @@ mostrarPestanaOrganizacion('votaciones');
     plan=await rpc('consultar_organizacion_cofrade',{p_token:token});
     $('org-deadline-date').value=localInput(Date.now()+3*86400000);
     $('org-deadline-attendance').value=localInput(Date.now()+3*86400000);
+    $('org-extra-deadline').value=localInput(Date.now()+3*86400000);
+    añadirOpcion($('org-extra-options'));añadirOpcion($('org-extra-options'));
     agregarFecha();agregarFecha();
-    pintar();ponerOculto('org-loading',true);ponerOculto('org-content',false);
+    pintar();await cargarEncuestasExtra();
+    ponerOculto('org-loading',true);ponerOculto('org-content',false);
     const sincronizar=()=>actualizarMensajes().catch(()=>{});
     setInterval(sincronizar,15000);
     document.addEventListener('visibilitychange',()=>{

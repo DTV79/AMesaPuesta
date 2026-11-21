@@ -72,6 +72,24 @@ function pintarVotaciones(datos){
     grupoVotos(destino,'❌ No asistirán',asistencia.no);
     grupoVotos(destino,'⏳ Sin respuesta',asistencia.sin_respuesta);
   }else notaVacia(destino,'No se utilizó la votación de asistencia del módulo.');
+
+  const adicionales=Array.isArray(datos.encuestas_extra)?datos.encuestas_extra:[];
+  if(adicionales.length){
+    destino.append(el('h3','','Otras votaciones'));
+    for(const encuesta of adicionales){
+      destino.append(el('h4','',encuesta.titulo||'Encuesta adicional'));
+      const modalidades={secreta:'Secreta',participacion:'Participación',publica:'Pública'};
+      destino.append(el('p','hist-meta',
+        (modalidades[encuesta.tipo]||'Encuesta')+' · '+
+        (encuesta.participantes||0)+' participantes · Cierre: '+instante(encuesta.cierra_en)));
+      if(encuesta.descripcion)destino.append(el('p','hist-meta',encuesta.descripcion));
+      const lista=el('ul','hist-list');
+      for(const opcion of encuesta.opciones||[])
+        linea(lista,opcion.texto||'Opción',opcion.votos===null
+          ?'Resultado no disponible':String(opcion.votos??0)+' votos');
+      destino.append(lista);
+    }
+  }
 }
 
 function pintarAnotaciones(datos){
