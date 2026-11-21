@@ -9,7 +9,7 @@
   <script src="../js/admin/session-guard.js"></script>
   <style>
     :root{font-family:system-ui,sans-serif;color:#2b2521;background:#f6f4ef}*{box-sizing:border-box}body{margin:0}
-    .shell{max-width:920px;margin:0 auto;padding:28px 17px 80px}.back{color:#7c2332;text-decoration:none;font-weight:800;font-size:14px}
+    .shell{max-width:920px;margin:0 auto;padding:28px 17px 80px}.back{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 15px;border:1px solid #dac8bd;border-radius:11px;background:#fffaf6;color:#7c2332;text-decoration:none;font-weight:800;font-size:14px}
     h1{margin:17px 0 5px;font-size:clamp(25px,5vw,33px)}.lead{color:#71665d;line-height:1.6;margin:0 0 25px}
     .lista{display:grid;gap:15px}.card{background:#fff;border:1px solid #e7d9cd;border-radius:17px;padding:19px;min-width:0}
     .cabecera{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}.cabecera h2{margin:0;color:#672534;font:700 clamp(20px,4vw,25px)/1.25 Georgia,serif}
@@ -25,7 +25,7 @@
 </head>
 <body>
   <main class="shell">
-    <a href="restaurantes.html" class="back">← Volver a Restaurantes y comidas</a>
+    <a href="restaurantes.html" class="back">← Restaurantes</a>
     <h1>💡 Restaurantes por descubrir</h1>
     <p class="lead">Revisa las propuestas de los cofrades. Al vincular un restaurante con una comida ya celebrada y publicada, desaparecerá de «Por descubrir». Aquí también puedes recuperar propuestas retiradas por su autor. Hasta entonces la elección de los organizadores seguirá siendo privada.</p>
     <p class="status" id="estado" role="status" aria-live="polite"></p>
