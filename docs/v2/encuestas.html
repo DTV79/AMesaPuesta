@@ -1854,7 +1854,7 @@ function renderWinnerBlock(poll){
             <div class="options">
               ${poll.options.length
                 ? poll.options.map((option, index) => `
-                  <button class="option-btn" type="button" data-option-index="${index}" data-option-id="${option.id}">
+                  <button class="option-btn" type="button" data-option-index="${index}" data-option-id="${option.id}" data-exclusive="${option.name === 'Ninguna fecha me viene bien' ? 'true' : 'false'}">
                     <span class="option-name">${option.name}</span>
                     <span class="option-arrow">${maxChoices > 1 ? "✓" : "+"}</span>
                   </button>
@@ -2244,8 +2244,6 @@ function renderWinnerBlock(poll){
       clearCardStatus(card);
 
       const maxChoices = safeNumber(card.dataset.maxChoices, 1);
-      const buttons = Array.from(card.querySelectorAll(".option-btn.active"));
-
       if(maxChoices <= 1){
         card.querySelectorAll(".option-btn").forEach(b => b.classList.remove("active"));
         button.classList.add("active");
@@ -2253,10 +2251,15 @@ function renderWinnerBlock(poll){
         const isActive = button.classList.contains("active");
         if(isActive){
           button.classList.remove("active");
-        } else if(buttons.length < maxChoices){
-          button.classList.add("active");
         } else {
-          showCardStatus(card, `Solo puedes elegir hasta ${maxChoices} opciones.`, "error");
+          if(button.dataset.exclusive === "true"){
+            card.querySelectorAll(".option-btn.active").forEach(b => b.classList.remove("active"));
+          } else {
+            card.querySelectorAll('.option-btn.active[data-exclusive="true"]')
+              .forEach(b => b.classList.remove("active"));
+          }
+          if(getSelectedButtons(card).length < maxChoices)button.classList.add("active");
+          else showCardStatus(card, `Solo puedes elegir hasta ${maxChoices} opciones.`, "error");
         }
       }
 

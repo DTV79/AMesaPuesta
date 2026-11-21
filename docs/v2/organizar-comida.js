@@ -5,6 +5,7 @@ const token=localStorage.getItem('amp_cofrade_token')||'';
 const base=SUPABASE_URL.replace(/\/$/,'');
 const campos=['restaurante','direccion','telefono','contacto','reserva','hora',
   'entrantes','principales','postres','bebidas','precio_orientativo'];
+const OPCION_NINGUNA='Ninguna fecha me viene bien';
 let plan=null;
 let encuestasExtra=[];
 let encuestaEnEdicion=null;
@@ -197,15 +198,25 @@ async function abrirEdicionEncuesta(id){
     $('org-edit-type').value=encuesta.tipo;
     $('org-edit-deadline').value=localInput(encuesta.cierra_en);
     const fija=encuesta.clase!=='extra',conVotos=Number(encuesta.participantes)>0;
+    $('org-edit-type-field').hidden=fija;
     $('org-edit-type').disabled=fija||conVotos;
+    $('org-edit-fixed-type').hidden=!fija;
+    $('org-edit-fixed-type').textContent=encuesta.clase==='fecha'
+      ?'🔒 Modalidad fija: secreta. Esta encuesta siempre será secreta.'
+      :'📢 Modalidad fija: pública. La confirmación de asistencia siempre será visible.';
+    $('org-edit-info').hidden=true;
+    $('org-edit-info-toggle').setAttribute('aria-expanded','false');
     const cont=$('org-edit-options');cont.replaceChildren();
     const bloqueada=conVotos||encuesta.clase==='asistencia';
-    for(const texto of encuesta.opciones||[])
+    for(const texto of (encuesta.opciones||[]).filter(texto=>
+      encuesta.clase!=='fecha'||texto!==OPCION_NINGUNA))
       añadirOpcion(cont,encuesta.clase==='fecha'?fechaEncuestaISO(texto):texto,
         encuesta.clase==='fecha'?'fecha':'texto',bloqueada);
+    $('org-edit-none-option').hidden=encuesta.clase!=='fecha';
     $('org-edit-add-option').hidden=bloqueada;
     $('org-edit-max').value=String(encuesta.max_opciones);
     $('org-edit-max').disabled=fija||conVotos;
+    $('org-edit-max-field').hidden=fija;
     $('org-edit-explanation').textContent=conVotos
       ?'Ya hay votos: únicamente podéis cambiar el título, la explicación o la fecha de cierre.'
       :fija?'Esta votación principal conserva su modalidad y sus reglas de respuesta.'
@@ -375,7 +386,8 @@ function pintar(){
       :'Encuesta abierta hasta '+tiempo(fecha.cierra_en)+'. Han votado '+fecha.participantes+' cofrades.';
     const lista=$('org-date-options');lista.replaceChildren();
     const opciones=fecha.opciones||[];
-    const max=Math.max(0,...opciones.map(o=>Number(o.votos)||0));
+    const opcionesFechas=opciones.filter(o=>o.fecha!==OPCION_NINGUNA);
+    const max=Math.max(0,...opcionesFechas.map(o=>Number(o.votos)||0));
     for(const opcion of opciones){
       const li=document.createElement('li');
       const nombre=document.createElement('span');nombre.textContent=opcion.fecha;
@@ -387,7 +399,7 @@ function pintar(){
     ponerOculto('org-form-confirm-date',!puedeConfirmar);
     const seleccion=$('org-final-date');seleccion.replaceChildren();
     if(puedeConfirmar){
-      opciones.filter(o=>Number(o.votos)===max).forEach(opcion=>{
+      opcionesFechas.filter(o=>Number(o.votos)===max).forEach(opcion=>{
         const partes=String(opcion.fecha).split('/');
         const opt=document.createElement('option');
         opt.value=partes.length===3?partes[2]+'-'+partes[1]+'-'+partes[0]:'';
@@ -395,7 +407,8 @@ function pintar(){
         seleccion.append(opt);
       });
     }
-    if(cerrado&&!definitiva&&max===0)nota('org-msg-confirm','No hubo votos. Administración puede resolverlo.');
+    if(cerrado&&!definitiva&&max===0)nota('org-msg-confirm',
+      'Ninguna fecha recibió votos favorables. Consultad con Administración para decidir cómo continuar.');
   }
   else{ponerOculto('org-share-date-row',true);ponerOculto('org-edit-date-row',true)}
   badgeEstado($('org-step1'),!!definitiva);
@@ -601,6 +614,7 @@ $('org-edit-form').addEventListener('submit',async event=>{
     if(!encuestaEnEdicion)throw Error('Elige primero la encuesta.');
     const opciones=opcionesFormulario('org-edit-options',
       encuestaEnEdicion.clase==='fecha'?'fecha':'texto');
+    if(encuestaEnEdicion.clase==='fecha')opciones.push(OPCION_NINGUNA);
     const plazo=$('org-edit-deadline').value;
     if(!plazo)throw Error('Indica el cierre de la encuesta.');
     await rpc('editar_encuesta_organizacion_cofrade',{
