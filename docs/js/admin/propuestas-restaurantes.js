@@ -23,6 +23,7 @@ function editar(propuesta){
   const grid=el('div',undefined,'campos');
   grid.append(input('Restaurante','nombre',propuesta.nombre),input('Localidad','localidad',propuesta.localidad),
     input('Enlace a Maps o web','enlace',propuesta.enlace,'url'),
+    input('Teléfono','telefono',propuesta.telefono,'tel'),
     input('Precio orientativo (€)','precio_orientativo',propuesta.precio_orientativo,'number'));
   const motivo=el('label','¿Por qué lo recomiendan?'),textarea=el('textarea');
   textarea.name='motivo';textarea.maxLength=600;textarea.rows=3;textarea.value=propuesta.motivo||'';
@@ -80,6 +81,7 @@ function tarjeta(p){
   if(p.motivo)card.append(el('p',p.motivo,'motivo'));
   const detalles=[p.interesados+' interesados',(p.comentarios?.length||0)+' comentarios'];
   if(p.precio_orientativo!==null&&p.precio_orientativo!==undefined)detalles.push(euro(p.precio_orientativo)+'/persona');
+  if(p.telefono)detalles.push('Tel. '+p.telefono);
   card.append(el('p',detalles.join(' · '),'meta'));
   if(p.estado==='visitado'&&p.comida_codigo){
     const a=el('a','Ver ficha de la comida','back');a.href='../v2/restaurantes.html#'+encodeURIComponent(p.comida_codigo);card.append(a);

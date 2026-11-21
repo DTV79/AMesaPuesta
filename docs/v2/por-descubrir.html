@@ -10,11 +10,11 @@
   <link rel="manifest" href="../manifest.webmanifest">
   <link rel="apple-touch-icon" href="../apple-touch-icon.png">
   <link rel="stylesheet" href="./styles.css?v=20261117-pizarra-proxima">
-  <link rel="stylesheet" href="./descubrir.css?v=20261121-1">
+  <link rel="stylesheet" href="./descubrir.css?v=20261121-2">
   <script src="./scroll-top.js" defer></script>
   <script defer src="./acceso-cofrade.js"></script>
   <script defer src="./mobile-nav.js"></script>
-  <script type="module" src="./descubrir.js?v=20261121-1"></script>
+  <script type="module" src="./descubrir.js?v=20261121-2"></script>
   <style>html:not(.cofrade-verificado) body{visibility:hidden}</style>
 </head>
 <body>
@@ -56,9 +56,10 @@
         <h3 id="descubrir-form-titulo">Proponer restaurante</h3>
         <p>Con el nombre y la localidad es suficiente. El resto, si lo sabes, ayuda a los demás.</p>
         <div class="descubrir-form-grid">
-          <label>Nombre del restaurante <span>*</span><input name="nombre" required maxlength="120" minlength="3" autocomplete="off" placeholder="¿Cómo se llama?"></label>
-          <label>Localidad <span>*</span><input name="localidad" required maxlength="100" minlength="2" placeholder="Ej. Tui, Vigo, Ourense…"></label>
+          <label><span>Nombre del restaurante <span class="descubrir-required" aria-hidden="true">*</span></span><input name="nombre" required maxlength="120" minlength="3" autocomplete="off" placeholder="¿Cómo se llama?"></label>
+          <label><span>Localidad <span class="descubrir-required" aria-hidden="true">*</span></span><input name="localidad" required maxlength="100" minlength="2" placeholder="Ej. Tui, Vigo, Ourense…"></label>
           <label>Enlace a Maps o a su web <input name="enlace" type="url" maxlength="500" inputmode="url" placeholder="https://…"></label>
+          <label>Teléfono <input name="telefono" type="tel" maxlength="40" inputmode="tel" autocomplete="off" placeholder="Ej. 986 123 456 (opcional)"></label>
           <label>Precio aproximado por persona (€) <input name="precio_orientativo" type="number" inputmode="decimal" min="0" max="2000" step="0.01" placeholder="Opcional"></label>
         </div>
         <label>¿Por qué lo recomiendas? <textarea name="motivo" maxlength="600" rows="3" placeholder="Algo especial que tenga, lo que te han contado…"></textarea></label>
