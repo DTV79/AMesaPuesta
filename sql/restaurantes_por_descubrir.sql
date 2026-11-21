@@ -279,6 +279,22 @@ BEGIN
   RETURN v_count=1;
 END $fn$;
 
+-- Borrado irreversible exclusivo del administrador. Las relaciones de intereses y
+-- comentarios se eliminan por CASCADE, pero nunca se toca una comida oficial.
+CREATE OR REPLACE FUNCTION public.eliminar_sugerencia_restaurante_admin(p_id uuid)
+RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path TO '' AS $fn$
+DECLARE v_count integer;
+BEGIN
+  IF NOT cofradia_privada.es_admin() THEN RAISE EXCEPTION 'Acceso restringido' USING errcode='42501'; END IF;
+  DELETE FROM public.sugerencias_restaurantes
+   WHERE id=p_id AND estado<>'visitado' AND comida_id IS NULL;
+  GET DIAGNOSTICS v_count=ROW_COUNT;
+  IF v_count<>1 THEN
+    RAISE EXCEPTION 'No se puede borrar esta propuesta: no existe o está vinculada a una comida';
+  END IF;
+  RETURN true;
+END $fn$;
+
 REVOKE ALL ON FUNCTION public.listar_sugerencias_restaurantes_cofrade(text),
   public.guardar_sugerencia_restaurante_cofrade(text,jsonb),
   public.retirar_sugerencia_restaurante_cofrade(text,uuid),
@@ -287,7 +303,8 @@ REVOKE ALL ON FUNCTION public.listar_sugerencias_restaurantes_cofrade(text),
   public.listar_sugerencias_restaurantes_admin(),
   public.editar_sugerencia_restaurante_admin(uuid,jsonb),
   public.estado_sugerencia_restaurante_admin(uuid,text,uuid),
-  public.eliminar_comentario_restaurante_admin(uuid)
+  public.eliminar_comentario_restaurante_admin(uuid),
+  public.eliminar_sugerencia_restaurante_admin(uuid)
   FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.listar_sugerencias_restaurantes_cofrade(text),
   public.guardar_sugerencia_restaurante_cofrade(text,jsonb),
@@ -298,5 +315,6 @@ GRANT EXECUTE ON FUNCTION public.listar_sugerencias_restaurantes_cofrade(text),
 GRANT EXECUTE ON FUNCTION public.listar_sugerencias_restaurantes_admin(),
   public.editar_sugerencia_restaurante_admin(uuid,jsonb),
   public.estado_sugerencia_restaurante_admin(uuid,text,uuid),
-  public.eliminar_comentario_restaurante_admin(uuid)
+  public.eliminar_comentario_restaurante_admin(uuid),
+  public.eliminar_sugerencia_restaurante_admin(uuid)
   TO authenticated;

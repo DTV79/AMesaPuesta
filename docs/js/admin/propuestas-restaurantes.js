@@ -112,7 +112,26 @@ function tarjeta(p){
   const bEdit=boton('✎ Editar'),bEstado=boton('Cambiar estado');
   bEdit.addEventListener('click',()=>{editarForm.hidden=!editarForm.hidden;estadoForm.hidden=true;});
   bEstado.addEventListener('click',()=>{estadoForm.hidden=!estadoForm.hidden;editarForm.hidden=true;});
-  acciones.append(bEdit,bEstado);card.append(acciones,editarForm,estadoForm);
+  acciones.append(bEdit,bEstado);
+  if(p.estado!=='visitado'&&!p.comida_id){
+    const bEliminar=boton('🗑️ Eliminar definitivamente','peligro');
+    bEliminar.addEventListener('click',async()=>{
+      const avisos=[];
+      if(p.interesados)avisos.push(p.interesados+' cofrades interesados');
+      if(p.comentarios?.length)avisos.push(p.comentarios.length+' comentarios');
+      const mensaje='¿Eliminar definitivamente «'+p.nombre+'» ('+p.localidad+')?\n\n'
+        +(avisos.length?'También se borrarán '+avisos.join(' y ')+'.\n\n':'')
+        +'Esta acción no se puede deshacer.';
+      if(!confirm(mensaje))return;
+      bEliminar.disabled=true;
+      try{
+        await rpc('eliminar_sugerencia_restaurante_admin',{p_id:p.id});
+        await cargar();estado('«'+p.nombre+'» eliminado definitivamente.');
+      }catch(error){estado(error.message,true);bEliminar.disabled=false;}
+    });
+    acciones.append(bEliminar);
+  }
+  card.append(acciones,editarForm,estadoForm);
   return card;
 }
 async function cargar(){
