@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7f4ef">
+  <title>Mis organizaciones · A Mesa Puesta</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    html:not(.cofrade-verificado) body{visibility:hidden}
+    .hist-main{max-width:940px;margin:0 auto;padding:22px 18px 95px}
+    .hist-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;
+      background:#fffcf8;border:1px solid #e4d5ca;border-radius:16px;padding:12px 15px;margin-bottom:18px}
+    .hist-nav strong{font:700 18px Georgia,serif;color:#382b28}
+    .hist-return{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;
+      background:#f2e6dd;border:1px solid #d6bcb0;border-radius:11px;color:#752936;
+      font:700 14px system-ui,sans-serif;text-decoration:none}
+    .hist-hero{background:#75242f;color:#fffaf7;border-radius:21px;padding:24px;margin-bottom:20px}
+    .hist-hero h1{font:700 clamp(27px,5vw,38px)/1.18 Georgia,serif;margin:0 0 9px}
+    .hist-hero p{line-height:1.55;margin:0;color:#f5dcd6}
+    .hist-card{display:block;text-decoration:none;color:#302823;background:#fffdf9;
+      border:1px solid #e6d6ca;border-radius:16px;padding:18px;margin:12px 0;
+      box-shadow:0 5px 17px #5f28220d}
+    .hist-card:hover{border-color:#b78d7c}
+    .hist-card-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:9px}
+    .hist-card h2{margin:0;color:#742936;font:700 22px Georgia,serif}
+    .hist-meta{color:#665955;font-size:14px;line-height:1.6;margin:7px 0}
+    .hist-badge{display:inline-block;background:#e8f1e9;color:#2b6444;border-radius:20px;
+      padding:5px 10px;font:700 12px system-ui,sans-serif}
+    .hist-badge--demo{background:#fff0c5;color:#754718}
+    .hist-card-accion{color:#742936;font-weight:700;margin-top:10px}
+    .hist-status{background:#fffaf5;border:1px solid #e6d6ca;border-radius:14px;padding:20px;
+      line-height:1.55;color:#634c46}
+    .hist-readonly{font:700 12px system-ui,sans-serif;color:#2b6444}
+    .hist-detail-title{font:700 clamp(23px,4vw,29px) Georgia,serif;color:#742936;margin:9px 0}
+    .hist-demo-warning{background:#fff0c5;border:1px solid #e8d18b;padding:12px 15px;
+      border-radius:12px;color:#6f481b;line-height:1.5;margin:14px 0}
+    .hist-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;
+      margin:17px 0 13px;padding:6px;border:1px solid #e4d3c8;border-radius:14px;background:#fffcf8}
+    .hist-tab{min-width:0;border:0;border-radius:9px;background:none;padding:11px 6px;
+      color:#654d47;cursor:pointer;font:700 15px system-ui,sans-serif}
+    .hist-tab[aria-selected="true"]{background:#782936;color:white}
+    .hist-tab:focus-visible,.hist-return:focus-visible,.hist-card:focus-visible{outline:3px solid #d19c7b;outline-offset:2px}
+    .hist-panel{background:#fffcf8;border:1px solid #e8d8ce;border-radius:16px;padding:19px}
+    .hist-panel h3{font:700 21px Georgia,serif;color:#782936;margin:2px 0 11px}
+    .hist-panel h4{color:#57423c;margin:20px 0 8px}
+    .hist-panel p{line-height:1.55}
+    .hist-list{list-style:none;margin:12px 0;padding:0;display:grid;gap:10px}
+    .hist-item{background:white;border:1px solid #e3d5cb;border-radius:12px;padding:13px;
+      overflow-wrap:anywhere;line-height:1.55}
+    .hist-item--done{background:#f0f6f0;border-color:#cce0ce}
+    .hist-item--mine{background:#eaf2e9;border-color:#c9decf}
+    .hist-subtle{font-size:13px;color:#6e6560;line-height:1.5;margin-top:5px}
+    .hist-task-title{font-size:16px;font-weight:700}
+    .hist-item--done .hist-task-title{color:#52695d;text-decoration:line-through}
+    .hist-message{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:7px}
+    .hist-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .hist-field{border:1px solid #e7d9ce;background:white;border-radius:11px;padding:12px;min-width:0}
+    .hist-field b{display:block;color:#6e514c;font-size:13px;margin-bottom:5px}
+    .hist-field span{white-space:pre-wrap;overflow-wrap:anywhere}
+    .hist-field--wide{grid-column:1/-1}
+    [hidden]{display:none!important}
+    @media(max-width:650px){
+      .hist-main{padding:15px 12px 90px}
+      .hist-hero{padding:21px}
+      .hist-card{padding:15px}
+      .hist-tab{font-size:13px;padding:11px 3px}
+      .hist-panel{padding:14px}
+      .hist-fields{grid-template-columns:minmax(0,1fr)}
+      .hist-field--wide{grid-column:auto}
+    }
+  </style>
+  <script defer src="./acceso-cofrade.js"></script>
+  <script defer src="./mobile-nav.js"></script>
+  <script defer src="./scroll-top.js"></script>
+  <script type="module" src="./mis-organizaciones.js?v=20261121-historico"></script>
+</head>
+<body>
+  <header class="site-header"><div class="container header-inner">
+    <a href="index.html" class="brand" aria-label="A Mesa Puesta, inicio">
+      <span class="brand-mark"><img src="https://raw.githubusercontent.com/DTV79/AMesaPuesta/53b6073bb0bab12113dc6a1ba52bc687ac39b9bc/docs/Fotos/logo-cangrejo.png" width="38" height="38" alt=""></span>
+      <span class="brand-text">A Mesa Puesta<small>La cofradía · Desde 2022</small></span>
+    </a>
+    <nav class="desktop-nav" aria-label="Navegación principal"><a href="index.html">Inicio</a><a href="restaurantes.html">Nuestras comidas</a><a href="cofrades.html">Cofrades</a><a href="encuestas.html">Encuestas</a></nav>
+  </div></header>
+  <main class="hist-main">
+    <div class="hist-nav"><strong>📚 Archivo personal</strong><a class="hist-return" href="index.html">📋 Mi Pizarra</a></div>
+    <section class="hist-hero">
+      <h1>Mis organizaciones</h1>
+      <p>Los preparativos de las comidas que organizaste. Solo tú y el otro organizador podéis consultar las tareas y conversaciones originales. Los históricos son de solo lectura.</p>
+    </section>
+    <p class="hist-status" id="hist-status" role="status">Cargando tus organizaciones…</p>
+    <section id="hist-list" hidden aria-label="Organizaciones anteriores"><div id="hist-cards"></div></section>
+    <section id="hist-detail" hidden aria-label="Histórico de la organización">
+      <a href="mis-organizaciones.html" class="hist-return">← Todas mis organizaciones</a>
+      <h2 id="hist-detail-title" class="hist-detail-title"></h2>
+      <p id="hist-detail-meta" class="hist-meta"></p>
+      <p class="hist-readonly">🔒 Histórico privado · Solo lectura</p>
+      <p id="hist-demo-warning" class="hist-demo-warning" hidden>🧪 Este histórico es una DEMOSTRACIÓN TEMPORAL. Las tareas y los comentarios son inventados para probar el diseño; no son registros reales de aquella comida.</p>
+      <div class="hist-tabs" role="tablist" aria-label="Apartados del histórico">
+        <button type="button" class="hist-tab" role="tab" id="hist-tab-votaciones" aria-controls="hist-panel-votaciones" aria-selected="true">Votaciones</button>
+        <button type="button" class="hist-tab" role="tab" id="hist-tab-anotaciones" aria-controls="hist-panel-anotaciones" aria-selected="false">Anotaciones</button>
+        <button type="button" class="hist-tab" role="tab" id="hist-tab-restaurante" aria-controls="hist-panel-restaurante" aria-selected="false">Restaurante</button>
+      </div>
+      <div class="hist-panel" role="tabpanel" id="hist-panel-votaciones" aria-labelledby="hist-tab-votaciones"></div>
+      <div class="hist-panel" role="tabpanel" id="hist-panel-anotaciones" aria-labelledby="hist-tab-anotaciones" hidden></div>
+      <div class="hist-panel" role="tabpanel" id="hist-panel-restaurante" aria-labelledby="hist-tab-restaurante" hidden></div>
+    </section>
+  </main>
+  <nav class="mobile-nav" aria-label="Navegación móvil">
+    <a href="index.html"><span aria-hidden="true">⌂</span>Inicio</a>
+    <a href="restaurantes.html"><span aria-hidden="true">🍽</span>Comidas</a>
+    <a href="cofrades.html"><span aria-hidden="true">👥</span>Cofrades</a>
+    <a href="index.html#secciones"><span aria-hidden="true">☰</span>Más</a>
+  </nav>
+  <script src="../cabecera-actualizacion.js"></script>
+</body>
+</html>
