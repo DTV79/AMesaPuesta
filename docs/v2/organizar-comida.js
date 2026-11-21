@@ -413,6 +413,48 @@ $('org-deliver').addEventListener('click',async()=>{
   }
 });
 
+
+const pestañasOrganizacion=['votaciones','anotaciones','restaurante'];
+function mostrarPestanaOrganizacion(nombre,{enfocar=false,desplazar=false}={}){
+  if(!pestañasOrganizacion.includes(nombre))return;
+  for(const clave of pestañasOrganizacion){
+    const tab=$('org-tab-'+clave),panel=$('org-panel-'+clave);
+    const activa=clave===nombre;
+    tab.setAttribute('aria-selected',String(activa));
+    tab.tabIndex=activa?0:-1;
+    panel.hidden=!activa;
+  }
+  if(enfocar)$('org-tab-'+nombre).focus({preventScroll:true});
+  if(desplazar)requestAnimationFrame(()=>
+    document.querySelector('.org-tabs').scrollIntoView({behavior:'smooth',block:'start'}));
+}
+for(const [indice,nombre] of pestañasOrganizacion.entries()){
+  $('org-tab-'+nombre).addEventListener('click',()=>
+    mostrarPestanaOrganizacion(nombre,{desplazar:true}));
+  $('org-tab-'+nombre).addEventListener('keydown',event=>{
+    let siguiente;
+    if(event.key==='ArrowRight')siguiente=(indice+1)%pestañasOrganizacion.length;
+    else if(event.key==='ArrowLeft')siguiente=(indice+pestañasOrganizacion.length-1)%pestañasOrganizacion.length;
+    else if(event.key==='Home')siguiente=0;
+    else if(event.key==='End')siguiente=pestañasOrganizacion.length-1;
+    else return;
+    event.preventDefault();
+    mostrarPestanaOrganizacion(pestañasOrganizacion[siguiente],{enfocar:true,desplazar:true});
+  });
+}
+// La cabecera es fija al desplazarse; las pestañas quedan justo debajo,
+// incluso si cambia su altura entre móvil y ordenador.
+const cabeceraOrganizacion=document.querySelector('.site-header');
+function ajustarCabeceraOrganizacion(){
+  if(cabeceraOrganizacion)document.documentElement.style.setProperty(
+    '--org-header-height',Math.ceil(cabeceraOrganizacion.getBoundingClientRect().height)+'px');
+}
+ajustarCabeceraOrganizacion();
+if(cabeceraOrganizacion&&'ResizeObserver' in window)
+  new ResizeObserver(ajustarCabeceraOrganizacion).observe(cabeceraOrganizacion);
+window.addEventListener('resize',ajustarCabeceraOrganizacion,{passive:true});
+mostrarPestanaOrganizacion('votaciones');
+
 (async()=>{
   try{
     if(!token)throw Error('Inicia sesión para acceder.');
