@@ -121,7 +121,7 @@
   <script defer src="./acceso-cofrade.js"></script>
   <script defer src="./mobile-nav.js"></script>
   <script defer src="./scroll-top.js"></script>
-  <script type="module" src="./organizar-comida.js?v=20261121-encuestas-extra1"></script>
+  <script type="module" src="./organizar-comida.js?v=20261121-fecha-ninguna1"></script>
 </head>
 <body>
   <header class="site-header"><div class="container header-inner">
@@ -153,9 +153,10 @@
         <div class="org-step-head"><span class="org-number">1</span><div><h2 id="org-titulo1">Elegir la fecha</h2><p class="org-muted">Votación secreta. Los cofrades no ven quién eligió cada día.</p></div></div>
         <div class="org-body">
           <div id="org-create-date">
-            <p>Propón entre 2 y 12 días y fija el cierre de la votación. Cada cofrade podrá marcar todas las fechas que le vengan bien.</p>
+            <p>Propón entre 2 y 12 días y fija el cierre de la votación. Cada cofrade podrá marcar todas las fechas que le vengan bien, o indicar que ninguna le viene bien.</p>
             <form id="org-form-date">
               <div id="org-dates" class="org-dates"></div>
+              <p class="org-notice">🔒 Última opción fija: <strong>Ninguna fecha me viene bien</strong>. No se puede quitar y es incompatible con marcar fechas.</p>
               <div class="org-row"><button type="button" class="org-btn org-btn--soft" id="org-add-date">+ Otra fecha</button></div>
               <div class="org-field" style="max-width:330px;margin-top:15px"><label for="org-deadline-date">Votar hasta el día y hora</label><input type="datetime-local" id="org-deadline-date" required></div>
               <div class="org-row"><button class="org-btn" type="submit">Publicar encuesta de fecha</button><span id="org-msg-date" class="org-status" role="status"></span></div>
@@ -230,15 +231,16 @@
           <div class="org-grid">
             <div class="org-field org-full"><label for="org-edit-question">Título</label><input id="org-edit-question" maxlength="180" required></div>
             <div class="org-field org-full"><label for="org-edit-description">Descripción</label><textarea id="org-edit-description" maxlength="2000" rows="2"></textarea></div>
-            <div class="org-field"><label for="org-edit-type">Modalidad <button type="button" class="org-info-toggle" id="org-edit-info-toggle" aria-label="Explicar las modalidades" aria-controls="org-edit-info" aria-expanded="false">i</button></label><select id="org-edit-type"><option value="secreta">Secreta</option><option value="participacion">Participación</option><option value="publica">Pública</option></select></div>
+            <div class="org-field" id="org-edit-type-field"><label for="org-edit-type">Modalidad <button type="button" class="org-info-toggle" id="org-edit-info-toggle" aria-label="Explicar las modalidades" aria-controls="org-edit-info" aria-expanded="false">i</button></label><select id="org-edit-type"><option value="secreta">Secreta</option><option value="participacion">Participación</option><option value="publica">Pública</option></select></div>
+            <p id="org-edit-fixed-type" class="org-notice org-full" hidden></p>
             <div class="org-field"><label for="org-edit-deadline">Plazo de votación</label><input type="datetime-local" id="org-edit-deadline" required></div>
             <div class="org-info org-full" id="org-edit-info" hidden>
               <p><strong>🔒 Secreta:</strong> ni las elecciones ni quién votó se muestran hasta el cierre; solo se publican resultados agregados.</p>
               <p><strong>👥 Participación:</strong> se conoce quién participó, pero no su opción; resultados al cerrar.</p>
               <p><strong>📢 Pública:</strong> se ven los votos y las opciones elegidas por cada persona durante la votación.</p>
             </div>
-            <div class="org-field org-full"><span>Opciones de respuesta</span><div id="org-edit-options"></div><div class="org-row"><button type="button" class="org-btn org-btn--soft" id="org-edit-add-option">+ Otra opción</button></div></div>
-            <div class="org-field"><label for="org-edit-max">Opciones que puede marcar cada cofrade</label><select id="org-edit-max"></select></div>
+            <div class="org-field org-full"><span>Opciones de respuesta</span><div id="org-edit-options"></div><div id="org-edit-none-option" class="org-notice" hidden>🔒 <strong>Ninguna fecha me viene bien</strong> · Opción fija, siempre la última.</div><div class="org-row"><button type="button" class="org-btn org-btn--soft" id="org-edit-add-option">+ Otra opción</button></div></div>
+            <div class="org-field" id="org-edit-max-field"><label for="org-edit-max">Opciones que puede marcar cada cofrade</label><select id="org-edit-max"></select></div>
           </div>
           <p id="org-edit-explanation" class="org-muted"></p>
           <div class="org-row"><button class="org-btn" type="submit">Guardar cambios</button><button type="button" class="org-btn org-btn--soft" id="org-edit-cancel">Cancelar</button><span id="org-edit-msg" class="org-status" role="status"></span></div>
