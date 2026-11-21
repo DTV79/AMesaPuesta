@@ -54,6 +54,8 @@
     .org-btn{border:0;border-radius:12px;background:#782936;color:#fff;padding:11px 17px;font:700 14px system-ui,sans-serif;cursor:pointer}
     .org-btn:disabled{opacity:.58;cursor:wait}
     .org-btn--soft{background:#f1e6dd;color:#6b2531;border:1px solid #d8bfb8}
+    .org-share{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;line-height:1.35}
+    .org-share:focus-visible{outline:3px solid #d19c7b;outline-offset:3px}
     .org-muted{color:#665f5b;font-size:14px}
     .org-notice{background:#f7eee5;border:1px solid #e8d6c4;padding:12px 15px;border-radius:12px;line-height:1.5;margin:13px 0}
     .org-success{background:#e9f3ec;border-color:#bad8c3;color:#24583b}
@@ -109,7 +111,7 @@
   <script defer src="./acceso-cofrade.js"></script>
   <script defer src="./mobile-nav.js"></script>
   <script defer src="./scroll-top.js"></script>
-  <script type="module" src="./organizar-comida.js?v=20261121-tres-pestanas"></script>
+  <script type="module" src="./organizar-comida.js?v=20261121-whatsapp-votaciones"></script>
 </head>
 <body>
   <header class="site-header"><div class="container header-inner">
@@ -152,6 +154,9 @@
           <div id="org-date-results" hidden>
             <p id="org-date-status"></p>
             <ul class="org-list" id="org-date-options"></ul>
+            <div class="org-row" id="org-share-date-row" hidden>
+              <a id="org-share-date" class="org-btn org-btn--soft org-share" href="#" target="_blank" rel="noopener noreferrer">📲 Avisar por WhatsApp</a>
+            </div>
             <form id="org-form-confirm-date" hidden>
               <div class="org-field" style="max-width:360px"><label for="org-final-date">Fecha definitiva (entre las más votadas)</label><select id="org-final-date" required></select></div>
               <div class="org-row"><button class="org-btn" type="submit">Confirmar fecha definitiva</button><span id="org-msg-confirm" role="status"></span></div>
@@ -169,7 +174,13 @@
             <div class="org-field" style="max-width:340px"><label for="org-deadline-attendance">Confirmar asistencia hasta</label><input type="datetime-local" id="org-deadline-attendance" required></div>
             <div class="org-row"><button type="submit" class="org-btn">Publicar encuesta de asistencia</button><span id="org-msg-attendance" role="status"></span></div>
           </form>
-          <div id="org-attendance-results" hidden><p id="org-attendance-status"></p><div id="org-attendance-groups" class="org-attendees"></div></div>
+          <div id="org-attendance-results" hidden>
+            <p id="org-attendance-status"></p>
+            <div class="org-row" id="org-share-attendance-row" hidden>
+              <a id="org-share-attendance" class="org-btn org-btn--soft org-share" href="#" target="_blank" rel="noopener noreferrer">📲 Avisar por WhatsApp</a>
+            </div>
+            <div id="org-attendance-groups" class="org-attendees"></div>
+          </div>
         </div>
       </section>
       <section class="org-step org-step--locked" id="org-step3" aria-labelledby="org-titulo3">

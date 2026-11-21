@@ -35,6 +35,26 @@ const fechaTexto=(iso)=>{
   return new Intl.DateTimeFormat('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
     .format(new Date(+m[1],+m[2]-1,+m[3]));
 };
+const accesoCofrades='https://dtv79.github.io/AMesaPuesta/acceso.html';
+function prepararAvisoWhatsApp(tipo,encuesta){
+  const esFecha=tipo==='fecha';
+  const motivo=esFecha
+    ?'📅 Tenemos abierta la votación para elegir la fecha de la próxima comida.'
+    :'🍽️ Ya está abierta la votación para confirmar quién asistirá a la próxima comida'
+      +(plan?.fecha_definitiva?' del '+fechaTexto(plan.fecha_definitiva):'')+'.';
+  const mensaje=[
+    '🦀 *Cofradía A Mesa Puesta*',
+    '',motivo,
+    '',
+    'Entrad en *Mi Pizarra* y '+(esFecha?'votad':'confirmad vuestra asistencia')
+      +' antes del '+tiempo(encuesta.cierra_en)+'.',
+    '',
+    'Acceso con vuestro usuario:',
+    accesoCofrades
+  ].join('\n');
+  const enlace=$('org-share-'+tipo);
+  enlace.href='https://wa.me/?text='+encodeURIComponent(mensaje);
+}
 const localInput=(fecha)=>{
   const d=new Date(fecha),pad=n=>String(n).padStart(2,'0');
   return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'
@@ -217,6 +237,8 @@ function pintar(){
   }
   if(fecha){
     const cerrado=!!fecha.cerrada;
+    ponerOculto('org-share-date-row',cerrado);
+    if(!cerrado)prepararAvisoWhatsApp('fecha',fecha);
     $('org-date-status').textContent=cerrado
       ?'Encuesta cerrada · '+fecha.participantes+' cofrades votaron.'
       :'Encuesta abierta hasta '+tiempo(fecha.cierra_en)+'. Han votado '+fecha.participantes+' cofrades.';
@@ -244,12 +266,15 @@ function pintar(){
     }
     if(cerrado&&!definitiva&&max===0)nota('org-msg-confirm','No hubo votos. Administración puede resolverlo.');
   }
+  else ponerOculto('org-share-date-row',true);
   badgeEstado($('org-step1'),!!definitiva);
   badgeEstado($('org-step2'),!!definitiva);
   ponerOculto('org-attendance-locked',!!definitiva);
   ponerOculto('org-form-attendance',!definitiva||!!asistencia);
   ponerOculto('org-attendance-results',!asistencia);
   if(asistencia){
+    ponerOculto('org-share-attendance-row',!!asistencia.cerrada);
+    if(!asistencia.cerrada)prepararAvisoWhatsApp('attendance',asistencia);
     const grupos=$('org-attendance-groups');grupos.replaceChildren();
     const si=asistencia.si||[],no=asistencia.no||[],sin=asistencia.sin_respuesta||[];
     grupos.append(verGrupo('✅ Asistirán',si),verGrupo('❌ No asistirán',no),verGrupo('⏳ Sin responder',sin));
@@ -257,6 +282,7 @@ function pintar(){
       ?'Plazo cerrado. Asistentes confirmados: '+si.length+'.'
       :'Encuesta pública abierta hasta '+tiempo(asistencia.cierra_en)+'. Puedes consultar quién ha respondido.';
   }
+  else ponerOculto('org-share-attendance-row',true);
   const terminada=!!asistencia?.cerrada;
   badgeEstado($('org-step3'),terminada);
   $('org-step3-note').textContent=terminada
