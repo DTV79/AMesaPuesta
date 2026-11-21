@@ -61,7 +61,10 @@
     .org-success{background:#e9f3ec;border-color:#bad8c3;color:#24583b}
     .org-status{font-weight:600;min-height:20px}
     .org-dates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;min-width:0;max-width:100%}
-    .org-field input[type="date"],.org-field input[type="datetime-local"]{display:block;min-width:0;max-width:100%;width:100%;inline-size:100%;min-inline-size:0;max-inline-size:100%}
+    .org-field input[type="date"]{display:block;min-width:0;max-width:100%;width:100%;inline-size:100%;min-inline-size:0;max-inline-size:100%}
+    .org-field input[type="datetime-local"]{display:block;box-sizing:border-box;
+      width:min(100%,310px);inline-size:min(100%,310px);min-width:0;min-inline-size:0;
+      max-width:100%;max-inline-size:100%;overflow:hidden;padding:10px 9px}
     .org-list{list-style:none;padding:0;margin:12px 0}
     .org-vote-card{background:#f9f2ec;border:1px solid #e8d6ca;border-radius:13px;padding:15px;margin:12px 0}
     .org-vote-card h3{font:700 18px Georgia,serif;color:#782936;margin:0 0 6px}
