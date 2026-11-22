@@ -586,7 +586,7 @@ function historialCard(m) {
     actions.append(btn);
   }
   if(!esProxima(m)&&comidasFotosHabilitadas.has(m.codigo)){
-    const subir=el('button','','📷 Añadir fotos');subir.type='button';
+    const subir=el('button','photo-upload-button','📷 Añadir fotos');subir.type='button';
     const seleccionar=el('input');seleccionar.type='file';seleccionar.hidden=true;
     seleccionar.multiple=true;seleccionar.accept='image/jpeg,image/png,image/webp,image/heic,image/heif';
     const progreso=el('p','meal-photo-upload-status');progreso.hidden=true;
@@ -606,7 +606,7 @@ function historialCard(m) {
           [...nueva.querySelectorAll('details')].forEach((d,i)=>{d.open=!!anterior[i];});
           card.replaceWith(nueva);
           const nota=nueva.querySelector('.meal-photo-upload-status');
-          if(nota){nota.hidden=false;nota.textContent='✓ '+resultado.guardadas+' fotos guardadas.'+(actualizada?' Ya aparecen en la galería.':' Actualiza la página para verlas.')+(resultado.errores.length?' No se pudieron subir: '+resultado.errores.join(' | '):'');}
+          if(nota){nota.hidden=false;nota.textContent='✓ '+resultado.guardadas+(resultado.guardadas===1?' foto guardada.':' fotos guardadas.')+(actualizada?' Ya aparecen en la galería.':' Actualiza la página para verlas.')+(resultado.errores.length?' No se pudieron subir: '+resultado.errores.join(' | '):'');}
         }else progreso.textContent='No se ha subido ninguna foto. '+resultado.errores.join(' | ');
       }catch(error){progreso.textContent=error.message||'No se pudieron subir las fotografías.';}
       finally{subir.disabled=false;}
@@ -622,6 +622,8 @@ function historialCard(m) {
     a.rel='noopener noreferrer';
     actions.append(a);
   }
+  const accionesVisibles=actions.querySelectorAll('a,button');
+  if(accionesVisibles.length%2===1)accionesVisibles[accionesVisibles.length-1].classList.add('history-action-full');
   contenido.append(actions);
   if(avisoFotos)contenido.append(avisoFotos);
   if(esProxima(m)){
