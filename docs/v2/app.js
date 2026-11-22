@@ -1,8 +1,10 @@
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js';
+import {comidasConFotosHabilitadas,subirFotosCofrade} from './fotos-cofrades.js';
 
 const API = SUPABASE_URL.replace(/\/$/, '') + '/functions/v1/listados-cofradia?consulta=listar_comidas_publicas_v2';
 let comidas = [];
 let valoracionesDisponibles = new Map();
+let comidasFotosHabilitadas = new Set();
 
 function el(tag, clase = '', texto = null) {
   const node = document.createElement(tag);
@@ -564,6 +566,7 @@ function historialCard(m) {
   contenido.append(resumenAsistencia);
 
   const actions=el('div','history-actions');
+  let avisoFotos=null;
   const maps=el('a','','↗ Cómo llegar');
   maps.href=ubicacion(m);
   maps.target='_blank';
@@ -582,6 +585,35 @@ function historialCard(m) {
     btn.addEventListener('click',()=>abrirGaleria(m,btn));
     actions.append(btn);
   }
+  if(!esProxima(m)&&comidasFotosHabilitadas.has(m.codigo)){
+    const subir=el('button','','📷 Añadir fotos');subir.type='button';
+    const seleccionar=el('input');seleccionar.type='file';seleccionar.hidden=true;
+    seleccionar.multiple=true;seleccionar.accept='image/jpeg,image/png,image/webp,image/heic,image/heif';
+    const progreso=el('p','meal-photo-upload-status');progreso.hidden=true;
+    progreso.setAttribute('role','status');progreso.setAttribute('aria-live','polite');
+    subir.addEventListener('click',()=>seleccionar.click());
+    seleccionar.addEventListener('change',async()=>{
+      const archivos=Array.from(seleccionar.files||[]);seleccionar.value='';
+      if(!archivos.length)return;
+      subir.disabled=true;progreso.hidden=false;
+      try{
+        const resultado=await subirFotosCofrade(m.codigo,archivos,mensaje=>{progreso.textContent=mensaje;});
+        if(resultado.guardadas){
+          let actualizada=true;
+          try{await cargarFotosNuevas();}catch(error){actualizada=false;console.warn('Fotos guardadas, pero no se pudo refrescar la galería',error);}
+          const anterior=[...card.querySelectorAll('details')].map(d=>d.open);
+          const nueva=historialCard(m);
+          [...nueva.querySelectorAll('details')].forEach((d,i)=>{d.open=!!anterior[i];});
+          card.replaceWith(nueva);
+          const nota=nueva.querySelector('.meal-photo-upload-status');
+          if(nota){nota.hidden=false;nota.textContent='✓ '+resultado.guardadas+' fotos guardadas.'+(actualizada?' Ya aparecen en la galería.':' Actualiza la página para verlas.')+(resultado.errores.length?' No se pudieron subir: '+resultado.errores.join(' | '):'');}
+        }else progreso.textContent='No se ha subido ninguna foto. '+resultado.errores.join(' | ');
+      }catch(error){progreso.textContent=error.message||'No se pudieron subir las fotografías.';}
+      finally{subir.disabled=false;}
+    });
+    actions.append(subir,seleccionar);
+    avisoFotos=progreso;
+  }
   const web=linkExterno(m.web);
   if(web){
     const a=el('a','','Sitio web ↗');
@@ -591,6 +623,7 @@ function historialCard(m) {
     actions.append(a);
   }
   contenido.append(actions);
+  if(avisoFotos)contenido.append(avisoFotos);
   if(esProxima(m)){
     contenido.append(el('p','agenda-ics-nota','La fecha se guarda como evento de día completo: aún no hay hora registrada.'));
   }
@@ -729,6 +762,15 @@ async function actualizarValoracionesEnPantalla(){
     }
   }catch(e){console.warn('No se pudieron actualizar las valoraciones',e)}
 }
+async function cargarFotosNuevas(){
+  const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/functions/v1/listados-cofradia?consulta=listar_fotos_comidas_publicas_v2',{
+    method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'x-cofrade-token':localStorage.getItem('amp_cofrade_token')||'','Content-Type':'application/json'},body:'{}',cache:'no-store'
+  });
+  if(!res.ok)throw Error('No se pudo actualizar la galería ('+res.status+')');
+  const rows=await res.json();
+  const porCodigo=new Map(rows.map(r=>[r.codigo,r.fotos]));
+  for(const m of comidas)m.fotos_nuevas=porCodigo.get(m.codigo)||[];
+}
 function iniciarRestaurantes(){
   prepararGaleria();
   void renderAgenda();
@@ -779,14 +821,13 @@ async function iniciar() {
   try {
     comidas=await consultarHistorial();
     try {
-      const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/functions/v1/listados-cofradia?consulta=listar_fotos_comidas_publicas_v2',{
-        method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'x-cofrade-token':localStorage.getItem('amp_cofrade_token')||'','Content-Type':'application/json'},body:'{}',cache:'no-store'
-      });
-      if(res.ok){
-        const rows=await res.json();
-        const porCodigo=new Map(rows.map(r=>[r.codigo,r.fotos]));
-        for(const m of comidas)m.fotos_nuevas=porCodigo.get(m.codigo)||[];
-      }else console.warn('No se pudieron consultar las portadas nuevas',res.status);
+      await Promise.all([
+        cargarFotosNuevas().catch(error=>console.warn('Fotografías nuevas no disponibles',error)),
+        document.body.dataset.page==='restaurantes'
+          ?comidasConFotosHabilitadas().then(codigos=>{comidasFotosHabilitadas=codigos;})
+            .catch(error=>console.warn('No se pudieron comprobar los permisos para subir fotos',error))
+          :Promise.resolve()
+      ]);
     }catch(e){console.warn('Fotografías nuevas no disponibles; se mantiene el histórico',e);}
     if(document.body.dataset.page==='restaurantes'){try{await cargarEstadoValoraciones()}catch(e){console.warn('Valoraciones no disponibles',e);}}
     if(document.body.dataset.page==='home')renderHome();
