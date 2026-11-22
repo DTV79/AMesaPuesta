@@ -225,7 +225,6 @@ button {cursor:pointer}
   .history-card {grid-template-columns:95px 1fr}
   .history-photo {min-height:180px}
   .history-content h2 {font-size:19px}
-  .history-actions {flex-direction:column;align-items:stretch}
 }
 @media(prefers-reduced-motion:reduce) {
   html{scroll-behavior:auto}
@@ -1373,6 +1372,15 @@ body.board-detail-mode .board-next {display:none!important}
 .agenda-nota{margin:5px 0 0;color:#78655b;font-size:11px;line-height:1.45}
 .history-actions .agenda-calendar-button{background:#ead8bc;color:#5c331c}
 .history-actions .agenda-calendar-button:hover{background:#e1c79f}
+/* Acciones de cada comida: botones alineados y cómodos de pulsar en móvil. */
+@media(max-width:680px){
+ .history-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:16px}
+ .history-actions>a,.history-actions>button{box-sizing:border-box;width:100%;min-width:0;min-height:49px;padding:10px 7px;border:1px solid #ead8cc;border-radius:12px;font-size:clamp(12px,3.4vw,14px);line-height:1.3;text-align:center;white-space:nowrap}
+ .history-actions>.photo-upload-button{background:var(--wine);color:#fff;border-color:var(--wine)}
+ .history-actions>.photo-upload-button:hover{background:#70212f;color:#fff}
+ .history-actions>.history-action-full{grid-column:1/-1}
+}
+@media(max-width:350px){.history-actions{grid-template-columns:minmax(0,1fr)}.history-actions>:is(a,button){grid-column:1/-1}}
 @media(max-width:600px){
  .agenda-comidas{margin:8px 0 20px;padding:14px 13px;border-radius:17px}
  .agenda-cabecera{margin-bottom:12px}
