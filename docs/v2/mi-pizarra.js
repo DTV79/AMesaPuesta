@@ -209,7 +209,7 @@ for(const d of data.deudas_comidas||[]){add("💸","Debes "+euros(d.importe)+" a
        aviso.textContent="Te toca organizar esta comida";
        tarjeta.append(aviso);
        const accesoOrganizacion=document.createElement("div");
-       accesoOrganizacion.className="pizarra-proxima-acciones";
+       accesoOrganizacion.className="pizarra-proxima-acciones pizarra-proxima-acciones--organizacion";
        const preparar=document.createElement("a");
        preparar.href="organizar-comida.html";
        preparar.textContent="📋 Preparar la comida";
@@ -234,7 +234,7 @@ for(const d of data.deudas_comidas||[]){add("💸","Debes "+euros(d.importe)+" a
            const cantidad=Math.max(0,Math.trunc(Number(await respuesta.json())||0));
            mensajesSinLeer.hidden=cantidad===0;
            mensajesSinLeer.textContent=cantidad
-             ?"💬 "+cantidad+(cantidad===1?" mensaje sin leer":" mensajes sin leer"):"";
+             ?cantidad+(cantidad===1?" mensaje sin leer":" mensajes sin leer"):"";
          }catch(error){console.warn("No se pudieron comprobar las anotaciones sin leer",error)}
        };
        void actualizarMensajesSinLeer();

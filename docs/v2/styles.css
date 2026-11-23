@@ -1406,11 +1406,19 @@ body.board-detail-mode .board-next {display:none!important}
 .pizarra-proxima-acciones a{background:#f3e7da}
 .pizarra-proxima-acciones a:hover,.pizarra-proxima-acciones button:hover{background:#f9dab5}
 .pizarra-proxima-acciones a:focus-visible,.pizarra-proxima-acciones button:focus-visible{outline:3px solid #fff;outline-offset:2px}
-.pizarra-proxima-novedades{display:inline-flex;align-items:center;justify-content:center;
-  min-height:36px;box-sizing:border-box;padding:8px 11px;border:1px solid #f0c98d;
-  border-radius:9px;background:#fff0da;color:#782936;font:800 12px/1.2 Arial,sans-serif}
+.pizarra-proxima-acciones--organizacion{flex-wrap:nowrap;align-items:center;gap:10px}
+.pizarra-proxima-acciones--organizacion a{flex:none;white-space:nowrap}
+.pizarra-proxima-novedades{display:inline-flex;align-items:center;gap:6px;
+  color:#ffdfb4;font:700 12px/1.3 Arial,sans-serif;white-space:nowrap}
+.pizarra-proxima-novedades::before{content:"";display:block;flex:none;
+  width:7px;height:7px;border-radius:50%;background:#ffca7b}
 .pizarra-proxima-novedades[hidden]{display:none}
 @media(max-width:390px){.pizarra-proxima-acciones a,.pizarra-proxima-acciones button{font-size:11px;padding:8px 9px}}
+@media(max-width:390px){
+  .pizarra-proxima-acciones--organizacion{gap:7px}
+  .pizarra-proxima-acciones--organizacion a{font-size:10px!important;padding:8px 7px!important}
+  .pizarra-proxima-novedades{font-size:10.5px;gap:4px}
+}
 
 /* Un solo icono grande y nombres con método en la organización sin fecha. */
 .pizarra-proxima-solo{display:flex;align-items:center;gap:12px}
