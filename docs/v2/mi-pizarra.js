@@ -214,8 +214,34 @@ for(const d of data.deudas_comidas||[]){add("💸","Debes "+euros(d.importe)+" a
        preparar.href="organizar-comida.html";
        preparar.textContent="📋 Preparar la comida";
        preparar.style.cssText="display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;background:#fff1dd;color:#571923;border-radius:10px;font-weight:800;text-decoration:none";
-       accesoOrganizacion.append(preparar);
+       const mensajesSinLeer=document.createElement("span");
+       mensajesSinLeer.className="pizarra-proxima-novedades";
+       mensajesSinLeer.hidden=true;
+       mensajesSinLeer.setAttribute("role","status");
+       accesoOrganizacion.append(preparar,mensajesSinLeer);
        tarjeta.append(accesoOrganizacion);
+       // Utiliza el mismo contador privado que la pestaña «Anotaciones».
+       // Cada organizador solo ve las tareas y notas nuevas de su compañero.
+       const actualizarMensajesSinLeer=async()=>{
+         if(document.visibilityState!=="visible")return;
+         try{
+           const respuesta=await fetch(base+"/rest/v1/rpc/novedades_anotaciones_organizacion_cofrade",{
+             method:"POST",cache:"no-store",
+             headers:{apikey:SUPABASE_PUBLISHABLE_KEY,"Content-Type":"application/json"},
+             body:JSON.stringify({p_token:token,p_marcar:false})
+           });
+           if(!respuesta.ok)throw Error("HTTP "+respuesta.status);
+           const cantidad=Math.max(0,Math.trunc(Number(await respuesta.json())||0));
+           mensajesSinLeer.hidden=cantidad===0;
+           mensajesSinLeer.textContent=cantidad
+             ?"💬 "+cantidad+(cantidad===1?" mensaje sin leer":" mensajes sin leer"):"";
+         }catch(error){console.warn("No se pudieron comprobar las anotaciones sin leer",error)}
+       };
+       void actualizarMensajesSinLeer();
+       setInterval(actualizarMensajesSinLeer,15000);
+       document.addEventListener("visibilitychange",()=>{
+         if(document.visibilityState==="visible")void actualizarMensajesSinLeer();
+       });
      }
      if(proxima){
        const acciones=document.createElement("div");
