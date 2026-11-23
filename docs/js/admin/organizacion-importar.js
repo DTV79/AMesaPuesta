@@ -97,14 +97,21 @@ async function cargar(){
     card.append(nota);
   }
   cambiarFecha.addEventListener('click',async()=>{
-    const fecha=prompt('Fecha definitiva (AAAA-MM-DD):',plan.fecha_definitiva||'');
+    const fecha=await AMPDialog.prompt(
+      'Selecciona el día definitivo para la próxima comida.',
+      plan.fecha_definitiva||'',
+      {titulo:'📅 Modificar fecha',tipoCampo:'date',etiqueta:'Fecha de la comida',aceptar:'Continuar'}
+    );
     if(fecha===null)return;
     if(!/^\d{4}-\d{2}-\d{2}$/.test(fecha)){
-      alert('Escribe la fecha en formato AAAA-MM-DD.');return;
+      await AMPDialog.alert('Selecciona una fecha válida para la comida.',{titulo:'Falta la fecha'});return;
     }
-    if(!confirm('¿Cambiar la fecha? Si ya hubo votos de asistencia, valora si hace falta una nueva confirmación.'))return;
+    if(!(await AMPDialog.confirm(
+      '¿Quieres establecer esta fecha como definitiva?\n\nSi ya se votó la asistencia, comprueba si es necesario pedir una nueva confirmación a los cofrades.',
+      {titulo:'Confirmar fecha',aceptar:'Guardar fecha'}
+    )))return;
     const {error}=await sb.rpc('ajustar_fecha_organizacion_admin',{p_fecha:fecha});
-    if(error){alert(error.message);return}
+    if(error){await AMPDialog.alert(error.message,{titulo:'No se pudo modificar la fecha'});return}
     location.reload();
   });
   copiar.addEventListener('click',()=>{
