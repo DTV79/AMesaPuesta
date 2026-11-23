@@ -510,6 +510,7 @@ async function actualizarMensajes(){
   try{
     const respuesta=await rpc('consultar_organizacion_cofrade',{p_token:token});
     actualizarColaboracion(respuesta);
+    await sincronizarContadorAnotaciones();
   }finally{
     sincronizandoColaboracion=false;
   }
@@ -661,8 +662,44 @@ $('org-deliver').addEventListener('click',async()=>{
 
 
 const pestañasOrganizacion=['votaciones','anotaciones','restaurante'];
+let pestanaActualOrganizacion='votaciones';
+let revisionContadorAnotaciones=0;
+let ultimaMarcaAnotaciones=Promise.resolve();
+
+function mostrarContadorAnotaciones(numero){
+  const cantidad=Math.max(0,Math.trunc(Number(numero)||0));
+  const badge=$('org-tab-count-anotaciones');
+  const tab=$('org-tab-anotaciones');
+  badge.hidden=cantidad===0;
+  badge.textContent=cantidad?String(cantidad):'';
+  tab.setAttribute('aria-label',cantidad
+    ?`Anotaciones: ${cantidad} ${cantidad===1?'novedad sin ver':'novedades sin ver'}`
+    :'Anotaciones');
+}
+
+async function sincronizarContadorAnotaciones(){
+  if(!plan)return;
+  const revision=++revisionContadorAnotaciones;
+  const marcar=pestanaActualOrganizacion==='anotaciones';
+  if(marcar)mostrarContadorAnotaciones(0);
+  try{
+    // Una lectura anterior debe quedar guardada antes de consultar novedades.
+    if(!marcar)await ultimaMarcaAnotaciones.catch(()=>{});
+    const solicitud=rpc('novedades_anotaciones_organizacion_cofrade',{
+      p_token:token,p_marcar:marcar
+    });
+    if(marcar)ultimaMarcaAnotaciones=solicitud;
+    const numero=await solicitud;
+    if(revision===revisionContadorAnotaciones&&!marcar
+      &&pestanaActualOrganizacion!=='anotaciones')mostrarContadorAnotaciones(numero);
+  }catch(error){
+    console.warn('No se pudo actualizar el contador de anotaciones:',error);
+  }
+}
 function mostrarPestanaOrganizacion(nombre,{enfocar=false,desplazar=false}={}){
   if(!pestañasOrganizacion.includes(nombre))return;
+  const cambio=pestanaActualOrganizacion!==nombre;
+  pestanaActualOrganizacion=nombre;
   for(const clave of pestañasOrganizacion){
     const tab=$('org-tab-'+clave),panel=$('org-panel-'+clave);
     const activa=clave===nombre;
@@ -673,6 +710,7 @@ function mostrarPestanaOrganizacion(nombre,{enfocar=false,desplazar=false}={}){
   if(enfocar)$('org-tab-'+nombre).focus({preventScroll:true});
   if(desplazar)requestAnimationFrame(()=>
     document.querySelector('.org-tabs').scrollIntoView({behavior:'smooth',block:'start'}));
+  if(cambio&&plan)void sincronizarContadorAnotaciones();
 }
 for(const [indice,nombre] of pestañasOrganizacion.entries()){
   $('org-tab-'+nombre).addEventListener('click',()=>
@@ -712,6 +750,7 @@ mostrarPestanaOrganizacion('votaciones');
     agregarFecha();agregarFecha();
     pintar();await cargarEncuestasExtra();
     ponerOculto('org-loading',true);ponerOculto('org-content',false);
+    void sincronizarContadorAnotaciones();
     const sincronizar=()=>actualizarMensajes().catch(()=>{});
     setInterval(sincronizar,15000);
     document.addEventListener('visibilitychange',()=>{
