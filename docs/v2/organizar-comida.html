@@ -27,11 +27,16 @@
       position:sticky;top:var(--org-header-height,64px);z-index:90;margin:0 0 15px;
       padding:7px;border:1px solid #e4d3c8;border-radius:16px;
       background:rgba(255,252,248,.97);box-shadow:0 6px 20px #5f282217}
-    .org-tab{box-sizing:border-box;min-width:0;min-height:45px;padding:10px 8px;
+    .org-tab{box-sizing:border-box;position:relative;min-width:0;min-height:45px;padding:10px 8px;
       border:1px solid transparent;border-radius:11px;background:transparent;
       color:#6e4d47;font:700 15px/1.25 system-ui,sans-serif;cursor:pointer}
     .org-tab[aria-selected="true"]{background:#782936;color:#fff;box-shadow:0 2px 8px #78293629}
     .org-tab:focus-visible{outline:3px solid #d19c7b;outline-offset:2px}
+    .org-tab-count{position:absolute;top:-5px;right:-5px;display:inline-grid;place-items:center;
+      min-width:20px;height:20px;box-sizing:border-box;padding:0 5px;border-radius:999px;
+      background:#a40000;color:#fff;font:800 11px/1 system-ui,sans-serif;
+      border:2px solid #fffcf8;box-shadow:0 2px 5px #44221c26}
+    .org-tab-count[hidden]{display:none}
     .org-tabs,.org-panel{scroll-margin-top:calc(var(--org-header-height,64px) + 13px)}
     .org-panel{min-width:0}
     .org-step,.org-private{background:#fffcf8;border:1px solid #eadbd2;border-radius:18px;padding:23px;margin:14px 0;box-shadow:0 8px 24px #5f28220c}
@@ -124,7 +129,7 @@
   <script defer src="./acceso-cofrade.js"></script>
   <script defer src="./mobile-nav.js"></script>
   <script defer src="./scroll-top.js"></script>
-  <script type="module" src="./organizar-comida.js?v=20261121-fecha-ninguna1"></script>
+  <script type="module" src="./organizar-comida.js?v=20261123-contador-anotaciones1"></script>
 </head>
 <body>
   <header class="site-header"><div class="container header-inner">
@@ -148,7 +153,7 @@
     <div id="org-content" hidden>
       <div class="org-tabs" role="tablist" aria-label="Apartados de organización">
         <button type="button" class="org-tab" role="tab" id="org-tab-votaciones" aria-controls="org-panel-votaciones" aria-selected="true" tabindex="0">Votaciones</button>
-        <button type="button" class="org-tab" role="tab" id="org-tab-anotaciones" aria-controls="org-panel-anotaciones" aria-selected="false" tabindex="-1">Anotaciones</button>
+        <button type="button" class="org-tab" role="tab" id="org-tab-anotaciones" aria-controls="org-panel-anotaciones" aria-selected="false" tabindex="-1">Anotaciones<span class="org-tab-count" id="org-tab-count-anotaciones" aria-hidden="true" hidden></span></button>
         <button type="button" class="org-tab" role="tab" id="org-tab-restaurante" aria-controls="org-panel-restaurante" aria-selected="false" tabindex="-1">Restaurante</button>
       </div>
       <div class="org-panel" id="org-panel-votaciones" role="tabpanel" aria-labelledby="org-tab-votaciones" tabindex="0">
